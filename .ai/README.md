@@ -2,7 +2,6 @@
 
 ```text
 .ai/
-├── BOOTSTRAP.md          # 템플릿 → 프로젝트 초기화 절차 (초기화 후 삭제)
 ├── work/                 # 스트림 — 브랜치 ws/<id> 하나에 디렉터리 하나, 소유자만 쓴다
 │   ├── _template/        # ai-stream.sh open 이 복사하는 양식 ({{…}} 치환)
 │   └── <id>/             # CURRENT.md · HANDOFF.md · LOG.md · INBOX.md · notes/ · (.lock — 미추적)
