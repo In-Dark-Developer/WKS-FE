@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-11 · claude-code · 01/T1 · Phase 02·03 Touches 를 파일 단위로
+
+- Commits: (직전 작업 커밋)
+- Done: Phase 02 를 T1~T5 로 재분할(토큰 → 폼/모달/카드·상태/앱셸 병렬), Phase 03 은 라우트 파일을 T3 단독 소유로. 각 PLAN 에 AC5(자기 Touches 안) 추가
+- Not done: Phase 04~08 은 상세 계획이 없어 그대로 (각 계획 스트림에서)
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: `src/ui/` 배럴을 없앴다 — CONVENTIONS 의 배럴 규칙도 같이 바꿨다
+- Verification: `ai-stream.sh phases` 재생성, 02/03 Task 수 5/5
+
 ## 2026-09-11 · claude-code · 01/T1 · 역할 메모리를 미추적 개인 영역으로
 
 - Commits: e300ae0
