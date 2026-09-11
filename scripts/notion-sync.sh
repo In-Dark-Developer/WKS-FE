@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # notion-sync.sh — 스트림 상태를 Notion Task 보드에 반영한다 (git → Notion 단방향).
 #
-#   scripts/notion-sync.sh           현재 브랜치의 스트림을 보드에 반영 (Task 스트림이 아니면 --check 와 같다)
+#   scripts/notion-sync.sh           현재 브랜치의 스트림을 보드에 반영
 #   scripts/notion-sync.sh --check   토큰·DB 접근·쓰기 권한만 확인 (한 행에 같은 값을 다시 써 본다)
 #   scripts/notion-sync.sh --stream <id>   브랜치 대신 이 스트림을 반영 (보드를 손으로 고친 뒤 되돌릴 때)
 #
 # env: NOTION_TOKEN(필수, Actions secret) · NOTION_DB(필수) · STREAM_REF · PR_URL · PR_MERGED
 # 보드가 기억이 아니다 — CURRENT.md 가 기억이고 보드는 그 사본이다 (AGENTS.md Rule 1).
+# Task 스트림은 사람이 만든 Phase+Task 행을 갱신하고, 그 밖의 스트림(spec·chore·plan·phase-close)은
+# Stream 열로 찾아 없으면 만든다 (ADR-20260912-notion-board-rows-for-streams).
 
 set -eo pipefail
 . "$(cd "$(dirname "$0")" && pwd)/lib/common.sh"
@@ -16,7 +18,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --stream) want_stream=${2:-}; shift;;
     --check) mode=check;;
-    -h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+    -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     *) die "알 수 없는 옵션 $1";;
   esac; shift
 done
@@ -49,34 +51,50 @@ notion_status() {
   esac
 }
 
-patch_page() { # patch_page <page_id> <상태> [owner] [pr_url]
-  local props
-  props=$(jq -n --arg st "$2" --arg owner "${3:-}" --arg pr "${4:-}" '
-    { "상태": { "select": { "name": $st } } }
-    + (if $owner == "" then {} else { "Owner": { "rich_text": [ { "text": { "content": $owner } } ] } } end)
-    + (if $pr    == "" then {} else { "PR": { "url": $pr } } end)
-    | { properties: . }')
-  api PATCH "pages/$1" "$props"
+props_json() { # props_json <상태> <owner> <pr> <stream> [title] [touches]
+  jq -n --arg st "$1" --arg owner "$2" --arg pr "$3" --arg stream "$4" --arg title "${5:-}" --arg touches "${6:-}" '
+    def text($v): { rich_text: [ { text: { content: $v } } ] };
+      { "상태": { select: { name: $st } } }
+    + (if $owner   == "" then {} else { "Owner":  text($owner) }   end)
+    + (if $pr      == "" then {} else { "PR": { url: $pr } }       end)
+    + (if $stream  == "" then {} else { "Stream": text($stream) }  end)
+    + (if $title   == "" then {} else { "작업": { title: [ { text: { content: $title } } ] } } end)
+    + (if $touches == "" then {} else { "Touches": text($touches) } end)'
 }
 
-# Task 로 행을 찾고 Phase 번호로 좁힌다 (보드의 Task 는 "T3", Phase 는 "01 project-setup")
-find_row() { # find_row <NN> <Tk> → page_id
-  local q
-  q=$(jq -n --arg t "$2" '{ filter: { property: "Task", rich_text: { equals: $t } }, page_size: 20 }')
-  api POST "databases/$NOTION_DB/query" "$q" || return 1
+patch_page() { # patch_page <page_id> <props_json>
+  api PATCH "pages/$1" "$(jq -n --argjson p "$2" '{ properties: $p }')"
+}
+
+create_page() { # create_page <props_json>
+  api POST "pages" "$(jq -n --arg db "$NOTION_DB" --argjson p "$1" '{ parent: { database_id: $db }, properties: $p }')"
+}
+
+query() { # query <filter_json 또는 null>
+  api POST "databases/$NOTION_DB/query" "$(jq -n --argjson f "$1" 'if $f == null then { page_size: 20 } else { filter: $f, page_size: 20 } end')"
+}
+
+# Task 행: 사람이 만든다. Task 로 찾고 Phase 번호로 좁힌다 (보드의 Task 는 "T3", Phase 는 "01 project-setup")
+find_task_row() { # find_task_row <NN> <Tk> → page_id
+  query "$(jq -n --arg t "$2" '{ property: "Task", rich_text: { equals: $t } }')" || return 1
   printf '%s' "$body" | jq -r --arg p "$1 " '.results[] | select(.properties.Phase.select.name // "" | startswith($p)) | .id' | head -n1
 }
 
+# 그 밖의 스트림: Stream 열로 찾는다 (없으면 호출자가 만든다)
+find_stream_row() { # find_stream_row <id> → page_id
+  query "$(jq -n --arg s "$1" '{ property: "Stream", rich_text: { equals: $s } }')" || return 1
+  printf '%s' "$body" | jq -r '.results[0].id // empty'
+}
+
 run_check() {
-  local q id st
-  q='{"page_size":1}'
-  api POST "databases/$NOTION_DB/query" "$q" || return 1
+  local id st
+  query null || return 1
   id=$(printf '%s' "$body" | jq -r '.results[0].id // empty')
   [ -n "$id" ] || { warn "보드에 행이 없다 — 읽기는 통과, 쓰기는 확인 못 했다"; return 0; }
   st=$(printf '%s' "$body" | jq -r '.results[0].properties."상태".select.name // empty')
   ok "읽기 통과 (DB 접근 · 행 ${id})"
   [ -n "$st" ] || { warn "첫 행에 상태 값이 없다 — 쓰기 확인 생략"; return 0; }
-  patch_page "$id" "$st" || return 1
+  patch_page "$id" "$(props_json "$st" "" "" "")" || return 1
   ok "쓰기 통과 (같은 값 '$st' 로 다시 씀 — 보드 내용은 그대로)"
 }
 
@@ -93,21 +111,31 @@ fi
 task=$(field "$CURRENT" Task)           # "01/T3" 또는 "-/-"
 phase=${task%%/*}; tk=${task#*/}
 status=$(status_of "$CURRENT")
-owner=$(field "$CURRENT" Owner)
-case "$owner" in *@users.noreply.github.com) owner="@${owner%@users.noreply.github.com}"; owner="@${owner#*+}";; *) owner="";; esac
-
-if [ "$phase" = "-" ] || [ "$tk" = "-" ]; then
-  say "notion-sync: $id 는 Task 스트림이 아니다 (Task: $task) — 보드 행 없음, 접근 확인만 한다"
-  run_check; exit $FAILED
-fi
-
 want=$(notion_status "$status")
 [ "${PR_MERGED:-}" = "true" ] && want=완료
 [ -n "$want" ] || { warn "Status '$status' 를 보드 값으로 옮길 수 없다 — 생략"; exit 0; }
 
-page=$(find_row "$phase" "$tk") || exit 1
-[ -n "$page" ] || { warn "보드에 Phase $phase · Task $tk 행이 없다 — 생략"; exit 0; }
+owner=$(field "$CURRENT" Owner)
+case "$owner" in *@users.noreply.github.com) owner="@${owner%@users.noreply.github.com}"; owner="@${owner#*+}";; *) owner="";; esac
 
-patch_page "$page" "$want" "$owner" "${PR_URL:-}" || exit 1
-ok "$task → 상태 '$want'${owner:+ · Owner $owner}${PR_URL:+ · PR}"
+if [ "$phase" != "-" ] && [ "$tk" != "-" ]; then
+  page=$(find_task_row "$phase" "$tk") || exit 1
+  [ -n "$page" ] || { warn "보드에 Phase $phase · Task $tk 행이 없다 — 생략 (Task 행은 사람이 만든다)"; exit 0; }
+  patch_page "$page" "$(props_json "$want" "$owner" "${PR_URL:-}" "$id")" || exit 1
+  ok "$task ($id) → 상태 '$want'${owner:+ · Owner $owner}${PR_URL:+ · PR}"
+  exit $FAILED
+fi
+
+# spec · chore · plan · phase-close — 보드 행을 Stream 으로 찾고, 없으면 만든다
+title=$(section "$CURRENT" "Current Task" | head -n1)
+[ -n "$title" ] || title="$id"
+touches=$(field "$CURRENT" Touches)
+page=$(find_stream_row "$id") || exit 1
+if [ -n "$page" ]; then
+  patch_page "$page" "$(props_json "$want" "$owner" "${PR_URL:-}" "$id" "$title" "$touches")" || exit 1
+  ok "$id → 상태 '$want'${owner:+ · Owner $owner}${PR_URL:+ · PR}"
+else
+  create_page "$(props_json "$want" "$owner" "${PR_URL:-}" "$id" "$title" "$touches")" || exit 1
+  ok "$id → 행 생성 · 상태 '$want'${owner:+ · Owner $owner}"
+fi
 exit $FAILED
