@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-11 · claude-code · 01/T1 · 역할 메모리를 미추적 개인 영역으로
+
+- Commits: e300ae0
+- Done: `.gitignore` 에 `.claude/agent-memory/*`(README 제외) 추가, `.gitattributes` 의 `merge=union` 삭제, `AGENTS.md` Repository Map·Rule 9(close commit 대상)·Rule 15 수정, README 를 미추적 전제로 재기술, 공지에 한 줄 추가
+- Not done: 없음
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 팀이 나중에 공유하기로 하면 되돌리는 절차를 README 에 적어뒀다
+- Verification: `git check-ignore -v .claude/agent-memory/<역할>/MEMORY.md` 로 제외 확인, 추적 파일은 README 하나
+
 ## 2026-09-11 · claude-code · 01/T1 · 역할 메모리 규약을 레포 안으로
 
 - Commits: 389e9a0
