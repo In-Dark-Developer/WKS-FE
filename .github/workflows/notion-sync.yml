@@ -1,0 +1,28 @@
+name: notion-sync
+
+# 스트림 상태(.ai/work/<id>/CURRENT.md)를 Notion Task 보드에 복사한다. 단방향 — 보드를 고쳐도 저장소는 바뀌지 않는다.
+on:
+  push:
+    branches: ['ws/**']
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+concurrency:
+  group: notion-sync-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: notion-sync.sh
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB: 10aa90e7-c6d1-4051-a227-8acec2d4fa44
+          STREAM_REF: ${{ github.head_ref || github.ref_name }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+        run: bash scripts/notion-sync.sh
