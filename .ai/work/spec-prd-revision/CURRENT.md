@@ -8,7 +8,7 @@
 - Task: -/-
 - Touches: docs/PRD.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap
 
 ## Current Phase
 
@@ -20,21 +20,24 @@ spec: prd-revision
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 기존 PRD·product-brief·ARCHITECTURE 대조로 빠진 요구 찾기
+- [x] FR-15~18 추가 (기존 번호는 그대로 — 추적성)
+- [x] Success Criteria → SC-1~6 확인 절차 표
+- [x] Open Questions Q1~Q5 신설, Constraints의 일정 줄을 Q1으로 연결
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`3a02603`
+`59ea29c`
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `docs/PRD.md` · `docs/product-brief.md`(배경) · `docs/ARCHITECTURE.md`(Data Flow·External Systems)
 
 ## Relevant Source Files
 
@@ -43,4 +46,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 올려 병합한다. Q1~Q5 는 소유자 결정이 필요하다 — 답이 나오면 해당 절을 고치고 표에서 지운다.
