@@ -9,7 +9,7 @@
 - Not done: 없음
 - Developer changes: 없음
 - Upstream changes: 없음
-- Spec changes: 없음
+- Spec changes: 이 PR 누적 — docs/PRD.md·docs/ARCHITECTURE.md 신규 작성, docs/api/openapi.yaml 을 백엔드 계약 참조본 초안으로 교체 (이번 세션 자체의 spec 변경은 없음)
 - Needs your attention: main 직접 push 가 기술적으로 가능하다 — 팀에 알려야 한다
 - Verification: 문서 변경만
 

@@ -14,7 +14,7 @@
 - `AGENTS.md`(Project·Repository Map·Commands·Rule 13), `README.md` 프로젝트 소개로 교체
 - `docs/PRD.md`(FR-1~14, NFR-1~6), `docs/ARCHITECTURE.md`(모듈 경계·의존 방향·데이터 흐름) 작성
 - `docs/api/openapi.yaml` — 백엔드 계약 **참조본** 초안으로 교체
-- `docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md`, 공지 `2026-09-11-bootstrap`, `docs/CONVENTIONS.md`(Rule 2 6위·Rule 3 에 등록)
+- 스택 ADR, 공지 `2026-09-11-bootstrap`, `docs/CONVENTIONS.md`(Rule 2 6위·Rule 3 에 등록)
 - Phase 01 재작성, Phase 02~08 생성(02·03은 상세), `docs/phases/README.md` 표 갱신
 - `.ai/BOOTSTRAP.md` 삭제, 기획 메모 → `docs/product-brief.md`
 - 저장소 설정: merge commit 전용 + 병합 메시지 = PR 제목/본문
@@ -25,7 +25,7 @@
 
 ## Files Changed
 
-- `AGENTS.md`, `README.md`, `docs/`(CONVENTIONS·PRD·ARCHITECTURE·api·ADR·phases 01~08·product-brief), `.ai/team/announcements/2026-09-11-bootstrap.md`, `.ai/README.md`, `.claude/agent-memory/README.md`, `.gitignore`, `.gitattributes`
+- `AGENTS.md` · `README.md` · `docs/` 전체(CONVENTIONS·PRD·ARCHITECTURE·api·ADR·phases 01~08·product-brief) · `.ai/`(공지·README) · `.claude/agent-memory/README.md` · `.gitignore` · `.gitattributes`
 
 ## Decisions Made
 
@@ -45,7 +45,7 @@
 
 ## Known Problems
 
-- main 보호 규칙 적용 실패: private 저장소 + GitHub Free 플랜이라 branch protection·ruleset API가 403. 저장소를 public 으로 바꾸거나 Pro 로 올려야 한다 (Phase 01 AC7)
+- main 보호 미적용(private + GitHub Free 403) — 소유자가 규칙·훅으로 대체하기로 결정, AC7 에 반영
 - `.github/workflows/ci.yml` 의 commands 잡은 placeholder echo 라 초록이지만 아무것도 검증하지 않는다(T5). `.github/CODEOWNERS` 는 비어 있다(T2)
 
 ## Unverified Assumptions
