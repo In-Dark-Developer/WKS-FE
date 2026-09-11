@@ -20,7 +20,7 @@ chore: notion-sync
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
@@ -29,12 +29,12 @@ IN_PROGRESS
 - [x] `scripts/notion-sync.sh` — 브랜치 → 스트림 → 보드 행 갱신, `--check`는 접근·쓰기만 확인
 - [x] `.github/workflows/notion-sync.yml` — `ws/**` push · PR 이벤트
 - [x] ADR·공지
-- [ ] push 해서 Actions 로그로 NOTION_TOKEN 동작 확인 ←
+- [x] Actions 로그로 토큰·읽기·쓰기·Task 경로 확인
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`05afd1a`
+`b89b201`
 
 ## Relevant Documents
 
@@ -47,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-Actions 로그에서 `notion-sync` 잡이 초록인지 확인하고, 실패하면 integration 의 보드 공유·권한을 고친다.
+PR 을 올려 병합한다. 병합 후 01/T2 스트림이 열릴 때 보드가 진행중으로 바뀌는지 눈으로 확인한다.
