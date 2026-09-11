@@ -2,18 +2,19 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-12
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+병합이 끝난 스트림의 브랜치와 `.ai/work/` 디렉터리가 저장소에 남아 있지 않다.
 
 ## Work Completed
 
-- 없음
+- 병합된 브랜치 삭제: `ws/chore-bootstrap` · `ws/chore-notion-sync` · `ws/chore-notion-sync-streams` · `ws/spec-prd-revision` · `ws/01-T2-owners` · `hotfix/ci-owner-base-lookup`
+- `scripts/ai-stream.sh gc` 로 스트림 디렉터리 5개 삭제 (이력은 git log 에 남는다)
 
 ## Work In Progress
 
@@ -21,19 +22,19 @@
 
 ## Files Changed
 
-- 없음
+- `.ai/work/{01-T2-owners,chore-bootstrap,chore-notion-sync,chore-notion-sync-streams,spec-prd-revision}/` 삭제
 
 ## Decisions Made
 
-- 없음
+- 스트림 이력은 파일이 아니라 커밋으로 남긴다 — gc 는 병합되고 브랜치가 없는 것만 지운다
 
 ## Tests Executed
 
-- 없음
+- `ai-stream.sh gc --dry-run` 으로 대상 확인 후 실행
 
 ## Test Results
 
-- 없음
+- 5개 모두 병합 상태였고 원격 브랜치가 없다
 
 ## Known Problems
 
@@ -45,4 +46,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 병합 후 Phase 01 T3(@jjjung0921)·T4(@nicerjs23) 스트림을 연다.

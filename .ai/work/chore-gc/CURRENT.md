@@ -8,7 +8,7 @@
 - Task: -/-
 - Touches: .ai/work/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync, 2026-09-12-board-rows-for-streams
 
 ## Current Phase
 
@@ -20,17 +20,18 @@ chore: gc
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 병합된 스트림 브랜치 5개 삭제 (원격·로컬)
+- [x] `ai-stream.sh gc` — 브랜치 없는 스트림 디렉터리 5개 삭제
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`f9ae80c`
+`16927c4`
 
 ## Relevant Documents
 
@@ -43,4 +44,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 올려 병합한다. 이후 Phase 01 T3·T4 스트림을 연다.
