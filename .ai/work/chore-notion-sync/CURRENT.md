@@ -6,9 +6,9 @@
 - Owner: 98745092+jjjung0921@users.noreply.github.com
 - Branch: ws/chore-notion-sync
 - Task: -/-
-- Touches: scripts/notion-sync.sh,.github/workflows/notion-sync.yml,docs/decisions/,.ai/team/announcements/
+- Touches: scripts/notion-sync.sh,.github/workflows/notion-sync.yml,docs/decisions/,.ai/team/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync
 
 ## Current Phase
 
@@ -20,12 +20,16 @@ chore: notion-sync
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 보드 스키마 확인 후 상태 매핑 확정, 보드에 `보류` 옵션 추가
+- [x] `scripts/notion-sync.sh` — 브랜치 → 스트림 → 보드 행 갱신, `--check`는 접근·쓰기만 확인
+- [x] `.github/workflows/notion-sync.yml` — `ws/**` push · PR 이벤트
+- [x] ADR·공지
+- [ ] push 해서 Actions 로그로 NOTION_TOKEN 동작 확인 ←
 
 ## Last Checkpoint
 
@@ -34,13 +38,13 @@ TODO
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `docs/decisions/ADR-20260912-notion-task-board-sync.md`
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `scripts/notion-sync.sh:patch_page` · `scripts/notion-sync.sh:find_row` · `.github/workflows/notion-sync.yml`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+Actions 로그에서 `notion-sync` 잡이 초록인지 확인하고, 실패하면 integration 의 보드 공유·권한을 고친다.

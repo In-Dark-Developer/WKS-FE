@@ -5,6 +5,7 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-12-notion-board-sync](announcements/2026-09-12-notion-board-sync.md) | yes | all | Phase 08 종료 |
 | [2026-09-11-bootstrap](announcements/2026-09-11-bootstrap.md) | yes | all | Phase 01 종료 |
 <!-- announcements:end -->
 
