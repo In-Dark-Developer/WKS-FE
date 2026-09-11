@@ -20,7 +20,7 @@ chore: bootstrap — 01/T1 spec·계획 초기화
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
@@ -34,7 +34,7 @@ IN_PROGRESS
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`b313617`
+`446e552`
 
 ## Relevant Documents
 
