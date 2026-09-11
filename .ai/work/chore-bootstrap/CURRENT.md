@@ -5,27 +5,32 @@
 - Stream: chore-bootstrap
 - Owner: 98745092+jjjung0921@users.noreply.github.com
 - Branch: ws/chore-bootstrap
-- Task: -/-
+- Task: 01/T1
 - Touches: .
 - Supersedes: none
 - Acked: none
 
 ## Current Phase
 
-— (Task 밖 스트림)
+01-project-setup — `docs/phases/01-project-setup/PLAN.md`
 
 ## Current Task
 
-chore: bootstrap
+chore: bootstrap — 01/T1 spec·계획 초기화
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 기획 메모·소유자 확인으로 범위 확정 (채팅·결제 MVP 제외, FE 전용 저장소, Vite SPA)
+- [x] spec 작성 (PRD · ARCHITECTURE · openapi 참조본)
+- [x] 스택 ADR + 공지
+- [x] Phase 01~08 PLAN·Phase 그래프
+- [x] BOOTSTRAP·README 정리
+- [ ] 저장소 설정(main 보호·merge commit) 적용 ←
 
 ## Last Checkpoint
 
@@ -34,7 +39,7 @@ TODO
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `AGENTS.md` · `docs/phases/01-project-setup/PLAN.md` · `docs/product-brief.md`
 
 ## Relevant Source Files
 
@@ -43,4 +48,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+spec 3종(PRD · ARCHITECTURE · docs/api/openapi.yaml)을 쓴다.

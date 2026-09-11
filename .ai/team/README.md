@@ -5,6 +5,7 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-11-bootstrap](announcements/2026-09-11-bootstrap.md) | yes | all | Phase 01 종료 |
 <!-- announcements:end -->
 
 - 공지는 팀 전체가 행동해야 하는 변경(AGENTS.md·ARCHITECTURE·API의 breaking 변경, 새 관례)에만 쓴다. 개인 간 요청은 이슈·PR 코멘트로.

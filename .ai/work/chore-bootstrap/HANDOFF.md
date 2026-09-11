@@ -1,31 +1,31 @@
 # Handoff — chore-bootstrap
 
-<!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
-
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-11
-- Phase / Task: -/-
+- Phase / Task: 01/T1
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+템플릿이 운꿰사 프론트엔드 저장소가 되어, 어떤 Agent든 AGENTS.md·PRD·ARCHITECTURE·Phase 계획만 읽고 Phase 01 T2 이후를 시작할 수 있다.
 
 ## Work Completed
 
-- 없음
+- 진행 중
 
 ## Work In Progress
 
-- 없음
+- AGENTS.md·README·PRD·ARCHITECTURE·openapi 참조본·스택 ADR·Phase 01~08 PLAN 작성
+- `.ai/운꿰사.md` → `docs/product-brief.md` 이동, `.ai/BOOTSTRAP.md` 삭제
+- 저장소 설정(main 보호·merge commit 전용) 적용 — 브랜치 자동 삭제는 소유자 요청으로 제외
 
 ## Files Changed
 
-- 없음
+- 진행 중
 
 ## Decisions Made
 
-- 없음
+- 진행 중
 
 ## Tests Executed
 
@@ -37,12 +37,12 @@
 
 ## Known Problems
 
-- 없음
+- 진행 중
 
 ## Unverified Assumptions
 
-- 없음
+- 진행 중
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+Phase 01 T2(스택 ADR 승인)·T3(제약 층 구성) 스트림을 연다.
