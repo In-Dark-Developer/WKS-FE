@@ -39,7 +39,7 @@
 
 - [x] T2. 모듈 Owner 확정 → `.github/CODEOWNERS` 생성 — Done when: `docs/ARCHITECTURE.md` Module Boundaries의 Owner 열이 GitHub 핸들로 채워지고 `scripts/ai-stream.sh codeowners --check`가 통과 · Touches: `docs/ARCHITECTURE.md`, `.github/CODEOWNERS`, `docs/phases/` · Owner: @jjjung0921 (commit 5ae8334)
 
-- [ ] T3. 제약 층 구성 — Done when: Commands의 install/test/typecheck/lint가 클린 체크아웃에서 경고 없이 성공 · Touches: `package.json`, `pnpm-lock.yaml`, `.nvmrc`, `tsconfig*.json`, `vite.config.ts`, `vitest.config.ts`, `eslint.config.js`, `.prettierrc`, `.gitignore` · Owner: @jjjung0921
+- [x] T3. 제약 층 구성 — Done when: Commands의 install/test/typecheck/lint가 클린 체크아웃에서 경고 없이 성공 · Touches: `package.json`, `pnpm-lock.yaml`, `.nvmrc`, `tsconfig*.json`, `vite.config.ts`, `vitest.config.ts`, `eslint.config.js`, `.prettierrc`, `.gitignore` · Owner: @jjjung0921 (commit 0061995)
   - 만들 파일: `package.json`(`packageManager: pnpm@<버전>`, 스크립트 `dev`·`build`·`test`·`typecheck`·`lint`), `pnpm-lock.yaml`, `.nvmrc`(Node major 고정)
   - `tsconfig.json` — `"strict": true`, `"noUncheckedIndexedAccess": true`, `"verbatimModuleSyntax": true`, 경로 별칭 `@/* → src/*`
   - `vite.config.ts` — React 플러그인 + `@tailwindcss/vite`, `vitest.config.ts` — jsdom + `tests/setup.ts`

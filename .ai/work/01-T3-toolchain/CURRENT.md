@@ -6,7 +6,7 @@
 - Owner: 98745092+jjjung0921@users.noreply.github.com
 - Branch: ws/01-T3-toolchain
 - Task: 01/T3
-- Touches: package.json, pnpm-lock.yaml, .nvmrc, tsconfig*.json, vite.config.ts, vitest.config.ts, eslint.config.js, .prettierrc, .gitignore
+- Touches: package.json, pnpm-lock.yaml, .nvmrc, tsconfig*.json, vite.config.ts, vitest.config.ts, eslint.config.js, .prettierrc, .gitignore, docs/phases/01-project-setup/PLAN.md
 - Supersedes: none
 - Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync, 2026-09-12-board-rows-for-streams
 
