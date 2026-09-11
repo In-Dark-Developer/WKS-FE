@@ -63,7 +63,7 @@ pnpm 스크립트와 도구 설정 파일은 Phase 01 T3에서 만든다 (ADR-20
 커밋 메시지는 **Agent가 읽는다** — 짧고 규격대로. 설명은 PR 본문(사람용)에 쓴다.
 
 ```text
-<type>(<scope>): <summary>        # type: feat fix refactor test docs chore ai · scope: 구성요소 이름(부기는 스트림 id) · summary ≤ 60자, 영어, 명령형
+<type>(<scope>): <summary>        # type: feat fix refactor test docs chore ci ai · scope: 구성요소 이름(부기는 스트림 id) · summary ≤ 60자, 영어, 명령형
                                   # (빈 줄) body는 키-값만, 최대 5줄, diff로 알 수 없는 것만: Why: / What: / Test:
 Agent: claude-code                # trailer 키 고정 — Agent(에이전트 커밋만) · Task: 02/T3 · Stream: 02-T3-auth · Spec: yes|no · Refs: ADR-…, #41 · Wip: 남은 것 한 줄(WIP만)
 ```
