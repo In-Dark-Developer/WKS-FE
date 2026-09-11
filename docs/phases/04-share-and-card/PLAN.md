@@ -1,7 +1,7 @@
 # Phase 04 — share-and-card
 
 - Status: PLANNED
-- Lead: TBD
+- Lead: @gn00py48
 - Depends on: 03
 - Start: TBD · End: TBD
 
@@ -27,7 +27,7 @@
 
 ## Tasks
 
-- [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/04-share-and-card/` · Owner: 미정
+- [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/04-share-and-card/` · Owner: @gn00py48
 
 ## Relevant Specifications
 

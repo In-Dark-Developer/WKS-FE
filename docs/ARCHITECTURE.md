@@ -33,14 +33,15 @@
 
 | Module   | Owns (책임)                                  | Location        | Owner | Allowed access (허용 인터페이스)            |
 |----------|----------------------------------------------|-----------------|-------|---------------------------------------------|
-| app      | 라우트 정의 · 전역 프로바이더 · 레이아웃      | `src/app/`      | TBD   | 라우트 경로 상수                            |
-| features | 화면 흐름 · 폼 상태 · 기능별 조합            | `src/features/` | TBD   | 기능별 진입 컴포넌트 (`index.ts`)만          |
-| ui       | 디자인 토큰 · 표현 전용 컴포넌트             | `src/ui/`       | TBD   | 공개 컴포넌트와 토큰                        |
-| api      | 엔드포인트 호출 · 요청/응답 스키마            | `src/api/`      | TBD   | 함수 단위 API와 추론된 타입                 |
-| lib      | 순수 유틸                                    | `src/lib/`      | TBD   | 개별 함수                                   |
-| docs     | spec · ADR · Phase                           | `docs/`         | TBD   | PR 리뷰                                     |
+| app      | 라우트 정의 · 전역 프로바이더 · 레이아웃      | `src/app/`      | @jjjung0921 | 라우트 경로 상수                            |
+| features | 화면 흐름 · 폼 상태 · 기능별 조합            | `src/features/` | @nicerjs23 | 기능별 진입 컴포넌트 (`index.ts`)만          |
+| ui       | 디자인 토큰 · 표현 전용 컴포넌트             | `src/ui/`       | @gn00py48 | 공개 컴포넌트와 토큰                        |
+| api      | 엔드포인트 호출 · 요청/응답 스키마            | `src/api/`      | @nicerjs23 | 함수 단위 API와 추론된 타입                 |
+| lib      | 순수 유틸                                    | `src/lib/`      | @gn00py48 | 개별 함수                                   |
+| docs     | spec · ADR · Phase                           | `docs/`         | @jjjung0921 | PR 리뷰                                     |
+| docs/api | 백엔드 계약 참조본                            | `docs/api/`     | @hairyung2002 | PR 리뷰 (계약의 source of truth는 백엔드 저장소) |
 
-- Owner는 Phase 01 T2에서 담당자가 확정되면 채우고 `scripts/ai-stream.sh codeowners`로 `.github/CODEOWNERS`를 만든다. 그 전까지 CODEOWNERS는 비어 있다.
+- Owner는 그 모듈 PR의 리뷰 책임자다(`.github/CODEOWNERS`는 이 표에서 `scripts/ai-stream.sh codeowners`가 만든다). 파일을 지금 누가 쓰는지는 Owner가 아니라 그 Task 스트림의 `Touches:`가 정한다 — 남의 모듈 파일이라도 내 Touches 안이면 내가 쓰고, 리뷰를 그 모듈 Owner가 한다.
 - `features`는 다른 `features`를 직접 import 하지 않는다. 공유가 필요하면 `ui`·`lib`·`api`로 내리거나 `app`이 조립한다.
 - `ui`는 백엔드 응답 타입을 모른다 — props로만 받는다. 도메인 규칙(등급 구간, 점수 계산)은 `ui`에 두지 않는다.
 
