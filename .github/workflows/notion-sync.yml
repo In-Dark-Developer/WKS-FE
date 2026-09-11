@@ -26,8 +26,3 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_MERGED: ${{ github.event.pull_request.merged }}
         run: bash scripts/notion-sync.sh
-      - name: verify task-stream path (임시 — 확인 후 제거)
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DB: 10aa90e7-c6d1-4051-a227-8acec2d4fa44
-        run: bash scripts/notion-sync.sh --stream chore-bootstrap
