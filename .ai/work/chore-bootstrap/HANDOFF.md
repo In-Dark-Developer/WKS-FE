@@ -14,7 +14,7 @@
 - `AGENTS.md`(Project·Repository Map·Commands·Rule 13), `README.md` 프로젝트 소개로 교체
 - `docs/PRD.md`(FR-1~14, NFR-1~6), `docs/ARCHITECTURE.md`(모듈 경계·의존 방향·데이터 흐름) 작성
 - `docs/api/openapi.yaml` — 백엔드 계약 **참조본** 초안으로 교체
-- `docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md` + 공지 `2026-09-11-bootstrap`
+- `docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md`, 공지 `2026-09-11-bootstrap`, `docs/CONVENTIONS.md`(타입·이름·컴포넌트·Tailwind·데이터·import·테스트 규칙, Rule 13에서 참조)
 - Phase 01 재작성, Phase 02~08 생성(02·03은 상세), `docs/phases/README.md` 표 갱신
 - `.ai/BOOTSTRAP.md` 삭제, 기획 메모 → `docs/product-brief.md`
 - 저장소 설정: merge commit 전용 + 병합 메시지 = PR 제목/본문
@@ -25,14 +25,14 @@
 
 ## Files Changed
 
-- `AGENTS.md`, `README.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`, `docs/api/openapi.yaml`, `docs/decisions/ADR-20260911-*.md`, `docs/phases/01~08/PLAN.md`, `docs/phases/README.md`, `docs/product-brief.md`, `.ai/team/announcements/2026-09-11-bootstrap.md`, `.ai/README.md`
+- `AGENTS.md`, `README.md`, `docs/CONVENTIONS.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`, `docs/api/openapi.yaml`, `docs/decisions/ADR-20260911-*.md`, `docs/phases/01~08/PLAN.md`, `docs/phases/README.md`, `docs/product-brief.md`, `.ai/team/announcements/2026-09-11-bootstrap.md`, `.ai/README.md`
 
 ## Decisions Made
 
 - 저장소는 프론트엔드 전용, 백엔드는 별도 저장소 — `docs/api/`는 참조본 (ADR-20260911)
-- Vite SPA(React Router) 채택, Next.js 기각 — 공유 링크 OG는 백엔드가 소유
-- MVP에서 앱 내 1:1 채팅과 결제 제외 (PRD Non-goals)
+- Vite SPA(React Router) 채택, Next.js 기각 — 공유 링크 OG는 백엔드가 소유. MVP에서 채팅·결제 제외(PRD Non-goals)
 - Owner 열은 TBD, CODEOWNERS 생성은 Phase 01 T2로 미룸
+- PRD·ADR·Phase 계획은 팀 회의 안건 — 이 PR 병합 전까지 확정 아님. 컨벤션만 먼저 문서로 고정
 
 ## Tests Executed
 
@@ -57,4 +57,4 @@
 
 ## Exact Next Action
 
-소유자가 모듈 Owner 핸들을 정하면 Phase 01 T2 스트림(`scripts/ai-stream.sh open 01/T2 codeowners`)을 열고, 이어서 T3(제약 층 구성)을 진행한다.
+팀 회의에서 PRD·스택 ADR·Phase 분할을 확정하고 PR을 병합한 뒤, Phase 01 T2(`ai-stream.sh open 01/T2 codeowners`) → T3 순으로 진행한다.
