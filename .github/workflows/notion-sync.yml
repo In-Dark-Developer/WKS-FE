@@ -22,7 +22,7 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB: 10aa90e7-c6d1-4051-a227-8acec2d4fa44
-          GITHUB_HEAD_REF: ${{ github.head_ref || github.ref_name }}
+          STREAM_REF: ${{ github.head_ref || github.ref_name }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_MERGED: ${{ github.event.pull_request.merged }}
         run: bash scripts/notion-sync.sh

@@ -4,7 +4,7 @@
 #   scripts/notion-sync.sh           현재 브랜치의 스트림을 보드에 반영 (Task 스트림이 아니면 --check 와 같다)
 #   scripts/notion-sync.sh --check   토큰·DB 접근·쓰기 권한만 확인 (한 행에 같은 값을 다시 써 본다)
 #
-# env: NOTION_TOKEN(필수, Actions secret) · NOTION_DB(필수) · GITHUB_HEAD_REF · PR_URL · PR_MERGED
+# env: NOTION_TOKEN(필수, Actions secret) · NOTION_DB(필수) · STREAM_REF · PR_URL · PR_MERGED
 # 보드가 기억이 아니다 — CURRENT.md 가 기억이고 보드는 그 사본이다 (AGENTS.md Rule 1).
 
 set -eo pipefail
@@ -78,7 +78,7 @@ run_check() {
   ok "쓰기 통과 (같은 값 '$st' 로 다시 씀 — 보드 내용은 그대로)"
 }
 
-branch=$(current_branch); [ -z "$branch" ] && branch=${GITHUB_HEAD_REF:-}
+branch=$(current_branch); [ -z "$branch" ] && branch=${STREAM_REF:-}   # GITHUB_* 는 러너 예약 접두라 스텝 env 로 못 넘긴다
 id=$(stream_from_branch "$branch")
 CURRENT="$WORK/$id/CURRENT.md"
 
