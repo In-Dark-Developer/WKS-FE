@@ -8,7 +8,7 @@
 - Task: -/-
 - Touches: docs/PRD.md
 - Supersedes: none
-- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync
+- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync, 2026-09-12-board-rows-for-streams
 
 ## Current Phase
 
