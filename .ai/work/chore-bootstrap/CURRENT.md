@@ -20,7 +20,7 @@ chore: bootstrap — 01/T1 spec·계획 초기화
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
@@ -29,13 +29,12 @@ IN_PROGRESS
 - [x] spec 작성 (PRD · ARCHITECTURE · openapi 참조본)
 - [x] 스택 ADR + 공지
 - [x] Phase 01~08 PLAN·Phase 그래프
-- [x] BOOTSTRAP·README 정리, 저장소 병합 방식 설정(main 보호는 플랜 제약으로 보류), `docs/CONVENTIONS.md` 작성
-- [x] main 보호 대체: CI 에서 PR author = 스트림 Owner 검사(`ai-end.sh --ci`)
+- [x] BOOTSTRAP·README 정리, 병합 방식 설정(main 보호 대신 CI 의 PR author = Owner 검사), `docs/CONVENTIONS.md` 작성
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`446e552`
+`bcd75d8`
 
 ## Relevant Documents
 

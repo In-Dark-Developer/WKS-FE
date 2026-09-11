@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-12 · claude-code · 01/T1 · CI 에 스트림 소유자 검사 추가
+
+- Commits: (feat(ai-end) 커밋)
+- Done: `ai-end.sh --ci` 에 `chk_owner` — PR author(`PR_AUTHOR`)와 CURRENT 의 Owner(noreply 이메일 → 핸들)를 대조하고, main 의 Owner 와 달라졌으면 take 커밋을 요구. ci.yml 에 `PR_AUTHOR` 주입
+- Not done: 기술적 강제(브랜치 보호·CODEOWNERS 리뷰 필수)는 private + Free 라 불가 — 그대로
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: PR 게이트만 막는다 — main 직접 push 와 take 커밋 제목 위조는 여전히 통과한다
+- Verification: `--ci` 를 일치/불일치/PR_AUTHOR 없음/소유자 변경(take 유무) 경우로 실행, 각각 ok·FAIL·warn 확인
+
 ## 2026-09-11 · claude-code · 01/T1 · main 보호 결정 반영
 
 - Commits: 446e552
