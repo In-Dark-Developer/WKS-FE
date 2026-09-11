@@ -20,7 +20,7 @@ chore: bootstrap — 01/T1 spec·계획 초기화
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
@@ -29,17 +29,16 @@ IN_PROGRESS
 - [x] spec 작성 (PRD · ARCHITECTURE · openapi 참조본)
 - [x] 스택 ADR + 공지
 - [x] Phase 01~08 PLAN·Phase 그래프
-- [x] BOOTSTRAP·README 정리
-- [ ] 저장소 설정(main 보호·merge commit) 적용 ←
+- [x] BOOTSTRAP·README 정리, 저장소 병합 방식 설정 (main 보호는 플랜 제약으로 보류 — HANDOFF 참고)
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`d75883f`
+`b7304ab`
 
 ## Relevant Documents
 
-- `AGENTS.md` · `docs/phases/01-project-setup/PLAN.md` · `docs/product-brief.md`
+- `docs/phases/01-project-setup/PLAN.md` · `docs/product-brief.md`
 
 ## Relevant Source Files
 
@@ -48,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-spec 3종(PRD · ARCHITECTURE · docs/api/openapi.yaml)을 쓴다.
+PR 병합 후 Phase 01 T2(Owner·CODEOWNERS) → T3(제약 층 구성).
