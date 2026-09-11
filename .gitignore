@@ -26,3 +26,9 @@ tmp/
 .ai/work/*/.lock
 
 # Stack-specific: 템플릿 초기화 시 추가한다 (예: node_modules/, dist/, __pycache__/, .venv/, target/)
+
+# Node
+node_modules/
+dist/
+coverage/
+.vite/
