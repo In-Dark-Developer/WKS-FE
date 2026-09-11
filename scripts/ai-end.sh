@@ -88,7 +88,7 @@ chk_owner() { # CI 전용 — PR 을 올린 사람이 이 스트림의 Owner 인
     return 0
   fi
   ok "PR author = 스트림 Owner (@$PR_AUTHOR)"
-  base_owner=$(field_from_ref "$base" "$CURRENT" Owner)
+  base_owner=$(field_from_ref "$base" "$CURRENT" Owner || true)   # main 에 없는 새 스트림이면 빈 값 (pipefail 로 죽지 않게)
   { [ -z "$base_owner" ] || [ "$base_owner" = "$owner" ]; } && return 0
   take=$(git log --format='%s' "$base..HEAD" -- "$CURRENT" | grep -c "^ai($id): take from " || true)
   [ "$take" -gt 0 ] && ok "소유자 변경에 take 커밋 있음 ($base_owner → $owner)" \
