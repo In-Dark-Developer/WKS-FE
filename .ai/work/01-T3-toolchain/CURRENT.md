@@ -8,7 +8,7 @@
 - Task: 01/T3
 - Touches: package.json, pnpm-lock.yaml, .nvmrc, tsconfig*.json, vite.config.ts, vitest.config.ts, eslint.config.js, .prettierrc, .gitignore
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync, 2026-09-12-board-rows-for-streams
 
 ## Current Phase
 
@@ -20,27 +20,28 @@ T3. 제약 층 구성
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 버전 조사 — typescript-eslint peer 때문에 TS 6 채택
+- [x] `package.json`·`.nvmrc`·`.gitignore`
+- [x] `tsconfig.json`(strict 세트, `@/*` 별칭)
+- [x] `vite.config.ts`·`vitest.config.ts`(jsdom)
+- [x] `eslint.config.js` — 의존 방향 규칙 4개, `.prettierrc`
+- [x] 클린 설치 후 test·typecheck·lint 통과, 경계 규칙 실동작 확인
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`0441661`
+`5b7404b`
 
 ## Relevant Documents
 
-- `docs/phases/01-project-setup/PLAN.md`
+- `docs/phases/01-project-setup/PLAN.md` T3 · `docs/ARCHITECTURE.md` Dependency Direction · `docs/CONVENTIONS.md`
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
-
-## Next Action
-
-`docs/phases/01-project-setup/PLAN.md`에서 01/T3의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+- `package.json:scripts` · `eslint.config.js:boundary` · `tsconfig.json` · `vitest.config.ts`
