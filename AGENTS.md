@@ -11,7 +11,7 @@
 
 ## Repository Map
 
-- `docs/PRD.md` 요구사항 · `docs/ARCHITECTURE.md` 현재 구조(Module Boundaries의 Owner = 소유권) · `docs/api/` API spec · `docs/decisions/` ADR · `docs/phases/` Phase 계획/결과
+- `docs/PRD.md` 요구사항 · `docs/ARCHITECTURE.md` 현재 구조(Module Boundaries의 Owner = 소유권) · `docs/CONVENTIONS.md` 코딩 컨벤션 · `docs/api/` API spec · `docs/decisions/` ADR · `docs/phases/` Phase 계획/결과
 - `.ai/work/<id>/` 스트림 상태 — `CURRENT.md` 상태·checkpoint·Touches·Acked · `HANDOFF.md` 인수인계 · `LOG.md` 세션 보고 · `INBOX.md` 소유자 지시 · `notes/` 임시 메모
 - `.ai/team/announcements/` 팀 공지(must-read) · `.ai/local/` 개인 메모리(미추적, 내 Agent만) · `.claude/agent-memory/<역할>/` 역할 메모리 · `.claude/agents/git-flow.md` flow 역할
 - `scripts/ai-start.sh` 세션 시작 · `scripts/ai-end.sh` 종료 점검 / `--ready` PR 준비 / `--ci` · `scripts/ai-stream.sh` 스트림·Phase·이력 관리
@@ -32,7 +32,7 @@
 10. **Interruption** — 중단(토큰·시간 소진, 오류)은 언제든 일어난다고 가정한다. Task 시작 시 HANDOFF의 Goal·Work In Progress를 먼저 쓰고(handoff-first), step마다 CURRENT의 Progress를 갱신하며, 큰 변경 전에는 HANDOFF를 먼저 갱신한다. 세션 안에 끝나지 않을 것 같으면 억지로 끝내지 말고 종료 절차로 간다.
 11. **Resume** — 정상 종료 시 CURRENT의 Status를 IN_PROGRESS로 남기지 않는다. **내 스트림**의 IN_PROGRESS만 중단 신호다(남의 스트림의 IN_PROGRESS는 작업 중이라는 뜻). 시작 시 IN_PROGRESS를 보면: uncommitted diff가 HANDOFF의 Work In Progress·CURRENT의 Progress와 일치하면 그 step부터 잇고, 아니면 직접 수정으로 취급한다. 어느 쪽이든 test를 먼저 실행한다. REVIEW 상태에서 INBOX·새 커밋이 있으면 재작업이다(Status → IN_PROGRESS, 끝나면 다시 `--ready`). 남의 스트림은 `ai-stream.sh take` 후에만 잇는다.
 12. **Context budget** — 파일은 필요한 부분만 읽고 긴 출력은 요약해서 남긴다. Relevant Source Files는 디렉터리가 아니라 파일·심볼 단위(`src/api/users.py:create_user`)로 적는다. 상한: CURRENT.md 50줄, HANDOFF.md 60줄, LOG 항목 8줄, Progress 10 step, `.ai/local/MEMORY.md` 50줄. `git log`는 맨몸으로 부르지 않는다.
-13. **Conventions** — 포맷·린트는 도구 설정(`.editorconfig`, `eslint.config.js`, `.prettierrc`)을 따르고, 모듈 경계·의존성 방향·소유권은 `docs/ARCHITECTURE.md`를 따른다. 정해진 Stack 밖의 언어·런타임 도입은 ADR이 필요하다. 비밀값과 생성물은 커밋하지 않으며 `.ai/`·`.ai/local/`에도 적지 않는다.
+13. **Conventions** — 코드 작성 규칙은 `docs/CONVENTIONS.md`, 포맷·린트는 도구 설정(`.editorconfig`, `eslint.config.js`, `.prettierrc`)을 따르고, 모듈 경계·의존성 방향·소유권은 `docs/ARCHITECTURE.md`를 따른다. 정해진 Stack 밖의 언어·런타임 도입은 ADR이 필요하다. 비밀값과 생성물은 커밋하지 않으며 `.ai/`·`.ai/local/`에도 적지 않는다.
     - `any` 금지(불가피하면 `unknown` + 좁히기). 타입 단언·`@ts-expect-error`는 이유를 주석으로 남긴다.
     - 백엔드 응답·URL 파라미터·스토리지 값 같은 런타임 경계 입력은 zod로 파싱한 뒤에만 쓴다. `src/ui/`는 검증된 props만 받고 도메인 규칙을 갖지 않는다.
     - 허용: TypeScript(앱·테스트), CSS(Tailwind 지시문). 그 외 언어·런타임 도입은 ADR.

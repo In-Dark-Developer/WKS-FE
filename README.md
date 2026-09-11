@@ -6,7 +6,7 @@
 이 저장소는 그중 **프론트엔드(화면)** 만 담는다. 사주(만세력) 계산·문구 생성·매칭·저장은 별도 백엔드 저장소가 담당한다.
 
 - 요구사항: [`docs/PRD.md`](docs/PRD.md)
-- 구조: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · 스택 결정: [`docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md`](docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md)
+- 구조: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · 코딩 컨벤션: [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) · 스택 결정: [`docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md`](docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md)
 - 소비하는 API 계약(참조본): [`docs/api/openapi.yaml`](docs/api/openapi.yaml)
 - 개발 계획: [`docs/phases/README.md`](docs/phases/README.md)
 - 원본 기획 메모: [`docs/product-brief.md`](docs/product-brief.md)

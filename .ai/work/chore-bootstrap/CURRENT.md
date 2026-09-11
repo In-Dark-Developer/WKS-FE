@@ -20,7 +20,7 @@ chore: bootstrap — 01/T1 spec·계획 초기화
 
 ## Status
 
-REVIEW
+IN_PROGRESS
 
 ## Progress
 
@@ -30,6 +30,7 @@ REVIEW
 - [x] 스택 ADR + 공지
 - [x] Phase 01~08 PLAN·Phase 그래프
 - [x] BOOTSTRAP·README 정리, 저장소 병합 방식 설정 (main 보호는 플랜 제약으로 보류 — HANDOFF 참고)
+- [ ] 개발 convention 문서 (`docs/CONVENTIONS.md`) ←
 
 ## Last Checkpoint
 
