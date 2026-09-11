@@ -3,6 +3,7 @@
 #
 #   scripts/notion-sync.sh           현재 브랜치의 스트림을 보드에 반영 (Task 스트림이 아니면 --check 와 같다)
 #   scripts/notion-sync.sh --check   토큰·DB 접근·쓰기 권한만 확인 (한 행에 같은 값을 다시 써 본다)
+#   scripts/notion-sync.sh --stream <id>   브랜치 대신 이 스트림을 반영 (보드를 손으로 고친 뒤 되돌릴 때)
 #
 # env: NOTION_TOKEN(필수, Actions secret) · NOTION_DB(필수) · STREAM_REF · PR_URL · PR_MERGED
 # 보드가 기억이 아니다 — CURRENT.md 가 기억이고 보드는 그 사본이다 (AGENTS.md Rule 1).
@@ -10,13 +11,14 @@
 set -eo pipefail
 . "$(cd "$(dirname "$0")" && pwd)/lib/common.sh"
 
-mode=sync
-for a in "$@"; do
-  case "$a" in
+mode=sync; want_stream=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --stream) want_stream=${2:-}; shift;;
     --check) mode=check;;
-    -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
-    *) die "알 수 없는 옵션 $a";;
-  esac
+    -h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+    *) die "알 수 없는 옵션 $1";;
+  esac; shift
 done
 
 [ -n "${NOTION_TOKEN:-}" ] || { warn "NOTION_TOKEN 이 없다 — 동기화 생략 (fork PR 에서는 정상)"; exit 0; }
@@ -80,6 +82,7 @@ run_check() {
 
 branch=$(current_branch); [ -z "$branch" ] && branch=${STREAM_REF:-}   # GITHUB_* 는 러너 예약 접두라 스텝 env 로 못 넘긴다
 id=$(stream_from_branch "$branch")
+[ -n "$want_stream" ] && { id=$want_stream; branch="ws/$id"; }
 CURRENT="$WORK/$id/CURRENT.md"
 
 if [ "$mode" = "check" ] || [ -z "$id" ] || [ ! -f "$CURRENT" ]; then
