@@ -20,7 +20,7 @@ chore: bootstrap — 01/T1 spec·계획 초기화
 
 ## Status
 
-REVIEW
+IN_PROGRESS
 
 ## Progress
 

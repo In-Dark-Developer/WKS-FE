@@ -10,7 +10,7 @@
 | #  | Phase | Lead | Depends on | Status | Tasks | Result |
 |----|-------|------|------------|--------|-------|--------|
 | 01 | [project-setup](01-project-setup/PLAN.md) | @jjjung0921 | none | IN_PROGRESS | 0/6 | — |
-| 02 | [design-system](02-design-system/PLAN.md) | TBD | 01 | PLANNED | 0/4 | — |
+| 02 | [design-system](02-design-system/PLAN.md) | TBD | 01 | PLANNED | 0/5 | — |
 | 03 | [saju-reading](03-saju-reading/PLAN.md) | TBD | 02 | PLANNED | 0/5 | — |
 | 04 | [share-and-card](04-share-and-card/PLAN.md) | TBD | 03 | PLANNED | 0/1 | — |
 | 05 | [friend-score](05-friend-score/PLAN.md) | TBD | 04 | PLANNED | 0/1 | — |

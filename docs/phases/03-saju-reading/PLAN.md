@@ -34,15 +34,18 @@
 
 ## Tasks
 
-- [ ] T1. API 클라이언트 계층 + 경계 검증 — Done when: 요청/응답이 zod로 검증되고 실패가 타입으로 구분되며 테스트가 통과 · Touches: `src/api/`, `docs/api/openapi.yaml` · Owner: 미정
+- [ ] T1. API 클라이언트 계층 + 경계 검증 — Done when: 요청/응답이 zod로 검증되고 실패가 타입으로 구분되며 테스트가 통과 · Touches: `src/api/client.ts`, `src/api/readings.ts`, `src/api/schema/`, `docs/api/openapi.yaml#/paths/~1readings` · Owner: 미정
 
 - [ ] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: 미정
 
-- [ ] T3. 인트로 화면 — Done when: 영상·문구·버튼이 뜨고 두 번째 방문에는 건너뛴다 · Touches: `src/features/intro/` · Owner: 미정
+- [ ] T3. 인트로 화면 + 라우트 등록 — Done when: 영상·문구·버튼이 뜨고 두 번째 방문에는 건너뛰며, `src/app/routes.tsx`에 이 Phase의 라우트가 모여 있다 · Touches: `src/features/intro/`, `src/app/routes.tsx` · Owner: 미정
 
-- [ ] T4. 사주 입력 폼 — Done when: 필수 검증·'모름' 처리가 동작하고 잘못된 입력에 에러 메시지가 뜬다 (테스트 포함) · Touches: `src/features/saju/` · Owner: 미정
+- [ ] T4. 사주 입력 폼 — Done when: 필수 검증·'모름' 처리가 동작하고 잘못된 입력에 에러 메시지가 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts` · Owner: 미정
 
-- [ ] T5. 결과 화면 — Done when: 다섯 영역이 응답대로 렌더되고 로딩·에러 상태가 있다 · Touches: `src/features/saju/` · Owner: 미정
+- [ ] T5. 결과 화면 — Done when: 다섯 영역이 응답대로 렌더되고 로딩·에러 상태가 있다 · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/sections/` · Owner: 미정
+
+<!-- T1은 T4·T5보다 먼저 병합한다(호출 계약이 먼저 있어야 한다). T3·T4·T5는 서로 겹치지 않는다.
+     라우트 파일은 충돌 지점이라 T3이 단독으로 소유한다 — 다른 Task는 자기 화면 컴포넌트만 export 하고 등록은 T3이 한다. -->
 
 ## Relevant Specifications
 
@@ -56,6 +59,7 @@
 - [ ] AC2. 태어난 시간·지역을 비워도 결과를 받을 수 있다
 - [ ] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
 - [ ] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
+- [ ] AC5. `src/app/routes.tsx`를 T3 외의 Task가 수정하지 않았다
 
 ## Validation Plan
 

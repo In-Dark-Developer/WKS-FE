@@ -19,7 +19,7 @@
 - 컴포넌트 파일 `PascalCase.tsx`, 훅 `useThing.ts`, 그 외 `camelCase.ts`, 폴더 `kebab-case`.
 - 파일 하나에 공개 컴포넌트 하나. 그 파일에서만 쓰는 비공개 하위 컴포넌트는 같은 파일에 둔다.
 - `default export` 금지 — named export만 쓴다(자동 import·검색·리네임이 안정적이다).
-- 배럴 `index.ts`는 feature 진입점과 `src/ui/`에만 둔다. 그 외에 만들지 않는다.
+- 배럴 `index.ts`는 feature 진입점에만 둔다. `src/ui/`는 배럴 없이 파일에서 직접 import 한다 — 공유 배럴은 모든 Task가 동시에 건드리는 충돌 지점이 된다.
 - 테스트는 대상 파일 옆에 `Thing.test.tsx`. 여러 기능을 가로지르는 시나리오만 `tests/`에 둔다.
 - 불리언은 `is/has/can` 접두, 이벤트 핸들러는 `handleX`, props로 받는 콜백은 `onX`.
 
