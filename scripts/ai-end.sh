@@ -5,7 +5,7 @@
 #         scripts/ai-end.sh --set-checkpoint   내 CURRENT.md 의 Last Checkpoint 를 HEAD 로 기록한 뒤 점검
 #         scripts/ai-end.sh --ready [--pr]     Task 완료: main 동기화·spec·공지 검사 → Status=REVIEW 커밋·push → PR 제목·본문 초안 출력 (--pr: gh 로 생성/갱신)
 #         scripts/ai-end.sh --quick            pre-push 훅용 (브랜치·남의 스트림·비밀값만, 수 초)
-#         scripts/ai-end.sh --ci               PR 검사 (CI). env: PR_TITLE, PR_BODY, GITHUB_HEAD_REF, CI_BASE(기본 origin/main)
+#         scripts/ai-end.sh --ci               PR 검사 (CI). env: PR_TITLE, PR_BODY, PR_AUTHOR, GITHUB_HEAD_REF, CI_BASE(기본 origin/main)
 # 종료 코드: 0 = 통과, 1 = FAIL 항목 있음 (warn 은 통과). 요구: git 2.23+, bash 3.2+.
 
 set -eo pipefail
@@ -73,6 +73,26 @@ chk_other_streams() {
 $(changed_paths)
 EOF
   [ "$bad" -eq 0 ] && ok "다른 스트림 디렉터리 변경 없음"
+  return 0
+}
+chk_owner() { # CI 전용 — PR 을 올린 사람이 이 스트림의 Owner 인가 (Rule 15)
+  local owner login base_owner take
+  [ -z "${PR_AUTHOR:-}" ] && { warn "PR author 를 알 수 없다 — 소유자 검사 건너뜀"; return 0; }
+  owner=$(field "$CURRENT" Owner)
+  case "$owner" in
+    *@users.noreply.github.com) login=${owner%@users.noreply.github.com}; login=${login#*+};;
+    *) warn "Owner '$owner' 를 GitHub 핸들로 매핑할 수 없다 — 소유자 검사 건너뜀 (noreply 이메일을 쓴다)"; return 0;;
+  esac
+  if [ "$(printf '%s' "$login" | tr 'A-Z' 'a-z')" != "$(printf '%s' "$PR_AUTHOR" | tr 'A-Z' 'a-z')" ]; then
+    fail "PR author @$PR_AUTHOR 가 스트림 $id 의 Owner($owner) 가 아니다 (Rule 15) — 인수는 scripts/ai-stream.sh take"
+    return 0
+  fi
+  ok "PR author = 스트림 Owner (@$PR_AUTHOR)"
+  base_owner=$(field_from_ref "$base" "$CURRENT" Owner)
+  { [ -z "$base_owner" ] || [ "$base_owner" = "$owner" ]; } && return 0
+  take=$(git log --format='%s' "$base..HEAD" -- "$CURRENT" | grep -c "^ai($id): take from " || true)
+  [ "$take" -gt 0 ] && ok "소유자 변경에 take 커밋 있음 ($base_owner → $owner)" \
+    || fail "main 의 Owner($base_owner) 와 다른데 take 커밋이 없다 — scripts/ai-stream.sh take"
   return 0
 }
 chk_secrets() {
@@ -195,7 +215,7 @@ case "$mode" in
       [ -n "$plan" ] && { grep -qE "^- \[x\] ${task#*/}\. .*\(commit [0-9a-f]{7,}" "$plan" && ok "PLAN 의 ${task#*/} 에 완료 SHA 있음" || warn "PLAN 의 ${task#*/} 줄에 [x]·(commit <sha>, PR #n) 를 적는다"; }
     fi;;
   ci)
-    chk_status; chk_other_streams; chk_sync; chk_spec; chk_announcements; chk_pr_title; chk_derived; chk_caps; chk_secrets
+    chk_status; chk_other_streams; chk_owner; chk_sync; chk_spec; chk_announcements; chk_pr_title; chk_derived; chk_caps; chk_secrets
     grep -q '{{' "$CURRENT" && fail "CURRENT.md 에 치환되지 않은 {{…}} 가 있다";;
 esac
 

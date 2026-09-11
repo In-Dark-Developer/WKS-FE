@@ -21,6 +21,7 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           GITHUB_HEAD_REF: ${{ github.head_ref }}
         run: bash scripts/ai-end.sh --ci
 
