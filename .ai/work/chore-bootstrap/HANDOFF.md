@@ -2,7 +2,7 @@
 
 - From: claude-code
 - To: 없음
-- Date: 2026-09-11
+- Date: 2026-09-12
 - Phase / Task: 01/T1
 
 ## Goal
@@ -17,7 +17,7 @@
 - 스택 ADR, 공지 `2026-09-11-bootstrap`, `docs/CONVENTIONS.md`(Rule 2 6위·Rule 3 에 등록)
 - Phase 01 재작성, Phase 02~08 생성(02·03은 상세), `docs/phases/README.md` 표 갱신
 - `.ai/BOOTSTRAP.md` 삭제, 기획 메모 → `docs/product-brief.md`
-- 저장소 설정: merge commit 전용 + 병합 메시지 = PR 제목/본문
+- 저장소 설정: merge commit 전용 + 병합 메시지 = PR 제목/본문, CI 에 PR author = 스트림 Owner 검사(`ai-end.sh --ci` 의 `chk_owner`)
 
 ## Work In Progress
 
@@ -25,7 +25,7 @@
 
 ## Files Changed
 
-- `AGENTS.md` · `README.md` · `docs/` 전체(CONVENTIONS·PRD·ARCHITECTURE·api·ADR·phases 01~08·product-brief) · `.ai/`(공지·README) · `.claude/agent-memory/README.md` · `.gitignore` · `.gitattributes`
+- `AGENTS.md` · `README.md` · `docs/` 전체(CONVENTIONS·PRD·ARCHITECTURE·api·ADR·phases 01~08·product-brief) · `.ai/`(공지·README) · `.claude/agent-memory/README.md` · `.gitignore` · `.gitattributes` · `scripts/ai-end.sh:chk_owner` · `.github/workflows/ci.yml`(PR_AUTHOR)
 
 ## Decisions Made
 
@@ -37,7 +37,7 @@
 
 ## Tests Executed
 
-- `scripts/ai-stream.sh phases --check`, `scripts/ai-stream.sh announce --check`
+- `scripts/ai-stream.sh phases --check`, `scripts/ai-stream.sh announce --check`, `ai-end.sh --ci` 를 PR_AUTHOR 일치/불일치/없음·소유자 변경(take 커밋 유무) 5 경우로 실행
 
 ## Test Results
 
@@ -45,7 +45,7 @@
 
 ## Known Problems
 
-- main 보호 미적용(private + GitHub Free 403) — 소유자가 규칙·훅으로 대체하기로 결정, AC7 에 반영
+- main 보호 미적용(private + GitHub Free 403) — 규칙·훅·CI 로 대체(AC7). `chk_owner` 는 PR 게이트일 뿐이라 main 직접 push 와 take 커밋 제목 위조로는 우회된다
 - `.github/workflows/ci.yml` 의 commands 잡은 placeholder echo 라 초록이지만 아무것도 검증하지 않는다(T5). `.github/CODEOWNERS` 는 비어 있다(T2)
 
 ## Unverified Assumptions
