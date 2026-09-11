@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-11 · claude-code · 01/T1 · CONVENTIONS 를 Truth·Loading 순서에 등록
+
+- Commits: 2b785af
+- Done: Rule 2 에 `docs/CONVENTIONS.md` 를 6위로 삽입(ARCHITECTURE 아래·PRD 위, 이하 한 칸 밀림), Rule 3 읽는 순서 끝에 "코드를 쓰기 전" 으로 추가, `.claude/agent-memory/README.md` 의 ⑩→⑪ 수정
+- Not done: `.claude/agent-memory/README.md` 가 레포 밖 `~/.agents/skills/agent-memory-protocol` 을 규약 소유자로 지목하는 문제는 소유자 판단 대기
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 역할 에이전트·스킬을 팀에 공유할지, 아니면 레포에서 참조를 끊을지
+- Verification: 문서 변경만
+
 ## 2026-09-11 · claude-code · 01/T1 · 개발 컨벤션 문서화
 
 - Commits: 3385cfc
