@@ -2,14 +2,14 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-12
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+스트림을 열면 종류에 상관없이 Notion 보드에 나타난다 — Task 스트림은 사람이 만든 행을, 그 밖의 스트림은 동기화가 만든 행을 쓴다.
 
 ## Work Completed
 
@@ -17,7 +17,7 @@
 
 ## Work In Progress
 
-- 없음
+- push 후 행 생성 확인
 
 ## Files Changed
 

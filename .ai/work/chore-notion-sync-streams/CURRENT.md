@@ -8,7 +8,7 @@
 - Task: -/-
 - Touches: scripts/notion-sync.sh,docs/decisions/,.ai/team/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync, 2026-09-12-board-rows-for-streams
 
 ## Current Phase
 
@@ -20,12 +20,15 @@ chore: notion-sync-streams
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 보드에 `Stream`(text) 속성 추가
+- [x] `notion-sync.sh` — Task 행은 Phase+Task, 나머지는 Stream 열로 찾고 없으면 생성
+- [x] ADR·공지
+- [ ] push 해서 이 스트림 행이 실제로 생기는지 확인 ←
 
 ## Last Checkpoint
 
@@ -34,13 +37,13 @@ TODO
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `docs/decisions/ADR-20260912-notion-board-rows-for-streams.md`
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `scripts/notion-sync.sh:find_stream_row` · `scripts/notion-sync.sh:create_page` · `scripts/notion-sync.sh:props_json`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+Actions 로그에서 행 생성을 확인하고 PR 을 올린다.
