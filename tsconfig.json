@@ -19,7 +19,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "allowImportingTsExtensions": false,
+    "allowImportingTsExtensions": true,
 
     "paths": {
       "@/*": ["./src/*"]

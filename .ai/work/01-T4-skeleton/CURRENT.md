@@ -6,7 +6,7 @@
 - Owner: 98745092+jjjung0921@users.noreply.github.com
 - Branch: ws/01-T4-skeleton
 - Task: 01/T4
-- Touches: index.html,src/,tests/,vitest.config.ts,docs/phases/01-project-setup/PLAN.md
+- Touches: index.html,src/,tests/,vitest.config.ts,docs/phases/01-project-setup/PLAN.md,tsconfig.json
 - Supersedes: none
 - Acked: none
 
