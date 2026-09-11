@@ -1,7 +1,7 @@
 # Phase 02 — design-system
 
 - Status: PLANNED
-- Lead: TBD
+- Lead: @gn00py48
 - Depends on: 01
 - Start: TBD · End: TBD
 
@@ -33,15 +33,15 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 ## Tasks
 
-- [ ] T1. Figma 토큰 → Tailwind 테마·CSS 변수 — Done when: 색·타이포·간격 토큰이 한 곳에 정의되고 임의 색상 사용을 린트가 막는다 · Touches: `src/ui/tokens/`, `src/index.css`, `tailwind.config.ts` · Owner: 미정
+- [ ] T1. Figma 토큰 → Tailwind 테마·CSS 변수 — Done when: 색·타이포·간격 토큰이 한 곳에 정의되고 임의 색상 사용을 린트가 막는다 · Touches: `src/ui/tokens/`, `src/index.css`, `tailwind.config.ts` · Owner: @gn00py48
 
-- [ ] T2. 폼 컴포넌트 — Done when: 버튼·인풋·셀렉트·체크박스가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Button.tsx`, `src/ui/TextField.tsx`, `src/ui/Select.tsx`, `src/ui/Checkbox.tsx` · Owner: 미정
+- [ ] T2. 폼 컴포넌트 — Done when: 버튼·인풋·셀렉트·체크박스가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Button.tsx`, `src/ui/TextField.tsx`, `src/ui/Select.tsx`, `src/ui/Checkbox.tsx` · Owner: @gn00py48
 
-- [ ] T3. 모달 — Done when: 포커스 트랩·ESC 닫기·배경 스크롤 잠금이 동작하고 테스트가 통과 · Touches: `src/ui/Modal.tsx` · Owner: 미정
+- [ ] T3. 모달 — Done when: 포커스 트랩·ESC 닫기·배경 스크롤 잠금이 동작하고 테스트가 통과 · Touches: `src/ui/Modal.tsx` · Owner: @nicerjs23
 
-- [ ] T4. 카드와 상태 컴포넌트 — Done when: 카드·로딩·에러·빈 상태가 렌더되고 테스트가 통과 · Touches: `src/ui/Card.tsx`, `src/ui/state/` · Owner: 미정
+- [ ] T4. 카드와 상태 컴포넌트 — Done when: 카드·로딩·에러·빈 상태가 렌더되고 테스트가 통과 · Touches: `src/ui/Card.tsx`, `src/ui/state/` · Owner: @jjjung0921
 
-- [ ] T5. 앱 셸 레이아웃 — Done when: 360–430px에서 가로 스크롤 없이 렌더되고 데스크톱에서 중앙 정렬된다 · Touches: `src/app/AppShell.tsx`, `src/app/layout.css` · Owner: 미정
+- [ ] T5. 앱 셸 레이아웃 — Done when: 360–430px에서 가로 스크롤 없이 렌더되고 데스크톱에서 중앙 정렬된다 · Touches: `src/app/AppShell.tsx`, `src/app/layout.css` · Owner: @jjjung0921
 
 <!-- T1이 먼저 병합되어야 T2~T5가 토큰을 쓴다. T2~T5는 서로 겹치지 않으므로 동시에 진행한다.
      `src/ui/index.ts` 배럴은 두지 않는다 — 모든 Task가 건드리게 되어 충돌 지점이 된다. 소비자는 파일에서 직접 import 한다. -->

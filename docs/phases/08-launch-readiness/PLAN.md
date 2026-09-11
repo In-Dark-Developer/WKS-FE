@@ -1,7 +1,7 @@
 # Phase 08 — launch-readiness
 
 - Status: PLANNED
-- Lead: TBD
+- Lead: @jjjung0921
 - Depends on: 05, 07
 - Start: TBD · End: TBD
 
@@ -27,7 +27,7 @@
 
 ## Tasks
 
-- [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/08-launch-readiness/` · Owner: 미정
+- [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/08-launch-readiness/` · Owner: @jjjung0921
 
 ## Relevant Specifications
 

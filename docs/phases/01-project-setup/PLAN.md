@@ -37,9 +37,9 @@
 
 - [ ] T1. spec·계획 초기화 — Done when: `AGENTS.md`·`README.md`·`docs/PRD.md`·`docs/ARCHITECTURE.md`·`docs/api/openapi.yaml`에 placeholder가 없고 Phase 그래프가 있다 · Touches: `.` · Owner: @jjjung0921
 
-- [ ] T2. 모듈 Owner 확정 → `.github/CODEOWNERS` 생성 — Done when: `docs/ARCHITECTURE.md` Module Boundaries의 Owner 열이 GitHub 핸들로 채워지고 `scripts/ai-stream.sh codeowners --check`가 통과 · Touches: `docs/ARCHITECTURE.md`, `.github/CODEOWNERS` · Owner: 미정
+- [ ] T2. 모듈 Owner 확정 → `.github/CODEOWNERS` 생성 — Done when: `docs/ARCHITECTURE.md` Module Boundaries의 Owner 열이 GitHub 핸들로 채워지고 `scripts/ai-stream.sh codeowners --check`가 통과 · Touches: `docs/ARCHITECTURE.md`, `.github/CODEOWNERS`, `docs/phases/` · Owner: @jjjung0921
 
-- [ ] T3. 제약 층 구성 — Done when: Commands의 install/test/typecheck/lint가 클린 체크아웃에서 경고 없이 성공 · Touches: `package.json`, `pnpm-lock.yaml`, `.nvmrc`, `tsconfig*.json`, `vite.config.ts`, `vitest.config.ts`, `eslint.config.js`, `.prettierrc`, `.gitignore` · Owner: 미정
+- [ ] T3. 제약 층 구성 — Done when: Commands의 install/test/typecheck/lint가 클린 체크아웃에서 경고 없이 성공 · Touches: `package.json`, `pnpm-lock.yaml`, `.nvmrc`, `tsconfig*.json`, `vite.config.ts`, `vitest.config.ts`, `eslint.config.js`, `.prettierrc`, `.gitignore` · Owner: @jjjung0921
   - 만들 파일: `package.json`(`packageManager: pnpm@<버전>`, 스크립트 `dev`·`build`·`test`·`typecheck`·`lint`), `pnpm-lock.yaml`, `.nvmrc`(Node major 고정)
   - `tsconfig.json` — `"strict": true`, `"noUncheckedIndexedAccess": true`, `"verbatimModuleSyntax": true`, 경로 별칭 `@/* → src/*`
   - `vite.config.ts` — React 플러그인 + `@tailwindcss/vite`, `vitest.config.ts` — jsdom + `tests/setup.ts`
@@ -47,11 +47,11 @@
   - 경고=실패: `pnpm lint` = `eslint . --max-warnings=0 && prettier --check .`, `tsc --noEmit`
   - `.gitignore`에 `node_modules/`, `dist/`, `coverage/`, `.vite/` 추가
 
-- [ ] T4. 최소 실행 스켈레톤 + 테스트 — Done when: `pnpm dev`로 라우팅된 빈 화면이 뜨고 테스트 1개 이상이 통과 · Touches: `index.html`, `src/`, `tests/` · Owner: 미정
+- [ ] T4. 최소 실행 스켈레톤 + 테스트 — Done when: `pnpm dev`로 라우팅된 빈 화면이 뜨고 테스트 1개 이상이 통과 · Touches: `index.html`, `src/`, `tests/` · Owner: @nicerjs23
 
-- [ ] T5. CI에서 Commands 실행 — Done when: `.github/workflows/ci.yml`의 commands 잡이 실제 pnpm 명령을 돌리고 PR에서 통과 · Touches: `.github/workflows/ci.yml` · Owner: 미정
+- [ ] T5. CI에서 Commands 실행 — Done when: `.github/workflows/ci.yml`의 commands 잡이 실제 pnpm 명령을 돌리고 PR에서 통과 · Touches: `.github/workflows/ci.yml` · Owner: @gn00py48
 
-- [ ] T6. 백엔드 계약 동기화 — Done when: 백엔드 저장소의 openapi와 `docs/api/openapi.yaml` 참조본이 일치하거나 차이가 이슈로 등록됨 · Touches: `docs/api/openapi.yaml` · Owner: 미정
+- [ ] T6. 백엔드 계약 동기화 — Done when: 백엔드 저장소의 openapi와 `docs/api/openapi.yaml` 참조본이 일치하거나 차이가 이슈로 등록됨 · Touches: `docs/api/openapi.yaml` · Owner: @nicerjs23
 
 ## Relevant Specifications
 
