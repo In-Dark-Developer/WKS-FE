@@ -8,7 +8,7 @@
 - Task: 01/T5
 - Touches: .github/workflows/ci.yml,tsconfig.json,docs/phases/01-project-setup/PLAN.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync, 2026-09-12-board-rows-for-streams
 
 ## Current Phase
 
@@ -20,27 +20,26 @@ T5. CI에서 Commands 실행
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] commands 잡을 실제 pnpm 명령으로 (install → test → typecheck → lint)
+- [x] pnpm/action-setup + setup-node(`.nvmrc`, pnpm 캐시)
+- [x] ci.yml 의 actions 를 Node 20 런타임 경고 없는 버전으로
+- [x] T3 잔재 `types: ["vitest/globals"]` 제거
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`f868018`
+`175993f`
 
 ## Relevant Documents
 
-- `docs/phases/01-project-setup/PLAN.md`
+- `docs/phases/01-project-setup/PLAN.md` T5 · `AGENTS.md` Commands
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
-
-## Next Action
-
-`docs/phases/01-project-setup/PLAN.md`에서 01/T5의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+- `.github/workflows/ci.yml:commands` · `tsconfig.json`
