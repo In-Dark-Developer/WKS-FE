@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-11 · claude-code · 01/T1 · 역할 메모리 규약을 레포 안으로
+
+- Commits: 389e9a0
+- Done: `.claude/agent-memory/README.md` 재작성 — 형식(MEMORY.md 인덱스 + 토픽 파일)·기록 기준·갱신 시점·우선순위를 레포 안에 직접 기술, `~/` 경로 참조 제거
+- Not done: 역할 에이전트·스킬 자체의 공유는 보류 — 절대 홈 경로 의존이라 이식 작업이 별도로 필요(ADR 대상)
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 없음 — 팀원은 개인 에이전트 설정 없이도 이 폴더 규약을 읽을 수 있다
+- Verification: `grep '~/' .claude/agent-memory/README.md` 0건
+
 ## 2026-09-11 · claude-code · 01/T1 · CONVENTIONS 를 Truth·Loading 순서에 등록
 
 - Commits: 2b785af
