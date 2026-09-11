@@ -8,7 +8,7 @@
 - Task: 01/T4
 - Touches: index.html,src/,tests/,vitest.config.ts,docs/phases/01-project-setup/PLAN.md,tsconfig.json
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-notion-board-sync, 2026-09-12-board-rows-for-streams
 
 ## Current Phase
 
@@ -20,27 +20,27 @@ T4. 최소 실행 스켈레톤 + 테스트
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] `index.html` · `src/main.tsx` 진입
+- [x] `src/app/App.tsx`(RouterProvider) · `routes.tsx` · 빈 화면
+- [x] `tests/setup.ts` + `vitest.config.ts`의 setupFiles 연결
+- [x] 라우트 렌더 테스트 1개
+- [x] test·typecheck·lint·build 통과, dev 서버에서 실제 렌더 확인
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`5e4a3bb`
+`61b0728`
 
 ## Relevant Documents
 
-- `docs/phases/01-project-setup/PLAN.md`
+- `docs/phases/01-project-setup/PLAN.md` T4 · `docs/CONVENTIONS.md` 2·3·6절
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
-
-## Next Action
-
-`docs/phases/01-project-setup/PLAN.md`에서 01/T4의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+- `src/app/routes.tsx:routes` · `src/app/App.tsx:App` · `src/main.tsx` · `tests/setup.ts`

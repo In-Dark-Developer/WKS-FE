@@ -47,7 +47,7 @@
   - 경고=실패: `pnpm lint` = `eslint . --max-warnings=0 && prettier --check .`, `tsc --noEmit`
   - `.gitignore`에 `node_modules/`, `dist/`, `coverage/`, `.vite/` 추가
 
-- [ ] T4. 최소 실행 스켈레톤 + 테스트 — Done when: `pnpm dev`로 라우팅된 빈 화면이 뜨고 테스트 1개 이상이 통과 · Touches: `index.html`, `src/`, `tests/` · Owner: @nicerjs23
+- [x] T4. 최소 실행 스켈레톤 + 테스트 — Done when: `pnpm dev`로 라우팅된 빈 화면이 뜨고 테스트 1개 이상이 통과 · Touches: `index.html`, `src/`, `tests/`, `vitest.config.ts`, `tsconfig.json` · Owner: @jjjung0921 (commit 61b0728)
 
 - [ ] T5. CI에서 Commands 실행 — Done when: `.github/workflows/ci.yml`의 commands 잡이 실제 pnpm 명령을 돌리고 PR에서 통과 · Touches: `.github/workflows/ci.yml` · Owner: @gn00py48
 
