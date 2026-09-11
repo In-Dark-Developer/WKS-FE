@@ -67,7 +67,7 @@
 - [ ] AC4. `docs/phases/README.md` 표가 PLAN 머리들과 일치하고 Phase 02·03 PLAN이 상세하게 존재한다
 - [ ] AC5. 툴체인 버전 고정 파일(`.nvmrc`, `packageManager`), `pnpm-lock.yaml`, 도구 설정 파일이 커밋되어 있고 `.gitignore`에 Node 항목이 있다
 - [ ] AC6. `AGENTS.md` Rule 13에 언어별 규칙이 3줄 이내로 있고 마지막 줄이 허용 언어 목록이며, 스택 ADR에 도구 선택 이유가 있다
-- [ ] AC7. main이 보호되고 병합 방식이 merge commit뿐이며 `.github/CODEOWNERS`가 ARCHITECTURE의 Owner 열과 일치한다
+- [ ] AC7. 병합 방식이 merge commit뿐이고 `.github/CODEOWNERS`가 ARCHITECTURE의 Owner 열과 일치한다. main 보호 규칙은 걸지 않는다 — private + GitHub Free 제약으로 규칙(`AGENTS.md` Rule 9)과 로컬 훅·CI로 대체하기로 결정했다(2026-09-11). 저장소가 public이 되거나 유료 플랜이 되면 `ai-stream.sh setup`을 다시 실행한다
 - [ ] AC8. CI가 PR에서 install/test/typecheck/lint와 `ai-end.sh --ci`를 돌린다
 
 ## Validation Plan
@@ -75,5 +75,5 @@
 - AC1: `grep -n "<" AGENTS.md README.md docs/PRD.md docs/ARCHITECTURE.md` 출력에 placeholder·지침 주석이 없는지 확인
 - AC2·AC5: 새로 클론한 디렉터리에서 Install → Test → Typecheck → Lint 순으로 실행
 - AC3·AC4·AC6: 해당 파일 확인, `scripts/ai-stream.sh phases --check`
-- AC7: `scripts/ai-stream.sh setup --check`, `scripts/ai-stream.sh codeowners --check`
+- AC7: `scripts/ai-stream.sh setup --check` 출력에서 병합 방식 확인(보호 규칙 없음이 정상), `scripts/ai-stream.sh codeowners --check`
 - AC8: PR에서 두 잡이 모두 초록인지 확인
