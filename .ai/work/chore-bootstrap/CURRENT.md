@@ -8,7 +8,7 @@
 - Task: 01/T1
 - Touches: .
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap
 
 ## Current Phase
 
