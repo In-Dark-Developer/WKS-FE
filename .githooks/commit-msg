@@ -6,8 +6,8 @@ subject=$(grep -m1 -v '^#' "$msgfile" | grep -m1 . || true)
 case "$subject" in ""|"Merge "*|"Revert "*|"fixup! "*|"squash! "*) exit 0;; esac
 [ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ] && exit 0
 
-if ! printf '%s' "$subject" | grep -qE '^(feat|fix|refactor|test|docs|chore|ai|spec|adr|plan|phase-close|hotfix|announce)\([A-Za-z0-9._/-]+\): .{1,72}$'; then
-  echo "commit-msg: subject 문법 위반 — <type>(<scope>): <summary>  (type: feat fix refactor test docs chore ai · summary ≤ 60자 영어 명령형)" >&2
+if ! printf '%s' "$subject" | grep -qE '^(feat|fix|refactor|test|docs|chore|ci|ai|spec|adr|plan|phase-close|hotfix|announce)\([A-Za-z0-9._/-]+\): .{1,72}$'; then
+  echo "commit-msg: subject 문법 위반 — <type>(<scope>): <summary>  (type: feat fix refactor test docs chore ci ai · summary ≤ 60자 영어 명령형)" >&2
   echo "            받은 것: '$subject'" >&2
   exit 1
 fi

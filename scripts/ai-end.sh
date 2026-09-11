@@ -186,7 +186,7 @@ chk_announcements() {
 }
 chk_pr_title() {
   local t=${PR_TITLE:-}; [ -z "$t" ] && { warn "PR_TITLE 없음 — 제목 문법 검사 생략"; return; }
-  if printf '%s' "$t" | grep -qE '^(feat|fix|refactor|test|docs|chore|ai|spec|adr|plan|phase-close|hotfix|announce)\([a-z0-9._/-]+\): .{1,72} \[([0-9]{2}|-)/(T[0-9]+|-)\]$'; then ok "PR 제목 문법: $t"; else fail "PR 제목 문법 위반: '$t' → <type>(<scope>): <summary> [<phase>/<task>]"; fi
+  if printf '%s' "$t" | grep -qE '^(feat|fix|refactor|test|docs|chore|ci|ai|spec|adr|plan|phase-close|hotfix|announce)\([a-z0-9._/-]+\): .{1,72} \[([0-9]{2}|-)/(T[0-9]+|-)\]$'; then ok "PR 제목 문법: $t"; else fail "PR 제목 문법 위반: '$t' → <type>(<scope>): <summary> [<phase>/<task>]"; fi
   return 0
 }
 chk_derived() {
