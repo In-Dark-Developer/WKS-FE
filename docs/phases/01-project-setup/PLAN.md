@@ -49,7 +49,7 @@
 
 - [x] T4. 최소 실행 스켈레톤 + 테스트 — Done when: `pnpm dev`로 라우팅된 빈 화면이 뜨고 테스트 1개 이상이 통과 · Touches: `index.html`, `src/`, `tests/`, `vitest.config.ts`, `tsconfig.json` · Owner: @jjjung0921 (commit 61b0728)
 
-- [ ] T5. CI에서 Commands 실행 — Done when: `.github/workflows/ci.yml`의 commands 잡이 실제 pnpm 명령을 돌리고 PR에서 통과 · Touches: `.github/workflows/ci.yml` · Owner: @gn00py48
+- [x] T5. CI에서 Commands 실행 — Done when: `.github/workflows/ci.yml`의 commands 잡이 실제 pnpm 명령을 돌리고 PR에서 통과 · Touches: `.github/workflows/ci.yml`, `tsconfig.json` · Owner: @jjjung0921 (commit 55f5fbd)
 
 - [ ] T6. 백엔드 계약 동기화 — Done when: 백엔드 저장소의 openapi와 `docs/api/openapi.yaml` 참조본이 일치하거나 차이가 이슈로 등록됨 · Touches: `docs/api/openapi.yaml` · Owner: @nicerjs23
 
