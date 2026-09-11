@@ -6,10 +6,10 @@
 
 - Commits: 5ae8334
 - Done: ARCHITECTURE Owner 열 3분할, CODEOWNERS 생성, Phase 01~08 Lead·Task Owner 배정, Notion 보드 Owner 21행
-- Not done: Collaborator 초대(권한이 없다), @hairyung2002 처리
+- Not done: Collaborator 초대 (권한이 없다)
 - Developer changes: 없음
 - Upstream changes: 없음
-- Spec changes: docs/ARCHITECTURE.md — Module Boundaries Owner 열과 Owner/Touches 구분 한 줄
+- Spec changes: docs/ARCHITECTURE.md — Module Boundaries Owner 열, `docs/api/` 행 추가(@hairyung2002), Owner/Touches 구분 한 줄
 - Needs your attention: @gn00py48·@nicerjs23 를 Collaborator 로 초대해야 CODEOWNERS 가 작동한다
 - Verification: codeowners --check · phases --check 통과, Task Touches 교차 확인
 

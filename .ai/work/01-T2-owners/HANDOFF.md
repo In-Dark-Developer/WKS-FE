@@ -13,7 +13,7 @@
 
 ## Work Completed
 
-- `docs/ARCHITECTURE.md` Module Boundaries Owner: app·docs @jjjung0921 / ui·lib @gn00py48 / api·features @nicerjs23
+- `docs/ARCHITECTURE.md` Module Boundaries Owner: app·docs @jjjung0921 / ui·lib @gn00py48 / api·features @nicerjs23, `docs/api/`(백엔드 계약 참조본)는 @hairyung2002
 - `.github/CODEOWNERS` 생성 (표에서 생성 — 손으로 고치지 않는다)
 - Phase 01~08 Lead와 Task Owner 배정, `docs/phases/README.md` 표 재생성
 - Notion 보드 Task 행 21개의 Owner 열을 같은 배정으로 채움
@@ -31,6 +31,7 @@
 - **모듈 Owner = 리뷰 책임**, **Touches = 쓰기 배타성**. 둘을 분리했다 — 남의 모듈 파일이라도 내 Touches 안이면 내가 쓰고 리뷰만 그 모듈 Owner가 한다. ARCHITECTURE에 한 줄로 적었다
 - 한 Phase의 Lead와 그 Phase Task를 한 사람에게 몰지 않았다. Phase 02·03은 세 명이 동시에 들어간다
 - 03/T3이 `src/app/routes.tsx`를 단독 소유한다(기존 설계) — 라우트 파일 충돌을 막는 유일한 방법이라 Owner도 app 모듈 소유자에게 줬다
+- @hairyung2002(백엔드)에게는 FE Task를 주지 않고 `docs/api/` 리뷰만 맡겼다. 계약 참조본이 백엔드와 어긋나는 것을 이 저장소에서 잡을 유일한 지점이다
 
 ## Tests Executed
 
@@ -43,13 +44,13 @@
 ## Known Problems
 
 - **@gn00py48·@nicerjs23 가 저장소 Collaborator 가 아니다.** CODEOWNERS 는 쓰기 권한 있는 사람만 인식하므로 초대 전까지 그 줄들은 무시된다 (GitHub 이 CODEOWNERS 경고를 띄운다)
-- Collaborator 목록에 @hairyung2002 가 있는데 이번 배정에는 없다 — 팀원이면 배정이 필요하고 아니면 권한을 내려야 한다
 - Phase 01 T4 의 Touches 가 `src/`, `tests/` 로 넓다. 01 이 끝난 뒤 02·03 이 시작하므로 충돌하지 않지만, T4 가 늦어지면 모두가 막힌다
 
 ## Unverified Assumptions
 
 - 세 사람의 가용 시간이 비슷하다고 보고 Task 수를 7·6·8로 맞췄다. 실제 부하는 Phase 02·03 진행 후 재조정
 - @gn00py48·@nicerjs23 의 GitHub 핸들이 이 사람들 계정이 맞다 (핸들 존재는 확인, 본인 여부는 미확인)
+- 백엔드 담당이 이 저장소 PR 리뷰에 참여할 시간이 있다고 가정했다 — 아니면 `docs/api/` Owner 를 되돌린다
 
 ## Exact Next Action
 

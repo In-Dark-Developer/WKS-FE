@@ -29,6 +29,7 @@ REVIEW
 - [x] `.github/CODEOWNERS` 생성 (`ai-stream.sh codeowners`)
 - [x] Phase 01~08 Lead·Task Owner 배정, Touches 충돌 확인
 - [x] Notion 보드 Owner 열 채움 (21행)
+- [x] `docs/api/` 리뷰를 백엔드 담당 @hairyung2002 에게
 
 ## Last Checkpoint
 
