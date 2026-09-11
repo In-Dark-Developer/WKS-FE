@@ -20,7 +20,7 @@ chore: notion-sync-streams
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
@@ -28,12 +28,12 @@ IN_PROGRESS
 - [x] 보드에 `Stream`(text) 속성 추가
 - [x] `notion-sync.sh` — Task 행은 Phase+Task, 나머지는 Stream 열로 찾고 없으면 생성
 - [x] ADR·공지
-- [ ] push 해서 이 스트림 행이 실제로 생기는지 확인 ←
+- [x] push 로 행 생성 확인 (Actions: `행 생성 · 상태 '진행중'`)
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`3a02603`
+`a2f508d`
 
 ## Relevant Documents
 
