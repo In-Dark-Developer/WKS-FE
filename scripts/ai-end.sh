@@ -3,7 +3,11 @@
 #
 # 사용법: scripts/ai-end.sh                    종료 점검 (close commit 전)
 #         scripts/ai-end.sh --set-checkpoint   내 CURRENT.md 의 Last Checkpoint 를 HEAD 로 기록한 뒤 점검
-#         scripts/ai-end.sh --ready [--pr]     Task 완료: main 동기화·spec·공지 검사 → Status=REVIEW 커밋·push → PR 제목·본문 초안 출력 (--pr: gh 로 생성/갱신)
+#         scripts/ai-end.sh --ready [--pr|--web]
+#                                              Task 완료: main 동기화·spec·공지 검사 → Status=REVIEW 커밋·push → PR 제목·본문 초안 출력
+#                                              (--pr: gh 로 생성/갱신 · --web: 제목·본문이 채워진 브라우저 compare 페이지를 연다)
+#         scripts/ai-end.sh --pr-title         PR 제목 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
+#         scripts/ai-end.sh --pr-body          PR 본문 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
 #         scripts/ai-end.sh --quick            pre-push 훅용 (브랜치·남의 스트림·비밀값만, 수 초)
 #         scripts/ai-end.sh --ci               PR 검사 (CI). env: PR_TITLE, PR_BODY, PR_AUTHOR, GITHUB_HEAD_REF, CI_BASE(기본 origin/main)
 # 종료 코드: 0 = 통과, 1 = FAIL 항목 있음 (warn 은 통과). 요구: git 2.23+, bash 3.2+.
@@ -11,14 +15,16 @@
 set -eo pipefail
 . "$(cd "$(dirname "$0")" && pwd)/lib/common.sh"
 
-mode=check; setcp=0; make_pr=0
+mode=check; setcp=0; make_pr=0; open_web=0; draft=
 for a in "$@"; do
   case "$a" in
-    --set-checkpoint) setcp=1;; --quick) mode=quick;; --ready) mode=ready;; --pr) make_pr=1;; --ci) mode=ci;;
-    -h|--help) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+    --set-checkpoint) setcp=1;; --quick) mode=quick;; --ready) mode=ready;; --pr) make_pr=1;; --web) open_web=1;; --ci) mode=ci;;
+    --pr-title) mode=draft; draft=title;; --pr-body) mode=draft; draft=body;;
+    -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     *) die "알 수 없는 옵션 $a";;
   esac
 done
+[ "$open_web" -eq 1 ] && [ "$mode" != ready ] && die "--web 은 --ready 와 함께 쓴다"
 
 branch=$(current_branch); [ -z "$branch" ] && branch=${GITHUB_HEAD_REF:-}
 id=$(stream_from_branch "$branch")
@@ -26,7 +32,7 @@ base=${CI_BASE:-$(main_ref)}
 head_short=$(git rev-parse --short HEAD)
 bootstrap=0; [ -f .ai/BOOTSTRAP.md ] && bootstrap=1
 
-[ "$mode" = "quick" ] || say "ai-end ($mode) — HEAD $head_short · branch ${branch:-?} · base $base · $today"
+case "$mode" in quick|draft) ;; *) say "ai-end ($mode) — HEAD $head_short · branch ${branch:-?} · base $base · $today";; esac
 
 # --- hotfix/* 와 bootstrap 은 스트림 규칙 밖 ---
 case "$branch" in hotfix/*) say "  hotfix/* 브랜치 — 스트림 규칙 검사 없음 (Commands 만 CI 가 검사)"; exit 0;; esac
@@ -200,6 +206,44 @@ chk_derived() {
   return 0
 }
 
+# ---------------------------------------------------------------- PR 초안 (--ready 와 CI 의 pr-body 잡이 같은 초안을 쓴다)
+pr_draft_vars() {
+  goal=$(section "$HANDOFF" Goal | head -n1 | sed 's/^<//; s/>$//')
+  spec_files=$(git diff --name-only "$base...HEAD" -- docs/PRD.md docs/ARCHITECTURE.md docs/api 2>/dev/null | tr '\n' ' ')
+  spec_flag=no; [ -n "$spec_files" ] && spec_flag=yes
+  logspec=$(awk '/^## /{ n++ } n == 1' "$LOG" | sed -n 's/^- Spec changes: *//p' | head -n1)
+  ann=$(git diff --name-only --diff-filter=A "$base...HEAD" -- "$TEAM/announcements/" 2>/dev/null | grep -v _template | sed 's#.*/##; s/\.md$//' | tr '\n' ',' | sed 's/,$//' || true)
+  refs=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/decisions/ 2>/dev/null | grep -v _template | sed 's#.*/##' | tr '\n' ',' | sed 's/,$//' || true)
+  return 0
+}
+pr_draft_title() {
+  local ptype scope summary
+  pr_draft_vars
+  case "$kind" in task) ptype=feat;; spec) ptype=spec;; plan) ptype=plan;; phase) ptype=phase-close;; *) ptype=chore;; esac
+  scope=$(touches_of "$touches" | head -n1 | sed 's/^\.\///; s/^\///'); scope=${scope%%/*}; scope=${scope%%#*}; scope=${scope%%.*}; [ -z "$scope" ] || [ "$scope" = "." ] && scope=repo
+  [ "$kind" = "phase" ] && scope=ai
+  summary=${goal:-$id}; summary=${summary:0:60}
+  printf '%s(%s): %s [%s]\n' "$ptype" "$scope" "$summary" "$task"
+}
+pr_draft_body() { # $1 = 1 이면 <details> 세션 기록까지. 0 은 --web 용 (본문이 URL 파라미터로 가서 길이 제한이 있다)
+  pr_draft_vars
+  printf '## 무엇을 · 왜\n\n%s\n\n' "${goal:-<한 줄>}"
+  section "$HANDOFF" "Work Completed"; printf '\n'
+  printf '## 리뷰 포인트\n\n'; section "$HANDOFF" "Decisions Made"; section "$HANDOFF" "Unverified Assumptions" | sed 's/^- /- (가정) /'; printf '\n'
+  printf '## Spec 변경\n\n'
+  if [ "$spec_flag" = yes ]; then printf -- '- %s — %s\n\n' "$spec_files" "${logspec:-<무엇이 어떻게>}"; else printf -- '- 없음\n\n'; fi
+  printf '## 확인 방법\n\n'; section "$HANDOFF" "Tests Executed"; section "$HANDOFF" "Test Results"; printf '\n'
+  printf '## 후속 · 알려진 문제\n\n'; section "$HANDOFF" "Known Problems"; printf '\n'
+  if [ "${1:-1}" -eq 1 ]; then printf '<details><summary>세션 기록 (에이전트 생성)</summary>\n\n'; strip_comments "$LOG" | sed '1d'; printf '\n</details>\n\n'; fi
+  printf -- '---\nStream: %s\nTask: %s\nSpec: %s\nRefs: %s\nAnnouncement: %s\n' "$id" "$task" "$spec_flag" "${refs:-none}" "${ann:-none}"
+}
+
+# --- --pr-title / --pr-body: 검사 없이 초안만 stdout 에 (CI 의 pr-body 잡) ---
+if [ "$mode" = draft ]; then
+  case "$draft" in title) pr_draft_title;; *) pr_draft_body 1;; esac
+  exit 0
+fi
+
 # ---------------------------------------------------------------- 모드별 실행
 case "$mode" in
   quick)
@@ -210,6 +254,7 @@ case "$mode" in
   ready)
     chk_close_scope; chk_status; chk_checkpoint; chk_other_streams; chk_sync; chk_spec; chk_announcements; chk_caps; chk_secrets; chk_handoff
     bash scripts/ai-stream.sh phases --check >/dev/null 2>&1 || warn "docs/phases/README.md 표가 PLAN 머리와 다르다 → scripts/ai-stream.sh phases (CI 가 FAIL 시킨다)"
+    bash scripts/ai-stream.sh announce --check >/dev/null 2>&1 || warn "공지 색인이 다르다 → scripts/ai-stream.sh announce (CI 가 FAIL 시킨다)"
     if [ "$kind" = "task" ]; then
       plan=$(ls -d docs/phases/"${task%%/*}"-*/PLAN.md 2>/dev/null | head -n1)
       [ -n "$plan" ] && { grep -qE "^- \[x\] ${task#*/}\. .*\(commit [0-9a-f]{7,}" "$plan" && ok "PLAN 의 ${task#*/} 에 완료 SHA 있음" || warn "PLAN 의 ${task#*/} 줄에 [x]·(commit <sha>, PR #n) 를 적는다"; }
@@ -244,38 +289,24 @@ fi
 have_origin && git push -q -u origin "ws/$id" 2>/dev/null && say "pushed ws/$id"
 rm -f "$LOCK"
 
-goal=$(section "$HANDOFF" Goal | head -n1 | sed 's/^<//; s/>$//')
-spec_files=$(git diff --name-only "$base...HEAD" -- docs/PRD.md docs/ARCHITECTURE.md docs/api 2>/dev/null | tr '\n' ' ')
-spec_flag=no; [ -n "$spec_files" ] && spec_flag=yes
-logspec=$(awk '/^## /{ n++ } n == 1' "$LOG" | sed -n 's/^- Spec changes: *//p' | head -n1)
-ann=$(git diff --name-only --diff-filter=A "$base...HEAD" -- "$TEAM/announcements/" 2>/dev/null | grep -v _template | sed 's#.*/##; s/\.md$//' | tr '\n' ',' | sed 's/,$//' || true)
-refs=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/decisions/ 2>/dev/null | grep -v _template | sed 's#.*/##' | tr '\n' ',' | sed 's/,$//' || true)
-case "$kind" in task) ptype=feat;; spec) ptype=spec;; plan) ptype=plan;; phase) ptype=phase-close;; *) ptype=chore;; esac
-scope=$(touches_of "$touches" | head -n1 | sed 's/^\.\///; s/^\///'); scope=${scope%%/*}; scope=${scope%%#*}; scope=${scope%%.*}; [ -z "$scope" ] || [ "$scope" = "." ] && scope=repo
-[ "$kind" = "phase" ] && scope=ai
-summary=${goal:-$id}; summary=${summary:0:60}
-title="$ptype($scope): $summary [$task]"
-
-body=$(mktemp -t ai-pr.XXXXXX)
-{
-  printf '## 무엇을 · 왜\n\n%s\n\n' "${goal:-<한 줄>}"
-  section "$HANDOFF" "Work Completed"; printf '\n'
-  printf '## 리뷰 포인트\n\n'; section "$HANDOFF" "Decisions Made"; section "$HANDOFF" "Unverified Assumptions" | sed 's/^- /- (가정) /'; printf '\n'
-  printf '## Spec 변경\n\n'
-  if [ "$spec_flag" = yes ]; then printf -- '- %s — %s\n\n' "$spec_files" "${logspec:-<무엇이 어떻게>}"; else printf -- '- 없음\n\n'; fi
-  printf '## 확인 방법\n\n'; section "$HANDOFF" "Tests Executed"; section "$HANDOFF" "Test Results"; printf '\n'
-  printf '## 후속 · 알려진 문제\n\n'; section "$HANDOFF" "Known Problems"; printf '\n'
-  printf '<details><summary>세션 기록 (에이전트 생성)</summary>\n\n'; strip_comments "$LOG" | sed '1d'; printf '\n</details>\n\n'
-  printf -- '---\nStream: %s\nTask: %s\nSpec: %s\nRefs: %s\nAnnouncement: %s\n' "$id" "$task" "$spec_flag" "${refs:-none}" "${ann:-none}"
-} > "$body"
+title=$(pr_draft_title)
+body=$(mktemp -t ai-pr.XXXXXX); pr_draft_body 1 > "$body"
 
 say
 say "PR title (draft): $title"
 say "PR body (draft) → $body"
 say "-----"; cat "$body"; say "-----"
-if [ "$make_pr" -eq 1 ]; then
+if [ "$make_pr" -eq 1 ] || [ "$open_web" -eq 1 ]; then
   command -v gh >/dev/null 2>&1 || die "gh 가 없다 — 위 초안으로 수동 생성"
-  if gh pr view "ws/$id" >/dev/null 2>&1; then gh pr edit "ws/$id" --title "$title" --body-file "$body" && say "PR 갱신됨"; else gh pr create --base main --head "ws/$id" --title "$title" --body-file "$body" && say "PR 생성됨"; fi
+  if gh pr view "ws/$id" >/dev/null 2>&1; then
+    gh pr edit "ws/$id" --title "$title" --body-file "$body" && say "PR 갱신됨"
+    if [ "$open_web" -eq 1 ]; then gh pr view "ws/$id" --web; fi
+  elif [ "$open_web" -eq 1 ]; then
+    short=$(mktemp -t ai-pr-short.XXXXXX); pr_draft_body 0 > "$short"
+    gh pr create --web --base main --head "ws/$id" --title "$title" --body-file "$short" && say "브라우저가 제목·본문이 채워진 채 열렸다 — 확인하고 Create 를 누른다"
+  else
+    gh pr create --base main --head "ws/$id" --title "$title" --body-file "$body" && say "PR 생성됨"
+  fi
 fi
 say "소유자가 본문을 다듬어 올린다 — 리뷰어가 읽을 글이다."
 exit 0
