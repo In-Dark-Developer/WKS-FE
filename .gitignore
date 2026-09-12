@@ -32,3 +32,5 @@ node_modules/
 dist/
 coverage/
 .vite/
+
+Claude outputs/
