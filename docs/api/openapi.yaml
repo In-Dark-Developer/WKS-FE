@@ -1,22 +1,27 @@
 # 백엔드 REST API 계약의 **참조본**이다 (source of truth 는 백엔드 저장소).
 # - 프론트엔드는 이 문서를 보고 구현하고, 실제 응답이 다르면 백엔드 저장소에 이슈로 올린 뒤 이 파일을 맞춘다.
-# - 아래 경로는 docs/PRD.md 의 FR 에서 도출한 초안이며, 백엔드 계약이 공개되면 통째로 교체한다 (Phase 03).
+# - 아래 경로는 docs/PRD.md 의 FR 과 Figma 「UI 최종 - 개발용」에서 도출한 초안이며, 백엔드 계약이 공개되면 통째로 교체한다 (Phase 01 T6 · Q3).
+# - 2026-09-12: 디자인 우선 원칙으로 갱신 — 양·음력, 12시진, 닉네임 8자, 운명 카드 응답 형태, 궁합 등급 구간, 사전신청·후보·당기기 엔드포인트(초안).
 # - 검증 예: npx @redocly/cli lint docs/api/openapi.yaml
 openapi: 3.1.0
 info:
   title: 운꿰사 API (frontend reference copy)
-  version: 0.0.1-draft
-  description: 사주 결과·공유·궁합·매칭을 제공하는 백엔드 API. 이 사본은 프론트엔드가 소비하는 계약의 참조본이다.
+  version: 0.0.2-draft
+  description: 사주 결과·공유·궁합·소개팅을 제공하는 백엔드 API. 이 사본은 프론트엔드가 소비하는 계약의 참조본이다.
 servers:
   - url: http://localhost:8080
     description: Local development
 tags:
   - name: saju
-    description: 사주 입력과 결과
+    description: 사주 입력과 결과 (운명 카드 · 인연카드)
   - name: share
     description: 공유 링크와 궁합
+  - name: profile
+    description: 소개팅 사전신청 (추가 정보)
   - name: matching
     description: 소개팅 후보와 운명의 실
+  - name: session
+    description: 세션 확인
 paths:
   /readings:
     post:
@@ -30,19 +35,42 @@ paths:
             schema: { $ref: "#/components/schemas/ReadingRequest" }
       responses:
         "201":
-          description: 생성됨
+          description: 생성됨. 세션이 없으면 이 응답과 함께 세션이 발급된다 (보관 방식은 Phase 03 T2 ADR)
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Reading" }
         "400":
-          description: 입력 오류
+          description: 입력 오류 (필드별 메시지는 Error.fields)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /readings/{readingId}:
+    get:
+      operationId: getReading
+      summary: 내 사주 결과를 다시 조회한다 — /reading/:id 재방문 (FR-3)
+      tags: [saju]
+      parameters:
+        - { name: readingId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: 조회됨
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reading" }
+        "401":
+          description: 세션 없음·만료 (FR-18)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: 없는 결과
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
   /shares/{shareId}:
     get:
       operationId: getShare
-      summary: 공유 링크로 링크 주인의 요약을 조회한다 (FR-4, FR-14)
+      summary: 공유 링크로 링크 주인의 요약을 조회한다 (FR-14, FR-15)
       tags: [share]
       parameters:
         - { name: shareId, in: path, required: true, schema: { type: string } }
@@ -60,7 +88,7 @@ paths:
   /shares/{shareId}/compatibility:
     post:
       operationId: createCompatibility
-      summary: 방문자의 사주로 궁합 점수를 만든다 (FR-6, FR-7)
+      summary: 방문자의 사주로 궁합 점수를 만든다 (FR-6, FR-7). 방문자의 Reading 도 함께 생성되어 양쪽 지도에 반영된다 (FR-14)
       tags: [share]
       parameters:
         - { name: shareId, in: path, required: true, schema: { type: string } }
@@ -74,12 +102,85 @@ paths:
           description: 산출됨
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Compatibility" }
+              schema: { $ref: "#/components/schemas/CompatibilityResult" }
+  /me:
+    get:
+      operationId: getMe
+      summary: 세션 확인 — 내 readingId 와 사전신청 여부 (FR-18)
+      tags: [session]
+      responses:
+        "200":
+          description: 세션 있음
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Me" }
+        "401":
+          description: 세션 없음·만료 → 사주 입력으로 안내
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
   /me/friends:
     get:
       operationId: listFriendScores
-      summary: 내 친구 점수 목록 (FR-8)
+      summary: 내 궁합 지도의 친구 목록 (FR-8). 등급별 인원 수는 클라이언트가 이 목록에서 센다
       tags: [share]
+      responses:
+        "200":
+          description: 조회됨 (점수 내림차순)
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Compatibility" }
+        "401":
+          description: 세션 없음·만료
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /me/profile:
+    post:
+      operationId: createProfile
+      summary: 소개팅 사전신청 — 추가 정보 등록 (FR-10, FR-17). 동의 없이는 호출하지 않는다
+      tags: [profile]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: { $ref: "#/components/schemas/ProfileRequest" }
+      responses:
+        "201":
+          description: 신청 완료
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Profile" }
+        "400":
+          description: 입력 오류 (예: 이메일 형식)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /matching/candidates:
+    get:
+      operationId: listCandidates
+      summary: 소개팅 후보 목록 (FR-12). 선정 기준은 Q5 — 백엔드가 정한다
+      tags: [matching]
+      responses:
+        "200":
+          description: 조회됨. 각 후보는 내가 등록한 항목에 대응하는 정보만 담는다
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Candidate" }
+        "403":
+          description: 사전신청 전
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /me/threads:
+    get:
+      operationId: listThreads
+      summary: 내가 보낸·받은 운명의 실 (FR-13)
+      tags: [matching]
       responses:
         "200":
           description: 조회됨
@@ -87,8 +188,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/Compatibility" }
-  /me/threads:
+                items: { $ref: "#/components/schemas/Thread" }
     post:
       operationId: sendThread
       summary: 운명의 실을 보낸다 (FR-13)
@@ -101,10 +201,23 @@ paths:
               type: object
               required: [targetId]
               properties:
-                targetId: { type: string }
+                targetId: { type: string, description: Candidate.id }
       responses:
         "201":
           description: 보냄
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Thread" }
+  /me/threads/{threadId}/pull:
+    post:
+      operationId: pullThread
+      summary: 받은 운명의 실을 당긴다 — 성립 시 contact 가 온다 (FR-13)
+      tags: [matching]
+      parameters:
+        - { name: threadId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: 성립됨
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Thread" }
@@ -112,59 +225,148 @@ components:
   schemas:
     ReadingRequest:
       type: object
-      required: [birthDate, gender, nickname]
+      required: [gender, calendarType, birthDate, nickname]
       properties:
-        birthDate: { type: string, format: date }
-        birthTime: { type: [string, "null"], description: "HH:mm. 모르면 null" }
-        birthRegion: { type: [string, "null"], description: "모르면 null" }
-        gender: { type: string, enum: [female, male, other] }
-        nickname: { type: string, maxLength: 20 }
+        gender: { type: string, enum: [female, male], description: "디자인 세그먼트 '남자/여자'" }
+        calendarType: { type: string, enum: [solar, lunar], description: "달력 기준 '양력/음력'. 윤달은 Q8" }
+        birthDate: { type: string, format: date, description: "화면은 숫자 8자리(YYYYMMDD)로 받고 YYYY-MM-DD 로 보낸다" }
+        birthTime:
+          type: [string, "null"]
+          enum: [ja, chuk, in, myo, jin, sa, o, mi, sin, yu, sul, hae, null]
+          description: "12시진 — 자(23:30–01:30) 축 인 묘 진 사 오 미 신 유 술 해. '태어난 시간을 몰라요'면 null"
+        birthRegion: { type: [string, "null"], description: "선택 목록은 Q6. '태어난 지역을 몰라요'면 null" }
+        nickname: { type: string, minLength: 1, maxLength: 8, description: "운명 카드·인연카드·지도에 8자까지 표시" }
     Reading:
       type: object
-      required: [id, shareId, zodiac, sections]
+      required: [id, shareId, zodiac, nickname, destiny, sections, cardScores, lucky]
       properties:
         id: { type: string }
         shareId: { type: string, description: 공유 링크 식별자 }
-        zodiac: { type: string, description: 십이간지 (점지 카드 캐릭터) }
+        nickname: { type: string }
+        zodiac: { $ref: "#/components/schemas/Zodiac" }
+        destiny:
+          type: object
+          required: [title, description]
+          properties:
+            title: { type: string, maxLength: 8, description: "운명 카드 '당신의 운명은 ___'" }
+            description: { type: string, description: "보살 말투 설명 2줄" }
         sections:
           type: object
-          required: [love, wealth, study, festivalItem, fortune]
+          description: 운명 카드 스탬프와 하단 운세 카드 3장
+          required: [love, marriage, children]
           properties:
             love: { $ref: "#/components/schemas/ReadingSection" }
-            wealth: { $ref: "#/components/schemas/ReadingSection" }
-            study: { $ref: "#/components/schemas/ReadingSection" }
-            festivalItem: { $ref: "#/components/schemas/ReadingSection" }
-            fortune: { $ref: "#/components/schemas/ReadingSection" }
+            marriage: { $ref: "#/components/schemas/ReadingSection" }
+            children: { $ref: "#/components/schemas/ReadingSection" }
+        cardScores:
+          type: object
+          description: 인연카드 앞면의 바 3개 (0–100)
+          required: [love, marriage, destiny]
+          properties:
+            love: { type: integer, minimum: 0, maximum: 100 }
+            marriage: { type: integer, minimum: 0, maximum: 100 }
+            destiny: { type: integer, minimum: 0, maximum: 100 }
+        lucky:
+          type: object
+          required: [place, item]
+          properties:
+            place: { type: string, description: "행운의 장소 (예: 만해광장)" }
+            item: { type: string, description: "행운의 아이템 (예: 작은 책 한 권)" }
     ReadingSection:
       type: object
-      required: [score, text]
+      required: [grade, text]
       properties:
-        score: { type: integer, minimum: 0, maximum: 100 }
+        grade: { type: string, description: "문자 등급 — 디자인 예시 SS+ · A+ · C+. 체계는 Q7", pattern: "^[SABCD]{1,2}[+-]?$" }
         text: { type: string, description: 보살 말투 문구 }
+    Zodiac:
+      type: string
+      enum: [rat, ox, tiger, rabbit, dragon, snake, horse, goat, monkey, rooster, dog, pig]
+      description: "십이간지 — 캐릭터 이미지와 '○○보살님' 문구를 화면이 치환한다"
     ShareSummary:
       type: object
       required: [shareId, nickname, zodiac]
       properties:
         shareId: { type: string }
         nickname: { type: string }
-        zodiac: { type: string }
+        zodiac: { $ref: "#/components/schemas/Zodiac" }
+        destinyTitle: { type: string, description: "사주 요약 한 줄 (FR-15)" }
     Compatibility:
       type: object
-      required: [score, grade, nickname]
+      required: [readingId, nickname, zodiac, score, grade]
       properties:
-        score: { type: integer, minimum: 0, maximum: 100 }
-        grade: { type: string, enum: [gwiin, chaltteok, beot, seuchim], description: "25점 구간 — 귀인·찰떡·벗·스침" }
+        readingId: { type: string, description: 상대의 Reading.id — 목록 key }
         nickname: { type: string }
-    Thread:
+        zodiac: { $ref: "#/components/schemas/Zodiac" }
+        score: { type: integer, minimum: 0, maximum: 100 }
+        grade:
+          type: string
+          enum: [gwiin, chaltteok, beot, seuchim]
+          description: "귀인 ≥90 · 찰떡 75–89 · 벗 61–74 · 스침 ≤60 (디자인 확정, FR-7). 백엔드가 계산한다"
+    CompatibilityResult:
       type: object
-      required: [id, state]
+      description: 방문자에게 돌려주는 궁합 결과 — 방문자 자신의 Reading 과 상대와의 궁합
+      required: [reading, compatibility]
+      properties:
+        reading: { $ref: "#/components/schemas/Reading" }
+        compatibility: { $ref: "#/components/schemas/Compatibility" }
+    Me:
+      type: object
+      required: [readingId, hasProfile]
+      properties:
+        readingId: { type: string }
+        hasProfile: { type: boolean, description: 사전신청 완료 여부 }
+    ProfileRequest:
+      type: object
+      required: [name, photo, email, contactType, contact, department, mbti, bio, consent]
+      properties:
+        name: { type: string }
+        photo: { type: string, format: binary, description: "형식·용량 제한은 Q10" }
+        email: { type: string, format: email, description: 안내 수신용 }
+        contactType: { type: string, enum: [phone, instagram] }
+        contact: { type: string }
+        department: { type: string }
+        mbti: { type: string, enum: [ISTJ, ISFJ, INFJ, INTJ, ISTP, ISFP, INFP, INTP, ESTP, ESFP, ENFP, ENTP, ESTJ, ESFJ, ENFJ, ENTJ] }
+        bio: { type: string, description: "최대 글자 수는 Q10" }
+        consent: { type: boolean, const: true, description: "개인정보 동의 (FR-17). false 면 클라이언트가 전송하지 않는다" }
+    Profile:
+      type: object
+      required: [id, createdAt]
       properties:
         id: { type: string }
+        createdAt: { type: string, format: date-time }
+    Candidate:
+      type: object
+      required: [id, nickname, zodiac]
+      description: 내가 등록한 항목에 대응하는 필드만 채워진다 (FR-12)
+      properties:
+        id: { type: string }
+        nickname: { type: string }
+        zodiac: { $ref: "#/components/schemas/Zodiac" }
+        photoUrl: { type: [string, "null"] }
+        department: { type: [string, "null"] }
+        mbti: { type: [string, "null"] }
+        bio: { type: [string, "null"] }
+        compatibility: { $ref: "#/components/schemas/Compatibility" }
+    Thread:
+      type: object
+      required: [id, targetId, direction, state]
+      properties:
+        id: { type: string }
+        targetId: { type: string }
+        direction: { type: string, enum: [sent, received] }
         state: { type: string, enum: [sent, matched], description: matched 일 때만 contact 가 온다 }
-        contact: { type: [string, "null"] }
+        contact:
+          type: [object, "null"]
+          properties:
+            type: { type: string, enum: [phone, instagram] }
+            value: { type: string }
     Error:
       type: object
       required: [code, message]
       properties:
         code: { type: string, description: 기계가 읽는 에러 코드 }
-        message: { type: string, description: 사람이 읽는 설명 }
+        message: { type: string, description: 사람이 읽는 설명 (보살 말투는 화면이 붙인다) }
+        fields:
+          type: object
+          additionalProperties: { type: string }
+          description: 필드별 오류 메시지 (400)

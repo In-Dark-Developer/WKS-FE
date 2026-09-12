@@ -3,7 +3,7 @@
 - Status: PLANNED
 - Lead: @nicerjs23
 - Depends on: 06
-- Start: TBD · End: TBD
+- Start: TBD · End: 2026-09-17 (MVP 마감 — PRD Constraints)
 
 ## Goal
 
@@ -24,6 +24,8 @@
 ## Dependencies
 
 - Phase 06
+- SCR-10 소개팅 후보 · SCR-11 운명의 실 디자인 — 현재 없음 (PRD Q9). 없으면 착수하지 않는다
+- 후보 선정 기준(Q5) · `/matching/candidates` · `/me/threads` · `/me/threads/{id}/pull` 계약
 
 ## Tasks
 
@@ -31,7 +33,7 @@
 
 ## Relevant Specifications
 
-- `docs/PRD.md` — FR-12, FR-13, NFR-4
+- `docs/PRD.md` — Screens(SCR-10·11), FR-12, FR-13, NFR-4
 - `docs/ARCHITECTURE.md` — Data Flow, Module Boundaries
 - `docs/api/openapi.yaml`
 

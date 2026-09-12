@@ -3,7 +3,7 @@
 - Status: PLANNED
 - Lead: @jjjung0921
 - Depends on: 05, 07
-- Start: TBD · End: TBD
+- Start: TBD · End: 2026-09-17 (MVP 마감 — PRD Constraints)
 
 ## Goal
 
@@ -15,7 +15,7 @@
 
 ## Scope
 
-- `docs/PRD.md`의 NFR-1, NFR-2, NFR-5, NFR-6 를 구현하는 화면과 상태
+- `docs/PRD.md`의 NFR-1, NFR-2, NFR-5, NFR-6 를 구현하는 화면과 상태, Success Criteria SC-1~6 실기기 확인, 배포(정적 호스팅 — ARCHITECTURE External Systems TBD)
 
 ## Out of Scope
 

@@ -35,7 +35,7 @@
 
 ## Tasks
 
-- [ ] T1. spec·계획 초기화 — Done when: `AGENTS.md`·`README.md`·`docs/PRD.md`·`docs/ARCHITECTURE.md`·`docs/api/openapi.yaml`에 placeholder가 없고 Phase 그래프가 있다 · Touches: `.` · Owner: @jjjung0921
+- [x] T1. spec·계획 초기화 — Done when: `AGENTS.md`·`README.md`·`docs/PRD.md`·`docs/ARCHITECTURE.md`·`docs/api/openapi.yaml`에 placeholder가 없고 Phase 그래프가 있다 · Touches: `.` · Owner: @jjjung0921 (commit 05afd1a, PR #1 · #3)
 
 - [x] T2. 모듈 Owner 확정 → `.github/CODEOWNERS` 생성 — Done when: `docs/ARCHITECTURE.md` Module Boundaries의 Owner 열이 GitHub 핸들로 채워지고 `scripts/ai-stream.sh codeowners --check`가 통과 · Touches: `docs/ARCHITECTURE.md`, `.github/CODEOWNERS`, `docs/phases/` · Owner: @jjjung0921 (commit 5ae8334)
 
@@ -51,7 +51,7 @@
 
 - [x] T5. CI에서 Commands 실행 — Done when: `.github/workflows/ci.yml`의 commands 잡이 실제 pnpm 명령을 돌리고 PR에서 통과 · Touches: `.github/workflows/ci.yml`, `tsconfig.json` · Owner: @jjjung0921 (commit 024da75)
 
-- [ ] T6. 백엔드 계약 동기화 — Done when: 백엔드 저장소의 openapi와 `docs/api/openapi.yaml` 참조본이 일치하거나 차이가 이슈로 등록됨 · Touches: `docs/api/openapi.yaml` · Owner: @nicerjs23
+- [ ] T6. 백엔드 계약 동기화 — Done when: 백엔드 저장소의 openapi와 `docs/api/openapi.yaml` 참조본(2026-09-12 디자인 우선 갱신본: 양·음력 · 12시진 · 닉네임 8자 · 운명 카드 응답 · 등급 구간 · `/readings/{id}` · `/me` · `/me/profile` · `/matching/candidates` · `/me/threads/{id}/pull`)이 일치하거나 차이가 이슈로 등록됨. Phase 03 T1의 선행 조건이다 · Touches: `docs/api/openapi.yaml` · Owner: @nicerjs23
 
 ## Relevant Specifications
 
@@ -61,14 +61,14 @@
 
 ## Acceptance Criteria
 
-- [ ] AC1. `AGENTS.md`, `README.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`에 placeholder(`<...>`)와 작성 지침 주석이 남아 있지 않다
+- [x] AC1. `AGENTS.md`, `README.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`에 placeholder(`<...>`)와 작성 지침 주석이 남아 있지 않다
 - [ ] AC2. `AGENTS.md` Commands의 모든 명령이 클린 체크아웃에서 경고 없이 성공한다 (typecheck·lint는 경고=실패 옵션으로 실행)
-- [ ] AC3. 스택 결정 ADR이 존재하고 `docs/ARCHITECTURE.md`가 이를 참조한다
-- [ ] AC4. `docs/phases/README.md` 표가 PLAN 머리들과 일치하고 Phase 02·03 PLAN이 상세하게 존재한다
-- [ ] AC5. 툴체인 버전 고정 파일(`.nvmrc`, `packageManager`), `pnpm-lock.yaml`, 도구 설정 파일이 커밋되어 있고 `.gitignore`에 Node 항목이 있다
-- [ ] AC6. `AGENTS.md` Rule 13에 언어별 규칙이 3줄 이내로 있고 마지막 줄이 허용 언어 목록이며, 스택 ADR에 도구 선택 이유가 있다
+- [x] AC3. 스택 결정 ADR이 존재하고 `docs/ARCHITECTURE.md`가 이를 참조한다
+- [x] AC4. `docs/phases/README.md` 표가 PLAN 머리들과 일치하고 Phase 02·03 PLAN이 상세하게 존재한다
+- [x] AC5. 툴체인 버전 고정 파일(`.nvmrc`, `packageManager`), `pnpm-lock.yaml`, 도구 설정 파일이 커밋되어 있고 `.gitignore`에 Node 항목이 있다
+- [x] AC6. `AGENTS.md` Rule 13에 언어별 규칙이 3줄 이내로 있고 마지막 줄이 허용 언어 목록이며, 스택 ADR에 도구 선택 이유가 있다
 - [ ] AC7. 병합 방식이 merge commit뿐이고 `.github/CODEOWNERS`가 ARCHITECTURE의 Owner 열과 일치한다. main 보호 규칙은 걸지 않는다 — private + GitHub Free 제약으로 규칙(`AGENTS.md` Rule 9)과 로컬 훅·CI로 대체하기로 결정했다(2026-09-11). 저장소가 public이 되거나 유료 플랜이 되면 `ai-stream.sh setup`을 다시 실행한다
-- [ ] AC8. CI가 PR에서 install/test/typecheck/lint와 `ai-end.sh --ci`를 돌린다
+- [x] AC8. CI가 PR에서 install/test/typecheck/lint와 `ai-end.sh --ci`를 돌린다
 
 ## Validation Plan
 

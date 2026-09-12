@@ -9,7 +9,7 @@
 <!-- phases:begin -->
 | #  | Phase | Lead | Depends on | Status | Tasks | Result |
 |----|-------|------|------------|--------|-------|--------|
-| 01 | [project-setup](01-project-setup/PLAN.md) | @jjjung0921 | none | IN_PROGRESS | 4/6 | — |
+| 01 | [project-setup](01-project-setup/PLAN.md) | @jjjung0921 | none | IN_PROGRESS | 5/6 | — |
 | 02 | [design-system](02-design-system/PLAN.md) | @gn00py48 | 01 | PLANNED | 0/5 | — |
 | 03 | [saju-reading](03-saju-reading/PLAN.md) | @nicerjs23 | 02 | PLANNED | 0/5 | — |
 | 04 | [share-and-card](04-share-and-card/PLAN.md) | @gn00py48 | 03 | PLANNED | 0/1 | — |

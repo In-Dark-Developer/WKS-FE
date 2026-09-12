@@ -17,8 +17,6 @@ TypeScript · React (Vite SPA) · Tailwind CSS · pnpm. 테스트는 Vitest + Re
 
 ## Getting Started
 
-> 설정 파일과 `package.json` 스크립트는 Phase 01 T3에서 만든다. 그전까지 아래 명령은 아직 동작하지 않는다.
-
 ```bash
 pnpm install --frozen-lockfile   # 설치
 pnpm dev                         # 개발 서버
@@ -34,7 +32,7 @@ pnpm lint                        # 린트·포맷 검사
 ```text
 src/
   app/        라우팅 · 전역 프로바이더 · 레이아웃
-  features/   화면 기능 (intro · saju · share · friends · profile · matching)
+  features/   화면 기능 (saju · share · friends · profile · matching)
   ui/         디자인 시스템 (토큰 · 표현 전용 컴포넌트)
   api/        백엔드 REST 호출 + zod 스키마
   lib/        도메인 비의존 유틸
@@ -61,5 +59,5 @@ scripts/ai-end.sh --ready                   # Task 완료 → PR 초안
 
 ## Design
 
-디자인은 Figma를 따른다 — [어둠의 개발자·기획자·디자이너 모임](https://www.figma.com/design/tzWb3S2guXz5zH2DMeX8Yt/%EC%96%B4%EB%91%A0%EC%9D%98-%EA%B0%9C%EB%B0%9C%EC%9E%90-%EA%B8%B0%ED%9A%8D%EC%9E%90-%EB%94%94%EC%9E%90%EC%9D%B4%EB%84%88-%EB%AA%A8%EC%9E%84?node-id=12-4) (node-id 12-4).
+디자인은 Figma를 따른다 — [어둠의 개발자·기획자·디자이너 모임](https://www.figma.com/design/tzWb3S2guXz5zH2DMeX8Yt/): 디자인시스템 `16-2` · [UI 최종 - 개발용 `558-2430`](https://www.figma.com/design/tzWb3S2guXz5zH2DMeX8Yt/?node-id=558-2430)(구현 기준) · [기능명세서 `560-2`](https://www.figma.com/design/tzWb3S2guXz5zH2DMeX8Yt/?node-id=560-2)(PRD 파생 요약). 디자인과 spec이 어긋나면 디자인이 우선한다. MVP(채팅 제외, API 연결 포함) 마감은 2026-09-17.
 디자인 토큰과 공통 컴포넌트는 Phase 02에서 `src/ui/`로 코드화한다.
