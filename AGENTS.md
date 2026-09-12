@@ -49,8 +49,6 @@
 | Lint      | `pnpm lint`            |
 | Run       | `pnpm dev`             |
 
-pnpm 스크립트와 도구 설정 파일은 Phase 01 T3에서 만든다 (ADR-20260911-frontend-stack-and-repo-scope). 그 전까지 이 표의 명령은 아직 동작하지 않는다.
-
 ## Session Procedure
 
 - **스트림이 없을 때**: `scripts/ai-stream.sh open <phase>/<task> <slug>` (spec/chore는 `open spec|chore <slug> --touches …`). 브랜치 `ws/<id>`와 `.ai/work/<id>/`가 생기고 push된다.

@@ -3,11 +3,11 @@
 - Status: PLANNED
 - Lead: @nicerjs23
 - Depends on: 04
-- Start: TBD · End: TBD
+- Start: TBD · End: 2026-09-17 (MVP 마감 — PRD Constraints)
 
 ## Goal
 
-공유 링크로 들어온 친구의 사주로 궁합 점수와 등급이 산출되어 양쪽 페이지에 쌓인다.
+공유 링크로 들어온 친구의 사주로 궁합 점수와 등급(귀인 ≥90 · 찰떡 75–89 · 벗 61–74 · 스침 ≤60)이 산출되어 양쪽 궁합 지도(구슬·등급별 인원·순위)와 결과 화면 하단 순위 요약에 쌓인다.
 
 ## Motivation
 
@@ -15,7 +15,7 @@
 
 ## Scope
 
-- `docs/PRD.md`의 FR-6, FR-7, FR-8, FR-14 를 구현하는 화면과 상태
+- `docs/PRD.md`의 FR-6, FR-7, FR-8, FR-14, FR-15 를 구현하는 화면(SCR-06 공유 랜딩 · SCR-07 궁합 결과 · SCR-08 궁합 지도 · SCR-04 하단 순위 요약)과 상태
 
 ## Out of Scope
 
@@ -24,6 +24,8 @@
 ## Dependencies
 
 - Phase 04
+- SCR-06 공유 링크 랜딩 · SCR-07 궁합 결과 디자인 — 현재 없음 (PRD Q9). 없으면 착수하지 않는다
+- `/shares/{shareId}` · `/shares/{shareId}/compatibility` · `/me/friends` 계약 확정
 
 ## Tasks
 
@@ -31,13 +33,14 @@
 
 ## Relevant Specifications
 
-- `docs/PRD.md` — FR-6, FR-7, FR-8, FR-14
+- `docs/PRD.md` — Screens(SCR-06·07·08), FR-6, FR-7, FR-8, FR-14, FR-15
+- Figma 「UI 최종 - 개발용」 — 지도 섹션(최종 v2: 등급별 색 구슬), 사주 결과 화면 Frame 51(친구 궁합 순위 빈 상태)
 - `docs/ARCHITECTURE.md` — Data Flow, Module Boundaries
 - `docs/api/openapi.yaml`
 
 ## Acceptance Criteria
 
-- [ ] AC1. FR-6, FR-7, FR-8, FR-14 가 화면에서 관찰 가능하게 동작한다
+- [ ] AC1. FR-6, FR-7, FR-8, FR-14, FR-15 가 화면에서 관찰 가능하게 동작한다
 - [ ] AC2. 새 화면·로직에 테스트가 있고 Commands가 경고 없이 통과한다
 
 ## Validation Plan
