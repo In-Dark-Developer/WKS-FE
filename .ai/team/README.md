@@ -5,7 +5,9 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-12-pr-body-autofill](announcements/2026-09-12-pr-body-autofill.md) | yes | all | Phase 08 종료 |
 | [2026-09-12-notion-board-sync](announcements/2026-09-12-notion-board-sync.md) | yes | all | Phase 08 종료 |
+| [2026-09-12-design-first-prd](announcements/2026-09-12-design-first-prd.md) | yes | all | Phase 08 종료 |
 | [2026-09-12-commit-type-ci](announcements/2026-09-12-commit-type-ci.md) | yes | all | Phase 08 종료 |
 | [2026-09-12-board-rows-for-streams](announcements/2026-09-12-board-rows-for-streams.md) | yes | all | Phase 08 종료 |
 | [2026-09-11-bootstrap](announcements/2026-09-11-bootstrap.md) | yes | all | Phase 01 종료 |
