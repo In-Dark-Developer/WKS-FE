@@ -76,6 +76,11 @@
   white-space: nowrap;
 }
 
+/* 인연카드는 앞말이 16px (Figma 731:4741). */
+[data-destiny-card][data-kind='connection'] [data-destiny-card-destiny] span {
+  font-size: calc(16 * var(--u));
+}
+
 /* 운명 제목은 길이가 보장되지 않는다 — 한 줄 말줄임. */
 [data-destiny-card-destiny] strong {
   min-width: 0;
