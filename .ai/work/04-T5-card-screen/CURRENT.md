@@ -1,7 +1,5 @@
 # Current State — 04-T5-card-screen
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 04-T5-card-screen
 - Owner: gn00py48@gmail.com
 - Branch: ws/04-T5-card-screen
@@ -9,7 +7,7 @@
 - Issue: none
 - Touches: src/features/share/card/, src/features/share/index.ts, src/app/preview/screens/card.tsx
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -21,17 +19,19 @@ T5. 인연카드 화면
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] HANDOFF Goal · T3·T4 브랜치를 merge 해 선행 결과 확보
+- [x] `shareCardImage.ts` — 파일 공유 / 저장 폴백 분기
+- [x] `ConnectionCardScreen.tsx` — 카드 + 버튼 2개 · 잠금 · Toast · 실패 안내
+- [x] 테스트 14개 · `/preview/card` 에 '화면' 상태
+- [x] 검증 test 238 · typecheck · lint · build(147.20KB)
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`6729b90`
+`4030b72`
 
 ## Relevant Documents
 
@@ -39,8 +39,9 @@ TODO
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/share/card/shareCardImage.ts:shareCardImage` — 공유/저장 분기
+- `src/features/share/card/ConnectionCardScreen.tsx` — SCR-05 화면
+- `src/lib/cardImage.ts:renderCardImage` (04/T4) · `src/features/share/link/ShareLinkButton.tsx` (04/T3)
 
 ## Next Action
 
