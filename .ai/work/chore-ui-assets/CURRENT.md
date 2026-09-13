@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: src/ui/assets/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -21,12 +21,14 @@ chore: ui-assets
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. Figma 「UI 최종 - 개발용」(558-2430) DEV ASSETS·카드·달·구슬·아이콘 추출
+- 2. 래스터는 WebP 변환(12지신 720px, 카드 @3x), SVG는 원본
+- 3. `src/ui/assets/` 배치, lint·typecheck·build 확인
 
 ## Last Checkpoint
 
@@ -36,6 +38,7 @@ TODO
 ## Relevant Documents
 
 - `AGENTS.md`
+- Figma `tzWb3S2guXz5zH2DMeX8Yt` 558-2430
 
 ## Relevant Source Files
 
@@ -44,4 +47,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합. 이후 화면 Task가 필요한 파일을 import 한다.
