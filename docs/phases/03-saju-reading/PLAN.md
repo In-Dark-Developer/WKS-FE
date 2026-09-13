@@ -32,12 +32,14 @@
 
 - Phase 02
 - Phase 01 T6 — 백엔드의 `POST /results` · `GET /results/{id}` 계약(2026-09-13 반영됨, `docs/api/openapi.yaml`) · 양·음력·12시진·십이간지·등급 체계 추가 요청 답변 (Q3 · Q7)
-- 윤달 여부 (Q8)
+- 윤달 여부 (Q8) — 백엔드 `feat/4` 병합 시 닫힌다 (`isLeapMonth`), 시진→`HH:mm` 규칙은 Q15
+- 백엔드 dev 에는 `POST /results` 만 있고 `GET /results/{id}` 는 미구현(2026-09-13) — 목 응답 경로가 T1 부터 필요
+- 로컬 연동: 백엔드 CORS 는 `http://localhost:3000` 만 허용 — `vite.config.ts` `server.port` 를 3000 으로 맞춘다 (T1 Touches)
 - 결과 대기 디자인(디자인시스템 FortuneLoading)과 결과 에러 상태 디자인
 
 ## Tasks
 
-- [ ] T1. API 클라이언트 계층 + 경계 검증 — Done when: `POST /results` · `GET /results/{id}`의 요청/응답 봉투가 zod로 검증되고 스키마 위반·네트워크 실패·`error.code`(404·503)가 타입으로 구분되며 테스트가 통과 · Touches: `src/api/client.ts`, `src/api/results.ts`, `src/api/schema/`, `docs/api/openapi.yaml#/paths/~1results`, `docs/api/openapi.yaml#/paths/~1results~1{resultId}` · Owner: @nicerjs23
+- [ ] T1. API 클라이언트 계층 + 경계 검증 — Done when: `POST /results` · `GET /results/{id}`의 요청/응답 봉투가 zod로 검증되고 스키마 위반·네트워크 실패·`error.code`(404·503)가 타입으로 구분되며 테스트가 통과 · Touches: `src/api/client.ts`, `src/api/results.ts`, `src/api/schema/`, `docs/api/openapi.yaml#/paths/~1results`, `docs/api/openapi.yaml#/paths/~1results~1{resultId}`, `vite.config.ts` · Owner: @nicerjs23
 
 - [ ] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: @jjjung0921
 
