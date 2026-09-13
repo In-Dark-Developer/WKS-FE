@@ -114,7 +114,7 @@ render() {
   c=${c//\{\{STREAM\}\}/$R_STREAM}; c=${c//\{\{OWNER\}\}/$R_OWNER}; c=${c//\{\{TASK\}\}/$R_TASK}
   c=${c//\{\{TOUCHES\}\}/$R_TOUCHES}; c=${c//\{\{SUPERSEDES\}\}/$R_SUPERSEDES}; c=${c//\{\{PHASE\}\}/$R_PHASE}
   c=${c//\{\{TASK_TITLE\}\}/$R_TASK_TITLE}; c=${c//\{\{CHECKPOINT\}\}/$R_CHECKPOINT}; c=${c//\{\{PLAN\}\}/$R_PLAN}
-  c=${c//\{\{DATE\}\}/$today}; c=${c//\{\{SLUG\}\}/$R_SLUG}
+  c=${c//\{\{DATE\}\}/$today}; c=${c//\{\{SLUG\}\}/$R_SLUG}; c=${c//\{\{ISSUE\}\}/${R_ISSUE:-none}}
   printf '%s\n' "$c"
 }
 
