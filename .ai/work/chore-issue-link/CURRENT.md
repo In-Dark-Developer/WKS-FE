@@ -6,9 +6,10 @@
 - Owner: 98745092+jjjung0921@users.noreply.github.com
 - Branch: ws/chore-issue-link
 - Task: -/-
+- Issue: none
 - Touches: scripts/ai-stream.sh,scripts/ai-end.sh,scripts/lib/common.sh,.ai/work/_template/CURRENT.md,AGENTS.md,.ai/team/announcements/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-planning-feedback, 2026-09-13-backend-contract, 2026-09-13-drop-birth-region, 2026-09-13-issue-link
 
 ## Current Phase
 
@@ -20,27 +21,31 @@ chore: issue-link
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] ai-stream.sh open: `--issue N` 파싱, `open --issue N <slug>` 제목에서 Task 추출, CURRENT `Issue:`, 이슈 코멘트
+- [x] common.sh render `{{ISSUE}}` · CURRENT 템플릿 `Issue:` 줄
+- [x] ai-end.sh PR 본문 첫 줄 `Closes #N`
+- [x] AGENTS.md Session Procedure · 공지 `issue-link` · 색인
+- [x] bash -n · 제목 정규식 · --pr-body Closes · render 테스트
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`1e485c8`
+`96dce6f`
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `AGENTS.md` Session Procedure · `.ai/team/announcements/2026-09-13-issue-link.md`
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `scripts/ai-stream.sh:cmd_open` · `scripts/ai-end.sh:pr_draft_vars`,`pr_draft_body` · `scripts/lib/common.sh:render`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합 후 팀원이 `scripts/ai-stream.sh open --issue <N> <slug>` 로 Phase 02·03 Task 를 연다.
