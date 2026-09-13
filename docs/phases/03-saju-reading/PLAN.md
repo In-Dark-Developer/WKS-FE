@@ -30,7 +30,7 @@
 
 ## Dependencies
 
-- Phase 02
+- Phase 02 — T4는 02/T2(기본 입력)·02/T6(Select) 병합 후, T3의 SCR-12 는 02/T4(`ContentState`)를 쓴다
 - Phase 01 T6 — 백엔드의 `POST /results` · `GET /results/{id}` 계약(2026-09-13 반영됨, `docs/api/openapi.yaml`) · 양·음력·12시진·십이간지·등급 체계 추가 요청 답변 (Q3 · Q7)
 - 윤달 여부 (Q8) — 백엔드 `feat/4` 병합 시 닫힌다 (`isLeapMonth`), 시진→`HH:mm` 규칙은 Q15
 - 백엔드 dev 에는 `POST /results` 만 있고 `GET /results/{id}` 는 미구현(2026-09-13) — 목 응답 경로가 T1 부터 필요
@@ -43,14 +43,15 @@
 
 - [x] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: @jjjung0921 (commit cc82bf8)
 
-- [ ] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있다 · Touches: `src/app/routes.tsx`, `src/app/RequireSession.tsx` · Owner: @jjjung0921
+- [ ] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/reading/:id/pre-register`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있고, 모든 라우트의 `errorElement`·첫 진입 `HydrateFallback`이 공통 상태 화면(SCR-12 — 수정본 오류·연결문제·로딩 문구, `ContentState` 사용)을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/app/RequireSession.tsx`, `src/app/RouteError.tsx` · Owner: @jjjung0921
 
 - [ ] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·닉네임 8자 검증과 '몰라요'→null 처리(`birthRegion`은 항상 null)가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts` · After: T1 · Owner: @gn00py48
 
-- [ ] T5. 결과 화면 — Done when: 운명 카드(캐릭터·'○○보살님'·운명 제목·설명·3영역 등급 스탬프)·행운의 장소/아이템·운세 카드 3장이 응답대로 렌더되고 결과 대기(FortuneLoading)·에러 상태가 있다 · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/DestinyCard.tsx`, `src/features/saju/sections/`, `src/features/saju/zodiac.ts` · After: T1 · Owner: @nicerjs23
+- [ ] T5. 결과 화면 — Done when: 운명 카드(캐릭터·'○○보살님'·운명 제목·설명·3영역 등급 스탬프)·행운의 장소/아이템·운세 카드 3장이 응답대로 렌더되고 결과 대기(FortuneLoading)·에러 상태가 있으며, Phase 06 사전신청 티저를 받을 `teaser` 슬롯 prop과 하위 라우트용 `<Outlet />` 자리가 있다(내용은 06/T2, 조립은 T3 — saju 가 profile 을 import 하지 않는다) · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/DestinyCard.tsx`, `src/features/saju/sections/`, `src/features/saju/zodiac.ts` · After: T1 · Owner: @nicerjs23
 
 <!-- 선후는 각 Task 의 After: 가 기준이다 (T4·T5 After: T1 — 호출 계약이 먼저 있어야 한다). T3·T4·T5는 서로 겹치지 않는다.
-     라우트 파일은 충돌 지점이라 T3이 단독으로 소유한다 — 다른 Task는 자기 화면 컴포넌트만 export 하고 등록은 T3이 한다. -->
+     라우트 파일은 충돌 지점이라 T3이 단독으로 소유한다 — 다른 Task는 자기 화면 컴포넌트·loader·action만 export 하고 등록은 T3이 한다.
+     옵션 값(12시진)은 `features/saju/options.ts`(T4)에 두고 ui Select(02/T6)에는 props로만 넘긴다. API 파일은 자원별로 나눈다 — `client.ts`·`session.ts`는 T1 소유, 다른 Task는 import 만. -->
 
 ## Relevant Specifications
 

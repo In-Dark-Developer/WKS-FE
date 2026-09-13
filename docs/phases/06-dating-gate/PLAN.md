@@ -23,13 +23,17 @@
 
 ## Dependencies
 
-- Phase 03 (Phase 02 T2의 TextArea·PhotoUpload·SegmentedControl 포함)
+- Phase 03 — 03/T1 `client.ts`, 03/T3 라우트 등록(`/reading/:id/pre-register` 조립), 03/T5 `teaser` 슬롯
+- Phase 02 — T2(기본 입력), T3(Modal), T6(Select·TextArea·PhotoUpload)
 - 동의 문구(수집 항목·목적·보관 기간 — PRD Q4)와 OptionalConsent 슬롯 표시 확정
 - 사전신청의 정답(디자인 추가 정보 vs 백엔드 `/signups` 학교 웹메일 인증) 확정 (Q14) · 사진 형식·용량, 자기소개 최대 글자 수 (Q10)
+- 디자인 확정: MBTI 입력 방식(수정본에 16개 드롭다운과 "이게 최선일까" 메모), 연락처 전화 필수·인스타 선택 반영
 
 ## Tasks
 
 - [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/06-dating-gate/` · Owner: @gn00py48
+
+- [ ] T2. 사전신청 모달 화면 — Done when: 수정본(558-3526) 사전신청 모달의 기본·오류(이메일 형식)·로딩·연결 실패(입력값 유지 후 재시도)·완료 5상태가 렌더되고, 결과 화면 티저(`PreRegistrationTeaser`)가 `/reading/:id/pre-register` 하위 라우트의 모달을 열며, 동의 전에는 `POST /signups` 요청이 나가지 않는다 (테스트 포함). 연락처는 전화번호 필수 + 인스타그램 선택(디자인의 택1과 다름 — PRD FR-10), MBTI 입력 방식은 디자인 확정을 따른다 · Touches: `src/features/profile/`, `src/api/signups.ts`, `src/api/schema/signups.ts`, `docs/api/openapi.yaml#/paths/~1signups` · After: T1 · Owner: @jjjung0921
 
 ## Relevant Specifications
 
