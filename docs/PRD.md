@@ -42,7 +42,7 @@
 | SCR-06 | 공유 링크 랜딩       | `/s/:shareId`       | 디자인 없음 — Phase 05 착수 전 필요           | FR-14, FR-15        |
 | SCR-07 | 궁합 결과            | `/s/:shareId/result`| 디자인 없음 — Phase 05 착수 전 필요           | FR-6, FR-7          |
 | SCR-08 | 궁합 지도            | `/me/map`           | UI · 지도 「최종」(v2: 등급별 색 구슬)        | FR-8, FR-14, FR-18  |
-| SCR-09 | 사전신청 모달        | SCR-04 위 모달      | UI · 수정본 「사전신청 모달」 5종             | FR-10, FR-17        |
+| SCR-09 | 사전신청 모달        | `/reading/:id/pre-register` (SCR-04 위 모달) | UI · 수정본 「사전신청 모달」 5종             | FR-10, FR-17        |
 | SCR-10 | 소개팅 후보          | `/matching`         | 디자인 없음 — Phase 07 착수 전 필요           | FR-12               |
 | SCR-11 | 운명의 실            | `/matching/:threadId` | 디자인 없음 — Phase 07 착수 전 필요         | FR-13               |
 | SCR-12 | 상태 화면(공통)      | 전역                | UI · 수정본 (기본/오류/연결문제/로딩중)       | FR-18, NFR-5        |

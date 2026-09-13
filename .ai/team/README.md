@@ -7,6 +7,7 @@
 |------|----------|------------|-------|
 | [2026-09-13-task-after](announcements/2026-09-13-task-after.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-session-token-and-contact](announcements/2026-09-13-session-token-and-contact.md) | yes | all | Phase 08 종료 |
+| [2026-09-13-screen-ownership](announcements/2026-09-13-screen-ownership.md) | yes | all | Phase 06 종료 |
 | [2026-09-13-planning-feedback](announcements/2026-09-13-planning-feedback.md) | yes | all | Phase 07 종료 |
 | [2026-09-13-notion-index-sync](announcements/2026-09-13-notion-index-sync.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-issue-link](announcements/2026-09-13-issue-link.md) | yes | all | Phase 08 종료 |

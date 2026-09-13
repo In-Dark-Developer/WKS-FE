@@ -7,7 +7,7 @@
 - Branch: ws/plan-02-design-system
 - Task: 02/-
 - Issue: none
-- Touches: docs/phases/02-design-system/,docs/phases/03-saju-reading/,docs/phases/06-dating-gate/,docs/phases/README.md,docs/PRD.md
+- Touches: docs/phases/02-design-system/,docs/phases/03-saju-reading/,docs/phases/06-dating-gate/,docs/phases/README.md,docs/PRD.md,.ai/team/announcements/,.ai/team/README.md
 - Supersedes: none
 - Acked: none
 

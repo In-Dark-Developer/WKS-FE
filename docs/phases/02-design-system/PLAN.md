@@ -36,7 +36,7 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 - [x] T1. Figma 토큰 → `@theme` · 폰트 · `cn()` (commit 32a858d, ada94b7, 60ad436) — Done when: 램프·시맨틱·Space·Radius 토큰이 `src/index.css` `@theme` 한 곳에 정의되고 `src/main.tsx`가 이를 import 하며, Pretendard 조달 방식이 결정·적용되고, `cn()`과 prettier-plugin-tailwindcss가 설정돼 임의 색상 사용을 린트가 막는다 · Touches: `src/ui/tokens/`, `src/index.css`, `src/main.tsx`, `src/lib/cn.ts`, `package.json`, `pnpm-lock.yaml`, `.prettierrc`, `eslint.config.js` · Owner: @jjjung0921
 
-- [ ] T2. 폼 컴포넌트 — Done when: Button(4 variant·로딩·비활성)·IconButton·TextField·TextArea(글자 수 카운터)·Select(트리거 + 옵션 시트)·Checkbox·SegmentedControl·Field(라벨·helper·에러)·PhotoUpload가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Button.tsx`, `src/ui/IconButton.tsx`, `src/ui/TextField.tsx`, `src/ui/TextArea.tsx`, `src/ui/Select.tsx`, `src/ui/Checkbox.tsx`, `src/ui/SegmentedControl.tsx`, `src/ui/Field.tsx`, `src/ui/PhotoUpload.tsx` · After: T1 · Owner: @gn00py48
+- [ ] T2. 폼 컴포넌트(기본 입력) — Done when: Button(4 variant·로딩·비활성)·IconButton·TextField·Checkbox·SegmentedControl·Field(라벨·helper·에러)가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Button.tsx`, `src/ui/IconButton.tsx`, `src/ui/TextField.tsx`, `src/ui/Checkbox.tsx`, `src/ui/SegmentedControl.tsx`, `src/ui/Field.tsx` · After: T1 · Owner: @gn00py48
 
 - [ ] T3. 오버레이 — Done when: Modal(포커스 트랩·ESC 닫기·배경 스크롤 잠금)·ShareSheet·Toast가 동작하고 테스트가 통과 · Touches: `src/ui/Modal.tsx`, `src/ui/ShareSheet.tsx`, `src/ui/Toast.tsx` · After: T1 · Owner: @nicerjs23
 
@@ -44,7 +44,10 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 - [x] T5. 앱 셸 레이아웃 — Done when: 360–430px에서 가로 스크롤 없이 렌더되고 데스크톱에서 중앙 정렬되며, 전역 배경(하늘·달, "그라데이션 고정 · 별자리가 올라감")이 들어간다 · Touches: `src/app/AppShell.tsx`, `src/app/layout.css` · After: T1 · Owner: @jjjung0921 (commit 3f9a1c0, PR #39)
 
-<!-- 선후는 각 Task 의 After: 가 기준이다 (T2~T5 After: T1). T2~T5는 서로 겹치지 않으므로 동시에 진행한다.
+- [ ] T6. 폼 컴포넌트(선택·긴 입력·사진) — Done when: Select(트리거 + 옵션 목록, 옵션은 props로만 받음 — 수정본 12시진·MBTI 목록)·TextArea(글자 수 카운터)·PhotoUpload(미리보기·안내·선택 버튼)가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Select.tsx`, `src/ui/TextArea.tsx`, `src/ui/PhotoUpload.tsx` · After: T2 · Owner: @jjjung0921
+
+<!-- 선후는 각 Task 의 After: 가 기준이다 (T2~T5 After: T1, T6 After: T2 — PhotoUpload 가 Button 을 쓴다). T2~T6은 서로 파일이 겹치지 않으므로 동시에 진행한다 — T6은 T2 병합 전에 시작해도 되고, 병합 전 `git merge main`으로 Button 을 받는다.
+     T2·T6 분리(2026-09-13): 수정본(558-3526) 기준으로 T2·03/T4·06 이 한 사람에게 몰려 03/T4 가 막히는 것을 풀려고 파일 단위로 나눴다.
      `src/ui/index.ts` 배럴은 두지 않는다 — 모든 Task가 건드리게 되어 충돌 지점이 된다. 소비자는 파일에서 직접 import 한다. -->
 
 ## Relevant Specifications
@@ -59,7 +62,7 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 - [ ] AC2. 공통 컴포넌트가 모두 렌더 테스트를 갖는다
 - [ ] AC3. 모달과 폼을 키보드만으로 조작할 수 있고 모든 입력에 라벨이 있다
 - [ ] AC4. `src/ui/`가 `src/api/`·`src/features/`를 import 하지 않는다
-- [ ] AC5. T2~T5가 서로의 파일을 수정하지 않았다 (각 PR의 diff가 자기 Touches 안)
+- [ ] AC5. T2~T6이 서로의 파일을 수정하지 않았다 (각 PR의 diff가 자기 Touches 안)
 
 ## Validation Plan
 
