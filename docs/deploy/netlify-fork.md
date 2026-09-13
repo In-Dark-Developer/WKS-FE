@@ -4,7 +4,7 @@ ADR-20260914-netlify-personal-fork 의 설정·운영 절차.
 
 ```text
 In-Dark-Developer/WKS-FE (main 병합)
-  └─ Actions sync-fork ─ merge-upstream ─▶ jjjung0921/WKS-FE (private fork)
+  └─ Actions sync-fork ─ git push --force ─▶ jjjung0921/WKS-FE (private fork)
                                             └─ Netlify 자동 빌드·배포 (netlify.toml)
 브라우저 ─ threatoffate.site ─ Route53 A 75.2.60.5 ─ Netlify
        └ api.threatoffate.site ─ Route53 ─ 백엔드 서버
@@ -19,12 +19,14 @@ In-Dark-Developer/WKS-FE (main 병합)
 
 1. GitHub → Settings → Developer settings → **Fine-grained personal access token**
    - Resource owner: `jjjung0921`, Repository access: **Only select repositories → `jjjung0921/WKS-FE`**
-   - Permissions: **Contents: Read and write**, **Workflows: Read and write** (동기화에 `.github/workflows` 변경이 섞이면 필요)
+   - Permissions: **Contents: Read and write**, **Workflows: Read and write** (`.github/workflows` 가 바뀐 커밋을 push 하려면 필요)
+   - 조직 저장소 권한은 주지 않는다 — 원본은 Actions 기본 토큰으로 체크아웃하고 이 토큰은 fork 에 push 만 한다
    - 만료일은 축제 종료 뒤로
 2. `In-Dark-Developer/WKS-FE` → Settings → Secrets and variables → Actions
    - **Secrets**: `FORK_SYNC_TOKEN` = 위 토큰
    - **Variables**: `NETLIFY_FORK_REPO` = `jjjung0921/WKS-FE`
 3. Actions → `sync-fork` → Run workflow 로 한 번 확인 → fork 의 main 이 upstream 과 같은 커밋인지, Netlify 에 새 배포가 생겼는지 본다
+4. fork 에서 직접 커밋하지 않는다 — 동기화가 fork `main` 을 upstream 으로 덮어쓴다
 
 토큰을 넣기 전에는 워크플로우가 건너뛴다. 수동으로 맞출 때는 fork 페이지의 **Sync fork** 버튼.
 
