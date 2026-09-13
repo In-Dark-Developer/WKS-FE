@@ -1,3 +1,4 @@
+import type { CompatibilitySummary } from '@/api/schema/result';
 import type { Grade } from '@/ui/DestinyCard';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
@@ -11,6 +12,9 @@ export type ReadingView = {
   fortunes: Record<FortuneKey, { grade: Grade; content: string }>;
   luckyPlace: string;
   luckyItem: string;
+  // 결과 화면 하단 순위 요약(FR-8) — 05/T2 FriendRanking 이 그린다(조립은 T7). saju 는 friends
+  // feature 를 import 하지 않으므로 타입은 api 계약(CompatibilitySummary) 그대로 둔다.
+  compatibilities?: readonly CompatibilitySummary[];
 };
 
 // 카드 스탬프와 운세 카드의 순서·이름 — 백엔드 fortunes 순서(MARRIAGE → CHILDREN → LOVE)와 같다.
