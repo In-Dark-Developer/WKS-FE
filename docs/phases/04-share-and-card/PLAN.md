@@ -32,7 +32,7 @@
 
 - [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/04-share-and-card/` · Owner: @gn00py48
 
-- [ ] T2. 인연카드 퍼블리싱 — Done when: Figma 「UI 최종 - 개발용」 점지 카드(558:2711) 앞면·뒷면과 십이간지 카드 12종이 props(닉네임·십이간지·운명 제목·연애·결혼·자녀 문자 등급 SS~B 6단계 — FR-5, 디자인의 0–100 바가 아니다)로만 렌더되고 `/preview` 에서 가짜 데이터로 확인된다 (테스트 포함). 앞면은 03/T5 의 `src/ui/DestinyCard.tsx`(캐릭터 `ZodiacCharacter`·스탬프 포함)를 인연카드 문구('님의 인연카드'·'당신의 인연 운명은..', Figma 731:4740)로 넓혀 쓴다 · Touches: `src/features/share/card/`, `src/ui/DestinyCard.tsx`, `src/features/share/index.ts`, `src/app/preview/screens/card.tsx` · Owner: @jjjung0921
+- [x] T2. 인연카드 퍼블리싱 — Done when: Figma 「UI 최종 - 개발용」 점지 카드(731:4667, 예전 558:2711) 앞면·뒷면과 '카드 뒤집기'(558:2788)와 십이간지 카드 12종이 props(닉네임·십이간지·운명 제목·연애·결혼·자녀 문자 등급 SS~B 6단계 — FR-5, 디자인의 0–100 바가 아니다)로만 렌더되고 `/preview` 에서 가짜 데이터로 확인된다 (테스트 포함). 앞면은 03/T5 의 `src/ui/DestinyCard.tsx`(캐릭터 `ZodiacCharacter`·스탬프 포함)를 인연카드 문구('님의 인연카드'·'당신의 인연 운명은..', Figma 731:4740)로 넓혀 쓴다 · Touches: `src/features/share/card/`, `src/ui/DestinyCard.tsx`, `src/ui/DestinyCard.css`, `src/features/share/index.ts`, `src/app/preview/screens/card.tsx` · Owner: @jjjung0921 (commit c6a9a57)
 
 <!-- 퍼블리싱 먼저(2026-09-13): T2 는 Phase 03 완료·T1 상세 계획을 기다리지 않는다(props 만). 공유 흐름·이미지 생성·연동은 T1 이 채울 Task 다. 03/T5·03/T6 병합 뒤 시작한다. -->
 

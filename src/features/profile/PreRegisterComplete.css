@@ -1,0 +1,16 @@
+/* 사전신청 완료 — Figma 695:2654 (375×870). 앱 셸 여백(16px)을 넘어 화면 폭 전체를 채운다. */
+[data-pre-register-complete] {
+  --u: calc(100cqw / 375);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 16px);
+  margin: 0 -16px -16px;
+  overflow: hidden;
+  container-type: inline-size;
+  background:
+    url('../../ui/assets/backgrounds/heart-lines.svg') left 6.93% top 22.64% / 80.62% auto no-repeat,
+    url('../../ui/assets/cards/card-front-decor.svg') left top / 86.13% auto no-repeat,
+    /* Figma 완료 화면 그라데이션 값 그대로 — 가운데 색은 토큰에 없다. */
+    linear-gradient(147.33deg, #ffeace 12.906%, #bbe0e8 62.507%, var(--color-neutral-0) 93.507%);
+}
