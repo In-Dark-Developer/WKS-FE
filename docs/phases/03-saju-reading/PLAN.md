@@ -31,9 +31,8 @@
 ## Dependencies
 
 - Phase 02 — T4는 02/T2(기본 입력)·02/T6(Select) 병합 후, T3의 SCR-12 는 02/T4(`ContentState`)를 쓴다
-- Phase 01 T6 — 백엔드의 `POST /results` · `GET /results/{id}` 계약(2026-09-13 반영됨, `docs/api/openapi.yaml`) · 양·음력·12시진·십이간지·등급 체계 추가 요청 답변 (Q3 · Q7)
-- 윤달 여부 (Q8) — 백엔드 `feat/4` 병합 시 닫힌다 (`isLeapMonth`), 시진→`HH:mm` 규칙은 Q15
-- 백엔드 dev 에는 `POST /results` 만 있고 `GET /results/{id}` 는 미구현(2026-09-13) — 목 응답 경로가 T1 부터 필요
+- 백엔드 계약 `POST /results` · `GET /results/{id}` — WKS-BE dev b61f849 로 참조본 갱신(2026-09-13 r2, `docs/api/openapi.yaml`): `calendarType`·`isLeapMonth`·`birthTime` 가운데 시각, 응답 `shareId`·`zodiac`·`fortunes[].grade` 6단계. 세션 토큰은 계약에 없다(Q16)
+- 백엔드 dev(b61f849)에 `POST /results` · `GET /results/{id}` · `GET /shares/{shareId}` · `POST /shares/{shareId}/compatibility` 가 있다 — 목 응답 경로는 백엔드 없이 개발·테스트할 때 쓴다
 - 로컬 연동: 백엔드 CORS 는 `http://localhost:3000` 만 허용 — `vite.config.ts` `server.port` 를 3000 으로 맞춘다 (T1 Touches)
 - 결과 대기 디자인(디자인시스템 FortuneLoading)과 결과 에러 상태 디자인
 
