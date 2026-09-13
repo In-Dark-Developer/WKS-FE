@@ -1,0 +1,71 @@
+[data-app-shell] {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin-inline: auto;
+  overflow-x: clip;
+}
+
+[data-app-shell-content] {
+  position: relative;
+  z-index: 1;
+  padding-block: calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-bottom));
+  padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+}
+
+[data-app-shell-backdrop] {
+  position: fixed;
+  z-index: -1;
+  inset-block: 0;
+  inset-inline: max(0px, calc((100vw - 430px) / 2));
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 72% 18%, var(--color-apricot-100) 0 52px, transparent 53px),
+    radial-gradient(circle at 72% 18%, var(--color-apricot-50) 0 72px, transparent 110px),
+    linear-gradient(
+      to bottom,
+      var(--color-primary-900),
+      var(--color-primary-700) 56%,
+      var(--color-primary-400)
+    );
+}
+
+[data-app-shell-stars] {
+  position: absolute;
+  inset: 0;
+  color: var(--color-neutral-0);
+  background-image: radial-gradient(circle, currentColor 0 1px, transparent 1.5px);
+  background-repeat: repeat;
+  animation-name: app-shell-stars-rise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+[data-app-shell-stars='far'] {
+  opacity: 0.35;
+  background-position: 13px 0;
+  background-size: 52px 104px;
+  animation-duration: 22s;
+}
+
+[data-app-shell-stars='near'] {
+  opacity: 0.7;
+  background-position: 31px 0;
+  background-size: 89px 104px;
+  animation-duration: 14s;
+}
+
+@keyframes app-shell-stars-rise {
+  to {
+    background-position-y: -104px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-app-shell-stars] {
+    animation: none;
+  }
+}
