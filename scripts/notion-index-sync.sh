@@ -125,6 +125,26 @@ task_row_ids() { # task_row_ids "NN name" → Task 보드에서 Phase select 가
 }
 plan_goal()  { sed -n '/^## Goal/,/^## /p' "$1" | grep -vE '^(## |<!--|-->|$)' | head -n1 | cut -c1-1900; }
 plan_scope() { sed -n '/^## Scope/,/^## /p' "$1" | grep '^- ' | sed 's/^- //' | paste -sd'\n' - | sed 's/[[:space:]]*$//' | tr '\n' '\001' | sed 's/\x01/ · /g' | cut -c1-1900; }
+task_after_props() { jq -n --arg ids "$1" '{ "선행 Task": { relation: [ ($ids | split(" ") | map(select(. != ""))[] | { id: . }) ] } }'; }
+sync_task_after() { # sync_task_after <PLAN.md> "<NN name>" — Task 줄의 After: 를 Task 보드 `선행 Task` 관계로 (보드 행은 Phase select + Task 로 찾는다)
+  local plan=$1 ph=$2 line tk after dep ids id rows=""
+  if [ "$dry" -eq 0 ] && [ -n "${NOTION_TASK_DB:-}" ]; then
+    notion_api POST "databases/$NOTION_TASK_DB/query" "$(jq -n --arg p "$ph" '{ filter: { property: "Phase", select: { equals: $p } }, page_size: 100 }')" || return 0
+    rows=$(printf '%s' "$body" | jq -r '.results[] | [.id, (.properties.Task.rich_text[0].plain_text // "")] | @tsv')
+  fi
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    tk=$(printf '%s' "$line" | sed -E 's/^- \[[ x]\] (T[0-9]+)\. .*/\1/'); after=$(printf '%s' "$line" | sed -n 's/.*After: *//p' | sed 's/ · Owner:.*//; s/,/ /g')
+    [ -n "$after" ] || continue
+    if [ "$dry" -eq 1 ] || [ -z "${NOTION_TASK_DB:-}" ]; then printf '%s %s ← After %s\n' "$ph" "$tk" "$after"; continue; fi
+    ids=""; for dep in $after; do id=$(printf '%s\n' "$rows" | awk -F'\t' -v t="$dep" '$2 == t { print $1; exit }'); [ -n "$id" ] && ids="${ids:+$ids }$id"; done
+    id=$(printf '%s\n' "$rows" | awk -F'\t' -v t="$tk" '$2 == t { print $1; exit }')
+    [ -n "$id" ] || { warn "$ph $tk 행이 보드에 없다 — 선행 Task 생략"; continue; }
+    notion_api PATCH "pages/$id" "$(jq -n --argjson p "$(task_after_props "$ids")" '{ properties: $p }')" && ok "$ph $tk ← After $after"
+  done <<EOF
+$(grep -E '^- \[[ x]\] T[0-9]+\. ' "$plan")
+EOF
+}
 sync_phases() { # docs/phases/README.md 의 phases:begin~end 표 (ai-stream.sh phases 가 만든다)
   local n=0 line nn link name lead dep st tasks res plan goal scope ids base; base=$(repo_url)
   while IFS= read -r line; do
@@ -134,6 +154,7 @@ sync_phases() { # docs/phases/README.md 의 phases:begin~end 표 (ai-stream.sh p
     st=$(trim "$(printf '%s' "$line" | cut -d'|' -f6)"); tasks=$(trim "$(printf '%s' "$line" | cut -d'|' -f7)"); res=$(trim "$(printf '%s' "$line" | cut -d'|' -f8)")
     plan="docs/phases/$nn-$name/PLAN.md"; goal=$(plan_goal "$plan"); scope=$(plan_scope "$plan"); ids=$(task_row_ids "$nn $name")
     send "${NOTION_PHASE_DB:-}" 번호 "$nn" "$(phase_props "$nn" "$nn $name" "$lead" "$dep" "$st" "$tasks" "$res" "$base/blob/main/$plan" "$goal" "$scope" "$ids")" && n=$((n + 1))
+    sync_task_after "$plan" "$nn $name"
   done <<EOF
 $(sed -n '/<!-- phases:begin -->/,/<!-- phases:end -->/p' docs/phases/README.md)
 EOF

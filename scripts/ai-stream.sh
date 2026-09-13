@@ -67,8 +67,12 @@ cmd_open() {
       local tline; tline=$(grep -E "^- \[[ x]\] ${kind#*/}\. " "$plan" | head -n1 || true)
       [ -n "$tline" ] || die "$plan 에 Task ${kind#*/} 항목이 없다"
       task_title=$(printf '%s' "$tline" | sed -E 's/^- \[[ x]\] //; s/ — Done when:.*//')
-      [ -z "$touches" ] && touches=$(printf '%s' "$tline" | sed -n 's/.*Touches: *//p' | sed 's/ · Owner:.*//; s/`//g')
+      [ -z "$touches" ] && touches=$(printf '%s' "$tline" | sed -n 's/.*Touches: *//p' | sed 's/ · After:.*//; s/ · Owner:.*//; s/`//g')
       [ -n "$touches" ] || die "PLAN 의 Task 줄에 Touches: 가 없다 — 적거나 --touches 로 지정한다"
+      local after dep; after=$(printf '%s' "$tline" | sed -n 's/.*After: *//p' | sed 's/ · Owner:.*//; s/,/ /g')
+      for dep in $after; do # 선행 Task 가 main 에 [x] 가 아니면 경고 (막지 않는다 — 병합 전 git merge main 으로 받는다)
+        git show "$base:$plan" 2>/dev/null | grep -qE "^- \[x\] ${dep}\. " || say "  선행 경고: ${kind%%/*}/$dep 가 아직 main 에 완료되지 않았다 (After: $after) — 시작은 되지만 병합 전 git merge main"
+      done
       local other
       for other in $(ws_refs | awk '{print $1}') $(git ls-tree --name-only "$base" "$WORK/" 2>/dev/null | sed "s#.*/##"); do
         case "$other" in "${phase}-${kind#*/}-"*)
