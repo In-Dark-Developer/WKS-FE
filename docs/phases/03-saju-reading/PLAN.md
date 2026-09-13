@@ -15,7 +15,7 @@
 
 ## Scope
 
-- 사주 입력 폼(SCR-02): 성별(남/여) · 달력 기준(양/음력) · 생년월일 8자리 · 12시진 셀렉트 + '몰라요' · 지역 셀렉트 + '몰라요' · 닉네임 1–8자, 기본/오류/연결문제/로딩 4상태
+- 사주 입력 폼(SCR-02): 성별(남/여) · 달력 기준(양/음력) · 생년월일 8자리 · 12시진 셀렉트 + '몰라요' · 닉네임 1–8자 (태어난 지역은 받지 않는다 — `birthRegion`은 null), 기본/오류/연결문제/로딩 4상태
 - 결과 대기(SCR-03)와 결과 화면(SCR-04): 운명 카드(십이간지 캐릭터·'○○보살님' 치환·운명 제목·설명·3영역 문자 등급 스탬프 B0~SS), 행운의 장소·아이템 카드, 운세 카드 3장, 보살 말투 문구
 - 세션 없음·만료 시 입력 화면으로 안내 (FR-18)
 - `src/api/` 클라이언트: 요청/응답 zod 스키마, 에러·타임아웃 처리, 서버 상태 캐시 방식 결정(ADR)
@@ -32,7 +32,7 @@
 
 - Phase 02
 - Phase 01 T6 — 백엔드의 `POST /results` · `GET /results/{id}` 계약(2026-09-13 반영됨, `docs/api/openapi.yaml`) · 양·음력·12시진·십이간지·등급 체계 추가 요청 답변 (Q3 · Q7)
-- 태어난 지역 선택 목록 (Q6), 윤달 여부 (Q8) — 백엔드 `feat/4` 병합 시 둘 다 닫힌다 (지역 제거 · `isLeapMonth`), 시진→`HH:mm` 규칙은 Q15
+- 윤달 여부 (Q8) — 백엔드 `feat/4` 병합 시 닫힌다 (`isLeapMonth`), 시진→`HH:mm` 규칙은 Q15
 - 백엔드 dev 에는 `POST /results` 만 있고 `GET /results/{id}` 는 미구현(2026-09-13) — 목 응답 경로가 T1 부터 필요
 - 로컬 연동: 백엔드 CORS 는 `http://localhost:3000` 만 허용 — `vite.config.ts` `server.port` 를 3000 으로 맞춘다 (T1 Touches)
 - 결과 대기 디자인(디자인시스템 FortuneLoading)과 결과 에러 상태 디자인
@@ -45,7 +45,7 @@
 
 - [ ] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있다 · Touches: `src/app/routes.tsx`, `src/app/RequireSession.tsx` · Owner: @jjjung0921
 
-- [ ] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·지역·닉네임 8자 검증과 '몰라요'→null 처리가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts` · Owner: @gn00py48
+- [ ] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·닉네임 8자 검증과 '몰라요'→null 처리(`birthRegion`은 항상 null)가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts` · Owner: @gn00py48
 
 - [ ] T5. 결과 화면 — Done when: 운명 카드(캐릭터·'○○보살님'·운명 제목·설명·3영역 등급 스탬프)·행운의 장소/아이템·운세 카드 3장이 응답대로 렌더되고 결과 대기(FortuneLoading)·에러 상태가 있다 · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/DestinyCard.tsx`, `src/features/saju/sections/`, `src/features/saju/zodiac.ts` · Owner: @nicerjs23
 
@@ -62,7 +62,7 @@
 ## Acceptance Criteria
 
 - [ ] AC1. 입력 → 결과를 이탈 없이 완주할 수 있다
-- [ ] AC2. 태어난 시간·지역을 '몰라요'로 두어도 결과를 받을 수 있고, 음력 입력이 전송된다
+- [ ] AC2. 태어난 시간을 '몰라요'로 두어도 결과를 받을 수 있고, 음력 입력이 전송되며, 지역 입력 없이 `birthRegion: null`로 보낸다
 - [ ] AC6. 세션 없이 `/reading/:id`에 들어오면 입력 화면으로 안내된다
 - [ ] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
 - [ ] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
