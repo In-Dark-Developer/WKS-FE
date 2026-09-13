@@ -13,38 +13,49 @@ Figma 결과 화면(713:4021)의 운명 카드·행운·운세 3장·결과 대�
 
 ## Work Completed
 
-- 없음
+- `ReadingResult`(view + share·ranking·teaser 슬롯 + Outlet) · `LuckySection` · `FortuneSection` · `FortuneLoading`(loading·delayed·error)
+- ui `DestinyCard`(343×461 비례 축소, 좌표는 Figma px × --u) · `ZodiacCharacter`(12종·보살 이름)
+- 에셋: 성곡체 woff2 원본 + `font-sungkok`, 등급 스탬프 SVG 6, 카드 장식 SVG(Figma 별·리본 합성)
+- `/preview/reading`: 결과·긴 제목·십이간지 12종·대기·지연·에러
 
 ## Work In Progress
 
-- 소유자 결정(2026-09-13): 성곡체·경찰감성체 추가 — 성곡체는 woff2 원본 커밋, 스탬프 6개는 SVG 로 렌더(폰트 파일 커밋 안 함). 공유 버튼·친구 궁합 순위는 슬롯 prop 자리만
-- 카드 앞면은 인연카드(04/T2)와 같아 `src/ui/DestinyCard.tsx` 로 둔다 (PLAN 의 saju/DestinyCard 대신)
-- 측정값: `notes/figma-measurements.md`
+- 없음
 
 ## Files Changed
 
-- 없음
+- CURRENT Touches 그대로 (+ 각 테스트)
+- `docs/phases/03-saju-reading/PLAN.md`(T5 줄), `docs/phases/04-share-and-card/PLAN.md`(T2 가 DestinyCard 재사용)
 
 ## Decisions Made
 
-- 없음
+- 소유자: 성곡체 추가(원본 woff2), 경찰감성체는 1MB 라 스탬프 6개만 SVG 로 — 폰트 파일 미커밋
+- 소유자: 공유 버튼·친구 궁합 순위는 슬롯 prop 자리만
+- 카드 앞면은 인연카드(04/T2)와 같아 ui 로 — features 간 import 금지 때문에
+- 카드 치수는 CSS 파일에서 cqw 비례 — 임의값 클래스 없이 Figma 좌표 그대로
 
 ## Tests Executed
 
-- 없음
+- `pnpm test`(127) · `typecheck` · `lint` · `build`(dist 에 preview 없음)
+- 브라우저 375px: 카드 패널 323×439·캐릭터·스탬프 줄 좌표가 Figma 와 일치(DOM 측정), 긴 제목 말줄임, 12종, 에러
 
 ## Test Results
 
-- 없음
+- 통과
 
 ## Known Problems
 
-- 없음
+- Figma 는 'Sungkok Semi-Serif', 배포본은 'Sungkok Serif' — 글자 굵기 미세 차이
+- 카드 텍스쳐는 배경 이미지에 구워져 리본 아래에 깔림(Figma 는 리본 위 overlay 60%) — 차이 미미
+- `docs/CONVENTIONS.md` 폰트 표·디자인 토큰 ADR 에 `font-sungkok` 미기재(Touches 밖) — 후속 chore
+- 애니메이션 슬롯은 점 3개 임시(십이지신 애니메이션 대기)
+- Figma 결과 섹션의 Frame 91(링크 진입)·92(궁합 지도 확인)는 담당 Task 확인 필요
 
 ## Unverified Assumptions
 
-- 없음
+- 보살 이름은 십이간지 카드(731:4740) 기준 — 결과 화면 예시는 '돼지보살'
+- 스탬프 원 색: SS·S 노랑 · A+·A 빨강 · B+·B 파랑 (디자인 예시 SS 노랑·A+/C+ 빨강·B 파랑에서 추정)
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 리뷰 후 병합 → 04/T2
