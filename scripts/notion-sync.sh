@@ -27,18 +27,8 @@ done
 [ -n "${NOTION_DB:-}" ] || die "NOTION_DB 를 지정한다"
 command -v jq >/dev/null || die "jq 가 필요하다"
 
-api() { # api <METHOD> <path> [body]
-  local out code
-  out=$(curl -sS -w '\n%{http_code}' -X "$1" "https://api.notion.com/v1/$2" \
-    -H "Authorization: Bearer $NOTION_TOKEN" \
-    -H "Notion-Version: 2022-06-28" \
-    -H "Content-Type: application/json" \
-    ${3:+-d "$3"})
-  code=$(printf '%s' "$out" | tail -n1)
-  body=$(printf '%s' "$out" | sed '$d')
-  [ "$code" = "200" ] || { fail "Notion $1 /$2 → HTTP $code: $(printf '%s' "$body" | jq -r '.message // .' | head -n1)"; return 1; }
-  return 0
-}
+. "$(cd "$(dirname "$0")" && pwd)/lib/notion.sh"
+api() { notion_api "$@"; } # 본문은 lib/notion.sh (2026-09-13)
 
 # CURRENT.md 의 Status → 보드의 상태
 notion_status() {
