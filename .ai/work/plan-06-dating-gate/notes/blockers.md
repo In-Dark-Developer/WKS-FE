@@ -25,3 +25,12 @@
 
 - 06/T1 상세 계획(이 스트림) — 완료
 - 위 1~10 이 닫히는 대로 T2 → T3 순서로 착수한다. 1·7 은 서로 독립이라 병렬로 풀 수 있다.
+
+## 추가 — main 의 테스트가 깨져 있다 (2026-09-13, 06/T1 PR 준비 중 발견)
+
+`src/app/App.test.tsx > 개발 서버에서는 /preview 가 퍼블리싱 확인 목록을 보여 준다` 가 실패한다. 이 스트림은 문서만 바꿨고(`git diff origin/main HEAD -- src/` 가 비어 있다) 재현은 결정적이다(2/2).
+
+- 처음 깨진 커밋: `ee970bc` (04/T2 인연카드 퍼블리싱, PR #60). 직전 `865e191` 까지는 2 passed
+- 증상: `/preview` 가 `퍼블리싱 확인` 제목 대신 `RouteLoading`(role=status, aria-busy) 에서 멈춘다 — `App.tsx` 의 `/preview/*` `lazy:` 가 `findByRole` 기본 1s 안에 풀리지 않는다
+- 영향: main 에 올라가는 모든 PR 의 `commands` 잡이 빨갛다 (이 PR 포함 — 문서만 바꿔도 막힌다)
+- 담당: `src/app/` 오너 @jjjung0921 (App.test 는 03/T6, 원인 커밋은 04/T2)
