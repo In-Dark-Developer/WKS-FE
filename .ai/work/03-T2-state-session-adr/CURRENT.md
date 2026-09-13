@@ -29,11 +29,12 @@ REVIEW
 - 1. 현재 라우터·의존성·PRD Q16·백엔드 계약(세션 1차 제외) 확인
 - 2. ADR 작성 — loader/action, `api/session.ts` localStorage
 - 3. ARCHITECTURE State·Persistence·External·Cross-cutting 갱신, 공지
+- 4. 소유자 지시 반영 — 세션은 백엔드 토큰 하나, `resultId` 대체 경로 제거
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`cc82bf8`
+`834eaed`
 
 ## Relevant Documents
 

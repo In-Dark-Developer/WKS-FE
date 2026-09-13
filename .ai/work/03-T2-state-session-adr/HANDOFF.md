@@ -15,7 +15,7 @@
 
 - `docs/decisions/ADR-20260913-server-state-and-session-storage.md` (commit cc82bf8)
 - 서버 상태: React Router loader/action/fetcher, 요청·캐시 라이브러리 없음, GET만 재시도 1회
-- 세션: `src/api/session.ts`만 localStorage `wks:session` `{v:1,resultId,token?}` 읽기·쓰기, 만료는 백엔드 응답으로
+- 세션: 로그인 없음, 백엔드 토큰 하나로만 식별·유지(소유자 결정). `src/api/session.ts`만 localStorage `wks:session` `{v:1,token}` 읽기·쓰기, 만료는 백엔드 응답으로 (commit 834eaed)
 - ARCHITECTURE 4개 절 갱신, 공지 `2026-09-13-server-state-session`
 
 ## Work In Progress
@@ -32,7 +32,8 @@
 ## Decisions Made
 
 - TanStack Query 기각 — 결과가 불변이고 무효화 대상은 `compatibilities` 하나, 라우터와 로딩 상태 이중화
-- localStorage 채택 — 축제 3일 재방문. XSS 노출은 감수, 백엔드가 HttpOnly 쿠키를 택하면 `resultId`만 저장
+- localStorage 채택 — 축제 3일 재방문, 요청 없이 가드 가능. XSS 노출은 감수. 백엔드가 HttpOnly 쿠키로 정하면 새 ADR
+- `resultId`는 세션에 넣지 않음 — 공유 링크 재료로만
 - `app → api/session` import 허용(기존 방향 안, lint 규칙 변경 없음)
 
 ## Tests Executed
@@ -46,13 +47,13 @@
 
 ## Known Problems
 
-- PRD(백엔드 세션 토큰 발급)와 백엔드 1차 계약(로그인·세션 제외)이 어긋난다 — Q16 미답. ADR은 `resultId`만으로 동작하게 썼다
+- 백엔드 1차 계약(로그인·세션 제외)에 토큰이 없다 — 백엔드 작업 필요(Q16). 그 전까지 실제 연동은 보호 화면 가드에 막히고 목 응답으로만 개발
 - `openapi.yaml` 참조본은 여전히 `security: []` 주석이 '세션 없음'이다(계약과는 일치)
 
 ## Unverified Assumptions
 
-- 보관한 `resultId`의 `RESULT_NOT_FOUND`를 세션 무효 신호로 쓴다 — 백엔드가 결과를 지우는 경우가 있는지 미확인
+- 토큰은 `POST /results` 응답으로, `Authorization: Bearer` 헤더로 오간다고 전제 — Q16 답으로 확인 필요
 
 ## Exact Next Action
 
-PR 리뷰 후 병합, T1·T3 소유자에게 공지 확인 요청
+PR #44 병합, 백엔드에 Q16(토큰 발급·전달·만료·조회 엔드포인트) 요청
