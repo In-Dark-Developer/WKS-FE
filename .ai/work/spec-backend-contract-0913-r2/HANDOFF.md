@@ -43,7 +43,7 @@ docs/api/openapi.yaml 참조본과 PRD·ARCHITECTURE 가 WKS-BE b61f849 의 api-
 
 ## Known Problems
 
-- 04 PLAN 의 'B0~SS' 표기는 plan PR #53 이 04 를 고치는 중이라 건드리지 않음 — 병합 후 한 줄 수정
+- #53 병합 후 main merge(색인·03·05 PLAN 자동 병합 확인), 04 PLAN 등급 표기를 6단계로 수정
 - ADR-20260913-server-state-and-session-storage 본문의 'resultId 는 공유 링크 재료' 는 이제 shareId — ADR 은 본문 수정 금지, 토큰 계약(Q16) ADR 때 함께 대체
 - 백엔드 FortuneCategory 에 운명운 없음 — 인연카드 '운명운' 등급 출처 미정(Q3 cardGrades)
 - T4 SajuForm 은 이미 이 계약 모양으로 보낸다 — 코드 변경 없음
