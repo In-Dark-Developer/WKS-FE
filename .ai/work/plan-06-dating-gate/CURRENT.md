@@ -9,39 +9,42 @@
 - Issue: none
 - Touches: docs/phases/06-dating-gate/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
-— (Task 밖 스트림)
+06-dating-gate — `docs/phases/06-dating-gate/PLAN.md`
 
 ## Current Task
 
-Phase 06-dating-gate 계획
+T1. 상세 계획 작성
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. main 동기화 · 공지 21건 확인(publishing-first · backend-contract-r2)
+- 2. 의존 조사 — `teaser` 슬롯 · `/preview` 규약 · routes.tsx 소유(03/T7)
+- 3. PLAN 상세화 — Motivation · Scope · Out of Scope · Dependencies
+- 4. Task 분할(T2 퍼블리싱 / T3 연동) · Acceptance Criteria · Validation Plan
+- 5. 차단 항목 정리 → `notes/blockers.md` (소유자가 담당자에게 전달)
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`7fddc73`
+`9899d2d`
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `docs/phases/06-dating-gate/PLAN.md` · `docs/PRD.md`(FR-9·10·17, NFR-4, Q4·Q10·Q14·Q16) · `.ai/team/announcements/2026-09-13-publishing-first.md`
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/saju/ReadingResult.tsx:ReadingResult`(teaser 슬롯) · `src/app/preview/previewScreen.ts:PreviewScreen` — 읽기만
 
 ## Next Action
 
-`AGENTS.md`에서 06/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰·병합. 차단 항목 10건은 `notes/blockers.md` — 소유자가 담당자에게 전달한다.

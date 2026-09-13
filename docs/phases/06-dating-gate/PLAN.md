@@ -52,7 +52,7 @@
 
 ## Tasks
 
-- [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/06-dating-gate/` · Owner: @gn00py48
+- [x] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/06-dating-gate/` · Owner: @gn00py48 (commit 9899d2d)
 
 - [ ] T2. 사전신청 모달·티저 퍼블리싱 — Done when: 수정본(558-3526) 사전신청 모달의 기본·오류(이메일 형식)·로딩·연결 실패(입력값 유지)·완료 5상태와 결과 화면 티저(`PreRegistrationTeaser`)가 feature 가 정한 뷰 모델 props 로만 렌더되고(`src/api/` 스키마를 import 하지 않는다), 동의 체크 전에는 제출 버튼이 잠기며, `/preview/pre-register` 에서 5상태를 가짜 데이터로 볼 수 있다 (테스트 포함). 연락처는 전화번호 필수 + 인스타그램 선택(디자인의 택1 세그먼트와 다름 — FR-10). 고지 문구는 `consent.ts` 한 곳에 모은다 · Touches: `src/features/profile/`, `src/app/preview/screens/pre-register.tsx` · After: 02/T3 · Owner: @jjjung0921
 
