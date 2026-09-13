@@ -10,6 +10,7 @@
 | [2026-09-13-session-module-owner](announcements/2026-09-13-session-module-owner.md) | yes | touches:src/api/ | Phase 03 종료 |
 | [2026-09-13-server-state-session](announcements/2026-09-13-server-state-session.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-screen-ownership](announcements/2026-09-13-screen-ownership.md) | yes | all | Phase 06 종료 |
+| [2026-09-13-publishing-first](announcements/2026-09-13-publishing-first.md) | yes | touches:src/ | Phase 08 종료 |
 | [2026-09-13-planning-feedback](announcements/2026-09-13-planning-feedback.md) | yes | all | Phase 07 종료 |
 | [2026-09-13-opacity-tokens](announcements/2026-09-13-opacity-tokens.md) | yes | touches:src/ | Phase 08 종료 |
 | [2026-09-13-notion-index-sync](announcements/2026-09-13-notion-index-sync.md) | yes | all | Phase 08 종료 |
