@@ -46,7 +46,7 @@
 
 - [x] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/08-launch-readiness/` · Owner: @jjjung0921
 
-- [x] T2. 배포 설정 — Done when: `netlify.toml`(빌드·`dist`·운영 `VITE_API_BASE_URL`·`/* → /index.html 200`·자산 캐시)과 조직 저장소 `main` push 마다 개인 fork 를 `merge-upstream` 으로 맞추는 `.github/workflows/sync-fork.yml`(변수·토큰이 없으면 건너뜀, fork 안에서는 안 돎)이 병합되고, 설정 절차가 `docs/deploy/netlify-fork.md` 에 있으며, AWS 배포 워크플로우·문서가 빠진다 · Touches: `netlify.toml`, `.github/workflows/`, `docs/deploy/` · Owner: @jjjung0921 (commit b565104 — 호스팅 Netlify → Pages → Workers → AWS → 개인 fork Netlify, ADR-20260914-netlify-personal-fork)
+- [x] T2. 배포 설정 — Done when: `netlify.toml`(빌드·`dist`·운영 `VITE_API_BASE_URL`·`/* → /index.html 200`·자산 캐시)과 조직 저장소 `main` push 마다 개인 fork `main` 을 upstream `main` 으로 덮어쓰는(push, fork 전용 fine-grained 토큰) `.github/workflows/sync-fork.yml`(변수·토큰이 없으면 건너뜀, fork 안에서는 안 돎)이 병합되고, 설정 절차가 `docs/deploy/netlify-fork.md` 에 있으며, AWS 배포 워크플로우·문서가 빠진다 · Touches: `netlify.toml`, `.github/workflows/`, `docs/deploy/` · Owner: @jjjung0921 (commit b565104·cc060d8 — 호스팅 Netlify → Pages → Workers → AWS → 개인 fork Netlify, ADR-20260914-netlify-personal-fork)
 
 - [ ] T3. 운영 연결 확인 — Done when: `docs/deploy/netlify-fork.md` 2~3 이 끝나 `sync-fork` 실행 뒤 Netlify 에 새 배포가 생기고, `https://threatoffate.site`·`www` 가 HTTPS 로 열리며, `https://threatoffate.site/s/test` 새로고침이 앱을 열고, 운영 화면에서 `api.threatoffate.site` 호출이 CORS 오류 없이 간다 — 확인 결과를 RESULT 에 적는다 · Touches: `docs/phases/08-launch-readiness/` · After: T2 · Owner: @jjjung0921
 
