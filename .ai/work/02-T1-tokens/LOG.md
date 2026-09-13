@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-13 · claude-code · 02/T1 · 토큰 밖 클래스 린트 · CONVENTIONS 표 · PR
+
+- Commits: ada94b7, 60ad436
+- Done: eslint-plugin-better-tailwindcss(no-unknown-classes) 도입, CONVENTIONS 4장 클래스 이름 표, PLAN T1 Owner → @jjjung0921, ADR·공지 갱신, 원본 OTF 휴지통으로 이동·dist 삭제, PR 생성
+- Not done: 없음
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: ADR·PLAN(Owner·SHA) · docs/CONVENTIONS.md 4장
+- Verification: test 22 통과 · typecheck · lint(규칙 위반 임시 파일로 실패 확인) · build
+
 ## 2026-09-13 · claude-code · 02/T1 · Figma 토큰 @theme · 폰트 번들 · cn()
 
 - Commits: 32a858d

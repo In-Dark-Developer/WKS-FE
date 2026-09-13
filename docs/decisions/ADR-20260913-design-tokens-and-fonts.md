@@ -25,7 +25,7 @@ Phase 02 T1 은 Figma 디자인시스템(16-2)의 로컬 변수·스타일을 �
 - 대안 2 와 4 를 택한다.
 - 토큰은 `src/ui/tokens/theme.css` 의 `@theme` 한 곳에 두고 `src/index.css` 가 import 한다(ARCHITECTURE: 토큰은 `ui` 소유). 이름 규칙: 램프 `bg-primary-500`, Text → `text-primary`(`--text-color-*`), Border → `border-default`(`--border-color-*`), 나머지 → `bg-surface-subtle`·`bg-action-primary-default`·`text-status-error-foreground`(`--color-*`), Space/16 → `p-16`(16px), Radius/12 → `rounded-12`, UI/14/600 → `text-ui-14 font-semibold`, Display/24 → `font-display text-display-24`. 포커스 링은 `outline-focus`.
 - 시맨틱 색은 같은 hex 의 램프 변수를 참조한다. 램프에 없는 Status 4색만 hex 로 둔다.
-- 임의 색상(hex·색 함수·`[color:…]`)이 든 문자열은 ESLint `no-restricted-syntax` 로 막는다(테스트 파일 제외).
+- 토큰 밖 클래스는 ESLint `better-tailwindcss/no-unknown-classes`(entryPoint `src/index.css`)로, 임의 색상(hex·색 함수·`[color:…]`)이 든 문자열은 `no-restricted-syntax` 로 막는다(테스트 파일 제외).
 - Display 폰트는 원본 OTF 를 woff2 로 바꿔 `src/ui/tokens/fonts/` 에 번들한다. 원본의 CFF 이름("DONGGUK UNIVERSITY")에 공백이 있어 브라우저 폰트 검사기(OTS)가 파일 전체를 거부하므로, CFF 이름과 name ID 6 을 `DONGGUKUNIVERSITY` 로 바꾼 뒤 변환했다(fontTools, 글리프·메트릭 변경 없음). CSS `font-family` 이름은 Figma 와 같은 `'DONGGUK UNIVERSITY'` 다.
 
 ## Rationale
@@ -34,6 +34,6 @@ Phase 02 T1 은 Figma 디자인시스템(16-2)의 로컬 변수·스타일을 �
 
 ## Consequences
 
-- 긍정: Figma 토큰 이름 = 클래스 이름. 토큰 밖 색·간격·radius·글자 크기 클래스는 CSS 가 생성되지 않는다(`src/ui/tokens/theme.test.ts`).
-- 부정 / 감수한 것: `p-4`=4px 등 Tailwind 기본 숫자와 뜻이 다르다. 토큰 밖 클래스(`bg-red-500`)는 린트 실패가 아니라 "스타일이 안 먹는 것"으로 드러난다 — 막으려면 등록되지 않은 클래스를 검사하는 ESLint 플러그인(예: eslint-plugin-better-tailwindcss)이 필요하다. 스케일 이름을 바꾸면 `src/lib/cn.ts` 의 tailwind-merge 목록도 같이 바꿔야 한다. 동국체 woff2 는 435kB 이고 원본 라이선스(© DONGGUK UNIVERSITY)의 웹 사용 허용 여부는 확인이 필요하다.
-- 후속 작업: T2~T5 는 이 이름 규칙을 쓴다(공지 2026-09-13-design-tokens). Figma 토큰이 바뀌면 `theme.css` 를 맞춘다.
+- 긍정: Figma 토큰 이름 = 클래스 이름. 토큰 밖 색·간격·radius·글자 크기 클래스는 CSS 가 생성되지 않고(`src/ui/tokens/theme.test.ts`) `pnpm lint` 가 실패한다.
+- 부정 / 감수한 것: `p-4`=4px 등 Tailwind 기본 숫자와 뜻이 다르다. 토큰 밖 클래스 검사를 위해 dev 의존성 eslint-plugin-better-tailwindcss 가 늘었다. 스케일 이름을 바꾸면 `src/lib/cn.ts` 의 tailwind-merge 목록도 같이 바꿔야 한다. 동국체 woff2 는 435kB 다. 원본 라이선스(© DONGGUK UNIVERSITY)의 웹 사용은 2026-09-13 @jjjung0921 이 확인했다.
+- 후속 작업: T2~T5 는 이 이름 규칙을 쓴다(공지 2026-09-13-design-tokens, `docs/CONVENTIONS.md` 4장). Figma 토큰이 바뀌면 `theme.css` 를 맞춘다.

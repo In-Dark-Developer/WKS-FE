@@ -7,7 +7,7 @@
 - Branch: ws/02-T1-tokens
 - Task: 02/T1
 - Issue: #22
-- Touches: src/ui/tokens/, src/index.css, src/main.tsx, src/lib/cn.ts, src/lib/cn.test.ts, package.json, pnpm-lock.yaml, .prettierrc, eslint.config.js, .ai/team/announcements/2026-09-13-design-tokens.md, .ai/team/README.md
+- Touches: src/ui/tokens/, src/index.css, src/main.tsx, src/lib/cn.ts, src/lib/cn.test.ts, package.json, pnpm-lock.yaml, .prettierrc, eslint.config.js, docs/CONVENTIONS.md, .ai/team/announcements/2026-09-13-design-tokens.md, .ai/team/README.md
 - Supersedes: none
 - Acked: 2026-09-11-bootstrap,2026-09-12-board-rows-for-streams,2026-09-12-commit-type-ci,2026-09-12-design-first-prd,2026-09-12-notion-board-sync,2026-09-12-pr-body-autofill,2026-09-13-backend-contract,2026-09-13-drop-birth-region,2026-09-13-issue-link,2026-09-13-notion-index-sync,2026-09-13-planning-feedback,2026-09-13-task-after,2026-09-13-design-tokens
 
@@ -28,11 +28,12 @@ REVIEW
 1. 의존성·`theme.css`·`index.css`·`cn()`·린트·prettier 플러그인 ✓
 2. Display 폰트 woff2(CFF 이름 수정)·ADR·공지 ✓
 3. test·typecheck·lint·build·브라우저 폰트 로드 확인 ✓
+4. 토큰 밖 클래스 린트·CONVENTIONS 표·Owner 변경 ✓
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`32a858d`
+`60ad436`
 
 ## Relevant Documents
 
