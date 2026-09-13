@@ -4,7 +4,7 @@
 
 ## 2026-09-14 · claude-code · 04/T1 · Phase 04 상세 계획 — 공유 링크·카드 이미지·폴백 4개 Task 로 분리
 
-- Commits: (이 커밋)
+- Commits: c05acc4
 - Done: PLAN 의 Motivation·Scope·Out of Scope·Dependencies·Tasks(T3~T6)·AC(7)·Validation Plan 을 채웠다. 공유 방식(Q11)을 'Web Share 우선 → 복사/저장 폴백'으로 정하고, 인연카드 등급은 `cardGrades` 없이 `fortunes[]` 를 쓰는 것으로 Q3 의 Phase 04 차단분을 닫았다. NFR-3 은 Phase 08 T4 소관이라 Out of Scope 로 옮겼다.
 - Not done: 없음 (T3~T6 은 미착수)
 - Developer changes: 없음

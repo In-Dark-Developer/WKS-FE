@@ -1,7 +1,5 @@
 # Current State — plan-04-share-and-card
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: plan-04-share-and-card
 - Owner: gn00py48@gmail.com
 - Branch: ws/plan-04-share-and-card
@@ -21,38 +19,29 @@ Phase 04-share-and-card 계획
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- [x] 기계 세팅(훅·커밋템플릿·alias·MSYS2_ARG_CONV_EXCL) · 공지 26건 확인
-- [x] 근거 수집 — PRD Screens·FR-4·5·15·16·Q3·Q11, openapi `/shares`·`fortunes`, 04/T2 산출물
-- [x] PLAN Scope·Out of Scope·Dependencies 갱신
-- [x] PLAN Tasks(T3~T6) 작성
-- [x] PLAN Acceptance Criteria(7)·Validation Plan 작성
-- [x] 색인 재생성(`phases`) · 검증(test 206 · typecheck · lint)
-- [ ] 커밋 → `ai-end.sh --ready` ←
+- [x] 기계 세팅 · 공지 26건 확인 · 근거 수집(PRD·openapi·04/T2)
+- [x] PLAN Scope·Out of Scope·Dependencies·Tasks(T3~T6)·AC(7)·Validation 작성
+- [x] 색인 재생성 · 검증(test 206 · typecheck · lint) · 커밋 c05acc4
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`0b272a3`
+`c05acc4`
 
 ## Relevant Documents
 
 - `docs/phases/04-share-and-card/PLAN.md` — 이 Task 의 산출물
-- `docs/PRD.md` — Screens(SCR-04·05), FR-4·FR-5·FR-15·FR-16, Open Questions Q3·Q11
-- `docs/api/openapi.yaml` — `/shares/{shareId}`, `SharedResult.fortunes[]`, `Grade`
-- `.ai/team/announcements/2026-09-13-{publishing-first,server-state-session,hosting-domains,planning-feedback}.md`
+- `docs/PRD.md` — SCR-04·05, FR-4·5·15·16, Q3·Q11 · `docs/api/openapi.yaml` — `SharedResult.fortunes[]`, `Grade`
+- 공지 `2026-09-13-{publishing-first,hosting-domains,server-state-session,planning-feedback}`
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- `src/features/share/card/ConnectionCard.tsx` — 04/T2 산출물(앞면·뒷면·뒤집기, props 전용)
+- `src/features/share/card/ConnectionCard.tsx` — 04/T2 산출물(props 전용)
 - `src/app/routes.tsx` — `reading/:id` 아래 `card` 자리가 주석으로 예약돼 있다
-- `src/app/preview/screens/card.tsx` — `/preview` 확인 경로
 
 ## Next Action
 
-`docs/phases/04-share-and-card/PLAN.md` 의 Scope·Tasks·Acceptance Criteria·Validation Plan 을 채운다.
+PR 병합 후 T3(공유 링크 버튼)·T4(카드 이미지 + ADR) 스트림을 병렬로 연다.
