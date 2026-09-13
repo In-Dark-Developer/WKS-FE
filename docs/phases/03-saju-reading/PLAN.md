@@ -31,9 +31,8 @@
 ## Dependencies
 
 - Phase 02 — T4는 02/T2(기본 입력)·02/T6(Select) 병합 후, T3의 SCR-12 는 02/T4(`ContentState`)를 쓴다
-- Phase 01 T6 — 백엔드의 `POST /results` · `GET /results/{id}` 계약(2026-09-13 반영됨, `docs/api/openapi.yaml`) · 양·음력·12시진·십이간지·등급 체계 추가 요청 답변 (Q3 · Q7)
-- 윤달 여부 (Q8) — 백엔드 `feat/4` 병합 시 닫힌다 (`isLeapMonth`), 시진→`HH:mm` 규칙은 Q15
-- 백엔드 dev 에는 `POST /results` 만 있고 `GET /results/{id}` 는 미구현(2026-09-13) — 목 응답 경로가 T1 부터 필요
+- 백엔드 계약 `POST /results` · `GET /results/{id}` — WKS-BE dev b61f849 로 참조본 갱신(2026-09-13 r2, `docs/api/openapi.yaml`): `calendarType`·`isLeapMonth`·`birthTime` 가운데 시각, 응답 `shareId`·`zodiac`·`fortunes[].grade` 6단계. 세션 토큰은 계약에 없다(Q16)
+- 백엔드 dev(b61f849)에 `POST /results` · `GET /results/{id}` · `GET /shares/{shareId}` · `POST /shares/{shareId}/compatibility` 가 있다 — 목 응답 경로는 백엔드 없이 개발·테스트할 때 쓴다
 - 로컬 연동: 백엔드 CORS 는 `http://localhost:3000` 만 허용 — `vite.config.ts` `server.port` 를 3000 으로 맞춘다 (T1 Touches)
 - 결과 대기 디자인(디자인시스템 FortuneLoading)과 결과 에러 상태 디자인
 
@@ -47,10 +46,15 @@
 
 - [x] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·닉네임 8자 검증과 '몰라요'→null 처리(`birthRegion`은 항상 null)가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts`, `src/features/saju/index.ts`, `src/ui/{Button,TextField,Select,SegmentedControl,Checkbox}.tsx`(수정본 appearance) · After: T1 · Owner: @jjjung0921 (commit 320a04a — action·라우트 연결은 T1 병합 후 T3 소유 routes.tsx 에서)
 
-- [ ] T5. 결과 화면 — Done when: 운명 카드(캐릭터·'○○보살님'·운명 제목·설명·3영역 등급 스탬프)·행운의 장소/아이템·운세 카드 3장이 응답대로 렌더되고 결과 대기(FortuneLoading)·에러 상태가 있으며, Phase 06 사전신청 티저를 받을 `teaser` 슬롯 prop과 하위 라우트용 `<Outlet />` 자리가 있다(내용은 06/T2, 조립은 T3 — saju 가 profile 을 import 하지 않는다) · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/DestinyCard.tsx`, `src/features/saju/sections/`, `src/features/saju/zodiac.ts` · After: T1 · Owner: @nicerjs23
+- [ ] T5. 결과 화면 퍼블리싱 — Done when: Figma 「UI 최종 - 개발용」 사주 결과 화면(558:2432)의 운명 카드(십이간지 캐릭터·'○○보살님'·운명 제목·설명·3영역 등급 스탬프 B0~SS)·행운의 장소/아이템·운세 카드 3장과 결과 대기(FortuneLoading)·에러 상태가 `ReadingView` props 로만 렌더되고(응답 스키마·`src/api/` 를 import 하지 않는다), Phase 06 사전신청 티저를 받을 `teaser` 슬롯 prop과 하위 라우트용 `<Outlet />` 자리가 있으며(내용은 06/T2, 조립은 T7 — saju 가 profile 을 import 하지 않는다), `/preview` 에서 가짜 데이터로 확인된다 (테스트 포함) · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/DestinyCard.tsx`, `src/features/saju/FortuneLoading.tsx`, `src/features/saju/sections/`, `src/features/saju/readingView.ts`, `src/features/saju/index.ts`, `src/ui/ZodiacCharacter.tsx`, `src/app/preview/screens/reading.tsx` · After: T6 · Owner: @jjjung0921
 
-<!-- 선후는 각 Task 의 After: 가 기준이다 (T4·T5 After: T1 — 호출 계약이 먼저 있어야 한다). T3·T4·T5는 서로 겹치지 않는다.
-     라우트 파일은 충돌 지점이라 T3이 단독으로 소유한다 — 다른 Task는 자기 화면 컴포넌트·loader·action만 export 하고 등록은 T3이 한다.
+- [ ] T6. 퍼블리싱 확인 라우트 — Done when: 개발 서버에서만 `/preview` 가 화면 목록을, `/preview/<화면>` 이 가짜 데이터로 각 화면을 보여 주고(`import.meta.env.DEV`), `pnpm build` 산출물에 preview 코드가 없으며, 화면 추가는 `src/app/preview/screens/<화면>.tsx` 파일 하나로 끝난다(공유 목록 파일을 고치지 않는다 — `import.meta.glob`), 입력 화면(SajuForm)이 첫 항목으로 뜬다 (테스트 포함) · Touches: `src/app/App.tsx`, `src/app/preview/` · Owner: @jjjung0921
+
+- [ ] T7. 입력·결과 연동 — Done when: `/` 가 SajuForm 과 action(검증된 SajuInput → `POST /results` → 세션 저장 → `/reading/:id` 로 redirect, 연결 실패는 `{ formError: 'connection' }`)으로, `/reading/:id` 가 loader(`GET /results/{id}` → `ReadingView` 변환)로 동작하고, 404·503·스키마 위반이 errorElement 로 가며, 백엔드 준비 전에는 T1 의 목 응답으로 입력 → 결과를 완주한다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/saju/sajuAction.ts`, `src/features/saju/readingLoader.ts`, `src/features/saju/toReadingView.ts` · After: T1, T4, T5 · Owner: @nicerjs23
+
+<!-- 선후는 각 Task 의 After: 가 기준이다 (T4 After: T1 · T5 After: T6 · T7 After: T1·T4·T5). T5·T6 은 T1 없이 진행한다.
+     퍼블리싱 먼저(2026-09-13): 화면(T4·T5)은 props 뷰 모델로만 그리고 `/preview` 에서 가짜 데이터로 확인한다. 데이터 연결(action·loader·응답→뷰 모델 변환)은 T7 이 한다. T5 담당 @nicerjs23 → @jjjung0921, 연동은 T7 @nicerjs23.
+     라우트 파일은 충돌 지점이라 한 Task 만 소유한다 — T3(완료) 이후는 T7. 다른 Task는 자기 화면 컴포넌트·loader·action만 export 한다. preview 는 `App.tsx`(T6)에서 붙여 routes.tsx 와 겹치지 않는다.
      옵션 값(12시진)은 `features/saju/options.ts`(T4)에 두고 ui Select(02/T6)에는 props로만 넘긴다. API 파일은 자원별로 나눈다 — `client.ts`는 T1, `session.ts`(localStorage 세션 보관 — ADR-20260913-server-state-and-session-storage)는 T3 소유이고 다른 Task는 import 만. `session.ts`를 T1에서 T3으로 옮겼다(2026-09-13) — T3의 가드가 T1을 기다리지 않게. -->
 
 ## Relevant Specifications

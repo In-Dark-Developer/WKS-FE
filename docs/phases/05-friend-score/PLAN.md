@@ -25,12 +25,16 @@
 
 - Phase 04
 - SCR-06 공유 링크 랜딩 · SCR-07 궁합 결과 디자인 — 현재 없음 (PRD Q9). 없으면 착수하지 않는다
-- `GET /results/{originId}`(링크 주인 조회 — 닉네임만 주는 요약 응답은 Q3) · `POST /results/{resultId}/compatibility` · `GET /results/{resultId}`의 `compatibilities` 계약 (2026-09-13 반영됨) · 등급 4개 이름·구간 확정 (Q3)
+- `GET /shares/{shareId}`(링크 주인 공개 결과 — 전문이 오고 화면이 요약을 숨긴다) · `POST /shares/{shareId}/compatibility`(`guestResultId`) · `GET /results/{resultId}`의 `compatibilities` 계약 (2026-09-13 r2 반영) · 등급 4개 이름·구간 확정(귀인 90~ · 찰떡 75~89 · 벗 61~74 · 스침 ~60)
 - SCR-06 공유 랜딩은 주인의 사주 요약을 보여주지 않는다 (2026-09-13 기획 피드백). 닉네임 노출 여부는 PRD Q12
 
 ## Tasks
 
 - [ ] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/05-friend-score/` · Owner: @nicerjs23
+
+- [ ] T2. 궁합 지도 퍼블리싱 — Done when: Figma 「UI 최종 - 개발용」 지도 「최종」(558:2570, v2 등급별 색 구슬)의 달·궤도·친구 구슬(귀인·찰떡·벗·스침)·등급별 인원 4칸·친구 궁합 순위·빈 상태가 props(내 닉네임·친구 목록 `{ nickname, score, tier }`)로만 렌더되고 `/preview` 에서 가짜 데이터로 확인된다 (테스트 포함). 구슬 배치 규칙이 미정이면(PRD Q11) 디자인 배치를 고정 좌표로 쓴다 · Touches: `src/features/friends/map/`, `src/features/friends/index.ts`, `src/app/preview/screens/map.tsx` · Owner: @jjjung0921
+
+<!-- 퍼블리싱 먼저(2026-09-13): T2 는 Phase 04 완료·T1 상세 계획을 기다리지 않는다(props 만). 등급별 인원 계산·조회 연동은 T1 이 채울 Task 다. 03/T6 병합 뒤 시작한다. -->
 
 ## Relevant Specifications
 

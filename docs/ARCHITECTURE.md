@@ -52,15 +52,15 @@
 
 ## Data Flow
 
-1. 사주 보기 — 입력 폼(`features/saju`) → `api`가 요청 스키마로 검증해 POST → 응답 봉투(`{success,data|error}`)를 zod로 파싱 → 응답과 함께 백엔드가 발급한 세션 토큰을 `api`가 보관(발급·전달 방식은 PRD Q16) → 결과 화면이 운명 카드(운명 제목·설명, 결혼운·자녀운·연애운 등급, 행운의 장소·아이템)를 렌더 → `resultId`(공유 링크 재료)와 인연카드 등급(`cardGrades` — 계약에 없어 요청 중, PRD Q3)을 `features/share`에 넘긴다.
-2. 친구 궁합 — 공유 링크(`?ref={originId}`)로 진입 → 링크 주인의 닉네임을 `GET /results/{originId}`로 조회(사주 요약은 보여주지 않는다 — 요약 전용 응답은 PRD Q3) → 방문자가 자기 사주를 입력(`POST /results`) → `POST /results/{resultId}/compatibility`로 궁합 점수 응답(점수 + 등급)을 받아 표시하고, 양쪽의 궁합 지도(`features/friends`: 구슬·등급별 인원·순위)에 반영된다. 등급별 인원 수는 `GET /results/{resultId}`의 `compatibilities`에서 `lib`의 순수 함수가 센다.
+1. 사주 보기 — 입력 폼(`features/saju`) → `api`가 요청 스키마로 검증해 POST → 응답 봉투(`{success,data|error}`)를 zod로 파싱 → 응답과 함께 백엔드가 발급한 세션 토큰을 `api`가 보관(발급·전달 방식은 PRD Q16) → 결과 화면이 운명 카드(운명 제목·설명, 결혼운·자녀운·연애운 등급, 행운의 장소·아이템)를 렌더 → `shareId`(공유 링크 재료)와 인연카드 등급(`cardGrades` — 계약에 없어 요청 중, PRD Q3)을 `features/share`에 넘긴다.
+2. 친구 궁합 — 공유 링크(`/s/:shareId`)로 진입 → 링크 주인의 공개 결과를 `GET /shares/{shareId}`로 조회(결과 전문이 오지만 화면은 닉네임만 쓰고 사주 요약은 숨긴다 — FR-15) → 방문자가 자기 사주를 입력(`POST /results`) → `POST /shares/{shareId}/compatibility`(`guestResultId`)로 궁합 점수 응답(점수 + 등급)을 받아 표시하고, 양쪽의 궁합 지도(`features/friends`: 구슬·등급별 인원·순위)에 반영된다. 등급별 인원 수는 `GET /results/{resultId}`의 `compatibilities`에서 `lib`의 순수 함수가 센다.
 3. 운명의 실 — 결과 화면의 사전신청 티저 → 모달(`features/profile`)에서 추가 정보 등록·동의(동의 전에는 전송하지 않는다) → 후보 카드 열람(`features/matching`, 축제 당일 2026-09-29부터) → '보내기' 호출 → 상대가 '당기기'를 하면 성립 응답에 연락처(전화번호, 등록했다면 인스타그램 아이디)가 포함되어 화면에 공개된다. 앱 내 채팅은 없다.
 
 ## State Management
 
 - 서버 상태(사주 결과, 친구 점수, 후보, 실 상태)는 백엔드가 소유한다. 화면은 React Router 데이터 API로 읽고 쓴다 — 읽기는 route `loader`, 쓰기는 `action`·`useFetcher`가 `src/api/` 함수를 부르고, loader·action은 feature가 export 해 `src/app/routes.tsx`가 등록한다. 요청/캐시 라이브러리는 두지 않는다. `/reading/:id` 하위 화면은 부모 loader 데이터(`useRouteLoaderData`)를 공유하고 결과 본문은 다시 부르지 않으며, `compatibilities`를 보여 주는 화면은 진입마다 다시 부른다(ADR-20260913-server-state-and-session-storage).
 - 폼·모달·블러 해제 여부 같은 화면 상태는 해당 feature 안의 지역 상태로 둔다. 전역 스토어는 도입하지 않는다.
-- 로그인은 없다. 백엔드가 보낸 세션 토큰만으로 '내 결과·내 신청·내 실'을 찾고 세션을 유지한다. `resultId`는 공유 링크 재료로만 쓴다. 토큰은 `src/api/session.ts`만 읽고 쓴다: localStorage 키 `wks:session`에 `{ v: 1, token }`을 두고 읽을 때 zod로 파싱한다(실패·스토리지 예외는 세션 없음). 토큰을 받는 응답에서 쓰고 `src/api/client.ts` 한 곳에서만 요청에 싣는다. 만료는 시계로 판단하지 않고 백엔드가 세션 무효로 응답하면 `clearSession()` 후 `/`로 보낸다. 발급 시점·전달 방식·만료 코드는 백엔드 계약 갱신 대기(PRD Q16) — 그 전까지는 목 응답의 토큰으로 개발한다.
+- 로그인은 없다. 백엔드가 보낸 세션 토큰만으로 '내 결과·내 신청·내 실'을 찾고 세션을 유지한다. 공유 링크 재료는 `shareId`다 — 계약의 `GET /results/{resultId}`는 토큰 계약(Q16) 전까지 본인 결과 조회에 `resultId`를 쓴다. 토큰은 `src/api/session.ts`만 읽고 쓴다: localStorage 키 `wks:session`에 `{ v: 1, token }`을 두고 읽을 때 zod로 파싱한다(실패·스토리지 예외는 세션 없음). 토큰을 받는 응답에서 쓰고 `src/api/client.ts` 한 곳에서만 요청에 싣는다. 만료는 시계로 판단하지 않고 백엔드가 세션 무효로 응답하면 `clearSession()` 후 `/`로 보낸다. 발급 시점·전달 방식·만료 코드는 백엔드 계약 갱신 대기(PRD Q16) — 그 전까지는 목 응답의 토큰으로 개발한다.
 
 ## Persistence
 
