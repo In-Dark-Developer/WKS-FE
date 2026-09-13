@@ -13,38 +13,46 @@
 
 ## Work Completed
 
-- 없음
+- `PreRegisterForm`: 이름·사진(미리보기만)·이메일·전화번호(필수)·인스타그램(선택)·학과·MBTI·자기소개 + 고지·동의. 기본·오류·로딩·연결 실패(입력 유지·다시 신청하기)·완료 — route action 결과(`{status:'done'}`·`{formError:'connection'}`)로 전환
+- `PreRegisterComplete`(695:2654) · `PreRegisterTeaser`(82:605 beforeOpen·available·closed) · `consent.ts` 고지 문구 · `formSchema.ts` 검증
+- `/preview/pre-register`: 기본·오류(이메일)·연결 실패·완료·티저
 
 ## Work In Progress
 
-- 소유자 결정(2026-09-13): 02/T3 Modal 전이라 모달 셸 없이 본문부터 퍼블리싱 — 셸은 02/T3 병합 뒤 후속
-- @gn00py48 의 06 상세 계획(ws/plan-06-dating-gate, PR 없음)의 T2(퍼블리싱)·T3(연동) 분리를 따른다 — main PLAN 은 아직 옛 T2
-- 연락처는 전화 필수 + 인스타 선택 두 칸(FR-10), 디자인에 없는 동의 체크·고지는 consent.ts
+- 모달 셸 없음 — 02/T3 Modal 병합 뒤 셸에 끼우는 후속 커밋이 남아 T2 는 체크하지 않음
 
 ## Files Changed
 
-- 없음
+- CURRENT Touches 그대로 (+ 테스트 3개)
 
 ## Decisions Made
 
-- 없음
+- 소유자: Modal 전이라 본문부터 퍼블리싱
+- 06 PLAN 은 @gn00py48 계획 스트림(ws/plan-06-dating-gate, PR 없음) 소유 — main 의 옛 T2 줄은 건드리지 않음
+- 필수: 이름·이메일·전화번호·동의. 그 밖의 필수·길이는 Q10 전이라 두지 않음
+- 연락처는 택1 세그먼트 대신 두 칸(FR-10), 사진은 전송 방식 미정(Q14)이라 action 에 안 보냄
+- 동의 체크·고지는 디자인에 없음(OptionalConsent 슬롯 미정) — Notice + Checkbox 로 추가
 
 ## Tests Executed
 
-- 없음
+- `pnpm test`(174) · typecheck · lint · build(dist 에 preview 없음), 브라우저 375px 연결 실패 흐름(로딩→실패 문구)·완료 화면
 
 ## Test Results
 
-- 없음
+- 통과
 
 ## Known Problems
 
-- 없음
+- 보관 기간 문구 '확정 후 안내드려요' — PRD Q4 답 필요(법적 고지)
+- 티저 '9/30' 은 디자인 와이어프레임 문구, PRD 오픈일은 9/29
+- 사진 추가 버튼은 ui PhotoUpload(아웃라인) 모양 — 수정본은 청록 채움
+- 06 계획 PR 이 아직 없음 — @gn00py48 에게 PR 요청 필요
+- Tailwind dev 서버가 새 파일 클래스를 늦게 읽음 — 새 파일 뒤 재시작
 
 ## Unverified Assumptions
 
-- 없음
+- 필수 항목 범위(이름·이메일·전화번호)
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 리뷰 후 병합
