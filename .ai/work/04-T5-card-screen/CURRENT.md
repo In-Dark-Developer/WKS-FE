@@ -5,7 +5,7 @@
 - Branch: ws/04-T5-card-screen
 - Task: 04/T5
 - Issue: none
-- Touches: src/features/share/card/, src/features/share/index.ts, src/app/preview/screens/card.tsx
+- Touches: src/features/share/card/, src/features/share/index.ts, src/app/preview/screens/card.tsx, src/features/share/link/ShareLinkButton.tsx
 - Supersedes: none
 - Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
@@ -28,10 +28,11 @@ REVIEW
 - [x] `ConnectionCardScreen.tsx` — 카드 + 버튼 2개 · 잠금 · Toast · 실패 안내
 - [x] 테스트 14개 · `/preview/card` 에 '화면' 상태
 - [x] 검증 test 238 · typecheck · lint · build(147.20KB)
+- [x] Figma 713:4070 대조 → CTA 색·높이·아이콘·상단 여백 정렬
 
 ## Last Checkpoint
 
-`4030b72`
+`af6bb5d`
 
 ## Relevant Documents
 
