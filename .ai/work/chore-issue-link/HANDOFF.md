@@ -13,7 +13,7 @@ GitHub track 이슈 번호 하나로 에이전트가 스트림(브랜치·.ai/wo
 
 ## Work Completed
 
-- `ai-stream.sh open … --issue N` 과 `open --issue N <slug>`(제목 `track(NN/Tk): …` 에서 Task) — CURRENT 에 `Issue: #N`, push 후 이슈 코멘트
+- `ai-stream.sh open … --issue N` 과 `open --issue N {slug}`(제목 `track(NN/Tk): …` 에서 Task) — CURRENT 에 `Issue: #N`, push 후 이슈 코멘트
 - `ai-end.sh --ready/--pr-body` 본문 첫 줄 `Closes #N` (Issue 없으면 생략)
 - CURRENT 템플릿 `Issue:` 줄 · render `{{ISSUE}}` · AGENTS.md Session Procedure · 공지 `2026-09-13-issue-link`
 
