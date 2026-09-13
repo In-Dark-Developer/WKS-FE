@@ -48,6 +48,7 @@
   | `Radius/12` · `Radius/999` | `rounded-12` · `rounded-999` | |
   | `UI/14/600 Semi Bold` | `text-ui-14 font-semibold` | 크기·행간은 `text-ui-*`, 굵기는 `font-normal`·`medium`·`semibold`·`bold` |
   | `Display/24/400 Regular` | `font-display text-display-24` | 동국체 |
+  | 운명 카드·궁합 지도 제목 (KMU80 성곡 세리프) | `font-sungkok` | 카드 좌표에 비례하는 크기는 컴포넌트 CSS 에서 `var(--font-sungkok)` 로 쓴다 (`src/ui/DestinyCard.css`). 파일 수정 금지 라이선스 — `src/ui/tokens/fonts/README.md` |
 
 - 목록에 없는 클래스(`bg-red-500`, `p-2`, `text-sm`)와 hex·`rgb()` 같은 색 리터럴은 `pnpm lint`가 실패시킨다. Figma 토큰이 바뀌면 `theme.css`를 먼저 맞추고, 스케일 이름이 바뀌면 `src/lib/cn.ts`의 목록도 맞춘다.
 - 조건부 클래스는 문자열 접합 대신 `cn()` 헬퍼(`@/lib/cn`, clsx + tailwind-merge)로 합친다.
