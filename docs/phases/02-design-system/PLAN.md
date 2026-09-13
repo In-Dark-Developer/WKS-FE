@@ -44,7 +44,7 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 - [x] T5. 앱 셸 레이아웃 — Done when: 360–430px에서 가로 스크롤 없이 렌더되고 데스크톱에서 중앙 정렬되며, 전역 배경(하늘·달, "그라데이션 고정 · 별자리가 올라감")이 들어간다 · Touches: `src/app/AppShell.tsx`, `src/app/layout.css` · After: T1 · Owner: @jjjung0921 (commit 3f9a1c0, PR #39)
 
-- [ ] T6. 폼 컴포넌트(선택·긴 입력·사진) — Done when: Select(트리거 + 옵션 목록, 옵션은 props로만 받음 — 수정본 12시진·MBTI 목록)·TextArea(글자 수 카운터)·PhotoUpload(미리보기·안내·선택 버튼)가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Select.tsx`, `src/ui/TextArea.tsx`, `src/ui/PhotoUpload.tsx` · After: T2 · Owner: @jjjung0921
+- [x] T6. 폼 컴포넌트(선택·긴 입력·사진) — Done when: Select(트리거 + 옵션 목록, 옵션은 props로만 받음 — 수정본 12시진·MBTI 목록)·TextArea(글자 수 카운터)·PhotoUpload(미리보기·안내·선택 버튼)가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Select.tsx`, `src/ui/TextArea.tsx`, `src/ui/PhotoUpload.tsx` · After: T2 · Owner: @jjjung0921 (commit 9094369)
 
 <!-- 선후는 각 Task 의 After: 가 기준이다 (T2~T5 After: T1, T6 After: T2 — PhotoUpload 가 Button 을 쓴다). T2~T6은 서로 파일이 겹치지 않으므로 동시에 진행한다 — T6은 T2 병합 전에 시작해도 되고, 병합 전 `git merge main`으로 Button 을 받는다.
      T2·T6 분리(2026-09-13): 수정본(558-3526) 기준으로 T2·03/T4·06 이 한 사람에게 몰려 03/T4 가 막히는 것을 풀려고 파일 단위로 나눴다.
