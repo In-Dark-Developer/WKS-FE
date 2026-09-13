@@ -21,7 +21,7 @@ T3. 운영 연결 확인
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
