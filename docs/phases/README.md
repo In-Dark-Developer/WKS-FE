@@ -24,4 +24,5 @@
 - 한 Phase는 독립적으로 검증 가능한 하나의 결과를 낸다. 결과를 한 문장으로 말할 수 없으면 나눈다.
 - Phase들은 `Depends on`으로 이어진 그래프다. 의존이 없는 Phase는 사람별·구성요소별로 **동시에** 진행할 수 있고, Phase마다 Lead 한 명이 있다.
 - Task 하나 = 스트림 하나(`ws/NN-Tk-<slug>`). 한 Task를 다시 열어야 하면 `ai-stream.sh open --reopen`.
+- 같은 Phase 안의 선후는 Task 줄의 `After: Tk`로 적는다. `ai-stream.sh open`이 선행 Task가 main에 `[x]`가 아니면 경고한다 — 병렬로 시작할 수는 있지만 병합 전 `git merge main`으로 선행 결과를 받는다. `After`가 없는 Task는 서로 동시에 진행한다.
 - Phase 종료 조건: PLAN의 Acceptance Criteria 전부 충족 + Validation Plan 수행 + `Depends on`의 Phase가 DONE + 그 Phase의 활성 스트림 없음 + RESULT.md 작성. Lead가 `ws/phase-NN-close` 스트림에서 RESULT 작성 → PLAN Status=DONE → `ai-stream.sh phases` → `ai-stream.sh gc` → PR. 병합 후 `ai-stream.sh tag NN`.
