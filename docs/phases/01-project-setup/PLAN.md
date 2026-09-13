@@ -51,7 +51,7 @@
 
 - [x] T5. CI에서 Commands 실행 — Done when: `.github/workflows/ci.yml`의 commands 잡이 실제 pnpm 명령을 돌리고 PR에서 통과 · Touches: `.github/workflows/ci.yml`, `tsconfig.json` · Owner: @jjjung0921 (commit 024da75)
 
-- [ ] T6. 백엔드 계약 동기화 — Done when: 백엔드 저장소의 openapi와 `docs/api/openapi.yaml` 참조본(2026-09-13 백엔드 api-spec.md 반영본: `/results` · `/results/{id}` · `/results/{id}/compatibility` · `/signups` · `/signups/resend` · `/signups/verify` · `/health`, 공통 봉투)이 일치하고, 추가 요청(PRD Q3·Q14, 스트림 `spec-planning-feedback-0913` `notes/backend-questions.md`)에 백엔드 답이 반영됨. Phase 03 T1의 선행 조건이다 · Touches: `docs/api/openapi.yaml` · Owner: @nicerjs23
+- [x] T6. 백엔드 계약 동기화 — Done when: 백엔드 api-spec.md(2026-09-13)와 `docs/api/openapi.yaml` 참조본(`/results` · `/results/{id}` · `/results/{id}/compatibility` · `/signups` · `/signups/resend` · `/signups/verify` · `/health`, 공통 봉투)이 일치하고, 디자인·기획과의 차이가 PRD Q3·Q7·Q14와 백엔드 문의 목록(`.ai/work/spec-planning-feedback-0913/notes/backend-questions.md`)으로 등록됨. 백엔드 답변 반영은 Phase 03 T1이 계약 필드로 시작한 뒤 후속 spec 스트림으로 한다 · Touches: `docs/api/openapi.yaml` · Owner: @jjjung0921 (commit 13e3691, PR #15)
 
 ## Relevant Specifications
 
