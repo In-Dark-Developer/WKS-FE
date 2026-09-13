@@ -26,6 +26,7 @@
 - Phase 04
 - SCR-06 공유 링크 랜딩 · SCR-07 궁합 결과 디자인 — 현재 없음 (PRD Q9). 없으면 착수하지 않는다
 - `/shares/{shareId}` · `/shares/{shareId}/compatibility` · `/me/friends` 계약 확정
+- SCR-06 공유 랜딩은 주인의 사주 요약을 보여주지 않는다 (2026-09-13 기획 피드백). 닉네임 노출 여부는 PRD Q12
 
 ## Tasks
 
