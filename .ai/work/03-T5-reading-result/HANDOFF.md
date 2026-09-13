@@ -45,8 +45,7 @@ Figma 결과 화면(713:4021)의 운명 카드·행운·운세 3장·결과 대�
 
 ## Known Problems
 
-- Figma 는 'Sungkok Semi-Serif', 배포본은 'Sungkok Serif' — 글자 굵기 미세 차이
-- 카드 텍스쳐는 배경 이미지에 구워져 리본 아래에 깔림(Figma 는 리본 위 overlay 60%) — 차이 미미
+- Figma 는 'Sungkok Semi-Serif', 배포본은 'Sungkok Serif' — 굵기 미세 차이. 카드 텍스쳐가 리본 아래에 깔림(Figma 는 위)
 - `docs/CONVENTIONS.md` 폰트 표·디자인 토큰 ADR 에 `font-sungkok` 미기재(Touches 밖) — 후속 chore
 - 애니메이션 슬롯은 점 3개 임시(십이지신 애니메이션 대기)
 - Figma 결과 섹션의 Frame 91(링크 진입)·92(궁합 지도 확인)는 담당 Task 확인 필요
