@@ -25,12 +25,9 @@ REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 -->
-- 1. 화면 등록 규약(PreviewScreen)·glob 목록
-- 2. /preview 목록·화면·상태 전환·화면별 action
-- 3. App.tsx DEV 전용 lazy 연결
-- 4. SajuForm 첫 화면 등록
-- 5. 테스트·빌드 산출물 검사
+<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
+- 1. 등록 규약(PreviewScreen)·glob 목록·/preview 목록·화면·상태·action
+- 2. App.tsx DEV lazy 연결, SajuForm 등록, 테스트·빌드 검사
 
 ## Last Checkpoint
 
@@ -45,11 +42,9 @@ REVIEW
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
 - `src/app/App.tsx:App`
-- `src/app/AppShell.tsx:AppShell`
-- `src/features/saju/SajuForm.tsx:SajuForm`
 - `src/app/preview/previewScreen.ts:PreviewScreen`
 - `src/app/preview/PreviewRoute.tsx:PreviewRoute`
 
 ## Next Action
 
-Progress 의 step 구현
+PR 병합 후 03/T5 결과 화면 퍼블리싱 (Figma MCP 재인증 필요)
