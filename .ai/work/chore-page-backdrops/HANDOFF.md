@@ -16,7 +16,7 @@
 - `dawn`(기본): 새벽 하늘 사진 + Primary 400→900 overlay (commit f0fc208)
 - `result`: 164.75° Primary400→#eee3d2→Primary300, 별자리 리본이 콘텐츠와 함께 스크롤
 - `mist`: Primary50→200, 좌우 반전 리본 682px 아래
-- 리본: `star-ribbon-loop.webp`(원본 + 상하 반전본) repeat-y 로 콘텐츠 끝까지 이어짐, 콘텐츠와 함께 스크롤 (commit 878a71a)
+- 사주 결과 리본: `star-ribbon-loop.webp`(원본 + 상하 반전본) repeat-y 로 콘텐츠 끝까지 이어짐, 콘텐츠와 함께 스크롤. 사전신청은 Figma 대로 좌우 반전 한 장 (commit 463dedb) (commit 878a71a)
 - AppShell 을 루트 라우트 element(RootLayout)로 옮겨 handle.backdrop 으로 선택. 오류·첫 대기 화면도 셸 안
 
 ## Work In Progress
@@ -47,7 +47,7 @@
 
 ## Known Problems
 
-- `src/ui/assets/moon/moon.svg`·`star-ribbon.webp` 는 이제 CSS 에서 쓰지 않는다(카드 등 다른 화면용으로 남김)
+- `src/ui/assets/moon/moon.svg` 는 이제 쓰는 곳이 없다(소유자 제공 파일이라 남김)
 - 헤더 '운꿰사' 검은 글자 — dawn 배경에선 보이나 Placeholder 라 T4 에서 교체
 
 ## Unverified Assumptions

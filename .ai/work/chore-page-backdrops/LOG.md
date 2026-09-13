@@ -4,10 +4,10 @@
 
 ## 2026-09-13 · claude-code · -/- · 별자리 리본 반전 반복
 
-- Commits: 878a71a
-- Done: 리본을 상하 반전 루프 타일로 repeat-y, 콘텐츠 끝까지 연결
+- Commits: 878a71a, 463dedb
+- Done: 사주 결과 리본만 상하 반전 루프 repeat-y, 사전신청은 한 장 유지
 - Not done: 없음
-- Developer changes: 소유자 지시 — 리본은 위아래 반전되며 스크롤과 함께, 서로 이어지게
+- Developer changes: 소유자 지시 — 사주 결과 리본은 위아래 반전되며 스크롤과 함께 이어지게
 - Upstream changes: 없음
 - Spec changes: 없음
 - Needs your attention: 없음

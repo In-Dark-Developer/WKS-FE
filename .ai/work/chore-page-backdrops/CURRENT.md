@@ -30,12 +30,12 @@ REVIEW
 - 2. AppShell `backdrop` prop(dawn·result·mist), CSS 3종, 달·CSS 별 제거
 - 3. RootLayout — route handle.backdrop 으로 배경 선택, App 은 RouterProvider 만
 - 4. test 50·typecheck·lint·build, 브라우저 3종 확인
-- 5. 소유자 지시 — 리본을 상하 반전 반복으로 페이지 끝까지 연결
+- 5. 소유자 지시 — 사주 결과 리본만 상하 반전 반복으로 페이지 끝까지 연결, 사전신청은 한 장 유지
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`878a71a`
+`463dedb`
 
 ## Relevant Documents
 
