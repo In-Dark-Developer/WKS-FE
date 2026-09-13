@@ -1,0 +1,189 @@
+/* 운꿰사 디자인 토큰 — Figma 디자인시스템(tzWb3S2guXz5zH2DMeX8Yt) 로컬 변수·스타일을 옮긴 것이다.
+   Figma 이름이 곧 클래스 이름이다: Space/16 → p-16 (16px), Radius/12 → rounded-12, UI/14 → text-ui-14,
+   Text/Primary → text-primary, Border/Default → border-default, Surface/Subtle → bg-surface-subtle.
+   토큰 밖 값이 생성되지 않도록 Tailwind 기본 색·간격·radius·글자 크기 스케일을 비운다.
+   바꿀 때는 Figma 를 먼저 바꾸고 여기를 맞춘다. 스케일 이름을 바꾸면 src/lib/cn.ts 의 목록도 맞춘다. */
+
+@font-face {
+  font-family: 'DONGGUK UNIVERSITY';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/dongguk-university.woff2') format('woff2');
+}
+
+@theme {
+  --color-*: initial;
+  --spacing-*: initial;
+  --radius-*: initial;
+  --text-*: initial;
+
+  /* Font — 본문 Pretendard(번들, src/index.css), 제목 Display 동국체 */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --font-display: 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+
+  /* Color ramp — Figma Variables (bg-primary-500, text-neutral-900 …) */
+  --color-primary-50: #f5f8f9;
+  --color-primary-100: #e4eef1;
+  --color-primary-200: #c2d9de;
+  --color-primary-300: #91bdc8;
+  --color-primary-400: #50919e;
+  --color-primary-500: #237f94;
+  --color-primary-600: #256b7f;
+  --color-primary-700: #1c596d;
+  --color-primary-800: #12475b;
+  --color-primary-900: #0a3349;
+
+  --color-apricot-50: #fefaf3;
+  --color-apricot-100: #fef1de;
+  --color-apricot-200: #fbe0b6;
+  --color-apricot-300: #f9cb85;
+  --color-apricot-400: #ecba6e;
+  --color-apricot-500: #dba75b;
+  --color-apricot-600: #c18e4a;
+  --color-apricot-700: #a57437;
+  --color-apricot-800: #895a24;
+  --color-apricot-900: #6d400f;
+
+  --color-rose-50: #fcf4f2;
+  --color-rose-100: #f9e3dc;
+  --color-rose-200: #f2bfb1;
+  --color-rose-300: #e9947d;
+  --color-rose-400: #de866f;
+  --color-rose-500: #d17763;
+  --color-rose-600: #b86858;
+  --color-rose-700: #9e584b;
+  --color-rose-800: #854641;
+  --color-rose-900: #6a3634;
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f7f8f8;
+  --color-neutral-100: #eff0f1;
+  --color-neutral-200: #dfe1e3;
+  --color-neutral-300: #c3c6c9;
+  --color-neutral-400: #989da0;
+  --color-neutral-500: #70777a;
+  --color-neutral-600: #595f63;
+  --color-neutral-700: #444a4e;
+  --color-neutral-800: #33383c;
+  --color-neutral-900: #24292d;
+
+  /* Text — text-primary … (Figma paint style) */
+  --text-color-primary: var(--color-neutral-900);
+  --text-color-secondary: var(--color-neutral-700);
+  --text-color-muted: var(--color-neutral-600);
+  --text-color-disabled: var(--color-neutral-400);
+  --text-color-brand: var(--color-primary-700);
+  --text-color-on-brand: var(--color-primary-50);
+  --text-color-on-accent: var(--color-primary-900);
+  --text-color-inverse: var(--color-neutral-0);
+
+  /* Border — border-default … (Figma paint style) */
+  --border-color-default: var(--color-primary-200);
+  --border-color-strong: var(--color-primary-300);
+  --border-color-control: var(--color-primary-500);
+  --border-color-focus: var(--color-primary-600);
+  --border-color-disabled: var(--color-neutral-200);
+  --border-color-neutral: var(--color-neutral-200);
+  --border-color-secondary-default: var(--color-neutral-300);
+  --border-color-secondary-hover: var(--color-neutral-400);
+  --border-color-secondary-pressed: var(--color-neutral-500);
+  --border-color-secondary-focus: var(--color-neutral-700);
+  --border-color-secondary-disabled: var(--color-neutral-200);
+  --border-color-apricot: var(--color-apricot-200);
+  --border-color-rose: var(--color-rose-300);
+
+  /* Surface — bg-surface-subtle … (Figma paint style) */
+  --color-surface-canvas: var(--color-neutral-0);
+  --color-surface-default: var(--color-neutral-0);
+  --color-surface-subtle: var(--color-neutral-50);
+  --color-surface-muted: var(--color-neutral-100);
+  --color-surface-brand: var(--color-primary-50);
+  --color-surface-selected: var(--color-neutral-100);
+  --color-surface-inverse: var(--color-primary-900);
+  --color-surface-apricot: var(--color-apricot-50);
+  --color-surface-rose: var(--color-rose-50);
+
+  /* Action — bg-action-primary-default … (Figma paint style) */
+  --color-action-primary-default: var(--color-neutral-900);
+  --color-action-primary-hover: var(--color-neutral-800);
+  --color-action-primary-pressed: var(--color-neutral-700);
+  --color-action-secondary-default: var(--color-neutral-0);
+  --color-action-secondary-hover: var(--color-neutral-50);
+  --color-action-secondary-pressed: var(--color-neutral-100);
+  --color-action-accent-default: var(--color-apricot-300);
+  --color-action-accent-hover: var(--color-apricot-400);
+  --color-action-accent-pressed: var(--color-apricot-500);
+  --color-action-disabled-background: var(--color-neutral-100);
+  --color-action-disabled-foreground: var(--color-neutral-400);
+  --color-action-teal-default: var(--color-primary-500);
+  --color-action-teal-hover: var(--color-primary-600);
+  --color-action-teal-pressed: var(--color-primary-700);
+  --color-action-secondary-foreground: var(--color-neutral-800);
+
+  /* Graphic — fill-graphic-lake … (Figma paint style) */
+  --color-graphic-lake: var(--color-primary-500);
+  --color-graphic-mist: var(--color-primary-400);
+  --color-graphic-night: var(--color-primary-900);
+  --color-graphic-moonlight: var(--color-apricot-300);
+  --color-graphic-lotus: var(--color-rose-300);
+
+  /* Status — text-status-error-foreground … (Figma paint style) */
+  --color-status-error-foreground: #c32e1e;
+  --color-status-error-background: #f9e0dc;
+  --color-status-success-foreground: #218447;
+  --color-status-success-background: #f5f9f7;
+
+  /* 포커스 링은 outline 으로 그린다 — outline-focus, outline-secondary-focus */
+  --outline-color-focus: var(--border-color-focus);
+  --outline-color-secondary-focus: var(--border-color-secondary-focus);
+
+  /* Space — Figma Layout/Space (p-16 = 16px) */
+  --spacing-0: 0px;
+  --spacing-4: 0.25rem;
+  --spacing-8: 0.5rem;
+  --spacing-12: 0.75rem;
+  --spacing-16: 1rem;
+  --spacing-20: 1.25rem;
+  --spacing-24: 1.5rem;
+  --spacing-32: 2rem;
+  --spacing-40: 2.5rem;
+  --spacing-48: 3rem;
+
+  /* Radius — Figma Layout/Radius (rounded-12 = 12px) */
+  --radius-0: 0px;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-999: 999px;
+
+  /* Typography — Figma text style 의 크기·행간. 굵기는 font-normal·medium·semibold·bold 로 준다.
+     UI/14/600 → text-ui-14 font-semibold, Display/24/400 → font-display text-display-24 */
+  --text-ui-12: 0.75rem;
+  --text-ui-12--line-height: 1.125rem;
+  --text-ui-14: 0.875rem;
+  --text-ui-14--line-height: 1.375rem;
+  --text-ui-16: 1rem;
+  --text-ui-16--line-height: 1.5rem;
+  --text-ui-18: 1.125rem;
+  --text-ui-18--line-height: 1.625rem;
+  --text-ui-20: 1.25rem;
+  --text-ui-20--line-height: 1.75rem;
+  --text-ui-24: 1.5rem;
+  --text-ui-24--line-height: 2rem;
+  --text-ui-28: 1.75rem;
+  --text-ui-28--line-height: 2.25rem;
+  --text-ui-32: 2rem;
+  --text-ui-32--line-height: 2.5rem;
+  --text-display-20: 1.25rem;
+  --text-display-20--line-height: 1.5rem;
+  --text-display-24: 1.5rem;
+  --text-display-24--line-height: 2.125rem;
+  --text-display-28: 1.75rem;
+  --text-display-28--line-height: 2.375rem;
+  --text-display-32: 2rem;
+  --text-display-32--line-height: 2.75rem;
+}
