@@ -1,6 +1,6 @@
 # ADR-20260914: 프론트를 S3 + CloudFront 에 올리고 DNS 는 Route53 에 둔다
 
-- Status: Accepted
+- Status: Superseded by ADR-20260914-netlify-personal-fork
 - Date: 2026-09-14
 - Deciders: @jjjung0921 (Phase 08 Lead) / 백엔드 팀 (Route53·AWS 계정)
 
