@@ -38,12 +38,14 @@
 
 ## Known Problems
 
-- 백엔드 레포·Swagger 에 접근할 수 없어 실제 응답과의 대조는 못 했다 — Phase 03 T1 의 zod 스키마가 첫 실검증이다
-- `ws/spec-drop-birth-region`(REVIEW)이 openapi 의 birthRegion 설명을 바꾼다 — 이 스트림은 openapi 를 안 건드려 충돌 없음
+- BE 소스(WKS-BE dev 4cf672e, feat/4-saju-calculator 9896e52) 대조 결과: 구현된 것은 `POST /api/results` 뿐. `GET /results/{id}`·궁합·signup 은 빈 컨트롤러이며 경로도 spec 과 다르다(`/api/compatibility`, `/api/signup`). `error.traceId` 없음(요구사항 FR-CM-08 에는 있음). INVALID_INPUT 의 message 는 필드 메시지를 ", " 로 이어 붙인 문자열
+- **Tier 구간 충돌**: BE architecture/backend-requirements 는 76–100 GUIIN · 51–75 CHALTTEOK · 26–50 BEOT · 0–25 SEUCHIM. PRD FR-7(귀인 ≥90 · 찰떡 75–89 · 벗 61–74 · 스침 ≤60)과 다르다 — 기획 결정 필요
+- feat/4 브랜치의 api-spec.md 가 참조본보다 새롭다: `calendarType`(필수)·`isLeapMonth` 추가, `birthRegion` 제거, 시진은 칸 가운데 시각(`HH:mm`)으로 전송, 자시 두 칸 분리 요청. dev 병합 전이라 참조본에는 아직 안 넣었다 — 병합되면 후속 spec 스트림
+- 실기동 대조는 못 했다(Docker 미기동). 코드·Flyway V1·V2·application.yml 로 확인
 
 ## Unverified Assumptions
 
-- 백엔드 dev 포트 8080 · tier 4값 이름 (backend-questions A6·B2)
+- 없음 — 포트 8080(server.port 미설정) · CORS `http://localhost:3000` · verify 리다이렉트 기본 `http://localhost:3000/verify` · tier 4값 `GUIIN CHALTTEOK BEOT SEUCHIM` · 이메일 도메인은 env `SIGNUP_ALLOWED_EMAIL_DOMAINS`(기본 빈 값) 모두 소스에서 확인
 
 ## Exact Next Action
 
