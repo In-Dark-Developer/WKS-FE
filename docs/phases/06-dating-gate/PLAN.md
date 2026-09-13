@@ -54,7 +54,7 @@
 
 - [x] T1. 상세 계획 작성 — Done when: 이 PLAN의 Scope·Tasks·Acceptance Criteria가 채워지고 병합됨 · Touches: `docs/phases/06-dating-gate/` · Owner: @gn00py48 (commit 9899d2d)
 
-- [ ] T2. 사전신청 모달·티저 퍼블리싱 — Done when: 수정본(558-3526) 사전신청 모달의 기본·오류(이메일 형식)·로딩·연결 실패(입력값 유지)·완료 5상태와 결과 화면 티저(`PreRegistrationTeaser`)가 feature 가 정한 뷰 모델 props 로만 렌더되고(`src/api/` 스키마를 import 하지 않는다), 동의 체크 전에는 제출 버튼이 잠기며, `/preview/pre-register` 에서 5상태를 가짜 데이터로 볼 수 있다 (테스트 포함). 연락처는 전화번호 필수 + 인스타그램 선택(디자인의 택1 세그먼트와 다름 — FR-10). 고지 문구는 `consent.ts` 한 곳에 모은다 · Touches: `src/features/profile/`, `src/app/preview/screens/pre-register.tsx` · After: 02/T3 · Owner: @jjjung0921
+- [x] T2. 사전신청 모달·티저 퍼블리싱 — Done when: 수정본(558-3526) 사전신청 모달의 기본·오류(이메일 형식)·로딩·연결 실패(입력값 유지)·완료 5상태와 결과 화면 티저(`PreRegistrationTeaser`)가 feature 가 정한 뷰 모델 props 로만 렌더되고(`src/api/` 스키마를 import 하지 않는다), 동의 체크 전에는 제출 버튼이 잠기며, `/preview/pre-register` 에서 5상태를 가짜 데이터로 볼 수 있다 (테스트 포함). 연락처는 전화번호 필수 + 인스타그램 선택(디자인의 택1 세그먼트와 다름 — FR-10). 고지 문구는 `consent.ts` 한 곳에 모은다 · Touches: `src/features/profile/`, `src/app/preview/screens/pre-register.tsx` · After: 02/T3 · Owner: @jjjung0921 (commit 269da6b 본문·ea10053 모달 셸 — `PreRegisterModal` 을 결과 화면 하위 라우트에 붙이는 일은 조립 Task)
 
 - [ ] T3. 사전신청 제출 연동 — Done when: `POST /signups` 요청·응답이 zod 로 검증되고, 동의하지 않은 제출은 네트워크 요청 0건으로 막히며, 성공 시 완료 상태·연결 실패 시 입력값 유지 안내로 전환되고, 사전신청 전에는 상대 정보가 화면·응답 어디에도 없다 (테스트 포함) · Touches: `src/api/signups.ts`, `src/api/schema/signups.ts`, `src/features/profile/preRegisterAction.ts`, `docs/api/openapi.yaml#/paths/~1signups` · After: T2 · Owner: 미정
 
