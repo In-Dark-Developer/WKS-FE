@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/phases/02-design-system/PLAN.md,docs/phases/README.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -21,12 +21,13 @@ chore: phase02-t4-check
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. PLAN 02 T4 체크와 SHA·PR 기록
+- 2. `ai-stream.sh phases`로 색인 재생성
 
 ## Last Checkpoint
 
@@ -36,6 +37,7 @@ TODO
 ## Relevant Documents
 
 - `AGENTS.md`
+- `docs/phases/02-design-system/PLAN.md`
 
 ## Relevant Source Files
 
@@ -44,4 +46,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합
