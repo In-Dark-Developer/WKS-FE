@@ -7,9 +7,9 @@
 - Branch: ws/chore-opacity-tokens
 - Task: -/-
 - Issue: none
-- Touches: src/ui/tokens/theme.css,src/ui/tokens/theme.test.ts,docs/CONVENTIONS.md
+- Touches: src/ui/tokens/theme.css,src/ui/tokens/theme.test.ts,docs/CONVENTIONS.md,.ai/team/announcements/,.ai/team/README.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-server-state-session, 2026-09-13-screen-ownership, 2026-09-13-session-module-owner, 2026-09-13-opacity-tokens
 
 ## Current Phase
 
@@ -21,17 +21,19 @@ chore: opacity-tokens
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. Figma 로컬 변수·스타일 전체(use_figma 읽기)와 selection 704:2804 변수 추출
+- 2. theme.css 대조 — 램프 41·스타일 54·Space/Radius 16·텍스트 21 일치, Opacity 10 누락
+- 3. Opacity 토큰 10개(color-mix), 테스트, CONVENTIONS 표, 공지
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`d7d6490`
+`8371c62`
 
 ## Relevant Documents
 
@@ -40,8 +42,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/ui/tokens/theme.css` Opacity 블록 · `src/ui/tokens/theme.test.ts`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰(@gn00py48) 후 병합
