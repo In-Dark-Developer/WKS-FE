@@ -14,6 +14,7 @@
 | [2026-09-13-opacity-tokens](announcements/2026-09-13-opacity-tokens.md) | yes | touches:src/ | Phase 08 종료 |
 | [2026-09-13-notion-index-sync](announcements/2026-09-13-notion-index-sync.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-issue-link](announcements/2026-09-13-issue-link.md) | yes | all | Phase 08 종료 |
+| [2026-09-13-form-owner-change](announcements/2026-09-13-form-owner-change.md) | no | all | Phase 03 종료 |
 | [2026-09-13-drop-birth-region](announcements/2026-09-13-drop-birth-region.md) | yes | docs/phases/03-saju-reading/, src/features/saju/, src/api/ | Phase 03 종료 |
 | [2026-09-13-design-tokens](announcements/2026-09-13-design-tokens.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-backend-contract](announcements/2026-09-13-backend-contract.md) | yes | all | Phase 08 종료 |
