@@ -13,43 +13,43 @@
 
 ## Work Completed
 
-- `src/api/schema/envelope.ts`·`result.ts`: `{success,data|error}` 봉투·`ErrorCode`(9개)·`ResultRequest`·`Result`·`ResultDetail` zod 스키마
+- `src/api/schema/envelope.ts`·`result.ts`: `{success,data|error}` 봉투·`ErrorCode`(9개)·`ResultRequest`·통합 `Result`(shareId·zodiac·compatibilities 포함) zod 스키마
 - `src/api/client.ts`: `request()` — 토큰(`Authorization: Bearer`) 헤더, GET 1회 재시도(POST 없음), 응답을 `{ok:true,data} | {ok:false,error:{kind:'network'|'schema'|'api',...}}`로 타입 구분, `INVALID_TOKEN`이면 `clearSession()`
-- `src/api/results.ts`: `createResult`·`getResult` + `VITE_API_MOCK=true`일 때 쓰는 목 응답(백엔드 dev에 GET 미구현이라 필요)
-- `vite.config.ts` server.port 3000(백엔드 CORS), `src/vite-env.d.ts`(env 타입, Touches 밖 — 아래 Known Problems)
+- `src/api/results.ts`: `createResult`·`getResult` + `VITE_API_MOCK=true`일 때 쓰는 목 응답
+- `vite.config.ts` server.port 3000, `src/vite-env.d.ts`(env 타입, Touches 밖 — 소유자 확인 필요)
+- (2차) main 재동기화 중 `docs/api/openapi.yaml` 0.2.0(WKS-BE b61f849) 유입 — 스키마를 계약대로 다시 맞춤: `calendarType`·`isLeapMonth` 추가, `birthRegion` 삭제, `Result`에 `shareId`·`zodiac`·`compatibilities`, `grade` SS~B 6단계
 
 ## Work In Progress
 
-- 없음 — 구현·테스트 끝, PR만 남음
+- 없음 — 구현·테스트 끝, push·PR 승인 대기
 
 ## Files Changed
 
-- `src/api/client.ts`, `src/api/client.test.ts`, `src/api/results.ts`, `src/api/results.test.ts`
-- `src/api/schema/envelope.ts`, `src/api/schema/result.ts`, `src/api/schema/result.test.ts`
-- `vite.config.ts`, `src/vite-env.d.ts` (신규)
+- `src/api/client.ts`, `.test.ts`, `src/api/results.ts`, `.test.ts`, `src/api/schema/envelope.ts`, `result.ts`, `.test.ts`
+- `vite.config.ts`, `src/vite-env.d.ts`(신규)
 
 ## Decisions Made
 
-- 요청/응답 타입 구분은 discriminated union 반환값으로 했다(throw 아님) — SajuForm처럼 호출자가 `{formError:'connection'}` 식으로 화면에 그대로 쓸 수 있게
-- `VITE_API_MOCK` 플래그로 목/실서버를 전환한다(자동 폴백 아님) — 진짜 404와 "라우트 자체가 없음"을 섞지 않으려고
+- 요청/응답 타입 구분은 discriminated union 반환값으로 했다(throw 아님) — action이 `{formError:'connection'}` 식으로 화면에 그대로 쓸 수 있게
+- `VITE_API_MOCK` 플래그로 목/실서버를 전환한다(자동 폴백 아님) — 진짜 404와 "계약 밖 경로"를 안 섞으려고
 
 ## Tests Executed
 
-- `pnpm test` (전체 28개 파일), `pnpm typecheck`, `pnpm lint`, `pnpm build`
+- `pnpm test`(28개 파일)·`typecheck`·`lint`·`build`, 계약 갱신 후 재실행
 
 ## Test Results
 
-- 135/135 통과, typecheck·lint·build 전부 통과 (commit 46d150a)
+- 137/137 통과, typecheck·lint·build 전부 통과 (commit 46d150a, 78fd74e)
 
 ## Known Problems
 
-- `src/vite-env.d.ts`는 CURRENT Touches 목록에 없었다 — `client.ts`의 `VITE_` env 타입에 필요해 추가했다(순수 타입 선언, 동작 없음). 소유자 확인 필요
-- `SajuInput`(03/T4)에는 계약에 없는 `calendarType`·`isLeapMonth`가 있고 `birthRegion`이 없다 — `SajuInput → ResultRequest` 변환은 이 Task Touches 밖(routes.tsx action, T3 소유)이라 손대지 않았다. 다음 사람이 이 변환에서 두 필드를 드롭하고 `birthRegion: null`을 채워야 한다(PRD Q3 답 전까지)
+- `src/vite-env.d.ts` Touches 밖 추가(순수 타입, 동작 없음) — 소유자 확인 필요
+- 좋은 소식: 계약 갱신으로 03/T4 `SajuInput`(calendarType·isLeapMonth 있음, birthRegion 없음)이 이제 `ResultRequest`와 거의 동일한 모양이라 03/T7 연동이 더 쉬워짐
 
 ## Unverified Assumptions
 
-- `INVALID_TOKEN` 에러 코드를 세션 무효 신호로 가정했다(PRD Q16 미확정) — 답이 오면 client.ts의 이 분기를 실제 코드로 바꾼다
+- `INVALID_TOKEN` 에러 코드를 세션 무효 신호로 가정했다(PRD Q16 미확정)
 
 ## Exact Next Action
 
-`.ai/local/notes/03-T1-api-client.md` 작성해 소유자에게 보여주고, 승인되면 `scripts/ai-end.sh --ready`로 PR 초안을 연다.
+소유자 push 승인 → `scripts/ai-end.sh --ready`로 PR 초안. 병합 후 다음 Task는 03/T7(입력·결과 연동, PLAN 재편으로 T5 대신 배정됨).

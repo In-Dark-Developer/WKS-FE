@@ -7,7 +7,7 @@
 - Issue: #27
 - Touches: src/api/client.ts, src/api/results.ts, src/api/schema/, docs/api/openapi.yaml#/paths/~1results, docs/api/openapi.yaml#/paths/~1results~1{resultId}, vite.config.ts
 - Supersedes: none
-- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -23,13 +23,14 @@ REVIEW
 
 ## Progress
 
-- 1. main 병합(02/T2·T6·03/T4 유입, 겹침 없음), ADR·PLAN·openapi 재확인
-- 2. `src/api/schema/`: envelope·Result·ResultRequest·ResultDetail zod 스키마
+- 1. main 병합(02/T2·T6·03/T4), `src/api/schema/`: envelope·Result·ResultRequest zod 스키마
 - 3. `src/api/client.ts`: 토큰 헤더·GET 1회 재시도·세션 무효 처리
 - 4. `src/api/results.ts`: createResult·getResult + `VITE_API_MOCK` 목 응답
 - 5. `vite.config.ts` server.port 3000, `src/vite-env.d.ts` 추가
-- 6. 테스트 27개 추가, `pnpm test|typecheck|lint|build` 통과 (commit 46d150a) ←
-- 7. HANDOFF·LOG 정리, PLAN Task 줄 갱신, `--ready`
+- 6. 테스트 27개 추가, `pnpm test|typecheck|lint|build` 통과 (commit 46d150a)
+- 7. main 재동기화 — 계약 r2(b61f849) 유입, README.md 표 충돌만 재생성으로 해결
+- 8. 스키마 재작업: calendarType·isLeapMonth 추가, birthRegion 삭제, shareId·zodiac·compatibilities, grade 6단계 (commit 78fd74e) ←
+- 9. HANDOFF·LOG 정리, 소유자 승인 후 push·`--ready`
 
 ## Last Checkpoint
 
@@ -42,8 +43,8 @@ REVIEW
 ## Relevant Source Files
 
 - `src/api/client.ts:request` · `src/api/results.ts:createResult,getResult`
-- `src/features/saju/formSchema.ts:SajuInput` (03/T4, client.ts 로 아직 연결 안 됨)
+- `docs/api/openapi.yaml` 0.2.0(ResultRequest·Result) — 03/T7(@nicerjs23, 연동)이 이 계약대로 연결
 
 ## Next Action
 
-`git merge main` 완료. `.ai/local/notes/03-T1-api-client.md` 설명 작성 → 소유자 승인 후 `ai-end.sh --ready`.
+로컬 커밋 완료(46d150a, 78fd74e), push는 소유자 승인 대기. 승인되면 push → `ai-end.sh --ready`.
