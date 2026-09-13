@@ -34,6 +34,3 @@ coverage/
 .vite/
 
 Claude outputs/
-
-# Cloudflare wrangler 로컬 상태
-.wrangler/
