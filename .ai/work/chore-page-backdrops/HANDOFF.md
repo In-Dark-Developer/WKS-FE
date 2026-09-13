@@ -16,6 +16,7 @@
 - `dawn`(기본): 새벽 하늘 사진 + Primary 400→900 overlay (commit f0fc208)
 - `result`: 164.75° Primary400→#eee3d2→Primary300, 별자리 리본이 콘텐츠와 함께 스크롤
 - `mist`: Primary50→200, 좌우 반전 리본 682px 아래
+- 리본: `star-ribbon-loop.webp`(원본 + 상하 반전본) repeat-y 로 콘텐츠 끝까지 이어짐, 콘텐츠와 함께 스크롤 (commit 878a71a)
 - AppShell 을 루트 라우트 element(RootLayout)로 옮겨 handle.backdrop 으로 선택. 오류·첫 대기 화면도 셸 안
 
 ## Work In Progress
@@ -26,13 +27,13 @@
 
 - `src/app/AppShell.tsx`·`AppShell.test.tsx`·`layout.css`·`App.tsx`
 - `src/app/RootLayout.tsx`·`RootLayout.test.tsx`·`routes.tsx`·`routes.test.tsx`
-- `src/ui/assets/backgrounds/dawn-sky.webp`
+- `src/ui/assets/backgrounds/dawn-sky.webp`·`star-ribbon-loop.webp`
 
 ## Decisions Made
 
 - 배경은 화면이 아니라 라우트 handle 로 정한다 — features 가 app 을 import 하지 않고 routes.tsx(T3 소유) 한 곳에서 지정
 - 달 SVG·CSS 별 애니메이션 제거 — 기본 프레임 사진에 달이 있고 디자인에 움직이는 별이 없음
-- "별자리가 올라감" 은 리본이 스크롤과 함께 올라가는 것으로 해석(애니메이션 아님)
+- 리본은 스크롤과 함께 움직이고 상하 반전으로 끝점을 이어 반복(소유자 지시). CSS 로는 타일별 반전이 안 돼 두 장을 붙인 에셋을 만듦
 - #eee3d2 는 Figma 에 토큰이 없어 layout.css 에 원본 값
 
 ## Tests Executed
@@ -46,12 +47,12 @@
 
 ## Known Problems
 
-- `src/ui/assets/moon/moon.svg` 는 이제 쓰는 곳이 없다(소유자 제공 파일이라 남김)
+- `src/ui/assets/moon/moon.svg`·`star-ribbon.webp` 는 이제 CSS 에서 쓰지 않는다(카드 등 다른 화면용으로 남김)
 - 헤더 '운꿰사' 검은 글자 — dawn 배경에선 보이나 Placeholder 라 T4 에서 교체
 
 ## Unverified Assumptions
 
-- '별자리가 올라감' 해석(스크롤 연동) — 디자이너 확인 필요
+- 없음
 
 ## Exact Next Action
 
