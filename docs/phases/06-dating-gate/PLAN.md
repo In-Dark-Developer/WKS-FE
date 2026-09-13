@@ -25,7 +25,7 @@
 
 - Phase 03 (Phase 02 T2의 TextArea·PhotoUpload·SegmentedControl 포함)
 - 동의 문구(수집 항목·목적·보관 기간 — PRD Q4)와 OptionalConsent 슬롯 표시 확정
-- 사진 형식·용량, 자기소개 최대 글자 수 (Q10) · `/me/profile` 계약
+- 사전신청의 정답(디자인 추가 정보 vs 백엔드 `/signups` 학교 웹메일 인증) 확정 (Q14) · 사진 형식·용량, 자기소개 최대 글자 수 (Q10)
 
 ## Tasks
 
