@@ -34,7 +34,19 @@ test('fortunes 배열을 카테고리별 key 로 바꾼다', () => {
     },
     luckyPlace: '만해광장',
     luckyItem: '책',
+    compatibilities: [],
   });
+});
+
+test('compatibilities 를 그대로 전달한다(ranking 슬롯이 쓴다)', () => {
+  const withFriends: Result = {
+    ...result,
+    compatibilities: [
+      { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-13T00:00:00Z' },
+    ],
+  };
+
+  expect(toReadingView(withFriends).compatibilities).toEqual(withFriends.compatibilities);
 });
 
 test('fortunes 순서가 바뀌어도 카테고리로 찾는다', () => {
