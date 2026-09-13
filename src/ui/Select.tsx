@@ -7,6 +7,7 @@ import { Icon } from '@/ui/Icon';
 
 // Figma 디자인시스템 C08 SelectTrigger + C09 OptionRow — 트리거 아래로 옵션 목록이 펼쳐진다.
 // 옵션 데이터(12시진·MBTI 등)는 쓰는 화면이 props 로 넘긴다.
+// appearance 'soft' 는 화면(수정본) 모습 — Surface/Subtle 배경·Border/Default 테두리, 고른 옵션은 Action/Teal.
 export type SelectOption<T extends string> = { value: T; label: string };
 
 type Props<T extends string> = {
@@ -18,6 +19,7 @@ type Props<T extends string> = {
   id?: string;
   disabled?: boolean;
   readOnly?: boolean;
+  appearance?: 'default' | 'soft';
   className?: string;
   'aria-describedby'?: string;
   'aria-invalid'?: boolean | 'true' | 'false';
@@ -33,6 +35,7 @@ export function Select<T extends string>({
   id,
   disabled = false,
   readOnly = false,
+  appearance = 'default',
   className,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
@@ -109,10 +112,14 @@ export function Select<T extends string>({
         className={cn(
           'flex h-48 w-full items-center gap-8 rounded-12 border p-12 text-left text-ui-16',
           'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus',
-          invalid ? 'border-status-error-foreground' : 'border-neutral',
+          invalid
+            ? 'border-status-error-foreground'
+            : appearance === 'soft'
+              ? 'border-default'
+              : 'border-neutral',
           disabled
             ? 'cursor-not-allowed border-disabled bg-surface-muted text-action-disabled-foreground'
-            : readOnly
+            : readOnly || appearance === 'soft'
               ? 'bg-surface-subtle text-primary'
               : 'bg-surface-default text-primary',
         )}
@@ -124,7 +131,12 @@ export function Select<T extends string>({
         role="combobox"
         type="button"
       >
-        <span className={cn('min-w-0 flex-1 truncate', !selected && 'text-muted')}>
+        <span
+          className={cn(
+            'min-w-0 flex-1 truncate',
+            !selected && (appearance === 'soft' ? 'text-disabled' : 'text-muted'),
+          )}
+        >
           {selected ? selected.label : placeholder}
         </span>
         <Icon className={cn(open && 'rotate-180')} src={chevronIcon} />
@@ -144,7 +156,10 @@ export function Select<T extends string>({
             aria-selected={option.value === value}
             className={cn(
               'flex h-48 cursor-pointer items-center gap-8 rounded-8 p-12 text-ui-16 text-primary',
-              option.value === value && 'bg-surface-selected',
+              option.value === value &&
+                (appearance === 'soft'
+                  ? 'bg-action-teal-default text-inverse'
+                  : 'bg-surface-selected'),
               index === activeIndex && 'outline-2 -outline-offset-2 outline-focus',
             )}
             id={`${listId}-${index}`}
