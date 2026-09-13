@@ -16,64 +16,58 @@
   padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
 }
 
+/* 배경 그라데이션·사진은 스크롤해도 고정된다. */
 [data-app-shell-backdrop] {
   position: fixed;
   z-index: -1;
   inset-block: 0;
   inset-inline: max(0px, calc((100vw - 430px) / 2));
   overflow: hidden;
+}
+
+/* 기본 (Figma 695:2501) — 새벽 하늘 사진 위에 Primary 400→900 그라데이션을 overlay 로 섞는다. */
+[data-backdrop='dawn'] [data-app-shell-backdrop] {
+  background:
+    linear-gradient(to bottom, var(--color-primary-400), var(--color-primary-900)),
+    url('../ui/assets/backgrounds/dawn-sky.webp') center / cover no-repeat;
+  background-blend-mode: overlay, normal;
+}
+
+/* 사주 결과 (Figma 558:2432) — 가운데 #eee3d2 는 Figma 에 토큰이 없는 원본 값이다. */
+[data-backdrop='result'] [data-app-shell-backdrop] {
   background: linear-gradient(
-    to bottom,
-    var(--color-primary-900),
-    var(--color-primary-700) 56%,
-    var(--color-primary-400)
+    164.75deg,
+    var(--color-primary-400) 1.67%,
+    #eee3d2 45.17%,
+    var(--color-primary-300) 98.33%
   );
 }
 
-[data-app-shell-backdrop]::before {
+/* 사전신청 모달 (Figma 558:2568) */
+[data-backdrop='mist'] [data-app-shell-backdrop] {
+  background: linear-gradient(to bottom, var(--color-primary-50) 21.05%, var(--color-primary-200));
+}
+
+/* 별자리 리본은 콘텐츠와 함께 스크롤되어 올라간다 ("그라데이션 고정 · 별자리가 올라감"). 375px 프레임 기준 비율. */
+[data-backdrop='result']::before,
+[data-backdrop='mist']::before {
   content: '';
   position: absolute;
-  top: 18%;
-  left: 72%;
-  width: 150px;
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  background: url('../ui/assets/moon/moon.svg') center / contain no-repeat;
+  z-index: 0;
+  aspect-ratio: 824 / 1909;
+  background: url('../ui/assets/backgrounds/star-ribbon.webp') center / contain no-repeat;
+  pointer-events: none;
 }
 
-[data-app-shell-stars] {
-  position: absolute;
-  inset: 0;
-  color: var(--color-neutral-0);
-  background-image: radial-gradient(circle, currentColor 0 1px, transparent 1.5px);
-  background-repeat: repeat;
-  animation-name: app-shell-stars-rise;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+[data-backdrop='result']::before {
+  top: 4px;
+  left: 3.73%;
+  width: 92.53%;
 }
 
-[data-app-shell-stars='far'] {
-  opacity: 0.35;
-  background-position: 13px 0;
-  background-size: 52px 104px;
-  animation-duration: 22s;
-}
-
-[data-app-shell-stars='near'] {
-  opacity: 0.7;
-  background-position: 31px 0;
-  background-size: 89px 104px;
-  animation-duration: 14s;
-}
-
-@keyframes app-shell-stars-rise {
-  to {
-    background-position-y: -104px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-app-shell-stars] {
-    animation: none;
-  }
+[data-backdrop='mist']::before {
+  top: 682px;
+  left: 0;
+  width: 100%;
+  scale: -1 1;
 }
