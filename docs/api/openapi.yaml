@@ -4,6 +4,7 @@
 # - 디자인·PRD 에는 있으나 이 계약에 없는 것(양·음력 · 12시진 · 십이간지 · 인연카드 등급 cardGrades · 사전신청 추가 정보 · 후보 · 운명의 실 · 링크 주인 닉네임만 주는 요약)은
 #   여기에 넣지 않았다 — 백엔드에 추가 요청 중이며 목록은 docs/PRD.md Open Questions Q3 다. 합의되면 이 파일에 추가한다.
 # - 백엔드 문서가 값을 확정하지 않은 곳은 description 에 [미확인] 을 붙였다.
+# - 2026-09-13: WKS-BE 소스(dev 4cf672e) 대조 — traceId 는 아직 안 온다(optional), tier enum 확정, INVALID_INPUT message 는 필드 메시지를 이어 붙인 문자열. 구현된 경로는 POST /results 뿐이다.
 # - 검증 예: npx @redocly/cli lint docs/api/openapi.yaml
 openapi: 3.1.0
 info:
@@ -13,7 +14,7 @@ info:
     사주 결과·궁합·소개팅 사전등록을 제공하는 백엔드 API. 이 사본은 프론트엔드가 소비하는 계약의 참조본이다.
     - 모든 응답은 `{ success: true, data }` 또는 `{ success: false, error }` 봉투로 온다. HTTP 상태코드도 함께 맞춘다.
     - JSON 키는 camelCase. 날짜는 `yyyy-MM-dd`, 시각은 ISO-8601 UTC(`Z`). **null 필드도 키를 유지한다.**
-    - `error.message` 는 사용자에게 그대로 보여줄 수 있는 한국어. `traceId` 는 화면에 노출해도 된다.
+    - `error.message` 는 사용자에게 그대로 보여줄 수 있는 한국어. `traceId` 는 화면에 노출해도 된다 (백엔드 요구사항 FR-CM-08 — 2026-09-13 현재 미구현이라 optional).
     - Swagger UI `/swagger-ui.html` · OpenAPI JSON `/v3/api-docs` 는 참고용이고 원본은 백엔드의 api-spec.md 다.
 security: []   # 인증·세션 없음 — 내 결과는 프론트가 보관한 resultId 로만 식별한다
 servers:
@@ -52,7 +53,7 @@ paths:
                   success: { type: boolean, const: true }
                   data: { $ref: "#/components/schemas/Result" }
         "400":
-          description: INVALID_INPUT — 유효성 검증 실패 (필드별 메시지는 없다)
+          description: INVALID_INPUT — 유효성 검증 실패. message 는 필드 메시지들을 ", " 로 이어 붙인 문자열이라 화면은 필드별 검증을 먼저 한다
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -283,7 +284,8 @@ components:
               description: "createdAt 내림차순. 상대의 생년월일·성별·resultId 는 내려오지 않는다 — 닉네임과 점수만 (FR-9)"
     CompatibilityTier:
       type: string
-      description: "궁합 등급. 확인된 값은 GUIIN(귀인) · BEOT(벗). 4등급 전체 이름과 점수 구간(PRD FR-7: 귀인 ≥90 · 찰떡 75–89 · 벗 61–74 · 스침 ≤60)은 [미확인] — 백엔드 예시 score 31 → BEOT 가 구간과 어긋난다 (Q3)"
+      enum: [GUIIN, CHALTTEOK, BEOT, SEUCHIM]
+      description: "궁합 등급 — 귀인 · 찰떡 · 벗 · 스침 (WKS-BE CompatibilityTier 확인). 점수 구간은 [미확인]: 백엔드 문서는 76–100 · 51–75 · 26–50 · 0–25, PRD FR-7 은 ≥90 · 75–89 · 61–74 · ≤60 — 기획 결정 대기 (Q3). 화면은 tier 값만 쓰고 구간을 계산하지 않는다"
     CompatibilitySummary:
       type: object
       required: [nickname, score, tier, createdAt]
@@ -333,8 +335,8 @@ components:
         success: { type: boolean, const: false }
         error:
           type: object
-          required: [code, message, traceId]
+          required: [code, message]
           properties:
             code: { $ref: "#/components/schemas/ErrorCode" }
-            message: { type: string, description: "사용자에게 그대로 보여줄 수 있는 한국어 (보살 말투는 화면이 붙인다). 필드별 메시지는 없다 — 필드 검증은 프론트가 먼저 한다" }
-            traceId: { type: string, description: 장애 문의용 — 화면에 노출해도 된다 }
+            message: { type: string, description: "사용자에게 그대로 보여줄 수 있는 한국어 (보살 말투는 화면이 붙인다). INVALID_INPUT 이면 필드 메시지들을 \", \" 로 이어 붙인 문자열 — 필드 검증은 프론트가 먼저 한다" }
+            traceId: { type: string, description: "장애 문의용 — 화면에 노출해도 된다. 백엔드 미구현(2026-09-13)이라 없을 수 있다" }
