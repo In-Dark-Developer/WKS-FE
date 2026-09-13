@@ -38,7 +38,7 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 - [x] T2. 폼 컴포넌트(기본 입력) — Done when: Button(4 variant·로딩·비활성)·IconButton·TextField·Checkbox·SegmentedControl·Field(라벨·helper·에러)가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Button.tsx`, `src/ui/IconButton.tsx`, `src/ui/TextField.tsx`, `src/ui/Checkbox.tsx`, `src/ui/SegmentedControl.tsx`, `src/ui/Field.tsx` · After: T1 · Owner: @jjjung0921 (commit 0dbf26a)
 
-- [ ] T3. 오버레이 — Done when: Modal(포커스 트랩·ESC 닫기·배경 스크롤 잠금)·ShareSheet·Toast가 동작하고 테스트가 통과 · Touches: `src/ui/Modal.tsx`, `src/ui/ShareSheet.tsx`, `src/ui/Toast.tsx` · After: T1 · Owner: @nicerjs23
+- [x] T3. 오버레이 — Done when: Modal(포커스 트랩·ESC 닫기·배경 스크롤 잠금)·ShareSheet·Toast가 동작하고 테스트가 통과 · Touches: `src/ui/Modal.tsx`, `src/ui/ShareSheet.tsx`, `src/ui/Toast.tsx` · After: T1 · Owner: @nicerjs23 (commit 65cdc15)
 
 - [x] T4. 카드와 상태 컴포넌트 — Done when: Card/Shell(Header·Media·Body·Footer 슬롯)·SectionHeader·Notice와 ContentState(로딩·에러·빈)가 렌더되고 테스트가 통과 · Touches: `src/ui/Card.tsx`, `src/ui/SectionHeader.tsx`, `src/ui/Notice.tsx`, `src/ui/state/` · After: T1 · Owner: @jjjung0921 (commit 8acba79, PR #38)
 

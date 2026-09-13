@@ -10,7 +10,7 @@
 | #  | Phase | Lead | Depends on | Status | Tasks | Result |
 |----|-------|------|------------|--------|-------|--------|
 | 01 | [project-setup](01-project-setup/PLAN.md) | @jjjung0921 | none | DONE | 6/6 | [RESULT](01-project-setup/RESULT.md) |
-| 02 | [design-system](02-design-system/PLAN.md) | @gn00py48 | 01 | PLANNED | 5/6 | — |
+| 02 | [design-system](02-design-system/PLAN.md) | @gn00py48 | 01 | PLANNED | 6/6 | — |
 | 03 | [saju-reading](03-saju-reading/PLAN.md) | @nicerjs23 | 02 | PLANNED | 7/7 | — |
 | 04 | [share-and-card](04-share-and-card/PLAN.md) | @gn00py48 | 03 | PLANNED | 1/2 | — |
 | 05 | [friend-score](05-friend-score/PLAN.md) | @nicerjs23 | 04 | PLANNED | 1/2 | — |
