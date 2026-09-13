@@ -8,7 +8,7 @@
 - Task: -/-
 - Touches: docs/api/openapi.yaml,docs/PRD.md,docs/phases/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-planning-feedback, 2026-09-13-backend-contract
 
 ## Current Phase
 
@@ -20,27 +20,30 @@ spec: backend-source-check
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] openapi: traceId optional · tier enum · INVALID_INPUT message 설명 · 소스 대조 머리말
+- [x] PRD: Q3 구간 충돌 명시 · Q15(입력 규칙, feat/4) 추가
+- [x] Phase 03 PLAN: GET 미구현·목 경로 · vite 포트 3000 · Q15 참조
+- [x] 검증·커밋·close
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`16ab7f2`
+`4ac7909`
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `docs/api/openapi.yaml` · `docs/PRD.md` Open Questions · `docs/phases/03-saju-reading/PLAN.md` Dependencies
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/api/openapi.yaml#/components/schemas/ErrorResponse` · `#/components/schemas/CompatibilityTier`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 열어 병합한다. 후속: 백엔드 `feat/4` dev 병합 후 calendarType·isLeapMonth·birthRegion 제거 반영 spec 스트림.
