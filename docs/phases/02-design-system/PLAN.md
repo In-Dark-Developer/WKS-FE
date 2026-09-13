@@ -42,7 +42,7 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 - [ ] T4. 카드와 상태 컴포넌트 — Done when: Card/Shell(Header·Media·Body·Footer 슬롯)·SectionHeader·Notice와 ContentState(로딩·에러·빈)가 렌더되고 테스트가 통과 · Touches: `src/ui/Card.tsx`, `src/ui/SectionHeader.tsx`, `src/ui/Notice.tsx`, `src/ui/state/` · After: T1 · Owner: @jjjung0921
 
-- [x] T5. 앱 셸 레이아웃 — Done when: 360–430px에서 가로 스크롤 없이 렌더되고 데스크톱에서 중앙 정렬되며, 전역 배경(하늘·달, "그라데이션 고정 · 별자리가 올라감")이 들어간다 · Touches: `src/app/AppShell.tsx`, `src/app/layout.css` · After: T1 · Owner: @jjjung0921 (commit 3f9a1c0)
+- [x] T5. 앱 셸 레이아웃 — Done when: 360–430px에서 가로 스크롤 없이 렌더되고 데스크톱에서 중앙 정렬되며, 전역 배경(하늘·달, "그라데이션 고정 · 별자리가 올라감")이 들어간다 · Touches: `src/app/AppShell.tsx`, `src/app/layout.css` · After: T1 · Owner: @jjjung0921 (commit 3f9a1c0, PR #39)
 
 <!-- 선후는 각 Task 의 After: 가 기준이다 (T2~T5 After: T1). T2~T5는 서로 겹치지 않으므로 동시에 진행한다.
      `src/ui/index.ts` 배럴은 두지 않는다 — 모든 Task가 건드리게 되어 충돌 지점이 된다. 소비자는 파일에서 직접 import 한다. -->
