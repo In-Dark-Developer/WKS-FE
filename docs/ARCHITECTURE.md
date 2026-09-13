@@ -72,7 +72,7 @@
 |------------------|----------------------------------|------------------------|--------------------------------------------------------|
 | 백엔드 API       | 사주·궁합·매칭·인증·저장          | REST/JSON (`docs/api/`) — 운영 `https://api.threatoffate.site/api` | 타임아웃 후 GET만 재시도 1회(POST는 재시도 안 함), 실패 시 route `errorElement`의 보살 말투 에러 화면 |
 | 인스타그램 공유  | 인연카드 이미지 공유 · 공유 링크    | Web Share API (files · url) | 미지원 브라우저는 이미지 다운로드 · 클립보드 복사 + Toast 로 폴백 |
-| 정적 호스팅      | SPA 배포와 공유 링크 라우팅       | Netlify — `https://threatoffate.site`, 모든 경로를 `index.html` 로 (ADR-20260913-hosting-and-domains) | 배포 실패 시 직전 배포 유지(Netlify 원자적 배포). 공유 링크 미리보기(NFR-3)는 Phase 08 |
+| 정적 호스팅      | SPA 배포와 공유 링크 라우팅       | Cloudflare Pages — `https://threatoffate.site`, 최상위 404.html 없이 모든 경로를 `index.html` 로 (ADR-20260913-cloudflare-pages-hosting) | 배포 실패 시 직전 배포 유지(Pages 원자적 배포). 공유 링크 미리보기(NFR-3)는 Phase 08 |
 
 ## Important Interfaces
 
