@@ -14,7 +14,7 @@
 | 03 | [saju-reading](03-saju-reading/PLAN.md) | @nicerjs23 | 02 | PLANNED | 7/7 | — |
 | 04 | [share-and-card](04-share-and-card/PLAN.md) | @gn00py48 | 03 | PLANNED | 1/2 | — |
 | 05 | [friend-score](05-friend-score/PLAN.md) | @nicerjs23 | 04 | PLANNED | 1/2 | — |
-| 06 | [dating-gate](06-dating-gate/PLAN.md) | @gn00py48 | 03 | PLANNED | 1/3 | — |
+| 06 | [dating-gate](06-dating-gate/PLAN.md) | @gn00py48 | 03 | PLANNED | 2/3 | — |
 | 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | PLANNED | 0/1 | — |
 | 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 2/6 | — |
 <!-- phases:end -->
