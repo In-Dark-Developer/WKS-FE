@@ -40,7 +40,7 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 - [ ] T3. 오버레이 — Done when: Modal(포커스 트랩·ESC 닫기·배경 스크롤 잠금)·ShareSheet·Toast가 동작하고 테스트가 통과 · Touches: `src/ui/Modal.tsx`, `src/ui/ShareSheet.tsx`, `src/ui/Toast.tsx` · After: T1 · Owner: @nicerjs23
 
-- [ ] T4. 카드와 상태 컴포넌트 — Done when: Card/Shell(Header·Media·Body·Footer 슬롯)·SectionHeader·Notice와 ContentState(로딩·에러·빈)가 렌더되고 테스트가 통과 · Touches: `src/ui/Card.tsx`, `src/ui/SectionHeader.tsx`, `src/ui/Notice.tsx`, `src/ui/state/` · After: T1 · Owner: @jjjung0921
+- [x] T4. 카드와 상태 컴포넌트 — Done when: Card/Shell(Header·Media·Body·Footer 슬롯)·SectionHeader·Notice와 ContentState(로딩·에러·빈)가 렌더되고 테스트가 통과 · Touches: `src/ui/Card.tsx`, `src/ui/SectionHeader.tsx`, `src/ui/Notice.tsx`, `src/ui/state/` · After: T1 · Owner: @jjjung0921 (commit 8acba79, PR #38)
 
 - [x] T5. 앱 셸 레이아웃 — Done when: 360–430px에서 가로 스크롤 없이 렌더되고 데스크톱에서 중앙 정렬되며, 전역 배경(하늘·달, "그라데이션 고정 · 별자리가 올라감")이 들어간다 · Touches: `src/app/AppShell.tsx`, `src/app/layout.css` · After: T1 · Owner: @jjjung0921 (commit 3f9a1c0, PR #39)
 
