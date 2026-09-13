@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # ai-stream.sh — 스트림·Phase·이력 관리. bash 3.2+, git 2.23+.
 #
-#   open <NN>/<Tk> <slug> [--reopen]            Task 스트림 열기 (브랜치 ws/<id> + .ai/work/<id>/ + push)
+#   open <NN>/<Tk> <slug> [--reopen] [--issue N] Task 스트림 열기 (브랜치 ws/<id> + .ai/work/<id>/ + push). --issue N: CURRENT 에 Issue 기록, PR 본문에 Closes #N
+#   open --issue N <slug>                        track 이슈 제목 `track(NN/Tk): …` 에서 Task 를 읽어 연다
 #   open spec|chore|plan|phase-close <slug> --touches a,b [--reopen]
 #   take                                         현재 스트림 인수 (Owner 변경 커밋 + push)
 #   status                                       팀 현황판 (원격 ws/* 에서 도출)
@@ -35,15 +36,25 @@ push_branch() {
 
 # ---------------------------------------------------------------- open
 cmd_open() {
-  local kind="" slug="" reopen=0 touches="" task="" phase="" id="" plan="" task_title="" supersedes="none"
+  local kind="" slug="" reopen=0 touches="" task="" phase="" id="" plan="" task_title="" supersedes="none" issue=""
   while [ $# -gt 0 ]; do
     case "$1" in
       --reopen) reopen=1;;
       --touches) touches=${2:-}; shift;;
+      --issue) issue=${2#\#}; shift;;
       --*) die "알 수 없는 옵션 $1";;
       *) if [ -z "$kind" ]; then kind=$1; elif [ -z "$slug" ]; then slug=$1; else die "인자가 너무 많다: $1"; fi;;
     esac; shift
   done
+  if [ -n "$issue" ]; then
+    printf '%s' "$issue" | grep -qE '^[0-9]+$' || die "--issue 는 이슈 번호다: $issue"
+    command -v gh >/dev/null || die "--issue 에는 gh 가 필요하다"
+    local ititle; ititle=$(gh issue view "$issue" --json title -q .title 2>/dev/null) || die "이슈 #$issue 를 읽을 수 없다"
+    if [ -z "$slug" ]; then # open --issue N <slug>: 제목 track(NN/Tk): … 에서 Task
+      slug=$kind; kind=$(printf '%s' "$ititle" | sed -nE 's/^[a-z-]+\(([0-9]{2}\/T[0-9]+)\).*/\1/p')
+      [ -n "$kind" ] || die "이슈 #$issue 제목이 'track(NN/Tk): …' 형식이 아니다 — open <NN>/<Tk> <slug> --issue $issue 로 연다"
+    fi
+  fi
   [ -n "$kind" ] && [ -n "$slug" ] || usage 1
   git diff --quiet && git diff --cached --quiet || die "커밋되지 않은 변경이 있다 — 먼저 커밋하거나 stash 한다"
   fetch_quiet
@@ -102,15 +113,18 @@ EOF
   fi
   git checkout -q -b "ws/$id" "$base"
   mkdir -p "$WORK/$id/notes"
-  R_STREAM=$id R_OWNER=$(my_email) R_TASK=$task R_TOUCHES=$touches R_SUPERSEDES=$supersedes R_TASK_TITLE=$task_title R_CHECKPOINT=$(short "$base")
+  R_STREAM=$id R_OWNER=$(my_email) R_TASK=$task R_TOUCHES=$touches R_SUPERSEDES=$supersedes R_TASK_TITLE=$task_title R_CHECKPOINT=$(short "$base") R_ISSUE=${issue:+#$issue}; R_ISSUE=${R_ISSUE:-none}
   if [ -n "$plan" ]; then R_PHASE="${plan#docs/phases/}"; R_PHASE="${R_PHASE%/PLAN.md} — \`$plan\`"; R_PLAN="\`$plan\`"; else R_PHASE="— (Task 밖 스트림)"; R_PLAN="\`AGENTS.md\`"; fi
-  export R_STREAM R_OWNER R_TASK R_TOUCHES R_SUPERSEDES R_TASK_TITLE R_CHECKPOINT R_PHASE R_PLAN
+  export R_STREAM R_OWNER R_TASK R_TOUCHES R_SUPERSEDES R_TASK_TITLE R_CHECKPOINT R_PHASE R_PLAN R_ISSUE
   local f
   for f in CURRENT HANDOFF LOG INBOX; do render "$WORK/_template/$f.md" > "$WORK/$id/$f.md"; done
   cp "$WORK/_template/notes/README.md" "$WORK/$id/notes/README.md"
   git add "$WORK/$id"
   bookkeep_commit "ai($id): open" "$task" "$id"
   push_branch "ws/$id"
+  if [ -n "$issue" ]; then
+    gh issue comment "$issue" --body "스트림 \`ws/$id\` 열림 — \`.ai/work/$id/\` push 됨 (owner $(my_email)). PR 은 이 이슈를 Closes 한다." >/dev/null 2>&1 && say "  이슈 #$issue 에 코멘트" || warn "이슈 #$issue 코멘트 실패 (권한?)"
+  fi
   say "opened ws/$id → $WORK/$id/  다음: scripts/ai-start.sh"
 }
 

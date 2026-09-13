@@ -6,6 +6,7 @@
 - Owner: {{OWNER}}
 - Branch: ws/{{STREAM}}
 - Task: {{TASK}}
+- Issue: {{ISSUE}}
 - Touches: {{TOUCHES}}
 - Supersedes: {{SUPERSEDES}}
 - Acked: none
