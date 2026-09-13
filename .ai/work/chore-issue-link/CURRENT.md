@@ -29,8 +29,7 @@ REVIEW
 - [x] ai-stream.sh open: `--issue N` 파싱, `open --issue N <slug>` 제목에서 Task 추출, CURRENT `Issue:`, 이슈 코멘트
 - [x] common.sh render `{{ISSUE}}` · CURRENT 템플릿 `Issue:` 줄
 - [x] ai-end.sh PR 본문 첫 줄 `Closes #N`
-- [x] AGENTS.md Session Procedure · 공지 `issue-link` · 색인
-- [x] bash -n · 제목 정규식 · --pr-body Closes · render 테스트
+- [x] AGENTS.md · 공지 `issue-link` · 색인 · 테스트(bash -n · 정규식 · --pr-body · render)
 
 ## Last Checkpoint
 
@@ -48,4 +47,4 @@ REVIEW
 
 ## Next Action
 
-PR 병합 후 팀원이 `scripts/ai-stream.sh open --issue <N> <slug>` 로 Phase 02·03 Task 를 연다.
+PR 병합 후 팀원이 `scripts/ai-stream.sh open --issue N slug` 로 Phase 02·03 Task 를 연다.
