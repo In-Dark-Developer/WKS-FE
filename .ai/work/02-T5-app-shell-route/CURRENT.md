@@ -21,7 +21,7 @@ T5. 앱 셸 레이아웃
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
