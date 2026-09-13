@@ -13,12 +13,20 @@ type Props = {
   shareId: string;
   nickname: string;
   variant?: 'primary' | 'accent' | 'secondary' | 'ghost' | 'apricot';
+  // Figma 결과 화면(713:4021)의 CTA 는 높이 48(size m)이다. 기본은 Button 과 같은 l.
+  size?: 'm' | 'l';
   className?: string;
 };
 
 // SCR-04 결과 화면·SCR-08 궁합 지도의 '친구에게 공유' (FR-4).
 // 공유 시트 → 클립보드 복사 → 링크 직접 노출 순으로 물러난다.
-export function ShareLinkButton({ shareId, nickname, variant = 'secondary', className }: Props) {
+export function ShareLinkButton({
+  shareId,
+  nickname,
+  variant = 'secondary',
+  size = 'l',
+  className,
+}: Props) {
   const [sharing, setSharing] = useState(false);
   // 복사가 막힌 동안에는 링크를 계속 보여준다 — Toast 는 잠깐 뒤 스스로 사라진다.
   const [showLink, setShowLink] = useState(false);
@@ -49,6 +57,7 @@ export function ShareLinkButton({ shareId, nickname, variant = 'secondary', clas
         loading={sharing}
         loadingLabel={shareLinkMessages.sharing}
         onClick={handleShare}
+        size={size}
         variant={variant}
       >
         {shareLinkMessages.button}

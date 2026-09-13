@@ -35,9 +35,12 @@ function storyButton() {
   return screen.getByRole('button', { name: '인스타 스토리 공유하기' });
 }
 
-test('카드와 공유 버튼 두 개를 보여준다', () => {
+test('제목과 카드, 공유 버튼 두 개를 보여준다', () => {
   render(<ConnectionCardScreen {...card} />);
 
+  expect(
+    screen.getByRole('heading', { level: 1, name: '달빛토끼님의 인연카드' }),
+  ).toBeInTheDocument();
   expect(storyButton()).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '카드 뒤집기' })).toBeInTheDocument();
