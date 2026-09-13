@@ -21,19 +21,19 @@ T2. 인연카드 퍼블리싱
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. DestinyCard 에 인연카드 문구(kind) 추가 ←
+- 1. DestinyCard 에 인연카드 문구(kind) 추가
 - 2. share/card ConnectionCard 앞·뒷면·뒤집기
 - 3. preview card 화면(앞면·뒷면·12종)·테스트
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`865e191`
+`c6a9a57`
 
 ## Relevant Documents
 
@@ -42,8 +42,9 @@ IN_PROGRESS
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/share/card/ConnectionCard.tsx:ConnectionCard`
+- `src/ui/DestinyCard.tsx:DestinyCard`
 
 ## Next Action
 
-`docs/phases/04-share-and-card/PLAN.md`에서 04/T2의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합 후 05/T2 궁합 지도 퍼블리싱
