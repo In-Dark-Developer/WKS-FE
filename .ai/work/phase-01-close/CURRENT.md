@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/phases/01-project-setup/,docs/phases/README.md,.ai/work/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -21,17 +21,19 @@ Phase 01 종료
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. 새 클론에서 AC2(install·test·typecheck·lint), AC7(setup·codeowners --check) 검증
+- 2. RESULT.md 작성, PLAN Status=DONE·AC2·AC7 체크
+- 3. `ai-stream.sh phases` · `gc`(5개)
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`ded7ee6`
+`b2d6667`
 
 ## Relevant Documents
 
@@ -44,4 +46,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 01/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합 후 `scripts/ai-stream.sh tag 01`
