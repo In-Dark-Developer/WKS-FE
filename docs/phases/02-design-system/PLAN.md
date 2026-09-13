@@ -34,7 +34,7 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 ## Tasks
 
-- [ ] T1. Figma 토큰 → `@theme` · 폰트 · `cn()` — Done when: 램프·시맨틱·Space·Radius 토큰이 `src/index.css` `@theme` 한 곳에 정의되고 `src/main.tsx`가 이를 import 하며, Pretendard 조달 방식이 결정·적용되고, `cn()`과 prettier-plugin-tailwindcss가 설정돼 임의 색상 사용을 린트가 막는다 · Touches: `src/ui/tokens/`, `src/index.css`, `src/main.tsx`, `src/lib/cn.ts`, `package.json`, `pnpm-lock.yaml`, `.prettierrc`, `eslint.config.js` · Owner: @gn00py48
+- [x] T1. Figma 토큰 → `@theme` · 폰트 · `cn()` (commit 32a858d) — Done when: 램프·시맨틱·Space·Radius 토큰이 `src/index.css` `@theme` 한 곳에 정의되고 `src/main.tsx`가 이를 import 하며, Pretendard 조달 방식이 결정·적용되고, `cn()`과 prettier-plugin-tailwindcss가 설정돼 임의 색상 사용을 린트가 막는다 · Touches: `src/ui/tokens/`, `src/index.css`, `src/main.tsx`, `src/lib/cn.ts`, `package.json`, `pnpm-lock.yaml`, `.prettierrc`, `eslint.config.js` · Owner: @gn00py48
 
 - [ ] T2. 폼 컴포넌트 — Done when: Button(4 variant·로딩·비활성)·IconButton·TextField·TextArea(글자 수 카운터)·Select(트리거 + 옵션 시트)·Checkbox·SegmentedControl·Field(라벨·helper·에러)·PhotoUpload가 라벨·에러·비활성 상태를 지원하고 각각 렌더 테스트가 통과 · Touches: `src/ui/Button.tsx`, `src/ui/IconButton.tsx`, `src/ui/TextField.tsx`, `src/ui/TextArea.tsx`, `src/ui/Select.tsx`, `src/ui/Checkbox.tsx`, `src/ui/SegmentedControl.tsx`, `src/ui/Field.tsx`, `src/ui/PhotoUpload.tsx` · After: T1 · Owner: @gn00py48
 
