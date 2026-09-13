@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/phases/03-saju-reading/PLAN.md,docs/phases/04-share-and-card/PLAN.md,docs/phases/05-friend-score/PLAN.md,docs/phases/README.md,.ai/team/announcements/,.ai/team/README.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-server-state-session, 2026-09-13-screen-ownership, 2026-09-13-session-module-owner, 2026-09-13-opacity-tokens, 2026-09-13-form-owner-change, 2026-09-13-publishing-first
 
 ## Current Phase
 
@@ -21,17 +21,19 @@ Phase 03-publishing-first 계획
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. 디자인 있는 화면·담당·선후 확인(SCR-02·03·04·05·08·09)
+- 2. 03: T5 결과 화면 퍼블리싱(담당 변경)·T6 preview·T7 연동 신설
+- 3. 04/T2 인연카드·05/T2 궁합 지도 퍼블리싱 신설, 색인·공지
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`1dffd1f`
+`586c02e`
 
 ## Relevant Documents
 
@@ -44,4 +46,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 03/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합 후 03/T6 preview 라우트, 이슈 #30 담당 변경
