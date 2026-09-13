@@ -1,5 +1,0 @@
-# pnpm 11 은 허용하지 않은 의존성의 설치 스크립트를 오류로 막는다.
-# wrangler(Cloudflare Workers 배포 — ADR-20260913-workers-static-assets)가 쓰는 네이티브 바이너리만 허용한다.
-allowBuilds:
-  esbuild: true
-  workerd: true
