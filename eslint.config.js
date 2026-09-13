@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
@@ -25,11 +26,15 @@ export default tseslint.config(
     rules: reactHooks.configs.recommended.rules,
   },
   {
-    // 색은 src/ui/tokens/theme.css 의 토큰 클래스로만 쓴다 (CONVENTIONS 4장). hex·색 함수가 든 문자열을 막는다 —
-    // bg-[#abc]·text-[rgb(0,0,0)]·style={{ color: '#fff' }}. 토큰 밖 팔레트 클래스(bg-red-500)는 theme.css 가 CSS 를 만들지 않는다.
+    // 색·간격·타이포는 src/ui/tokens/theme.css 의 토큰 클래스로만 쓴다 (CONVENTIONS 4장).
+    // no-unknown-classes: theme.css 에 없는 클래스(bg-red-500·p-2·text-sm)를 막는다 — className·cn() 안의 문자열.
+    // no-restricted-syntax: hex·색 함수가 든 모든 문자열을 막는다 — bg-[#abc]·text-[rgb(0,0,0)]·style={{ color: '#fff' }}.
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['**/*.test.{ts,tsx}'],
+    plugins: { 'better-tailwindcss': betterTailwindcss },
+    settings: { 'better-tailwindcss': { entryPoint: 'src/index.css' } },
     rules: {
+      'better-tailwindcss/no-unknown-classes': 'error',
       'no-restricted-syntax': [
         'error',
         ...['Literal[value', 'TemplateElement[value.raw'].map((attribute) => ({
