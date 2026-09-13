@@ -214,6 +214,7 @@ pr_draft_vars() {
   logspec=$(awk '/^## /{ n++ } n == 1' "$LOG" | sed -n 's/^- Spec changes: *//p' | head -n1)
   ann=$(git diff --name-only --diff-filter=A "$base...HEAD" -- "$TEAM/announcements/" 2>/dev/null | grep -v _template | sed 's#.*/##; s/\.md$//' | tr '\n' ',' | sed 's/,$//' || true)
   refs=$(git diff --name-only --diff-filter=A "$base...HEAD" -- docs/decisions/ 2>/dev/null | grep -v _template | sed 's#.*/##' | tr '\n' ',' | sed 's/,$//' || true)
+  issue=$(field "$CURRENT" Issue); case "$issue" in none|"") issue="";; \#*) ;; *) issue="#$issue";; esac
   return 0
 }
 pr_draft_title() {
@@ -227,6 +228,7 @@ pr_draft_title() {
 }
 pr_draft_body() { # $1 = 1 이면 <details> 세션 기록까지. 0 은 --web 용 (본문이 URL 파라미터로 가서 길이 제한이 있다)
   pr_draft_vars
+  [ -n "$issue" ] && printf 'Closes %s\n\n' "$issue"
   printf '## 무엇을 · 왜\n\n%s\n\n' "${goal:-<한 줄>}"
   section "$HANDOFF" "Work Completed"; printf '\n'
   printf '## 리뷰 포인트\n\n'; section "$HANDOFF" "Decisions Made"; section "$HANDOFF" "Unverified Assumptions" | sed 's/^- /- (가정) /'; printf '\n'
