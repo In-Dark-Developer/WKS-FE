@@ -1,7 +1,5 @@
 # Current State — 04-T4-card-image
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 04-T4-card-image
 - Owner: gn00py48@gmail.com
 - Branch: ws/04-T4-card-image
@@ -9,7 +7,7 @@
 - Issue: none
 - Touches: src/lib/cardImage.ts, src/lib/cardImage.test.ts, docs/decisions/, package.json, pnpm-lock.yaml
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-13-publishing-first, 2026-09-13-design-tokens, 2026-09-13-opacity-tokens, 2026-09-13-hosting-domains, 2026-09-12-design-first-prd, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -21,17 +19,20 @@ T4. 카드 이미지 생성
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] HANDOFF Goal · 카드 CSS·에셋·폰트 조사
+- [x] 방식 비교 4안 → `html-to-image` 채택 · 의존성 추가
+- [x] `cardImage.ts` 구현 · 테스트 7개
+- [x] ADR-20260914 작성
+- [x] 검증 test 213 · typecheck · lint · 청크 분리 실측(gzip 5.10KB)
+- [x] 커밋 f0c9a39
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`0b272a3`
+`f0c9a39`
 
 ## Relevant Documents
 
@@ -39,8 +40,9 @@ TODO
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/lib/cardImage.ts:renderCardImage` — 동적 import + toBlob
+- `src/lib/cardImage.ts:buildStoryFrame` — 화면 밖 1080×1920 프레임
+- `src/ui/DestinyCard.css` — 컨테이너 쿼리 기반 레이아웃(재현도 판단 근거)
 
 ## Next Action
 
