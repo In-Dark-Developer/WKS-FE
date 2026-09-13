@@ -29,8 +29,7 @@ REVIEW
 - [x] `scripts/notion-index-sync.sh` — PRD FR/NFR·ADR upsert, Phase·상태 도출, `--dry-run`
 - [x] 워크플로 `notion-index-sync.yml` (main docs 변경 · dispatch)
 - [x] ADR-20260913-notion-index-sync · 공지 · 색인 · Notion 페이지 머리말 갱신
-- [x] dry-run 24 FR/NFR · 9 ADR 검증
-- [x] 📅 Phase 색인 DB 생성(Notion) · `--phases` · 워크플로 env · ADR·공지 갱신 · main 머지(색인 충돌 해결)
+- [x] 📅 Phase 색인 DB 생성 · `--phases` · ADR·공지 갱신 · main 머지(색인 충돌 해결) · dry-run 24+10+8행
 
 ## Last Checkpoint
 
