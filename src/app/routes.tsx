@@ -1,14 +1,35 @@
-import type { RouteObject } from 'react-router-dom';
+import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 
 import { AppShell } from '@/app/AppShell';
-import { Placeholder } from '@/app/Placeholder';
 import { requireSession } from '@/app/requireSession';
 import { RootLayout } from '@/app/RootLayout';
 import { RouteError } from '@/app/RouteError';
 import { RouteLoading } from '@/app/RouteLoading';
+import {
+  ReadingResult,
+  SajuForm,
+  readingLoader,
+  sajuAction,
+  type ReadingView,
+} from '@/features/saju';
 
-// 이 파일은 Phase 03 T3 이 단독으로 소유한다 — 각 화면은 컴포넌트·loader·action 만 export 하고 등록은 여기서 한다.
-// 배경은 handle.backdrop 으로 정한다 — 'dawn'(기본) · 'result'(사주 결과) · 'mist'(사전신청 모달).
+// 세션 가드(T3) 뒤에 결과 loader(T7)를 잇는다 — requireSession 이 없으면 redirect('/')로 끝난다.
+function protectedReadingLoader(args: LoaderFunctionArgs) {
+  requireSession();
+  return readingLoader(args);
+}
+
+// share(04)·ranking(05)·teaser(06) 슬롯은 그 Phase가 끝나기 전까지 비워 둔다(saju 는 다른 feature 를
+// import 하지 않는다 — ARCHITECTURE Module Boundaries).
+function ReadingResultRoute() {
+  const view = useLoaderData<ReadingView>();
+  return <ReadingResult view={view} />;
+}
+
+// 이 파일은 Phase 03 T7 이 단독으로 소유한다(T3 이후 인계) — 각 화면은 컴포넌트·loader·action 만
+// export 하고 등록은 여기서 한다. 배경은 handle.backdrop 으로 정한다 — 'dawn'(기본) · 'result'(사주 결과) ·
+// 'mist'(사전신청 모달).
 export const routes: RouteObject[] = [
   {
     path: '/',
@@ -24,14 +45,14 @@ export const routes: RouteObject[] = [
       </AppShell>
     ),
     children: [
-      // SCR-02 사주 입력 — 03/T4 SajuForm
-      { index: true, element: <Placeholder /> },
-      // SCR-04 사주 결과 — 03/T5 ReadingResult (세션 필요)
+      // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7
+      { index: true, element: <SajuForm />, action: sajuAction },
+      // SCR-04 사주 결과 — 03/T5 ReadingResult (세션 필요), loader 03/T7
       {
         path: 'reading/:id',
-        loader: requireSession,
+        loader: protectedReadingLoader,
         handle: { backdrop: 'result' },
-        element: <Placeholder />,
+        element: <ReadingResultRoute />,
         // 예약: 'card' SCR-05 인연카드 (Phase 04) · 'pre-register' SCR-09 사전신청 모달 (06/T2, handle backdrop 'mist')
       },
       // 예약: 's/:shareId' SCR-06 공유 랜딩 (Phase 05)
