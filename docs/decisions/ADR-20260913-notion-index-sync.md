@@ -24,7 +24,7 @@ Notion 「운꿰사」에는 저장소에서 복사해 온 색인 세 개가 있
 
 - 요구사항 색인: `요구사항`(FR 본문, NFR 은 "본문 — Target") · `구분` · `우선순위`(FR 만) · `Phase`(그 ID 를 언급하는 `docs/phases/*/PLAN.md` 의 번호, `03·05`) · `상태`(그 Phase 들의 Status — 전부 DONE 이면 완료, 하나라도 IN_PROGRESS/REVIEW 면 구현중, 아니면 계획).
 - ADR 색인: `결정`(H1) · `번호`(파일명) · `상태`(Status 줄) · `GitHub`(main blob 링크) · `한 줄 요약`(Decision 절 첫 두 줄). **`영역` 열만 사람이 채우고 동기화가 건드리지 않는다.**
-- Phase 색인: `Phase`("NN name") · `번호` · `Lead` · `Depends on` · `Status` · `Tasks`(완료/전체) · `Result` · `GitHub`(PLAN.md 링크) — `docs/phases/README.md` 표가 원본이고 그 표는 `ai-stream.sh phases` 가 PLAN 머리에서 만든다. Task 보드의 `Phase` 열은 select 라 관계로 잇지 않는다.
+- Phase 색인: `Phase`("NN name") · `번호` · `Lead` · `Depends on` · `Status` · `Tasks`(완료/전체) · `Result` · `GitHub`(PLAN.md 링크) · `Goal`(PLAN ## Goal 첫 문단) · `Scope`(PLAN ## Scope 항목을 `·`로) · `Task 보드`(관계 — Task 보드에서 `Phase` select 가 같은 행들, 양방향이라 보드 행에도 `Phase 색인`이 생긴다) — `docs/phases/README.md` 표와 각 PLAN.md 가 원본이고 표는 `ai-stream.sh phases` 가 PLAN 머리에서 만든다.
 - Notion REST 호출은 `scripts/lib/notion.sh` 로 뽑아 `notion-sync.sh` 와 공유한다.
 
 ## Consequences

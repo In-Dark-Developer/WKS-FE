@@ -7,7 +7,7 @@
 #     --phases   docs/phases/README.md 표 → 📅 Phase 색인             (번호 로 upsert)
 #     전부 생략하면 셋 다. --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
 #
-# env: NOTION_TOKEN(필수, Actions secret) · NOTION_PRD_DB · NOTION_ADR_DB · NOTION_PHASE_DB (database id) · REPO_URL(GitHub 링크, 기본 origin)
+# env: NOTION_TOKEN(필수, Actions secret) · NOTION_PRD_DB · NOTION_ADR_DB · NOTION_PHASE_DB · NOTION_TASK_DB(Task 보드 — Phase 행의 `Task 보드` 관계용, 없으면 관계 생략) (database id) · REPO_URL(GitHub 링크, 기본 origin)
 # 색인은 사본이다 — 원본은 docs/ 이고 여기서 고친 값은 다음 push 에 덮어써진다. 사람이 채우는 열(ADR 색인의 `영역`)만 건드리지 않는다.
 # Phase 열은 docs/phases/*/PLAN.md 에서 그 ID 를 언급하는 Phase 번호, 상태 열은 그 Phase 들의 Status(docs/phases/README.md)에서 이끌어낸다.
 # ADR: docs/decisions/ADR-20260913-notion-index-sync.md
@@ -110,20 +110,30 @@ sync_adr() {
 }
 
 # ---------------------------------------------------------------- Phases
-phase_props() { # phase_props <번호> <title> <lead> <depends> <status> <tasks> <result> <url>
-  jq -n --arg no "$1" --arg title "$2" --arg lead "$3" --arg dep "$4" --arg st "$5" --arg tasks "$6" --arg res "$7" --arg url "$8" '
+phase_props() { # phase_props <번호> <title> <lead> <depends> <status> <tasks> <result> <url> <goal> <scope> <task_ids(공백 구분)>
+  jq -n --arg no "$1" --arg title "$2" --arg lead "$3" --arg dep "$4" --arg st "$5" --arg tasks "$6" --arg res "$7" --arg url "$8" --arg goal "$9" --arg scope "${10}" --arg ids "${11}" '
     def text($v): { rich_text: [ { text: { content: $v } } ] };
     { "Phase": { title: [ { text: { content: $title } } ] }, "번호": text($no), "Lead": text($lead), "Depends on": text($dep),
-      "Status": { select: { name: $st } }, "Tasks": text($tasks), "Result": text($res), "GitHub": { url: $url } }'
+      "Status": { select: { name: $st } }, "Tasks": text($tasks), "Result": text($res), "GitHub": { url: $url },
+      "Goal": text($goal), "Scope": text($scope) }
+    + (if $ids == "" then {} else { "Task 보드": { relation: [ ($ids | split(" ")[] | { id: . }) ] } } end)'
 }
+task_row_ids() { # task_row_ids "NN name" → Task 보드에서 Phase select 가 그 값인 행 id 들 (공백 구분). 보드 id 없거나 dry-run 이면 빈 값
+  [ -n "${NOTION_TASK_DB:-}" ] && [ "$dry" -eq 0 ] || return 0
+  notion_api POST "databases/$NOTION_TASK_DB/query" "$(jq -n --arg p "$1" '{ filter: { property: "Phase", select: { equals: $p } }, page_size: 100 }')" || return 0
+  printf '%s' "$body" | jq -r '[.results[].id] | join(" ")'
+}
+plan_goal()  { sed -n '/^## Goal/,/^## /p' "$1" | grep -vE '^(## |<!--|-->|$)' | head -n1 | cut -c1-1900; }
+plan_scope() { sed -n '/^## Scope/,/^## /p' "$1" | grep '^- ' | sed 's/^- //' | paste -sd'\n' - | sed 's/[[:space:]]*$//' | tr '\n' '\001' | sed 's/\x01/ · /g' | cut -c1-1900; }
 sync_phases() { # docs/phases/README.md 의 phases:begin~end 표 (ai-stream.sh phases 가 만든다)
-  local n=0 line nn link name lead dep st tasks res base; base=$(repo_url)
+  local n=0 line nn link name lead dep st tasks res plan goal scope ids base; base=$(repo_url)
   while IFS= read -r line; do
     nn=$(trim "$(printf '%s' "$line" | cut -d'|' -f2)"); printf '%s' "$nn" | grep -qE '^[0-9]{2}$' || continue
     link=$(trim "$(printf '%s' "$line" | cut -d'|' -f3)"); name=$(printf '%s' "$link" | sed -E 's/^\[([^]]*)\].*/\1/')
     lead=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); dep=$(trim "$(printf '%s' "$line" | cut -d'|' -f5)")
     st=$(trim "$(printf '%s' "$line" | cut -d'|' -f6)"); tasks=$(trim "$(printf '%s' "$line" | cut -d'|' -f7)"); res=$(trim "$(printf '%s' "$line" | cut -d'|' -f8)")
-    send "${NOTION_PHASE_DB:-}" 번호 "$nn" "$(phase_props "$nn" "$nn $name" "$lead" "$dep" "$st" "$tasks" "$res" "$base/blob/main/docs/phases/$nn-$name/PLAN.md")" && n=$((n + 1))
+    plan="docs/phases/$nn-$name/PLAN.md"; goal=$(plan_goal "$plan"); scope=$(plan_scope "$plan"); ids=$(task_row_ids "$nn $name")
+    send "${NOTION_PHASE_DB:-}" 번호 "$nn" "$(phase_props "$nn" "$nn $name" "$lead" "$dep" "$st" "$tasks" "$res" "$base/blob/main/$plan" "$goal" "$scope" "$ids")" && n=$((n + 1))
   done <<EOF
 $(sed -n '/<!-- phases:begin -->/,/<!-- phases:end -->/p' docs/phases/README.md)
 EOF

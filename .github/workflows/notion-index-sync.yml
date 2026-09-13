@@ -22,4 +22,5 @@ jobs:
           NOTION_PRD_DB: c46fef81-e47b-4299-a30d-89b6f4feac5c
           NOTION_ADR_DB: 96bba6ec-55a7-4a1a-9474-298648f637a9
           NOTION_PHASE_DB: 6585b534-8238-4856-bf1e-e121dc272c7f
+          NOTION_TASK_DB: 10aa90e7-c6d1-4051-a227-8acec2d4fa44
         run: bash scripts/notion-index-sync.sh
