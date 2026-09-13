@@ -19,7 +19,7 @@ info:
 security: []   # 계약에 인증·세션이 아직 없다. 프론트는 백엔드 세션 토큰으로 식별하기로 했고(PRD Q16) 계약 갱신 대기 중이다
 servers:
   - url: https://api.threatoffate.site/api
-    description: "운영 (ADR-20260913-workers-static-assets) — 프론트 origin https://threatoffate.site 를 CORS 에 허용해야 한다. /api 접두는 백엔드 확인 전 가정 [미확인]"
+    description: "운영 (ADR-20260914-aws-cloudfront-hosting) — 프론트 origin https://threatoffate.site·https://www.threatoffate.site 를 CORS 에 허용해야 한다. /api 접두는 백엔드 확인 전 가정 [미확인]"
   - url: http://localhost:8080/api
     description: "Local development — Base URL 은 /api. 백엔드 CORS 기본값은 http://localhost:3000 (CORS_ALLOWED_ORIGINS)"
 tags:
