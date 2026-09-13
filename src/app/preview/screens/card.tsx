@@ -1,5 +1,5 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
-import { ConnectionCard } from '@/features/share';
+import { ConnectionCard, ConnectionCardScreen } from '@/features/share';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
 const card = {
@@ -30,12 +30,13 @@ const zodiacs: readonly Zodiac[] = [
   'PIG',
 ];
 
-// SCR-05 인연카드 — 04/T2.
+// SCR-05 인연카드 — 04/T2 퍼블리싱 · 04/T5 화면(공유·저장).
 export const preview: PreviewScreen = {
   title: 'SCR-05 인연카드',
   order: 2,
   backdrop: 'result',
   states: {
+    화면: () => <ConnectionCardScreen {...card} shareId="9f0d3f1e-0000-4000-8000-000000000001" />,
     앞면: () => <ConnectionCard {...card} />,
     뒷면: () => <ConnectionCard {...card} initialFace="back" />,
     '십이간지 12종': () => (
