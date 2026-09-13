@@ -5,6 +5,7 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-13-workers-static-assets](announcements/2026-09-13-workers-static-assets.md) | no | all | Phase 08 종료 |
 | [2026-09-13-task-after](announcements/2026-09-13-task-after.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-session-token-and-contact](announcements/2026-09-13-session-token-and-contact.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-session-module-owner](announcements/2026-09-13-session-module-owner.md) | yes | touches:src/api/ | Phase 03 종료 |

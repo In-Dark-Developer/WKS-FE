@@ -1,6 +1,6 @@
 # ADR-20260913: 프론트 호스팅을 Netlify 에서 Cloudflare Pages 로 — 도메인 구성은 그대로
 
-- Status: Accepted
+- Status: Superseded by ADR-20260913-workers-static-assets
 - Date: 2026-09-13
 - Deciders: @jjjung0921 (Phase 08 Lead) / 백엔드 팀 확인 필요 — PR 리뷰
 
