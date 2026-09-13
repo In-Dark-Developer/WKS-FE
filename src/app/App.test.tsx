@@ -13,7 +13,9 @@ test('루트 경로 콘텐츠를 앱 셸 안에 렌더한다', () => {
 
   const shell = screen.getByRole('main');
 
-  expect(within(shell).getByRole('heading', { name: '운꿰사' })).toBeInTheDocument();
+  expect(
+    within(shell).getByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
 });
 
 test('개발 서버에서는 /preview 가 퍼블리싱 확인 목록을 보여 준다', async () => {

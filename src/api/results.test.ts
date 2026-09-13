@@ -1,4 +1,4 @@
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 const { requestMock } = vi.hoisted(() => ({ requestMock: vi.fn() }));
 vi.mock('./client', async (importOriginal) => {
@@ -16,6 +16,12 @@ const input: ResultRequestInput = {
   birthTime: null,
   gender: 'MALE',
 };
+
+beforeEach(() => {
+  // 로컬 `.env`(개발 편의용 VITE_API_MOCK=true)가 있어도 이 파일의 기본값은 항상 "실제 모드"다 —
+  // 목 모드가 필요한 테스트는 각자 vi.stubEnv('VITE_API_MOCK', 'true')로 켠다.
+  vi.stubEnv('VITE_API_MOCK', 'false');
+});
 
 afterEach(() => {
   requestMock.mockReset();
