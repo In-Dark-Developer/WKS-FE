@@ -1,0 +1,89 @@
+/* 궁합 지도 카드 — Figma 558:2628 (343 × 459, 패널 323×439). 패널 안 치수는 Figma px × --u 로 비례한다. */
+[data-compatibility-map] {
+  /* cqw 는 카드의 content box(= 패널 323px) 기준이다. */
+  --u: calc(100cqw / 323);
+  container-type: inline-size;
+  padding: 2.915%;
+  border-radius: 16px;
+  background: var(--color-opacity-card-apricot-50-70);
+  box-shadow: 0 6px 6px color-mix(in srgb, var(--color-primary-400) 10%, transparent);
+}
+
+[data-compatibility-map-panel] {
+  position: relative;
+  aspect-ratio: 323 / 439;
+  overflow: hidden;
+  /* Figma 안쪽 테두리 — border 는 안쪽 좌표를 1px 밀어서 outline 으로 그린다. */
+  outline: 1px solid color-mix(in srgb, var(--color-primary-300) 53%, transparent);
+  outline-offset: -1px;
+  border-radius: 12px;
+  background: url('../../../ui/assets/backgrounds/compatibility-map.svg') center / 100% 100%
+    no-repeat;
+  color: var(--color-neutral-0);
+}
+
+/* 종이 결 — Figma 텍스쳐 overlay 30%. */
+[data-compatibility-map-panel]::before {
+  position: absolute;
+  inset: 0;
+  background: url('../../../ui/assets/backgrounds/paper-grain.webp') center / cover;
+  content: '';
+  mix-blend-mode: overlay;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+[data-compatibility-map-header] {
+  position: absolute;
+  top: calc(15 * var(--u));
+  inset-inline: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  letter-spacing: -0.06em;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+[data-compatibility-map-header] h2 {
+  font-family: var(--font-sungkok);
+  font-size: calc(24 * var(--u));
+  font-weight: 400;
+  color: var(--color-apricot-100);
+}
+
+[data-compatibility-map-header] p {
+  font-size: calc(12 * var(--u));
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+/* 구슬 — 원 중심이 (--x, --y). 그림자 여백(원 지름의 47%)만큼 이미지를 넓히고 음수 여백으로 자리를 맞춘다. */
+[data-compatibility-map-orbs] li {
+  position: absolute;
+  top: calc((var(--y) - var(--d) / 2) * var(--u));
+  left: calc(var(--x) * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  translate: -50% 0;
+}
+
+[data-compatibility-map-orbs] img {
+  width: calc(var(--d) * var(--u));
+  max-width: none;
+  height: calc(var(--d) * var(--u));
+  overflow: visible;
+  scale: 1.9412;
+}
+
+[data-compatibility-map-orbs] span {
+  font-family: var(--font-display);
+  font-size: calc(12 * var(--u));
+  letter-spacing: -0.06em;
+  line-height: normal;
+  white-space: nowrap;
+  opacity: 0.7;
+}
