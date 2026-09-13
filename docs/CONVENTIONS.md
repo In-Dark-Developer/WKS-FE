@@ -3,7 +3,7 @@
 <!-- 사람과 Agent가 코드를 쓸 때 지키는 규칙. 협업 절차(스트림·커밋·PR)는 AGENTS.md, 구조·소유권은 docs/ARCHITECTURE.md 에 있으므로 여기서 반복하지 않는다.
      도구가 잡을 수 있는 규칙은 문장이 아니라 설정(eslint.config.js · .prettierrc · tsconfig.json)으로 옮기고, 옮긴 뒤에는 이 문서에서 지운다 — Phase 01 T3. -->
 
-- Last updated: 2026-09-11
+- Last updated: 2026-09-13
 - Status: 팀 합의 대기 (Phase 01 T3에서 도구 설정으로 고정)
 
 ## 1. 타입
@@ -33,8 +33,23 @@
 
 ## 4. 스타일 (Tailwind)
 
-- 색·타이포·간격은 `src/ui/`가 정의한 토큰만 쓴다. 임의값(`text-[#1a1a1a]`, `mt-[13px]`)은 쓰지 않는다.
-- 조건부 클래스는 문자열 접합 대신 `cn()` 헬퍼(clsx + tailwind-merge)로 합친다.
+- 색·타이포·간격은 `src/ui/tokens/theme.css`가 정의한 토큰만 쓴다. 임의값(`text-[#1a1a1a]`, `mt-[13px]`)은 쓰지 않는다.
+- 토큰 클래스 이름은 Figma 이름을 그대로 옮긴다. Tailwind 기본 색·간격·radius·글자 크기 스케일은 없다(ADR-20260913-design-tokens-and-fonts).
+
+  | Figma | 클래스 | 비고 |
+  |-------|--------|------|
+  | 램프 `Primary/500` · `Neutral/0` | `bg-primary-500` · `text-neutral-0` | Primary·Apricot·Rose·Neutral |
+  | `Text/Primary` · `Text/OnBrand` | `text-primary` · `text-on-brand` | 글자색 전용. placeholder는 `placeholder:text-muted` |
+  | `Border/Default` · `Border/Secondary/Hover` | `border-default` · `border-secondary-hover` | 테두리 전용 |
+  | `Border/Focus` | `outline-focus` · `outline-secondary-focus` | 포커스 링은 outline으로 |
+  | `Surface/*` · `Action/*` · `Graphic/*` · `Status/*` | `bg-surface-subtle` · `bg-action-primary-default` · `fill-graphic-lake` · `text-status-error-foreground` | 그룹 이름을 접두로 붙이고 어느 유틸리티에나 쓴다 |
+  | `Space/16` | `p-16` · `gap-8` · `mt-24` | 숫자가 곧 px — `p-4`는 4px |
+  | `Radius/12` · `Radius/999` | `rounded-12` · `rounded-999` | |
+  | `UI/14/600 Semi Bold` | `text-ui-14 font-semibold` | 크기·행간은 `text-ui-*`, 굵기는 `font-normal`·`medium`·`semibold`·`bold` |
+  | `Display/24/400 Regular` | `font-display text-display-24` | 동국체 |
+
+- 목록에 없는 클래스(`bg-red-500`, `p-2`, `text-sm`)와 hex·`rgb()` 같은 색 리터럴은 `pnpm lint`가 실패시킨다. Figma 토큰이 바뀌면 `theme.css`를 먼저 맞추고, 스케일 이름이 바뀌면 `src/lib/cn.ts`의 목록도 맞춘다.
+- 조건부 클래스는 문자열 접합 대신 `cn()` 헬퍼(`@/lib/cn`, clsx + tailwind-merge)로 합친다.
 - 같은 클래스 묶음이 세 번째로 반복되면 `src/ui/` 컴포넌트로 올린다.
 - 레이아웃 기준은 모바일(360–430px)이고 데스크톱은 중앙 정렬 폴백이다. 가로 스크롤이 생기면 잘못된 것이다.
 - 클래스 순서는 Prettier 플러그인이 정렬한다 — 손으로 맞추지 않는다.
