@@ -11,4 +11,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    // 백엔드 dev 서버 CORS 가 http://localhost:3000 만 허용한다 (Phase 03 PLAN Dependencies).
+    port: 3000,
+  },
 });
