@@ -43,6 +43,7 @@
   | `Border/Default` · `Border/Secondary/Hover` | `border-default` · `border-secondary-hover` | 테두리 전용 |
   | `Border/Focus` | `outline-focus` · `outline-secondary-focus` | 포커스 링은 outline으로 |
   | `Surface/*` · `Action/*` · `Graphic/*` · `Status/*` | `bg-surface-subtle` · `bg-action-primary-default` · `fill-graphic-lake` · `text-status-error-foreground` | 그룹 이름을 접두로 붙이고 어느 유틸리티에나 쓴다 |
+  | `Opacity/Card/Neutral-0/50%` · `Opacity/Overlay/Neutral-900/80%` | `bg-opacity-card-neutral-0-50` · `bg-opacity-overlay-neutral-900-80` | 반투명 카드·오버레이. `/`와 `%`를 빼고 `-`로 잇는다. Figma 에 없는 투명도 조합(`bg-neutral-0/37`)은 쓰지 않는다 |
   | `Space/16` | `p-16` · `gap-8` · `mt-24` | 숫자가 곧 px — `p-4`는 4px |
   | `Radius/12` · `Radius/999` | `rounded-12` · `rounded-999` | |
   | `UI/14/600 Semi Bold` | `text-ui-14 font-semibold` | 크기·행간은 `text-ui-*`, 굵기는 `font-normal`·`medium`·`semibold`·`bold` |

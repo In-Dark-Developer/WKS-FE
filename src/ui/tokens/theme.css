@@ -136,6 +136,25 @@
   --color-status-success-foreground: #218447;
   --color-status-success-background: #f5f9f7;
 
+  /* Opacity — bg-opacity-card-neutral-0-50 … (Figma Variables Opacity/Card/Neutral-0/50%, 램프 색에 투명도) */
+  --color-opacity-card-neutral-0-50: color-mix(in srgb, var(--color-neutral-0) 50%, transparent);
+  --color-opacity-card-neutral-0-70: color-mix(in srgb, var(--color-neutral-0) 70%, transparent);
+  --color-opacity-card-neutral-0-80: color-mix(in srgb, var(--color-neutral-0) 80%, transparent);
+  --color-opacity-card-apricot-50-50: color-mix(in srgb, var(--color-apricot-50) 50%, transparent);
+  --color-opacity-card-apricot-50-70: color-mix(in srgb, var(--color-apricot-50) 70%, transparent);
+  --color-opacity-card-apricot-50-80: color-mix(in srgb, var(--color-apricot-50) 80%, transparent);
+  --color-opacity-card-primary-50-50: color-mix(in srgb, var(--color-primary-50) 50%, transparent);
+  --color-opacity-card-rose-50-50: color-mix(in srgb, var(--color-rose-50) 50%, transparent);
+  --color-opacity-card-neutral-100-50: color-mix(
+    in srgb,
+    var(--color-neutral-100) 50%,
+    transparent
+  );
+  --color-opacity-overlay-neutral-900-80: color-mix(
+    in srgb,
+    var(--color-neutral-900) 80%,
+    transparent
+  );
   /* 포커스 링은 outline 으로 그린다 — outline-focus, outline-secondary-focus */
   --outline-color-focus: var(--border-color-focus);
   --outline-color-secondary-focus: var(--border-color-secondary-focus);

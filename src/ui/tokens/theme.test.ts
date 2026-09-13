@@ -32,6 +32,14 @@ describe('design tokens', () => {
     ['border-default', '--border-color-default: var(--color-primary-200)'],
     ['bg-status-error-background', '--color-status-error-background: #f9e0dc'],
     ['outline-focus', '--outline-color-focus: var(--border-color-focus)'],
+    [
+      'bg-opacity-card-neutral-0-50',
+      '--color-opacity-card-neutral-0-50: color-mix(in srgb, var(--color-neutral-0) 50%, transparent)',
+    ],
+    [
+      'bg-opacity-overlay-neutral-900-80',
+      '--color-opacity-overlay-neutral-900-80: color-mix(in srgb, var(--color-neutral-900) 80%, transparent)',
+    ],
     ['p-16', '--spacing-16: 1rem'],
     ['p-4', '--spacing-4: 0.25rem'],
     ['rounded-12', '--radius-12: 12px'],
@@ -39,8 +47,10 @@ describe('design tokens', () => {
     ['font-display', "--font-display: 'DONGGUK UNIVERSITY'"],
   ])('%s generates CSS from the Figma token', (candidate, declaration) => {
     const css = build([candidate]);
+    // Prettier 가 긴 선언을 여러 줄로 나누므로 공백을 접어서 비교한다.
+    const flat = css.replace(/\(\s+/g, '(').replace(/\s+\)/g, ')').replace(/\s+/g, ' ');
     expect(css).toContain(`.${candidate}`);
-    expect(css).toContain(declaration);
+    expect(flat).toContain(declaration);
   });
 
   it.each([
