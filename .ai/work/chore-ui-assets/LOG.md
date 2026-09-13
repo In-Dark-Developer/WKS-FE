@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-13 · claude-code · -/- · AppShell 배경 달을 moon.svg로 교체
+
+- Commits: ad58c02
+- Done: backdrop radial-gradient 달 제거, `::before`에 `moon.svg` 배치
+- Not done: 없음
+- Developer changes: 소유자가 moon-body·craters·rim SVG를 `moon.svg` 하나로 교체 — 그대로 반영
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 헤더 '운꿰사' 글자가 어두운 배경에서 잘 안 보임(범위 밖)
+- Verification: test 32·typecheck·lint·build 통과, 브라우저에서 달 확인
+
 ## 2026-09-13 · claude-code · -/- · Figma 에셋 src/ui/assets 추가
 
 - Commits: b20f7ad

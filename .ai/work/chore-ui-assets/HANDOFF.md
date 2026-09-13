@@ -16,7 +16,8 @@
 - `zodiac/` 12지신 투명 캐릭터 WebP (가로 720px, 원본 1024px+)
 - `backgrounds/` night-lake(입력 화면) · star-ribbon(별 리본) · paper-grain(종이 질감, 1024px)
 - `cards/` 점지 카드 앞면 배경 · 뒷면 · 뒷면(질감 없음) @3x
-- `moon/` 달 레이어 SVG(body·craters·rim) · `orbs/` 귀인·찰떡·벗·스침 구슬 SVG
+- `moon/moon.svg` 달 한 장(소유자가 레이어 3개를 합친 파일로 교체) · `orbs/` 귀인·찰떡·벗·스침 구슬 SVG
+- AppShell 배경 달: radial-gradient 두 겹 → `[data-app-shell-backdrop]::before`에 `moon.svg`(150px, 중심 72%·18% 유지)
 - `icons/` chevron-down·close·plus·arrow-right·instagram·rotate-right SVG
 
 ## Work In Progress
@@ -25,7 +26,8 @@
 
 ## Files Changed
 
-- `src/ui/assets/**` (신규 30개, 2.1MB)
+- `src/ui/assets/**` (신규 28개, 2.1MB)
+- `src/app/layout.css`
 
 ## Decisions Made
 
@@ -37,10 +39,11 @@
 
 - `pnpm lint` · `pnpm typecheck` · `pnpm build`
 - WebP 크기·알파 확인, 미리보기 육안 확인
+- `pnpm test`(32) · 전용 브라우저 localhost:5173 에서 달 렌더·moon.svg 200·콘솔 에러 없음
 
 ## Test Results
 
-- 모두 통과 (import 하는 코드는 아직 없음)
+- 모두 통과. `::before` 배경은 jsdom에서 검증 불가라 단위 테스트 없음(브라우저 확인)
 
 ## Known Problems
 

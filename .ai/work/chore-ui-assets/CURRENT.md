@@ -7,7 +7,7 @@
 - Branch: ws/chore-ui-assets
 - Task: -/-
 - Issue: none
-- Touches: src/ui/assets/
+- Touches: src/ui/assets/,src/app/layout.css
 - Supersedes: none
 - Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
@@ -29,11 +29,13 @@ REVIEW
 - 1. Figma 「UI 최종 - 개발용」(558-2430) DEV ASSETS·카드·달·구슬·아이콘 추출
 - 2. 래스터는 WebP 변환(12지신 720px, 카드 @3x), SVG는 원본
 - 3. `src/ui/assets/` 배치, lint·typecheck·build 확인
+- 4. 소유자가 달 레이어 3개를 `moon/moon.svg` 하나로 교체
+- 5. AppShell 배경 달을 CSS 그라데이션에서 `moon.svg`로 교체
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`85efb7c`
+`ad58c02`
 
 ## Relevant Documents
 
@@ -43,7 +45,7 @@ REVIEW
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/app/layout.css:[data-app-shell-backdrop]::before`
 
 ## Next Action
 
