@@ -17,14 +17,19 @@
 - `Toast.tsx` — `duration`(기본 3000ms) 뒤 자동 `onClose`. 모달이 아니라 포커스는 안 가져가고 `role="status"`+`aria-live="polite"`로만 알림
 - 세 파일 다 기존 오버레이 토큰(`bg-opacity-overlay-neutral-900-80`) 사용, 새 토큰 필요 없었음
 - 테스트 16개(포커스 트랩 순환, 배경 클릭, ESC, 스크롤 잠금/복원, 포커스 복원, 옵션 선택, 타이머)
+- (소유자 제안) `src/app/preview/screens/overlays.tsx` 추가 — 버튼 3개로 각 컴포넌트를 열어보는 확인용
+  화면. `pnpm dev`+playwright로 실제 브라우저에서 눌러봄: 포커스 트랩·ESC·배경클릭 닫기·스크롤
+  잠금/복원·ShareSheet 선택 시 자동 닫힘·Toast 자동 소멸 전부 확인, 콘솔 에러 0건, 스크린샷으로
+  스타일도 확인(카드·바텀시트·토스트 다 토큰대로 렌더됨)
 
 ## Work In Progress
 
-- 없음 — 구현·테스트 끝, push 승인 대기
+- 없음 — 구현·테스트·실사용 확인 끝, push 승인 대기
 
 ## Files Changed
 
 - `src/ui/Modal.tsx`, `Modal.test.tsx`, `ShareSheet.tsx`, `ShareSheet.test.tsx`, `Toast.tsx`, `Toast.test.tsx` (전부 신규)
+- `src/app/preview/screens/overlays.tsx`(신규, Touches 밖 → 소유자 제안으로 추가, CURRENT Touches 갱신함)
 
 ## Decisions Made
 
@@ -35,15 +40,16 @@
 ## Tests Executed
 
 - `pnpm test`(45개 파일, 신규 3개)·`typecheck`·`lint`·`build`
+- `pnpm dev` 실사용 확인(playwright): Modal·ShareSheet·Toast 각각 버튼으로 열어 동작·스타일 확인
 
 ## Test Results
 
-- 201/201 통과, typecheck·lint·build 전부 통과
+- 201/201 통과, typecheck·lint·build 전부 통과. 실제 구동 확인도 통과(콘솔 에러 0)
 
 ## Known Problems
 
 - Figma 정확한 프레임을 대조하지 못했다(이 Task Done-when에 프레임 번호가 없어 접근 안 함) — 나중에 디자인 검수에서 여백·크기가 조정될 수 있다
-- 세 컴포넌트 다 아직 어디에서도 안 쓰인다(Phase 02는 컴포넌트만 만들고 조립은 화면 Task 몫) — 실제 화면에 붙여보기 전까지 API가 안 맞을 가능성 있음
+- `/preview/overlays`에서 실제로 열어봐 동작은 확인했지만, 세 컴포넌트 다 아직 실제 화면(공유 버튼 등)에는 안 쓰인다 — 진짜로 붙여보기 전까지 props 모양이 안 맞을 가능성은 남아 있음
 
 ## Unverified Assumptions
 
