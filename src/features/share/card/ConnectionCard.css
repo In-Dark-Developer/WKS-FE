@@ -1,0 +1,58 @@
+/* 인연카드 — 앞면(DestinyCard)과 뒷면을 같은 칸에 겹쳐 두고 Y축으로 뒤집는다. */
+[data-connection-card] {
+  position: relative;
+  display: grid;
+  perspective: 1200px;
+}
+
+[data-connection-card-inner] {
+  position: relative;
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+[data-connection-card][data-face='back'] [data-connection-card-inner] {
+  transform: rotateY(180deg);
+}
+
+[data-connection-card-inner] > * {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+}
+
+/* 뒷면 — Figma 731:4712. card-back.webp 는 그림자 여백까지 담은 351×469 라 343×461 칸 밖으로 4px 씩 넘친다. */
+[data-connection-card-back] {
+  position: relative;
+  aspect-ratio: 343 / 461;
+  transform: rotateY(180deg);
+}
+
+[data-connection-card-back] img {
+  position: absolute;
+  top: -0.868%;
+  left: -1.166%;
+  width: 102.332%;
+  max-width: none;
+  height: 101.735%;
+}
+
+/* 카드 뒤집기 — Figma 558:2788, 카드 아래에서 27px 위 (461px 기준). */
+[data-connection-card-flip] {
+  position: absolute;
+  bottom: 5.857%;
+  left: 50%;
+  z-index: 1;
+  translate: -50% 0;
+}
+
+[data-connection-card-flip] > span {
+  width: 14px;
+  height: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-connection-card-inner] {
+    transition: none;
+  }
+}
