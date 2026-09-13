@@ -1,6 +1,6 @@
 # ADR-20260913: 프론트는 Netlify `threatoffate.site`, 백엔드는 `api.threatoffate.site`
 
-- Status: Accepted
+- Status: Superseded by ADR-20260913-cloudflare-pages-hosting
 - Date: 2026-09-13
 - Deciders: @jjjung0921 (Phase 08 Lead) / 백엔드 팀 합의 필요 — PR 리뷰
 
