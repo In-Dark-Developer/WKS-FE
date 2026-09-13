@@ -7,9 +7,9 @@
 - Branch: ws/02-T5-app-shell
 - Task: 02/T5
 - Issue: #26
-- Touches: src/app/AppShell.tsx, src/app/layout.css
+- Touches: src/app/AppShell.tsx, src/app/layout.css, src/app/AppShell.test.tsx
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -26,12 +26,14 @@ TODO
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] Figma 375px 화면과 T5 반응형 불변식 확인
+- [x] AppShell 폭·safe-area·고정 배경·별 상승 모션 구현
+- [x] 렌더 테스트와 test·typecheck·lint 검증
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`cf93bda`
+`3f9a1c0`
 
 ## Relevant Documents
 
@@ -40,8 +42,9 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/app/AppShell.tsx:AppShell`
+- `src/app/layout.css`
 
 ## Next Action
 
-`docs/phases/02-design-system/PLAN.md`에서 02/T5의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+최신 main을 병합하고 `scripts/ai-end.sh --ready --pr`로 PR을 연다.
