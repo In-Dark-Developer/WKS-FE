@@ -48,14 +48,15 @@
   background: linear-gradient(to bottom, var(--color-primary-50) 21.05%, var(--color-primary-200));
 }
 
-/* 별자리 리본은 콘텐츠와 함께 스크롤되어 올라간다 ("그라데이션 고정 · 별자리가 올라감"). 375px 프레임 기준 비율. */
+/* 별자리 리본은 콘텐츠와 함께 스크롤되고, 위아래를 번갈아 뒤집어 이어 붙여 페이지 끝까지 연결된다.
+   star-ribbon-loop.webp = star-ribbon.webp + 상하 반전본을 세로로 붙인 한 장 (끝점이 맞물린다). 375px 프레임 기준 비율. */
 [data-backdrop='result']::before,
 [data-backdrop='mist']::before {
   content: '';
   position: absolute;
   z-index: 0;
-  aspect-ratio: 824 / 1909;
-  background: url('../ui/assets/backgrounds/star-ribbon.webp') center / contain no-repeat;
+  bottom: 0;
+  background: url('../ui/assets/backgrounds/star-ribbon-loop.webp') top center / 100% auto repeat-y;
   pointer-events: none;
 }
 
