@@ -5,7 +5,8 @@ import spinnerIcon from '@/ui/assets/icons/spinner.svg';
 import { Icon } from '@/ui/Icon';
 
 // Figma 디자인시스템 C01 Button/Primary·Accent·Secondary·Ghost (M 48 · L 56).
-type Variant = 'primary' | 'accent' | 'secondary' | 'ghost';
+// apricot 은 화면(수정본) 주 버튼 — Action/Accent(Apricot) 토큰을 쓴다.
+type Variant = 'primary' | 'accent' | 'secondary' | 'ghost' | 'apricot';
 type Size = 'm' | 'l';
 
 type Props = ComponentPropsWithoutRef<'button'> & {
@@ -25,6 +26,8 @@ const variantClass: Record<Variant, string> = {
   secondary:
     'border border-secondary-default bg-action-secondary-default text-action-secondary-foreground hover:border-secondary-hover hover:bg-action-secondary-hover active:border-secondary-pressed active:bg-action-secondary-pressed focus-visible:outline-secondary-focus',
   ghost: 'text-brand hover:bg-surface-selected active:bg-surface-selected',
+  apricot:
+    'bg-action-accent-default text-primary hover:bg-action-accent-hover active:bg-action-accent-pressed',
 };
 
 const disabledClass: Record<Variant, string> = {
@@ -33,6 +36,7 @@ const disabledClass: Record<Variant, string> = {
   secondary:
     'disabled:border-secondary-disabled disabled:bg-action-disabled-background disabled:text-action-disabled-foreground',
   ghost: 'disabled:bg-transparent disabled:text-action-disabled-foreground',
+  apricot: 'disabled:bg-action-disabled-background disabled:text-action-disabled-foreground',
 };
 
 export function Button({
