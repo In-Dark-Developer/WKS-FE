@@ -6,6 +6,7 @@
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
 | [2026-09-14-netlify-personal-fork](announcements/2026-09-14-netlify-personal-fork.md) | no | all | Phase 08 종료 |
+| [2026-09-14-domain-threadoffate](announcements/2026-09-14-domain-threadoffate.md) | no | all | Phase 08 종료 |
 | [2026-09-14-aws-cloudfront-hosting](announcements/2026-09-14-aws-cloudfront-hosting.md) | no | all | Phase 08 종료 |
 | [2026-09-13-workers-static-assets](announcements/2026-09-13-workers-static-assets.md) | no | all | Phase 08 종료 |
 | [2026-09-13-task-after](announcements/2026-09-13-task-after.md) | yes | all | Phase 08 종료 |

@@ -23,7 +23,7 @@ AWS 설정 대신 개인 fork + Netlify 무료로 운영 배포할 것인가, �
 
 ## Decision
 
-대안 3 (소유자 결정, 2026-09-14). ADR-20260914-aws-cloudfront-hosting 을 대체한다. 주소(`threatoffate.site`·`api.threatoffate.site`)·DNS Route53·`VITE_API_BASE_URL`·토큰 헤더 설계는 그대로다.
+대안 3 (소유자 결정, 2026-09-14). ADR-20260914-aws-cloudfront-hosting 을 대체한다. 주소(`threadoffate.site`·`api.threadoffate.site`)·DNS Route53·`VITE_API_BASE_URL`·토큰 헤더 설계는 그대로다.
 
 - `netlify.toml`: 빌드 `pnpm build` → `dist`, 운영 `VITE_API_BASE_URL`, SPA 폴백 `/* → /index.html 200`, `/assets/*` 장기 캐시
 - `.github/workflows/sync-fork.yml`: 조직 저장소 `main` push 마다 `merge-upstream` 으로 fork `main` 을 맞춘다 — Netlify 는 fork push 로 빌드한다. 토큰은 fork 한 저장소에만 쓰기 권한이 있는 fine-grained PAT(`FORK_SYNC_TOKEN`)
