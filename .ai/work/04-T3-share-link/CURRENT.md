@@ -1,7 +1,5 @@
 # Current State — 04-T3-share-link
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 04-T3-share-link
 - Owner: gn00py48@gmail.com
 - Branch: ws/04-T3-share-link
@@ -9,7 +7,7 @@
 - Issue: none
 - Touches: src/features/share/link/, src/features/share/index.ts, src/app/preview/screens/share.tsx
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-13-publishing-first, 2026-09-13-hosting-domains, 2026-09-13-design-tokens, 2026-09-13-opacity-tokens, 2026-09-13-server-state-session, 2026-09-13-task-after, 2026-09-13-screen-ownership, 2026-09-12-design-first-prd, 2026-09-13-backend-contract-r2
 
 ## Current Phase
 
@@ -21,17 +19,20 @@ T3. 공유 링크 버튼 퍼블리싱
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] HANDOFF Goal 작성 · 기존 Toast·Button·preview 관례 확인
+- [x] `shareUrl.ts`·`shareLink.ts`·`messages.ts` (3단 폴백)
+- [x] `ShareLinkButton.tsx` — 로딩 잠금·복사 Toast·링크 노출
+- [x] 테스트 13개 · `/preview/share` 세 분기
+- [x] 검증 test 219 · typecheck · lint · build(147KB gzip) · AC5·AC6 grep
+- [x] 커밋 57ed534
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`0b272a3`
+`57ed534`
 
 ## Relevant Documents
 
@@ -39,8 +40,9 @@ TODO
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/share/link/shareLink.ts:shareLink` — 폴백 분기
+- `src/features/share/link/shareUrl.ts:buildShareUrl` — origin 기준 URL
+- `src/features/share/link/ShareLinkButton.tsx` — 화면
 
 ## Next Action
 
