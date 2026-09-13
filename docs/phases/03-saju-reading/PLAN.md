@@ -43,7 +43,7 @@
 
 - [x] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: @jjjung0921 (commit cc82bf8)
 
-- [ ] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/reading/:id/pre-register`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있고, 모든 라우트의 `errorElement`·첫 진입 `HydrateFallback`이 공통 상태 화면(SCR-12 — 수정본 오류·연결문제·로딩 문구, `ContentState` 사용)을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/app/RequireSession.tsx`, `src/app/RouteError.tsx` · Owner: @jjjung0921
+- [x] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/reading/:id/pre-register`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있고, 모든 라우트의 `errorElement`·첫 진입 `HydrateFallback`이 공통 상태 화면(SCR-12 — 수정본 오류·연결문제·로딩 문구, `ContentState` 사용)을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/app/requireSession.ts`, `src/app/RouteError.tsx`, `src/app/RouteLoading.tsx`, `src/api/session.ts` · Owner: @jjjung0921 (commit cc0ebd7)
 
 - [ ] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·닉네임 8자 검증과 '몰라요'→null 처리(`birthRegion`은 항상 null)가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts` · After: T1 · Owner: @gn00py48
 
@@ -51,7 +51,7 @@
 
 <!-- 선후는 각 Task 의 After: 가 기준이다 (T4·T5 After: T1 — 호출 계약이 먼저 있어야 한다). T3·T4·T5는 서로 겹치지 않는다.
      라우트 파일은 충돌 지점이라 T3이 단독으로 소유한다 — 다른 Task는 자기 화면 컴포넌트·loader·action만 export 하고 등록은 T3이 한다.
-     옵션 값(12시진)은 `features/saju/options.ts`(T4)에 두고 ui Select(02/T6)에는 props로만 넘긴다. API 파일은 자원별로 나눈다 — `client.ts`·`session.ts`는 T1 소유, 다른 Task는 import 만. -->
+     옵션 값(12시진)은 `features/saju/options.ts`(T4)에 두고 ui Select(02/T6)에는 props로만 넘긴다. API 파일은 자원별로 나눈다 — `client.ts`는 T1, `session.ts`(localStorage 세션 보관 — ADR-20260913-server-state-and-session-storage)는 T3 소유이고 다른 Task는 import 만. `session.ts`를 T1에서 T3으로 옮겼다(2026-09-13) — T3의 가드가 T1을 기다리지 않게. -->
 
 ## Relevant Specifications
 
