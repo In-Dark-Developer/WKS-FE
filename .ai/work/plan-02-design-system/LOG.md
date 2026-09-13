@@ -8,7 +8,7 @@
 - Done: 02 T2 분리·T6, 03 T3·T5 보강, 06 T2, PRD SCR-09 라우트, 공지
 - Not done: track 이슈 생성·#23 갱신(병합 후)
 - Developer changes: 소유자 지시 — 수정본 기준, 충돌 없는 책임 분리
-- Upstream changes: 없음
+- Upstream changes: PR #44 병합 — phases·공지 색인 충돌을 재생성으로 해결, Acked 에 server-state-session 추가
 - Spec changes: `docs/PRD.md` SCR-09 라우트 (Touches 안)
 - Needs your attention: @gn00py48·@nicerjs23 동의, 디자인 3건(지역 칸·연락처·MBTI)
 - Verification: phases·announce --check, lint 통과
