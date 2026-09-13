@@ -1,7 +1,5 @@
 # Current State — 03-T1-api-client
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 03-T1-api-client
 - Owner: nicerjs23@gmail.com
 - Branch: ws/03-T1-api-client
@@ -9,7 +7,7 @@
 - Issue: #27
 - Touches: src/api/client.ts, src/api/results.ts, src/api/schema/, docs/api/openapi.yaml#/paths/~1results, docs/api/openapi.yaml#/paths/~1results~1{resultId}, vite.config.ts
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after
 
 ## Current Phase
 
@@ -21,27 +19,31 @@ T1. API 클라이언트 계층 + 경계 검증
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. main 병합(02/T2·T6·03/T4 유입, 겹침 없음), ADR·PLAN·openapi 재확인
+- 2. `src/api/schema/`: envelope·Result·ResultRequest·ResultDetail zod 스키마
+- 3. `src/api/client.ts`: 토큰 헤더·GET 1회 재시도·세션 무효 처리
+- 4. `src/api/results.ts`: createResult·getResult + `VITE_API_MOCK` 목 응답
+- 5. `vite.config.ts` server.port 3000, `src/vite-env.d.ts` 추가
+- 6. 테스트 27개 추가, `pnpm test|typecheck|lint|build` 통과 (commit 46d150a) ←
+- 7. HANDOFF·LOG 정리, PLAN Task 줄 갱신, `--ready`
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
 `1d6ee6a`
 
 ## Relevant Documents
 
-- `docs/phases/03-saju-reading/PLAN.md`
+- `docs/phases/03-saju-reading/PLAN.md` · `docs/decisions/ADR-20260913-server-state-and-session-storage.md`
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/api/client.ts:request` · `src/api/results.ts:createResult,getResult`
+- `src/features/saju/formSchema.ts:SajuInput` (03/T4, client.ts 로 아직 연결 안 됨)
 
 ## Next Action
 
-`docs/phases/03-saju-reading/PLAN.md`에서 03/T1의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+`git merge main` 완료. `.ai/local/notes/03-T1-api-client.md` 설명 작성 → 소유자 승인 후 `ai-end.sh --ready`.

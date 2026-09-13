@@ -39,7 +39,7 @@
 
 ## Tasks
 
-- [ ] T1. API 클라이언트 계층 + 경계 검증 — Done when: `POST /results` · `GET /results/{id}`의 요청/응답 봉투가 zod로 검증되고 스키마 위반·네트워크 실패·`error.code`(404·503)가 타입으로 구분되며 테스트가 통과 · Touches: `src/api/client.ts`, `src/api/results.ts`, `src/api/schema/`, `docs/api/openapi.yaml#/paths/~1results`, `docs/api/openapi.yaml#/paths/~1results~1{resultId}`, `vite.config.ts` · Owner: @nicerjs23
+- [x] T1. API 클라이언트 계층 + 경계 검증 — Done when: `POST /results` · `GET /results/{id}`의 요청/응답 봉투가 zod로 검증되고 스키마 위반·네트워크 실패·`error.code`(404·503)가 타입으로 구분되며 테스트가 통과 · Touches: `src/api/client.ts`, `src/api/results.ts`, `src/api/schema/`, `docs/api/openapi.yaml#/paths/~1results`, `docs/api/openapi.yaml#/paths/~1results~1{resultId}`, `vite.config.ts` · Owner: @nicerjs23 (commit 46d150a — SajuForm→ResultRequest 매핑은 T3 소유 routes.tsx action 몫, 아직 연결 안 됨)
 
 - [x] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: @jjjung0921 (commit cc82bf8)
 
