@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-13 · claude-code · 01/T6 · 백엔드 계약 동기화 완료 처리
+
+- Commits: 65321a1
+- Done: openapi ↔ api-spec.md 일치 확인 · 차이 등록 확인 · PLAN T6 [x]·Owner 변경·Done-when 재작성
+- Not done: 실제 백엔드 응답 대조(레포·서버 없음) · 백엔드 답변 반영(후속 spec 스트림)
+- Developer changes: 없음
+- Upstream changes: 없음 (`ws/spec-drop-birth-region` 은 미병합, openapi birthRegion 설명만 겹침)
+- Spec changes: 없음 (openapi 무변경)
+- Needs your attention: 백엔드에 `notes/backend-questions.md` A·B 항목 전송 필요
+- Verification: redocly lint 오류 0 · pnpm test 1/1 · typecheck · lint 통과
+
 ## 2026-09-13 · ai-stream · 01/T6 · 스트림 열기
 
 - Commits: (open)
