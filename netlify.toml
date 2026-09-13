@@ -1,0 +1,22 @@
+# Netlify 배포 설정 — ADR-20260914-netlify-personal-fork, Phase 08 T2. Netlify 는 개인 fork(jjjung0921/WKS-FE)를 빌드한다.
+# Node 버전은 .nvmrc, pnpm 버전은 package.json packageManager 를 Netlify 가 읽는다.
+
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+# 비밀값이 아니다 — 프론트 번들에 그대로 들어가는 공개 주소.
+[build.environment]
+  VITE_API_BASE_URL = "https://api.threatoffate.site/api"
+
+# SPA — 새로고침·공유 링크(/s/:shareId) 직접 진입도 index.html 이 받아 라우터가 그린다.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Vite 가 파일 이름에 해시를 붙이는 산출물은 오래 캐시한다. index.html 은 Netlify 기본(매번 재검증).
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
