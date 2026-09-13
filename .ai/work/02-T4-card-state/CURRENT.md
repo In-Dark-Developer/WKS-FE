@@ -19,7 +19,7 @@ T4. 카드와 상태 컴포넌트
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
