@@ -48,8 +48,7 @@
 ## Known Problems
 
 - 라우트 미연결 — `/` 는 아직 Placeholder. T1 의 `createResult` 가 있어야 action 을 만들 수 있다
-- 수정본 12시진 목록은 자시 한 칸 — 디자인 갱신 요청 필요
-- '자세히'(이용약관 695:2753) 는 Modal(02/T3) 전이라 넣지 않음
+- 수정본 12시진은 자시 한 칸(디자인 갱신 요청 필요), '자세히' 약관(695:2753)은 Modal(02/T3) 전이라 없음
 - `SajuForm.tsx` 약 215줄(200줄 기준 초과), 음력 실재일·윤달 존재는 백엔드 INVALID_INPUT 에 기댐
 
 ## Unverified Assumptions
