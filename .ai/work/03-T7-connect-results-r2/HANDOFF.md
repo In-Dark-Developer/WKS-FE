@@ -14,7 +14,7 @@
 - `readingView.ts`: `ReadingView`에 `compatibilities?: readonly CompatibilitySummary[]` 추가(api 타입 재사용 — saju는 friends feature를 import하지 않으므로 friends 쪽 `Friend` 타입 대신 api 계약 타입을 그대로 씀)
 - `src/api/schema/result.ts`: `CompatibilitySummary` 타입을 export하도록 한 줄 추가(원래 스키마만 export, 인퍼드 타입이 없었음 — Touches 밖이지만 최소·비파괴적 추가)
 - `toReadingView.ts`: `result.compatibilities`를 그대로 전달
-- `routes.tsx`: `@/features/friends`에서 `FriendRanking` import, `ReadingResultRoute`가 `ranking={<FriendRanking friends={view.compatibilities ?? []} limit={3} />}`로 조립
+- `routes.tsx`: `@/features/friends`에서 `FriendRanking` import, `ReadingResultRoute`가 `ranking` prop에 `FriendRanking`(friends=`view.compatibilities`, limit=3)을 만들어 넣음
 - 테스트: `toReadingView.test.ts`에 compatibilities 전달 확인 테스트 추가(+기존 스냅샷형 테스트 갱신), `routes.test.tsx`에 빈 상태·데이터 있는 상태 둘 다 렌더 확인 추가
 - **`pnpm dev`(VITE_API_MOCK=true)+playwright로 실제 결과 화면에 "친구 궁합 순위" 섹션이 뜨는 것 확인**(목 응답은 항상 compatibilities:[]라 빈 상태만 실제 확인, 데이터 있는 경우는 유닛 테스트로 커버). 콘솔 에러 0
 
