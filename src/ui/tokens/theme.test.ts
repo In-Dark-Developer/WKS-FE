@@ -45,6 +45,7 @@ describe('design tokens', () => {
     ['rounded-12', '--radius-12: 12px'],
     ['text-ui-14', '--text-ui-14--line-height: 1.375rem'],
     ['font-display', "--font-display: 'DONGGUK UNIVERSITY'"],
+    ['font-sungkok', "--font-sungkok: 'KMU80 Sungkok Serif'"],
   ])('%s generates CSS from the Figma token', (candidate, declaration) => {
     const css = build([candidate]);
     // Prettier 가 긴 선언을 여러 줄로 나누므로 공백을 접어서 비교한다.
