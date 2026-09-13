@@ -6,8 +6,8 @@ ADR-20260914-netlify-personal-fork 의 설정·운영 절차.
 In-Dark-Developer/WKS-FE (main 병합)
   └─ Actions sync-fork ─ git push --force ─▶ jjjung0921/WKS-FE (private fork)
                                             └─ Netlify 자동 빌드·배포 (netlify.toml)
-브라우저 ─ threatoffate.site ─ Route53 A 75.2.60.5 ─ Netlify
-       └ api.threatoffate.site ─ Route53 ─ 백엔드 서버
+브라우저 ─ threadoffate.site ─ Route53 A 75.2.60.5 ─ Netlify
+       └ api.threadoffate.site ─ Route53 ─ 백엔드 서버
 ```
 
 ## 1. Netlify 사이트 (fork 소유자 계정)
@@ -32,23 +32,24 @@ In-Dark-Developer/WKS-FE (main 병합)
 
 ## 3. 도메인 (Route53 — 백엔드 팀)
 
-Netlify → Domain management → Add domain `threatoffate.site` (`www` 포함) 후, Route53 호스팅 영역에:
+Netlify → Domain management → Add domain `threadoffate.site` (`www` 포함) 후, Route53 호스팅 영역에:
 
 | 이름 | 유형 | 값 |
 |------|------|----|
-| `threatoffate.site` | A | `75.2.60.5` (Netlify 로드밸런서 — apex 에 다른 A 레코드가 있으면 지운다) |
-| `www.threatoffate.site` | CNAME | `<사이트 이름>.netlify.app` |
+| `threadoffate.site` | A | `75.2.60.5` (Netlify 로드밸런서 — apex 에 다른 A 레코드가 있으면 지운다) |
+| `www.threadoffate.site` | CNAME | `effulgent-torrone-699094.netlify.app` |
 
 HTTPS 인증서는 DNS 반영 뒤 Netlify 가 자동 발급한다(최대 하루).
 
 ## 4. 확인
 
-1. `https://threatoffate.site` 가 열리고 `https://threatoffate.site/s/test` 새로고침이 앱을 연다
-2. 운영 화면 DevTools Network 에서 `api.threatoffate.site` 호출이 CORS 오류 없이 간다
+1. `https://threadoffate.site` 가 열리고 `https://threadoffate.site/s/test` 새로고침이 앱을 연다
+2. 운영 화면 DevTools Network 에서 `api.threadoffate.site` 호출이 CORS 오류 없이 간다
 
 ## 백엔드 팀에 요청
 
-- CORS 허용 origin: `https://threatoffate.site`, `https://www.threatoffate.site` (도메인 연결 전 확인용으로 `https://<사이트 이름>.netlify.app`)
+- `api.threadoffate.site` 에 **HTTPS(443) 와 TLS 인증서** — 프론트가 HTTPS 라 HTTP API 는 브라우저가 막는다
+- CORS 허용 origin: `https://threadoffate.site`, `https://www.threadoffate.site`, `https://effulgent-torrone-699094.netlify.app`
 - Route53 레코드 3 의 두 줄, 운영 `/api` 접두 확인
 
 ## 주의
