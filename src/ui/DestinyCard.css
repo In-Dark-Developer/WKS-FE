@@ -1,0 +1,117 @@
+/* 운명 카드 — Figma 713:4026 (343×461, 패널 323×439). 패널 안 치수는 Figma px × --u 로, 카드 폭이 바뀌면 통째로 비례한다. */
+[data-destiny-card] {
+  /* cqw 는 카드의 content box(= 패널 323px) 기준이다. */
+  --u: calc(100cqw / 323);
+  container-type: inline-size;
+  aspect-ratio: 343 / 461;
+  /* 카드 자신에게는 cqw 가 자기 폭이 아니므로 padding 은 폭 기준 % 로 준다 (11px·10px / 343px). */
+  padding: 3.207% 2.915%;
+  border-radius: 12px;
+  background: var(--color-neutral-0);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-neutral-900) 20%, transparent);
+}
+
+[data-destiny-card-panel] {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    url('./assets/cards/card-front-decor.svg') center / 100% 100% no-repeat,
+    url('./assets/cards/card-front-bg.webp') center / 100% 100% no-repeat;
+  color: var(--color-neutral-900);
+  line-height: normal;
+}
+
+[data-destiny-card-character] {
+  position: absolute;
+  top: calc(var(--y) * var(--u));
+  left: calc(var(--x) * var(--u));
+  width: calc(var(--w) * var(--u));
+  max-width: none;
+  pointer-events: none;
+}
+
+[data-destiny-card-header] {
+  position: absolute;
+  top: calc(15 * var(--u));
+  inset-inline: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  letter-spacing: -0.06em;
+  white-space: nowrap;
+}
+
+[data-destiny-card-header] h2 {
+  font-family: var(--font-sungkok);
+  font-size: calc(24 * var(--u));
+  font-weight: 400;
+}
+
+[data-destiny-card-header] p,
+[data-destiny-card-destiny] p + p {
+  font-size: calc(12 * var(--u));
+  font-weight: 500;
+  color: var(--color-neutral-700);
+}
+
+[data-destiny-card-destiny] {
+  position: absolute;
+  top: calc(99 * var(--u));
+  inset-inline: calc(18 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+  letter-spacing: -0.06em;
+}
+
+[data-destiny-card-destiny] p:first-child {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  font-family: var(--font-sungkok);
+  font-size: calc(14 * var(--u));
+  white-space: nowrap;
+}
+
+/* 운명 제목은 길이가 보장되지 않는다 — 한 줄 말줄임. */
+[data-destiny-card-destiny] strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: calc(29.565 * var(--u));
+  font-weight: 400;
+  text-overflow: ellipsis;
+}
+
+/* 설명은 두 줄까지. */
+[data-destiny-card-destiny] p + p {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: pre-line;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+[data-destiny-card-grades] > div {
+  position: absolute;
+  top: calc(var(--y) * var(--u));
+  left: calc(219 * var(--u));
+  display: flex;
+  align-items: center;
+  gap: calc(3.269 * var(--u));
+}
+
+[data-destiny-card-grades] dt {
+  font-size: calc(13.153 * var(--u));
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  white-space: nowrap;
+}
+
+[data-destiny-card-grades] img {
+  display: block;
+  width: auto;
+  height: calc(var(--h) * var(--u));
+}

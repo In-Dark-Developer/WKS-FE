@@ -7,7 +7,7 @@
 
 ## Goal
 
-사주 입력 폼에서 시작해 운명 카드 결과 화면(운명 제목·설명, 연애운·결혼운·자녀운 등급 B0~SS, 행운의 장소(동국대)·아이템)이 뜨고, 그 결과가 백엔드 응답에서 온다. 세션 없이 결과 화면에 들어오면 입력으로 안내된다.
+사주 입력 폼에서 시작해 운명 카드 결과 화면(운명 제목·설명, 연애운·결혼운·자녀운 등급 SS~B 6단계, 행운의 장소(동국대)·아이템)이 뜨고, 그 결과가 백엔드 응답에서 온다. 세션 없이 결과 화면에 들어오면 입력으로 안내된다.
 
 ## Motivation
 
@@ -15,8 +15,8 @@
 
 ## Scope
 
-- 사주 입력 폼(SCR-02): 성별(남/여) · 달력 기준(양/음력) · 생년월일 8자리 · 12시진 셀렉트 + '몰라요' · 닉네임 1–8자 (태어난 지역은 받지 않는다 — `birthRegion`은 null), 기본/오류/연결문제/로딩 4상태
-- 결과 대기(SCR-03)와 결과 화면(SCR-04): 운명 카드(십이간지 캐릭터·'○○보살님' 치환·운명 제목·설명·3영역 문자 등급 스탬프 B0~SS), 행운의 장소·아이템 카드, 운세 카드 3장, 보살 말투 문구
+- 사주 입력 폼(SCR-02): 성별(남/여) · 달력 기준(양/음력) · 생년월일 8자리 · 12시진 셀렉트 + '몰라요' · 닉네임 1–8자 (태어난 지역은 받지 않고 `birthRegion` 필드도 보내지 않는다 — 계약에서 빠짐), 기본/오류/연결문제/로딩 4상태
+- 결과 대기(SCR-03)와 결과 화면(SCR-04): 운명 카드(십이간지 캐릭터·'○○보살님' 치환·운명 제목·설명·3영역 문자 등급 스탬프 SS~B 6단계), 행운의 장소·아이템 카드, 운세 카드 3장, 보살 말투 문구
 - 세션 없음·만료 시 입력 화면으로 안내 (FR-18)
 - `src/api/` 클라이언트: 요청/응답 zod 스키마, 에러·타임아웃 처리, 서버 상태 캐시 방식 결정(ADR)
 - 백엔드 준비 전 개발을 위한 목(mock) 응답 경로
@@ -44,11 +44,11 @@
 
 - [x] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/reading/:id/pre-register`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있고, 모든 라우트의 `errorElement`·첫 진입 `HydrateFallback`이 공통 상태 화면(SCR-12 — 수정본 오류·연결문제·로딩 문구, `ContentState` 사용)을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/app/requireSession.ts`, `src/app/RouteError.tsx`, `src/app/RouteLoading.tsx`, `src/api/session.ts` · Owner: @jjjung0921 (commit cc0ebd7)
 
-- [x] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·닉네임 8자 검증과 '몰라요'→null 처리(`birthRegion`은 항상 null)가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts`, `src/features/saju/index.ts`, `src/ui/{Button,TextField,Select,SegmentedControl,Checkbox}.tsx`(수정본 appearance) · After: T1 · Owner: @jjjung0921 (commit 320a04a — action·라우트 연결은 T1 병합 후 T3 소유 routes.tsx 에서)
+- [x] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·닉네임 8자 검증과 '몰라요'→null 처리(`birthRegion` 은 보내지 않는다)가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts`, `src/features/saju/index.ts`, `src/ui/{Button,TextField,Select,SegmentedControl,Checkbox}.tsx`(수정본 appearance) · After: T1 · Owner: @jjjung0921 (commit 320a04a — action·라우트 연결은 T7)
 
-- [ ] T5. 결과 화면 퍼블리싱 — Done when: Figma 「UI 최종 - 개발용」 사주 결과 화면(558:2432)의 운명 카드(십이간지 캐릭터·'○○보살님'·운명 제목·설명·3영역 등급 스탬프 B0~SS)·행운의 장소/아이템·운세 카드 3장과 결과 대기(FortuneLoading)·에러 상태가 `ReadingView` props 로만 렌더되고(응답 스키마·`src/api/` 를 import 하지 않는다), Phase 06 사전신청 티저를 받을 `teaser` 슬롯 prop과 하위 라우트용 `<Outlet />` 자리가 있으며(내용은 06/T2, 조립은 T7 — saju 가 profile 을 import 하지 않는다), `/preview` 에서 가짜 데이터로 확인된다 (테스트 포함) · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/DestinyCard.tsx`, `src/features/saju/FortuneLoading.tsx`, `src/features/saju/sections/`, `src/features/saju/readingView.ts`, `src/features/saju/index.ts`, `src/ui/ZodiacCharacter.tsx`, `src/app/preview/screens/reading.tsx` · After: T6 · Owner: @jjjung0921
+- [x] T5. 결과 화면 퍼블리싱 — Done when: Figma 「UI 최종 - 개발용」 사주 결과 화면 Frame 93 내 사주(713:4021, 예전 558:2432)의 운명 카드(십이간지 캐릭터·'○○보살님'·운명 제목·설명·3영역 등급 스탬프 SS~B 6단계)·행운의 장소/아이템·운세 카드 3장과 결과 대기(FortuneLoading)·에러 상태가 `ReadingView` props 로만 렌더되고(응답 스키마·`src/api/` 를 import 하지 않는다), 다른 Phase 가 채울 `share`(04 인스타 공유)·`ranking`(05 친구 궁합 순위)·`teaser`(06 사전신청) 슬롯 prop과 하위 라우트용 `<Outlet />` 자리가 있으며(조립은 T7 — saju 가 share·friends·profile 을 import 하지 않는다), `/preview` 에서 가짜 데이터로 확인된다 (테스트 포함). 운명 카드 앞면은 04/T2 인연카드와 같아 `src/ui/DestinyCard.tsx` 에 둔다 · Touches: `src/features/saju/ReadingResult.tsx`, `src/features/saju/FortuneLoading.tsx`, `src/features/saju/sections/`, `src/features/saju/readingView.ts`, `src/features/saju/index.ts`, `src/ui/DestinyCard.tsx`, `src/ui/DestinyCard.css`, `src/ui/ZodiacCharacter.tsx`, `src/ui/assets/grades/`, `src/ui/assets/cards/`, `src/ui/tokens/theme.css`, `src/ui/tokens/fonts/`, `src/app/preview/screens/reading.tsx` · After: T6 · Owner: @jjjung0921 (commit 7fc2ccf)
 
-- [ ] T6. 퍼블리싱 확인 라우트 — Done when: 개발 서버에서만 `/preview` 가 화면 목록을, `/preview/<화면>` 이 가짜 데이터로 각 화면을 보여 주고(`import.meta.env.DEV`), `pnpm build` 산출물에 preview 코드가 없으며, 화면 추가는 `src/app/preview/screens/<화면>.tsx` 파일 하나로 끝난다(공유 목록 파일을 고치지 않는다 — `import.meta.glob`), 입력 화면(SajuForm)이 첫 항목으로 뜬다 (테스트 포함) · Touches: `src/app/App.tsx`, `src/app/preview/` · Owner: @jjjung0921
+- [x] T6. 퍼블리싱 확인 라우트 — Done when: 개발 서버에서만 `/preview` 가 화면 목록을, `/preview/<화면>` 이 가짜 데이터로 각 화면을 보여 주고(`import.meta.env.DEV`), `pnpm build` 산출물에 preview 코드가 없으며, 화면 추가는 `src/app/preview/screens/<화면>.tsx` 파일 하나로 끝난다(공유 목록 파일을 고치지 않는다 — `import.meta.glob`), 입력 화면(SajuForm)이 첫 항목으로 뜬다 (테스트 포함) · Touches: `src/app/App.tsx`, `src/app/preview/` · Owner: @jjjung0921 (commit 17512a9)
 
 - [ ] T7. 입력·결과 연동 — Done when: `/` 가 SajuForm 과 action(검증된 SajuInput → `POST /results` → 세션 저장 → `/reading/:id` 로 redirect, 연결 실패는 `{ formError: 'connection' }`)으로, `/reading/:id` 가 loader(`GET /results/{id}` → `ReadingView` 변환)로 동작하고, 404·503·스키마 위반이 errorElement 로 가며, 백엔드 준비 전에는 T1 의 목 응답으로 입력 → 결과를 완주한다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/saju/sajuAction.ts`, `src/features/saju/readingLoader.ts`, `src/features/saju/toReadingView.ts` · After: T1, T4, T5 · Owner: @nicerjs23
 
@@ -61,17 +61,17 @@
 
 - `docs/PRD.md` — Screens(SCR-02·03·04·12), FR-2, FR-3, FR-18, NFR-2, NFR-4
 - `docs/ARCHITECTURE.md` — Data Flow 1, State Management, Cross-cutting Concerns
-- `docs/api/openapi.yaml` — `/readings`, `/readings/{readingId}`, `/me`
+- `docs/api/openapi.yaml` — `/results`, `/results/{resultId}`
 - Figma 「UI 최종 - 개발용」 558-2430 — 수정본(기본/오류/연결문제/로딩중), 사주 결과 화면 Frame 69
 
 ## Acceptance Criteria
 
 - [ ] AC1. 입력 → 결과를 이탈 없이 완주할 수 있다
-- [ ] AC2. 태어난 시간을 '몰라요'로 두어도 결과를 받을 수 있고, 음력 입력이 전송되며, 지역 입력 없이 `birthRegion: null`로 보낸다
+- [ ] AC2. 태어난 시간을 '몰라요'로 두어도 결과를 받을 수 있고, 음력·윤달 입력이 전송되며, 지역 입력 없이 `birthRegion` 필드를 보내지 않는다
 - [ ] AC6. 세션 없이 `/reading/:id`에 들어오면 입력 화면으로 안내된다
 - [ ] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
 - [ ] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
-- [ ] AC5. `src/app/routes.tsx`를 T3 외의 Task가 수정하지 않았다
+- [ ] AC5. `src/app/routes.tsx`를 T3(완료)·T7 외의 Task가 수정하지 않았다
 
 ## Validation Plan
 

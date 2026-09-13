@@ -12,17 +12,28 @@
   src: url('./fonts/dongguk-university.woff2') format('woff2');
 }
 
+/* 운명 카드 제목 — 국민대 KMU80 성곡 세리프 (CC BY-ND, 파일 수정 금지 · fonts/README.md) */
+@font-face {
+  font-family: 'KMU80 Sungkok Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/kmu80-sungkok-serif.woff2') format('woff2');
+}
+
 @theme {
   --color-*: initial;
   --spacing-*: initial;
   --radius-*: initial;
   --text-*: initial;
 
-  /* Font — 본문 Pretendard(번들, src/index.css), 제목 Display 동국체 */
+  /* Font — 본문 Pretendard(번들, src/index.css), 제목 Display 동국체, 운명 카드 성곡체 */
   --font-sans:
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
     'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   --font-display: 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+  --font-sungkok:
+    'KMU80 Sungkok Serif', 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, serif;
 
   /* Color ramp — Figma Variables (bg-primary-500, text-neutral-900 …) */
   --color-primary-50: #f5f8f9;
