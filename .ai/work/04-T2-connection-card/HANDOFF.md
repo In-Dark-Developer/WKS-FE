@@ -2,14 +2,14 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-13
 - Phase / Task: 04/T2
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+인연카드 앞면(731:4668·12종 731:4740)·뒷면(731:4712)과 카드 뒤집기가 props 로만 렌더되고 `/preview/card` 에서 확인된다.
 
 ## Work Completed
 
@@ -17,7 +17,8 @@
 
 ## Work In Progress
 
-- 없음
+- 앞면은 ui DestinyCard 에 kind=connection 문구, 뒷면은 기존 card-back.webp(문구 포함 이미지), 뒤집기 버튼은 옛 화면 558:2788 모양
+- 등급 줄 이름은 props — 디자인은 결혼·자녀·연애, PRD FR-5 는 연애·결혼·운명운(Q3 미정)
 
 ## Files Changed
 
