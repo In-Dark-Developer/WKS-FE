@@ -11,9 +11,9 @@ import { clearSession, readSession } from './session';
 
 const input: ResultRequestInput = {
   nickname: '보살',
+  calendarType: 'SOLAR',
   birthDate: '2002-01-01',
   birthTime: null,
-  birthRegion: null,
   gender: 'MALE',
 };
 
@@ -71,7 +71,7 @@ test('목 모드에서 방금 만든 resultId 는 다시 조회된다', async ()
 
   const fetched = await getResult(created.data.resultId);
 
-  expect(fetched).toEqual({ ok: true, data: { ...created.data, compatibilities: [] } });
+  expect(fetched).toEqual({ ok: true, data: created.data });
 });
 
 test('목 모드에서 모르는 resultId 는 RESULT_NOT_FOUND', async () => {
