@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, main push 마다 CI 가 돌린다).
 #
-#   scripts/notion-index-sync.sh [--prd] [--adr] [--dry-run]
+#   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--dry-run]
 #     --prd      docs/PRD.md 의 FR·NFR 표 → 🙋 요구사항 색인 (PRD)   (ID 로 upsert)
 #     --adr      docs/decisions/ADR-*.md → 🏛️ ADR 색인               (번호 로 upsert)
-#     둘 다 생략하면 둘 다. --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
+#     --phases   docs/phases/README.md 표 → 📅 Phase 색인             (번호 로 upsert)
+#     전부 생략하면 셋 다. --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
 #
-# env: NOTION_TOKEN(필수, Actions secret) · NOTION_PRD_DB · NOTION_ADR_DB (database id) · REPO_URL(ADR GitHub 링크, 기본 origin)
+# env: NOTION_TOKEN(필수, Actions secret) · NOTION_PRD_DB · NOTION_ADR_DB · NOTION_PHASE_DB (database id) · REPO_URL(GitHub 링크, 기본 origin)
 # 색인은 사본이다 — 원본은 docs/ 이고 여기서 고친 값은 다음 push 에 덮어써진다. 사람이 채우는 열(ADR 색인의 `영역`)만 건드리지 않는다.
 # Phase 열은 docs/phases/*/PLAN.md 에서 그 ID 를 언급하는 Phase 번호, 상태 열은 그 Phase 들의 Status(docs/phases/README.md)에서 이끌어낸다.
 # ADR: docs/decisions/ADR-20260913-notion-index-sync.md
@@ -15,20 +16,21 @@ set -eo pipefail
 . "$(cd "$(dirname "$0")" && pwd)/lib/common.sh"
 . "$(cd "$(dirname "$0")" && pwd)/lib/notion.sh"
 
-do_prd=0; do_adr=0; dry=0
+do_prd=0; do_adr=0; do_ph=0; dry=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --prd) do_prd=1;; --adr) do_adr=1;; --dry-run) dry=1;;
+    --prd) do_prd=1;; --adr) do_adr=1;; --phases) do_ph=1;; --dry-run) dry=1;;
     -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     *) die "알 수 없는 옵션 $1";;
   esac; shift
 done
-[ "$do_prd" -eq 0 ] && [ "$do_adr" -eq 0 ] && do_prd=1 && do_adr=1
+[ "$do_prd" -eq 0 ] && [ "$do_adr" -eq 0 ] && [ "$do_ph" -eq 0 ] && do_prd=1 && do_adr=1 && do_ph=1
 command -v jq >/dev/null || die "jq 가 필요하다"
 if [ "$dry" -eq 0 ]; then
   [ -n "${NOTION_TOKEN:-}" ] || { warn "NOTION_TOKEN 이 없다 — 동기화 생략"; exit 0; }
   [ "$do_prd" -eq 0 ] || [ -n "${NOTION_PRD_DB:-}" ] || die "NOTION_PRD_DB 를 지정한다"
   [ "$do_adr" -eq 0 ] || [ -n "${NOTION_ADR_DB:-}" ] || die "NOTION_ADR_DB 를 지정한다"
+  [ "$do_ph" -eq 0 ] || [ -n "${NOTION_PHASE_DB:-}" ] || die "NOTION_PHASE_DB 를 지정한다"
 fi
 
 trim() { printf '%s' "$1" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'; }
@@ -107,6 +109,28 @@ sync_adr() {
   say "ADR: ${n}행"
 }
 
+# ---------------------------------------------------------------- Phases
+phase_props() { # phase_props <번호> <title> <lead> <depends> <status> <tasks> <result> <url>
+  jq -n --arg no "$1" --arg title "$2" --arg lead "$3" --arg dep "$4" --arg st "$5" --arg tasks "$6" --arg res "$7" --arg url "$8" '
+    def text($v): { rich_text: [ { text: { content: $v } } ] };
+    { "Phase": { title: [ { text: { content: $title } } ] }, "번호": text($no), "Lead": text($lead), "Depends on": text($dep),
+      "Status": { select: { name: $st } }, "Tasks": text($tasks), "Result": text($res), "GitHub": { url: $url } }'
+}
+sync_phases() { # docs/phases/README.md 의 phases:begin~end 표 (ai-stream.sh phases 가 만든다)
+  local n=0 line nn link name lead dep st tasks res base; base=$(repo_url)
+  while IFS= read -r line; do
+    nn=$(trim "$(printf '%s' "$line" | cut -d'|' -f2)"); printf '%s' "$nn" | grep -qE '^[0-9]{2}$' || continue
+    link=$(trim "$(printf '%s' "$line" | cut -d'|' -f3)"); name=$(printf '%s' "$link" | sed -E 's/^\[([^]]*)\].*/\1/')
+    lead=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); dep=$(trim "$(printf '%s' "$line" | cut -d'|' -f5)")
+    st=$(trim "$(printf '%s' "$line" | cut -d'|' -f6)"); tasks=$(trim "$(printf '%s' "$line" | cut -d'|' -f7)"); res=$(trim "$(printf '%s' "$line" | cut -d'|' -f8)")
+    send "${NOTION_PHASE_DB:-}" 번호 "$nn" "$(phase_props "$nn" "$nn $name" "$lead" "$dep" "$st" "$tasks" "$res" "$base/blob/main/docs/phases/$nn-$name/PLAN.md")" && n=$((n + 1))
+  done <<EOF
+$(sed -n '/<!-- phases:begin -->/,/<!-- phases:end -->/p' docs/phases/README.md)
+EOF
+  say "Phases: ${n}행"
+}
+
 [ "$do_prd" -eq 1 ] && sync_prd
 [ "$do_adr" -eq 1 ] && sync_adr
+[ "$do_ph" -eq 1 ] && sync_phases
 exit 0

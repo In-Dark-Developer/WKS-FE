@@ -1,6 +1,6 @@
 name: notion-index-sync
 
-# docs/PRD.md 의 FR·NFR 과 docs/decisions/ADR-*.md 를 Notion 색인 DB 에 복사한다. 단방향 — 색인을 고쳐도 저장소는 바뀌지 않는다.
+# docs/PRD.md 의 FR·NFR, docs/decisions/ADR-*.md, docs/phases/README.md 표를 Notion 색인 DB 에 복사한다. 단방향 — 색인을 고쳐도 저장소는 바뀌지 않는다.
 on:
   push:
     branches: [main]
@@ -21,4 +21,5 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_PRD_DB: c46fef81-e47b-4299-a30d-89b6f4feac5c
           NOTION_ADR_DB: 96bba6ec-55a7-4a1a-9474-298648f637a9
+          NOTION_PHASE_DB: 6585b534-8238-4856-bf1e-e121dc272c7f
         run: bash scripts/notion-index-sync.sh

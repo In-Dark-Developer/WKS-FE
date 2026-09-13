@@ -5,10 +5,10 @@
 ## 2026-09-13 · claude-code · -/- · Notion 요구사항·ADR 색인 자동 동기화
 
 - Commits: 7db4054
-- Done: lib/notion.sh · notion-index-sync.sh(--dry-run 검증) · 워크플로 · ADR-20260913 · 공지 · Notion 머리말
+- Done: lib/notion.sh · notion-index-sync.sh(--prd/--adr/--phases, --dry-run 검증) · Phase 색인 DB 신규 · 워크플로 · ADR-20260913 · 공지 · Notion 머리말
 - Not done: 실 Notion 호출(병합 후 dispatch)
 - Developer changes: 없음
-- Upstream changes: 없음
+- Upstream changes: #32(issue-link) 병합 → 공지 색인 충돌, `ai-stream.sh announce` 로 재생성
 - Spec changes: 없음 (ADR 추가)
 - Needs your attention: NOTION_TOKEN 통합을 두 색인 DB 에 연결했는지 확인. 병합 후 첫 실행은 workflow_dispatch
 - Verification: bash -n · --dry-run 24+9행 · notion-sync.sh --help
@@ -19,7 +19,7 @@
 - Done: 스트림 `chore-notion-index-sync` 생성 (브랜치 `ws/chore-notion-index-sync`)
 - Not done: 없음
 - Developer changes: 없음
-- Upstream changes: 없음
+- Upstream changes: #32(issue-link) 병합 → 공지 색인 충돌, `ai-stream.sh announce` 로 재생성
 - Spec changes: 없음
 - Needs your attention: 없음
 - Verification: 없음

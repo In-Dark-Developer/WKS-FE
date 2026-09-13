@@ -16,6 +16,7 @@ docs/PRD.md 와 docs/decisions/ 가 main 에 병합되면 Notion 요구사항 �
 - `scripts/lib/notion.sh` 추출(notion_api·notion_find·notion_upsert), `notion-sync.sh` 는 `api()` 래퍼로 공유
 - `scripts/notion-index-sync.sh` — FR/NFR 24행·ADR 9행 upsert, Phase 는 PLAN 언급, 상태는 Phase Status, `--dry-run`
 - 워크플로 `notion-index-sync.yml` · ADR-20260913 · 공지 · Notion 「운꿰사」 머리말 문장 갱신
+- 📅 Phase 색인 DB 를 Notion 에 만들고(`6585b534…`) `--phases` 로 `docs/phases/README.md` 표를 upsert (8행)
 
 ## Work In Progress
 
@@ -36,7 +37,7 @@ docs/PRD.md 와 docs/decisions/ 가 main 에 병합되면 Notion 요구사항 �
 
 ## Test Results
 
-- FR 18 + NFR 6 + ADR 9 행 속성 JSON 정상. FR-1 은 Phase 빈 값(PLAN 언급 없음, MVP 제외) 정상. 실제 Notion 호출은 로컬에 토큰이 없어 미실행
+- FR 18 + NFR 6 + ADR 9 + Phase 8 행 속성 JSON 정상. FR-1 은 Phase 빈 값(PLAN 언급 없음, MVP 제외) 정상. 실제 Notion 호출은 로컬에 토큰이 없어 미실행
 
 ## Known Problems
 

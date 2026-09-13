@@ -1,4 +1,4 @@
-# ADR-20260913: Notion 요구사항·ADR 색인은 main 의 사본이다 — CI 가 갱신한다
+# ADR-20260913: Notion 요구사항·ADR·Phase 색인은 main 의 사본이다 — CI 가 갱신한다
 
 - Status: Accepted
 - Date: 2026-09-13
@@ -20,10 +20,11 @@ Notion 「운꿰사」에는 저장소에서 복사해 온 색인 세 개가 있
 
 ## Decision
 
-3번을 택한다. `scripts/notion-index-sync.sh` 가 `docs/PRD.md` 의 `| FR-n |`·`| NFR-n |` 행과 `docs/decisions/ADR-*.md` 를 읽어 각 색인 DB 에 ID(`ID`·`번호`)로 upsert 하고, `.github/workflows/notion-index-sync.yml` 이 main 의 `docs/PRD.md`·`docs/decisions/**`·`docs/phases/**` 변경마다 실행한다(`workflow_dispatch` 로 수동 실행 가능).
+3번을 택한다. `scripts/notion-index-sync.sh` 가 `docs/PRD.md` 의 `| FR-n |`·`| NFR-n |` 행, `docs/decisions/ADR-*.md`, `docs/phases/README.md` 의 Phase 표를 읽어 각 색인 DB(요구사항 · ADR · 📅 Phase 색인)에 ID(`ID`·`번호`)로 upsert 하고, `.github/workflows/notion-index-sync.yml` 이 main 의 `docs/PRD.md`·`docs/decisions/**`·`docs/phases/**` 변경마다 실행한다(`workflow_dispatch` 로 수동 실행 가능).
 
 - 요구사항 색인: `요구사항`(FR 본문, NFR 은 "본문 — Target") · `구분` · `우선순위`(FR 만) · `Phase`(그 ID 를 언급하는 `docs/phases/*/PLAN.md` 의 번호, `03·05`) · `상태`(그 Phase 들의 Status — 전부 DONE 이면 완료, 하나라도 IN_PROGRESS/REVIEW 면 구현중, 아니면 계획).
 - ADR 색인: `결정`(H1) · `번호`(파일명) · `상태`(Status 줄) · `GitHub`(main blob 링크) · `한 줄 요약`(Decision 절 첫 두 줄). **`영역` 열만 사람이 채우고 동기화가 건드리지 않는다.**
+- Phase 색인: `Phase`("NN name") · `번호` · `Lead` · `Depends on` · `Status` · `Tasks`(완료/전체) · `Result` · `GitHub`(PLAN.md 링크) — `docs/phases/README.md` 표가 원본이고 그 표는 `ai-stream.sh phases` 가 PLAN 머리에서 만든다. Task 보드의 `Phase` 열은 select 라 관계로 잇지 않는다.
 - Notion REST 호출은 `scripts/lib/notion.sh` 로 뽑아 `notion-sync.sh` 와 공유한다.
 
 ## Consequences
