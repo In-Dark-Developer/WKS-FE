@@ -13,6 +13,7 @@ import {
   sajuAction,
   type ReadingView,
 } from '@/features/saju';
+import { FriendRanking } from '@/features/friends';
 
 // 세션 가드(T3) 뒤에 결과 loader(T7)를 잇는다 — requireSession 이 없으면 redirect('/')로 끝난다.
 function protectedReadingLoader(args: LoaderFunctionArgs) {
@@ -20,11 +21,13 @@ function protectedReadingLoader(args: LoaderFunctionArgs) {
   return readingLoader(args);
 }
 
-// share(04)·ranking(05)·teaser(06) 슬롯은 그 Phase가 끝나기 전까지 비워 둔다(saju 는 다른 feature 를
-// import 하지 않는다 — ARCHITECTURE Module Boundaries).
+// share(04)·teaser(06) 슬롯은 그 Phase가 끝나기 전까지 비워 둔다. ranking(05)은 FriendRanking으로
+// 채운다 — saju 는 friends 를 import 하지 않으므로 조립은 여기(app)서 한다(ARCHITECTURE Module
+// Boundaries · 03/T5 Done-when "조립은 T7" · 05/T2 커밋 메모).
 function ReadingResultRoute() {
   const view = useLoaderData<ReadingView>();
-  return <ReadingResult view={view} />;
+  const ranking = <FriendRanking friends={view.compatibilities ?? []} limit={3} />;
+  return <ReadingResult ranking={ranking} view={view} />;
 }
 
 // 이 파일은 Phase 03 T7 이 단독으로 소유한다(T3 이후 인계) — 각 화면은 컴포넌트·loader·action 만

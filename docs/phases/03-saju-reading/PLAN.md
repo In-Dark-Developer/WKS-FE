@@ -50,7 +50,7 @@
 
 - [x] T6. 퍼블리싱 확인 라우트 — Done when: 개발 서버에서만 `/preview` 가 화면 목록을, `/preview/<화면>` 이 가짜 데이터로 각 화면을 보여 주고(`import.meta.env.DEV`), `pnpm build` 산출물에 preview 코드가 없으며, 화면 추가는 `src/app/preview/screens/<화면>.tsx` 파일 하나로 끝난다(공유 목록 파일을 고치지 않는다 — `import.meta.glob`), 입력 화면(SajuForm)이 첫 항목으로 뜬다 (테스트 포함) · Touches: `src/app/App.tsx`, `src/app/preview/` · Owner: @jjjung0921 (commit 17512a9)
 
-- [x] T7. 입력·결과 연동 — Done when: `/` 가 SajuForm 과 action(검증된 SajuInput → `POST /results` → 세션 저장 → `/reading/:id` 로 redirect, 연결 실패는 `{ formError: 'connection' }`)으로, `/reading/:id` 가 loader(`GET /results/{id}` → `ReadingView` 변환)로 동작하고, 404·503·스키마 위반이 errorElement 로 가며, 백엔드 준비 전에는 T1 의 목 응답으로 입력 → 결과를 완주한다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/saju/sajuAction.ts`, `src/features/saju/readingLoader.ts`, `src/features/saju/toReadingView.ts` · After: T1, T4, T5 · Owner: @nicerjs23 (commit 90c8cd8)
+- [x] T7. 입력·결과 연동 — Done when: `/` 가 SajuForm 과 action(검증된 SajuInput → `POST /results` → 세션 저장 → `/reading/:id` 로 redirect, 연결 실패는 `{ formError: 'connection' }`)으로, `/reading/:id` 가 loader(`GET /results/{id}` → `ReadingView` 변환)로 동작하고, 404·503·스키마 위반이 errorElement 로 가며, 백엔드 준비 전에는 T1 의 목 응답으로 입력 → 결과를 완주한다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/saju/sajuAction.ts`, `src/features/saju/readingLoader.ts`, `src/features/saju/toReadingView.ts` · After: T1, T4, T5 · Owner: @nicerjs23 (commit 90c8cd8, ranking 슬롯 05/T2 FriendRanking 조립 누락분은 commit 019c4ef 로 채움)
 
 <!-- 선후는 각 Task 의 After: 가 기준이다 (T4 After: T1 · T5 After: T6 · T7 After: T1·T4·T5). T5·T6 은 T1 없이 진행한다.
      퍼블리싱 먼저(2026-09-13): 화면(T4·T5)은 props 뷰 모델로만 그리고 `/preview` 에서 가짜 데이터로 확인한다. 데이터 연결(action·loader·응답→뷰 모델 변환)은 T7 이 한다. T5 담당 @nicerjs23 → @jjjung0921, 연동은 T7 @nicerjs23.

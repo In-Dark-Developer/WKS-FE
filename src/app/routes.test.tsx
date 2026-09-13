@@ -69,6 +69,26 @@ test('세션이 있으면 결과 화면에 머문다', async () => {
   ).toBeInTheDocument();
   expect(router.state.location.pathname).toBe('/reading/abc');
   expect(screen.getByRole('main')).toHaveAttribute('data-backdrop', 'result');
+  // 친구 궁합 순위(05/T2 FriendRanking)가 ranking 슬롯에 조립돼 있다 — 인연이 없을 때 안내.
+  expect(screen.getByText('아직 인연이 없어요')).toBeInTheDocument();
+});
+
+test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () => {
+  writeSession('token-1');
+  getResultMock.mockResolvedValue({
+    ok: true,
+    data: {
+      ...stubResult,
+      compatibilities: [
+        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-13T00:00:00Z' },
+      ],
+    },
+  });
+
+  renderAt('/reading/abc');
+
+  expect(await screen.findByText('친구1')).toBeInTheDocument();
+  expect(screen.getByText('92')).toBeInTheDocument();
 });
 
 test('결과 조회가 실패하면 오류 화면을 보인다', async () => {

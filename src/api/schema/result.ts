@@ -67,6 +67,8 @@ export const compatibilitySummarySchema = z.object({
   createdAt: z.string(),
 });
 
+export type CompatibilitySummary = z.infer<typeof compatibilitySummarySchema>;
+
 // POST /results · GET /results/{resultId} 가 공통으로 쓰는 응답 모양(openapi Result).
 // 생성 직후엔 compatibilities 가 빈 배열이고, 조회 시엔 누적된다(createdAt 내림차순).
 export const resultSchema = z.object({
