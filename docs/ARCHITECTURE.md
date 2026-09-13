@@ -60,11 +60,11 @@
 
 - 서버 상태(사주 결과, 친구 점수, 후보, 실 상태)는 백엔드가 소유한다. 화면은 React Router 데이터 API로 읽고 쓴다 — 읽기는 route `loader`, 쓰기는 `action`·`useFetcher`가 `src/api/` 함수를 부르고, loader·action은 feature가 export 해 `src/app/routes.tsx`가 등록한다. 요청/캐시 라이브러리는 두지 않는다. `/reading/:id` 하위 화면은 부모 loader 데이터(`useRouteLoaderData`)를 공유하고 결과 본문은 다시 부르지 않으며, `compatibilities`를 보여 주는 화면은 진입마다 다시 부른다(ADR-20260913-server-state-and-session-storage).
 - 폼·모달·블러 해제 여부 같은 화면 상태는 해당 feature 안의 지역 상태로 둔다. 전역 스토어는 도입하지 않는다.
-- 세션은 `src/api/session.ts`만 읽고 쓴다: localStorage 키 `wks:session`에 `{ v: 1, resultId, token? }`을 두고 읽을 때 zod로 파싱한다(실패·스토리지 예외는 세션 없음). 결과 생성 성공 시 쓰고, 토큰이 있으면 `src/api/client.ts` 한 곳에서만 요청에 싣는다. 만료는 시계로 판단하지 않고 백엔드가 세션 무효로 응답할 때(지금은 보관한 `resultId`의 `RESULT_NOT_FOUND`) `clearSession()` 후 `/`로 보낸다. PRD는 백엔드 토큰 발급을 결정했으나 백엔드 1차 계약에는 세션이 없다 — 토큰 형식·전달 방식은 PRD Q16 대기이며, 그 전까지 세션은 `resultId`뿐이다.
+- 로그인은 없다. 백엔드가 보낸 세션 토큰만으로 '내 결과·내 신청·내 실'을 찾고 세션을 유지한다. `resultId`는 공유 링크 재료로만 쓴다. 토큰은 `src/api/session.ts`만 읽고 쓴다: localStorage 키 `wks:session`에 `{ v: 1, token }`을 두고 읽을 때 zod로 파싱한다(실패·스토리지 예외는 세션 없음). 토큰을 받는 응답에서 쓰고 `src/api/client.ts` 한 곳에서만 요청에 싣는다. 만료는 시계로 판단하지 않고 백엔드가 세션 무효로 응답하면 `clearSession()` 후 `/`로 보낸다. 발급 시점·전달 방식·만료 코드는 백엔드 계약 갱신 대기(PRD Q16) — 그 전까지는 목 응답의 토큰으로 개발한다.
 
 ## Persistence
 
-브라우저에 저장하는 것은 localStorage `wks:session` 한 키 — 내 `resultId`와, 백엔드가 발급하면 세션 토큰 — 뿐이다(인트로는 MVP에서 제외됐다). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
+브라우저에 저장하는 것은 localStorage `wks:session` 한 키의 세션 토큰뿐이다(인트로는 MVP에서 제외됐다). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
 
 ## External Systems
 
@@ -81,7 +81,7 @@
 
 ## Cross-cutting Concerns
 
-- 인증/인가: 로그인·비밀번호는 없다. 사주 결과 생성 시 백엔드가 세션 토큰을 발급하고 프론트가 보관해 이후 요청에 실어 보낸다(전달 방식은 PRD Q16). 사전신청의 학교 웹메일 매직링크는 백엔드가 처리하고 프론트 완료 페이지로 302. 보호된 화면은 route loader가 `readSession()`이 없으면, api가 세션 무효 응답을 받으면 사주 입력(`/`)으로 리다이렉트한다.
+- 인증/인가: 로그인·비밀번호는 없다. 사주 결과 생성 시 백엔드가 세션 토큰을 발급하고 프론트가 보관해 이후 요청에 실어 보내며, 내 데이터는 토큰으로만 찾는다(전달 방식은 PRD Q16). 사전신청의 학교 웹메일 매직링크는 백엔드가 처리하고 프론트 완료 페이지로 302. 보호된 화면은 route loader가 `readSession()`이 없으면, api가 세션 무효 응답을 받으면 사주 입력(`/`)으로 리다이렉트한다.
 - 설정: `VITE_` 접두 환경변수(`VITE_API_BASE_URL` 등)로만 주입한다. 비밀값은 프론트엔드에 두지 않는다.
 - 에러 처리: 응답 스키마 검증 실패와 네트워크 실패를 구분해 사용자에게는 같은 안내 화면을, 콘솔에는 원인을 남긴다.
 - 관측성: 로깅·분석 도구는 TBD (Phase 08).
