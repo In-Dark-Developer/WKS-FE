@@ -1,6 +1,6 @@
 # ADR-20260913: Cloudflare Pages 대신 Cloudflare Workers 정적 자산으로 배포
 
-- Status: Accepted
+- Status: Superseded by ADR-20260914-aws-cloudfront-hosting
 - Date: 2026-09-13
 - Deciders: @jjjung0921 (Phase 08 Lead)
 

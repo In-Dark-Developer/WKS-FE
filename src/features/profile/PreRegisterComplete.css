@@ -1,11 +1,11 @@
-/* 사전신청 완료 — Figma 695:2654 (375×870). 앱 셸 여백(16px)을 넘어 화면 폭 전체를 채운다. */
+/* 사전신청 완료 — Figma 695:2654 (375×870). 모달 패널·미리보기 어디에 두어도 그 폭을 채우는 둥근 판으로 그린다. */
 [data-pre-register-complete] {
   --u: calc(100cqw / 375);
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 16px);
-  margin: 0 -16px -16px;
+  min-height: min(640px, calc(100dvh - 160px));
+  border-radius: 16px;
   overflow: hidden;
   container-type: inline-size;
   background:

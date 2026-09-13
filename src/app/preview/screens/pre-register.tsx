@@ -1,5 +1,12 @@
+import { useState } from 'react';
+
 import type { PreviewScreen } from '@/app/preview/previewScreen';
-import { PreRegisterComplete, PreRegisterForm, PreRegisterTeaser } from '@/features/profile';
+import {
+  PreRegisterComplete,
+  PreRegisterForm,
+  PreRegisterModal,
+  PreRegisterTeaser,
+} from '@/features/profile';
 
 const SUBMIT_DELAY_MS = 1200;
 
@@ -13,13 +20,25 @@ const filled = {
   agreed: true,
 } as const;
 
-// SCR-09 사전신청 모달 본문·SCR-04 티저 — 06/T2. 모달 셸(02/T3)이 생기기 전이라 본문만 그린다.
+// 결과 화면 티저 → 사전신청 모달 흐름 — 실제 라우트(`/reading/:id/pre-register`) 연결은 조립 Task 가 한다.
+function TeaserToModal() {
+  const [open, setOpen] = useState(true);
+  return (
+    <>
+      <PreRegisterTeaser onApply={() => setOpen(true)} state="available" />
+      <PreRegisterModal onClose={() => setOpen(false)} open={open} />
+    </>
+  );
+}
+
+// SCR-09 사전신청 모달·SCR-04 티저 — 06/T2. '모달' 은 02/T3 Modal 안, 나머지는 본문만 그린다.
 // 제출하면 1.2초 로딩 뒤 '연결 실패' 상태에서는 연결 실패를, 나머지는 완료를 돌려준다.
 export const preview: PreviewScreen = {
   title: 'SCR-09 사전신청',
   order: 4,
   backdrop: 'mist',
   states: {
+    모달: TeaserToModal,
     기본: () => <PreRegisterForm />,
     '오류(이메일)': () => <PreRegisterForm defaultValues={{ ...filled, email: 'wks@dongguk' }} />,
     '연결 실패': () => <PreRegisterForm defaultValues={filled} />,

@@ -82,7 +82,7 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
   return (
     <form className="flex flex-col gap-24 pt-24" noValidate onSubmit={handleSubmit}>
       <header className="flex flex-col gap-12">
-        <h1 className="font-display text-display-24 whitespace-pre-line text-primary">
+        <h1 className="font-display text-display-24 break-keep whitespace-pre-line text-primary">
           {'가을 축제,\n나에게 어떤 인연이 찾아올까?'}
         </h1>
         <p className="text-ui-12 font-medium text-disabled">
