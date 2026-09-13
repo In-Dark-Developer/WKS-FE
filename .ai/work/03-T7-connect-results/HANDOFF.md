@@ -41,7 +41,8 @@
 
 ## Test Results
 
-- 165/165 통과, typecheck·lint·build 전부 통과. 실제 구동 확인도 통과
+- 185/185 통과, typecheck·lint·build 전부 통과. 실제 구동 확인도 통과
+- (2차) main 재동기화(04/T2·05/T2·06/T2 등 유입, 겹침 없음) 중 로컬 `.env`(VITE_API_MOCK=true)가 `results.test.ts`의 "실제 모드" 테스트 2개를 목 모드로 새게 만드는 걸 발견 — `beforeEach`로 격리해 고침(commit 482aa10)
 
 ## Known Problems
 
