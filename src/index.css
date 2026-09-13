@@ -1,0 +1,5 @@
+/* 전역 스타일 진입점 — 토큰은 src/ui/tokens/theme.css 한 곳에만 둔다. */
+@import 'tailwindcss';
+/* Pretendard 번들: 필요한 글자 구간(unicode-range)의 woff2 만 같은 origin 에서 받는다. */
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+@import './ui/tokens/theme.css';

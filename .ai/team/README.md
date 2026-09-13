@@ -10,6 +10,7 @@
 | [2026-09-13-notion-index-sync](announcements/2026-09-13-notion-index-sync.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-issue-link](announcements/2026-09-13-issue-link.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-drop-birth-region](announcements/2026-09-13-drop-birth-region.md) | yes | docs/phases/03-saju-reading/, src/features/saju/, src/api/ | Phase 03 종료 |
+| [2026-09-13-design-tokens](announcements/2026-09-13-design-tokens.md) | yes | all | Phase 08 종료 |
 | [2026-09-13-backend-contract](announcements/2026-09-13-backend-contract.md) | yes | all | Phase 08 종료 |
 | [2026-09-12-pr-body-autofill](announcements/2026-09-12-pr-body-autofill.md) | yes | all | Phase 08 종료 |
 | [2026-09-12-notion-board-sync](announcements/2026-09-12-notion-board-sync.md) | yes | all | Phase 08 종료 |

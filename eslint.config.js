@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
@@ -11,6 +12,10 @@ const boundary = (files, groups, message) => ({
   },
 });
 
+// hex(#abc·#aabbcc·#aabbccdd) · CSS 색 함수 · Tailwind 타입 힌트 [color:…]
+const ARBITRARY_COLOR =
+  '/#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})(?![0-9a-zA-Z_-])|\\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color-mix)\\(|\\[color:/';
+
 export default tseslint.config(
   { ignores: ['dist/', 'coverage/', '.vite/'] },
   js.configs.recommended,
@@ -19,6 +24,26 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx}'],
     plugins: { 'react-hooks': reactHooks },
     rules: reactHooks.configs.recommended.rules,
+  },
+  {
+    // 색·간격·타이포는 src/ui/tokens/theme.css 의 토큰 클래스로만 쓴다 (CONVENTIONS 4장).
+    // no-unknown-classes: theme.css 에 없는 클래스(bg-red-500·p-2·text-sm)를 막는다 — className·cn() 안의 문자열.
+    // no-restricted-syntax: hex·색 함수가 든 모든 문자열을 막는다 — bg-[#abc]·text-[rgb(0,0,0)]·style={{ color: '#fff' }}.
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    plugins: { 'better-tailwindcss': betterTailwindcss },
+    settings: { 'better-tailwindcss': { entryPoint: 'src/index.css' } },
+    rules: {
+      'better-tailwindcss/no-unknown-classes': 'error',
+      'no-restricted-syntax': [
+        'error',
+        ...['Literal[value', 'TemplateElement[value.raw'].map((attribute) => ({
+          selector: `${attribute}=${ARBITRARY_COLOR}]`,
+          message:
+            '임의 색상 금지 — src/ui/tokens/theme.css 의 토큰 클래스를 쓴다 (CONVENTIONS 4장)',
+        })),
+      ],
+    },
   },
   boundary(
     ['src/ui/**'],
