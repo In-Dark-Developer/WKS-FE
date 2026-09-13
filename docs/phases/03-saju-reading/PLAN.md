@@ -43,7 +43,7 @@
 
 - [x] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: @jjjung0921 (commit cc82bf8)
 
-- [ ] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/reading/:id/pre-register`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있고, 모든 라우트의 `errorElement`·첫 진입 `HydrateFallback`이 공통 상태 화면(SCR-12 — 수정본 오류·연결문제·로딩 문구, `ContentState` 사용)을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/app/requireSession.ts`, `src/app/RouteError.tsx`, `src/app/RouteLoading.tsx`, `src/api/session.ts` · Owner: @jjjung0921
+- [x] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/reading/:id/pre-register`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있고, 모든 라우트의 `errorElement`·첫 진입 `HydrateFallback`이 공통 상태 화면(SCR-12 — 수정본 오류·연결문제·로딩 문구, `ContentState` 사용)을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/app/requireSession.ts`, `src/app/RouteError.tsx`, `src/app/RouteLoading.tsx`, `src/api/session.ts` · Owner: @jjjung0921 (commit cc0ebd7)
 
 - [ ] T4. 사주 입력 폼 — Done when: 성별·달력 기준·생년월일 8자리·12시진·닉네임 8자 검증과 '몰라요'→null 처리(`birthRegion`은 항상 null)가 동작하고, 필드별 에러 문구("생년월일을 숫자 8자리로 작성해 주세요" 등)·연결 실패 시 입력값 유지·로딩 상태가 디자인(수정본 4상태)대로 뜬다 (테스트 포함) · Touches: `src/features/saju/SajuForm.tsx`, `src/features/saju/formSchema.ts`, `src/features/saju/options.ts` · After: T1 · Owner: @gn00py48
 
