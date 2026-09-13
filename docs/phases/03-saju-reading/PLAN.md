@@ -41,7 +41,7 @@
 
 - [ ] T1. API 클라이언트 계층 + 경계 검증 — Done when: `POST /results` · `GET /results/{id}`의 요청/응답 봉투가 zod로 검증되고 스키마 위반·네트워크 실패·`error.code`(404·503)가 타입으로 구분되며 테스트가 통과 · Touches: `src/api/client.ts`, `src/api/results.ts`, `src/api/schema/`, `docs/api/openapi.yaml#/paths/~1results`, `docs/api/openapi.yaml#/paths/~1results~1{resultId}`, `vite.config.ts` · Owner: @nicerjs23
 
-- [ ] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: @jjjung0921
+- [x] T2. 서버 상태 캐시·세션 보관 방식 ADR — Done when: ADR이 병합되고 `docs/ARCHITECTURE.md` State Management의 TBD가 사라진다 · Touches: `docs/decisions/`, `docs/ARCHITECTURE.md` · Owner: @jjjung0921 (commit cc82bf8)
 
 - [ ] T3. 라우트 등록 + 세션 안내 — Done when: `/`(입력)·`/reading/:id`(결과)가 `src/app/routes.tsx`에 등록되고, 세션 없이 `/reading/:id`에 들어오면 `/`로 안내되며(FR-18), 이후 Phase의 라우트 자리(`/reading/:id/card`, `/s/:shareId`, `/me/map`, `/matching`)가 주석으로 예약돼 있다 · Touches: `src/app/routes.tsx`, `src/app/RequireSession.tsx` · Owner: @jjjung0921
 
