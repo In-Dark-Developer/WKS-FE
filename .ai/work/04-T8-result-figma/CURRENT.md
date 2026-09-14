@@ -21,21 +21,20 @@ T8. 결과 화면을 Figma 사주 카드 화면(658:5075)에 맞추기
 
 ## Status
 
-BLOCKED
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - [x] 1. 레이아웃: 콘텐츠 349(좌우 13), 카드 349×461, 인스타 버튼·순위 좌우 8 안쪽 333 (commit 2f07677)
-- [x] 2. 행운 아이템→장소, 운세 연애→결혼→자녀 간격 24, 카드 배경·테두리 Figma 값
-- [x] 3. FriendRanking RankingList 모양 · 설명 칸 폭 297·140자 · 제목 맞춤 상수 312
-- [x] 4. test 258·typecheck·lint · 375px 좌표 Figma 대조
-- [ ] 5. spec PR #97 병합 대기 → --ready → PR ←
+- [x] 2. 행운 아이템→장소, 운세 연애→결혼→자녀 간격 24, 카드 배경·테두리 ·  FriendRanking RankingList 모양 · 설명 칸 폭 297·140자 · 제목 맞춤 상수 312
+- [x] 3. test 258·typecheck·lint · 375px 좌표 Figma 대조
+- [ ] 4. #97 병합됨 → main 병합 → --ready → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`e106563`
+`c6c27e1`
 
 ## Relevant Documents
 

@@ -20,7 +20,7 @@
 
 ## Work In Progress
 
-- 없음 — spec PR #97 병합 대기 (이 브랜치는 #97 브랜치를 병합해 두었다)
+- 없음
 
 ## Files Changed
 
@@ -51,4 +51,4 @@
 
 ## Exact Next Action
 
-#97 병합 확인 후 --ready.
+PR 병합 후 운영 결과 화면 실기기 확인.
