@@ -21,7 +21,7 @@ T3. 공유 링크 버튼 퍼블리싱
 
 ## Status
 
-IN_PROGRESS
+BLOCKED
 
 ## Progress
 
@@ -33,7 +33,7 @@ IN_PROGRESS
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`3a43aca`
+`6c1ff1e`
 
 ## Relevant Documents
 

@@ -4,12 +4,12 @@
 
 - From: claude-code
 - To: 없음
-- Date: 2026-09-14
+- Date: 2026-09-15
 - Phase / Task: 04/T3
 
 ## Goal
 
-공유 시트로 보낸 문구에서 링크가 문구와 붙지 않아, 받은 사람이 `/s/<shareId>` 를 그대로 연다.
+공유 시트로 보낸 문구에서 링크가 문구와 붙지 않아, 받은 사람이 `/s/:shareId` 를 그대로 연다.
 
 
 ## Work Completed
@@ -56,4 +56,4 @@
 
 ## Exact Next Action
 
-배포 후 iOS·Android 카카오톡으로 공유해 링크가 `/s/<shareId>` 에서 끝나는지 확인.
+배포 후 iOS·Android 카카오톡으로 공유해 링크가 `/s/:shareId` 에서 끝나는지 확인.
