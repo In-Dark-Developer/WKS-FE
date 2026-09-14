@@ -28,6 +28,7 @@ const view: ReadingView = {
   },
   luckyPlace: '만해광장',
   luckyItem: '작은 책 한 권',
+  shareId: '9f0d3f1e-0000-4000-8000-000000000001',
 };
 
 const zodiacs: readonly Zodiac[] = [
