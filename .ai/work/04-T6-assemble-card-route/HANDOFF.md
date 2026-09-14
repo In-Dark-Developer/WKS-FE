@@ -44,7 +44,7 @@
 
 ## Known Problems
 
-- `src/features/saju/ReadingResult.tsx`(03/T5) 주석이 "하위 라우트(인연카드·사전신청 모달)는 <Outlet /> 에 뜬다"고 적고 있으나 인연카드는 형제 라우트가 됐다 — 주석만 실제와 다르다(Touches 밖이라 고치지 않음). @jjjung0921 확인 요청.
+- `src/features/saju/ReadingResult.tsx`(03/T5) 주석이 "하위 라우트(인연카드·사전신청 모달)는 `<Outlet />` 에 뜬다"고 적고 있으나 인연카드는 형제 라우트가 됐다 — 주석만 실제와 다르다(Touches 밖이라 고치지 않음). @jjjung0921 확인 요청.
 - `ConnectionCardScreen` 의 sr-only `<h1>` 과 `DestinyCard` 의 `<h2>` 가 이름이 같아("…님의 인연카드") 접근성 트리에 같은 이름이 둘이다(04/T5 범위).
 
 ## Unverified Assumptions
