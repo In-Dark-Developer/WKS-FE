@@ -21,7 +21,7 @@ T8. 결과 주인 확인을 보관된 `resultId` 로 전환
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
