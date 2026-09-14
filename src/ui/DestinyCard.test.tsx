@@ -51,3 +51,12 @@ test('긴 운명 제목·설명도 말줄임 없이 전문을 그린다', () => 
   // 잘리지 않으므로 전체 문구를 따로 담을 title 속성도 없다 (PRD FR-3 — 합 120자 이내).
   expect(screen.getByText(longTitle)).not.toHaveAttribute('title');
 });
+
+test('제목 글자 수를 글자 크기 계산에 넘긴다', () => {
+  renderCard('인연 하나에 뿌리내린 나무');
+
+  // 긴 제목은 CSS 가 이 값으로 글자 크기를 줄여 한 줄에 둔다 (DestinyCard.css).
+  expect(
+    screen.getByText('인연 하나에 뿌리내린 나무').style.getPropertyValue('--title-chars'),
+  ).toBe('14');
+});

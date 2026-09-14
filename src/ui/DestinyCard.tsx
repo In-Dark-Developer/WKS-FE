@@ -80,7 +80,7 @@ export function DestinyCard({ nickname, zodiac, title, description, grades, clas
         <div data-destiny-card-destiny="">
           <p>
             <span>당신의 운명은</span>
-            <strong>{title}</strong>
+            <strong style={cssVars({ '--title-chars': title.length })}>{title}</strong>
           </p>
           <p>{description}</p>
         </div>
