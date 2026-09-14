@@ -21,7 +21,7 @@ T3. 공유 링크 버튼 퍼블리싱
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
