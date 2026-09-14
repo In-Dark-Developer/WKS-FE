@@ -12,7 +12,6 @@ export type { ResultRequestInput } from './schema/result';
 // 백엔드 dev(b61f849)에는 POST /results·GET /results/{id}가 있지만, 백엔드 없이 개발·테스트할 때
 // `VITE_API_MOCK=true`(로컬 .env, 기본은 꺼짐) 면 이 파일 안에서 만든 목 응답을 대신 돌려준다
 // (docs/phases/03-saju-reading/PLAN.md Dependencies).
-// Q16(세션 토큰 계약)이 오기 전까지는 이 목 응답이 유일하게 토큰을 돌려주는 경로다.
 const isMockEnabled = () => import.meta.env.VITE_API_MOCK === 'true';
 
 const mockResults = new Map<string, Result>();
@@ -38,8 +37,6 @@ function buildMockResult(input: ResultRequestInput): Result {
 async function mockCreateResult(input: ResultRequestInput): Promise<ApiOutcome<Result>> {
   const result = buildMockResult(input);
   mockResults.set(result.resultId, result);
-  // 실제 계약에는 아직 토큰이 없다(PRD Q16) — 보호 라우트를 로컬에서 확인할 수 있게 목 토큰을 써 둔다.
-  writeSession(`mock-${result.resultId}`);
   return { ok: true, data: result };
 }
 
@@ -58,8 +55,13 @@ async function mockGetResult(resultId: string): Promise<ApiOutcome<Result>> {
 // 호출하는 쪽(route action)이 로딩 UX를 맡는다. 응답의 compatibilities 는 항상 빈 배열이다.
 export async function createResult(input: ResultRequestInput): Promise<ApiOutcome<Result>> {
   const body = resultRequestSchema.parse(input); // 호출자(내부 코드)의 모양 실수를 개발 중 바로 잡는다
-  if (isMockEnabled()) return mockCreateResult(body);
-  return request({ method: 'POST', path: '/results', body }, resultSchema);
+  const outcome = isMockEnabled()
+    ? await mockCreateResult(body)
+    : await request({ method: 'POST', path: '/results', body }, resultSchema);
+  // 만든 결과를 이 브라우저의 '내 결과'로 기억한다 — 결과 화면 가드가 주소의 id 와 비교한다
+  // (ADR-20260914-result-ownership-in-browser). 목·실제 응답이 같은 경로로 쓴다.
+  if (outcome.ok) writeSession(outcome.data.resultId);
+  return outcome;
 }
 
 // GET /results/{resultId} — 본인 결과 재방문 조회(FR-3, FR-8). 트래픽이 가장 몰리는 경로다.

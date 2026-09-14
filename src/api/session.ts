@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-// 세션 보관은 이 파일만 한다 — ADR-20260913-server-state-and-session-storage.
+// 세션 보관은 이 파일만 한다 — ADR-20260914-result-ownership-in-browser.
+// 세션은 이 브라우저가 만든 '내 결과'의 resultId 하나다(백엔드 세션 토큰은 없다). 새 결과가 덮어쓴다.
 const KEY = 'wks:session';
 
-const sessionSchema = z.object({ v: z.literal(1), token: z.string().min(1) });
+const sessionSchema = z.object({ v: z.literal(2), resultId: z.string().uuid() });
 
-export type Session = { token: string };
+export type Session = { resultId: string };
 
 export function readSession(): Session | null {
   let raw: string | null;
@@ -23,17 +24,18 @@ export function readSession(): Session | null {
   } catch {
     value = null;
   }
+  // 예전 토큰 값(`{ v: 1, token }`)도 여기서 걸러져 지워진다.
   const parsed = sessionSchema.safeParse(value);
   if (!parsed.success) {
     clearSession();
     return null;
   }
-  return { token: parsed.data.token };
+  return { resultId: parsed.data.resultId };
 }
 
-export function writeSession(token: string): void {
+export function writeSession(resultId: string): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ v: 1, token }));
+    localStorage.setItem(KEY, JSON.stringify({ v: 2, resultId }));
   } catch {
     // 저장하지 못하면 이번 방문 동안만 세션 없이 동작한다.
   }

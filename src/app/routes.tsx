@@ -18,15 +18,15 @@ import { IntroGate } from '@/features/intro';
 import { ConnectionCardScreen, ShareLinkButton, cardLoader, type CardView } from '@/features/share';
 import { Button } from '@/ui/Button';
 
-// 세션 가드(T3) 뒤에 결과 loader(T7)를 잇는다 — requireSession 이 없으면 redirect('/')로 끝난다.
+// 세션 가드(T3·T8) 뒤에 결과 loader(T7)를 잇는다 — 이 브라우저가 만든 결과가 아니면 redirect('/')로 끝난다.
 function protectedReadingLoader(args: LoaderFunctionArgs) {
-  requireSession();
+  requireSession(args.params.id);
   return readingLoader(args);
 }
 
 // 인연카드 화면도 결과와 같은 세션 가드 뒤에 둔다 — 남의 결과를 주소만으로 열지 못한다.
 function protectedCardLoader(args: LoaderFunctionArgs) {
-  requireSession();
+  requireSession(args.params.id);
   return cardLoader(args);
 }
 
