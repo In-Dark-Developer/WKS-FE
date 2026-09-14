@@ -32,20 +32,18 @@
 
 ## Decisions Made
 
-- `requireSession` 인자는 `string | undefined`(params.id) — 보관값이 없으면 id 가 없어도 막는다
-- 라우트 테스트의 주소 id 를 UUID 로 바꿨다 — 보관값이 UUID 로만 파싱된다
+- `requireSession(params.id)` 는 보관값이 없으면 id 유무와 무관하게 막는다 · 라우트 테스트 주소 id 를 UUID 로(보관값이 UUID 로만 파싱)
 
 
 ## Tests Executed
 
-- `pnpm test` · `pnpm typecheck` · `pnpm lint`
-- 목 모드 dev 서버(워크스페이스 `.claude/launch.json` `wks-fe-mock`, 저장소 밖): 예전 v1 값이 있는 상태에서 입력 → 결과 → 인연카드, 다른 UUID 주소·보관값 삭제 후 카드 주소
+- `pnpm test` · `pnpm typecheck` · `pnpm lint` · 목 모드 dev 서버(워크스페이스 `.claude/launch.json` `wks-fe-mock`, 저장소 밖): 예전 v1 값이 있는 상태에서 입력 → 결과 → 인연카드, 다른 UUID 주소·보관값 삭제 후 카드 주소
 
 
 ## Test Results
 
 - 55 files / 258 tests 통과, typecheck·lint(경고 0) 통과
-- 목 모드: `/reading/<id>` 진입, `wks:session` 이 `{v:2,resultId}` 로 교체, 카드 화면 표시, 불일치·보관값 없음은 `/`, 콘솔 에러 없음
+- 목 모드: 결과 주소 진입, `wks:session` 이 `{v:2,resultId}` 로 교체, 카드 화면 표시, 불일치·보관값 없음은 `/`, 콘솔 에러 없음
 
 
 ## Known Problems

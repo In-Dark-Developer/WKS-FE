@@ -26,9 +26,8 @@ BLOCKED
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- [x] 1. `session.ts` `{ v: 2, resultId }` · `results.ts` 성공 시 저장 · `client.ts` 토큰 코드 삭제 (+ test)
-- [x] 2. `requireSession(id)` 비교 · routes loader · routes test (commit 55dc225, WIP)
-- [x] 3. test 258·typecheck·lint 통과 · 목 모드 브라우저 완주·불일치 redirect 확인
+- [x] 1. `session.ts` `{ v: 2, resultId }` · `results.ts` 성공 시 저장 · `client.ts` 토큰 코드 삭제 (+ test) · `requireSession(id)`·routes (commit 55dc225, WIP)
+- [x] 3. test 258·typecheck·lint · 목 모드 브라우저 완주·불일치 redirect
 - [ ] 4. 실제 백엔드 1회 완주 — 소유자 확인 대기(운영이면 DB 1건·LLM 1회) ←
 - [ ] 5. PLAN T8 체크·SHA · --ready
 
