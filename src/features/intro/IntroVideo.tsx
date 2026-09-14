@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import introVideo from '@/ui/assets/video/intro.mp4';
-import { Button } from '@/ui/Button';
 
 const SKIP_AFTER_MS = 2000;
 
@@ -31,12 +30,15 @@ export function IntroVideo({ onFinish }: Props) {
           playsInline
           src={introVideo}
         />
+        {/* 영상 위에 떠 있는 반투명 버튼 — 디자인시스템 Button 에 없는 모양이라 여기서만 쓴다(소유자 참고 캡처). */}
         {canSkip ? (
-          <div className="absolute inset-x-0 bottom-40 flex justify-center">
-            <Button onClick={onFinish} size="m" variant="secondary">
-              건너뛰기
-            </Button>
-          </div>
+          <button
+            className="absolute top-16 right-16 rounded-8 border border-opacity-card-neutral-0-80 bg-opacity-card-neutral-0-50 px-16 py-8 text-ui-12 font-semibold tracking-widest text-primary backdrop-blur-xs focus-visible:outline-2 focus-visible:outline-focus"
+            onClick={onFinish}
+            type="button"
+          >
+            건너뛰기
+          </button>
         ) : null}
       </div>
     </div>
