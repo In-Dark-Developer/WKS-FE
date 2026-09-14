@@ -24,7 +24,7 @@ test('버튼을 누르면 현재 origin 의 공유 링크를 시트로 넘긴다
 
   await screen.findByRole('button', { name: '친구에게 공유' });
   expect(share).toHaveBeenCalledWith(
-    expect.objectContaining({ url: `${window.location.origin}/s/abc` }),
+    expect.objectContaining({ text: expect.stringMatching(`\n${window.location.origin}/s/abc$`) }),
   );
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });

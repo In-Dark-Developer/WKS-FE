@@ -34,7 +34,9 @@ async function copyToClipboard(url: string): Promise<boolean> {
 export async function shareLink(url: string, meta: ShareMeta): Promise<ShareOutcome> {
   if (typeof navigator.share === 'function') {
     try {
-      await navigator.share({ title: meta.title, text: meta.text, url });
+      // url 을 따로 넘기면 받는 앱(카카오톡 등)이 url 과 text 를 구분자 없이 이어 붙여 링크가 문구까지 먹는다.
+      // url 을 text 안에 줄바꿈으로 넣어 링크 끝을 분명히 한다.
+      await navigator.share({ title: meta.title, text: `${meta.text}\n${url}` });
       return 'shared';
     } catch (error) {
       if (isAbortError(error)) return 'cancelled';
