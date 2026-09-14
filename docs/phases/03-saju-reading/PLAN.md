@@ -1,6 +1,6 @@
 # Phase 03 — saju-reading
 
-- Status: PLANNED
+- Status: DONE
 - Lead: @nicerjs23
 - Depends on: 02
 - Start: TBD · End: 2026-09-17 (MVP 마감 — PRD Constraints)
@@ -68,12 +68,12 @@
 
 ## Acceptance Criteria
 
-- [ ] AC1. 입력 → 결과를 이탈 없이 완주할 수 있다
-- [ ] AC2. 태어난 시간을 '몰라요'로 두어도 결과를 받을 수 있고, 음력·윤달 입력이 전송되며, 지역 입력 없이 `birthRegion` 필드를 보내지 않는다
-- [ ] AC6. 이 브라우저가 만든 결과가 없거나 다른 `resultId` 로 `/reading/:id`·`/reading/:id/card` 에 들어오면 입력 화면으로 안내된다
-- [ ] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
-- [ ] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
-- [ ] AC5. `src/app/routes.tsx`를 T3(완료)·T7·T8 외의 Task가 수정하지 않았다
+- [x] AC1. 입력 → 결과를 이탈 없이 완주할 수 있다
+- [x] AC2. 태어난 시간을 '몰라요'로 두어도 결과를 받을 수 있고, 음력·윤달 입력이 전송되며, 지역 입력 없이 `birthRegion` 필드를 보내지 않는다
+- [x] AC6. 이 브라우저가 만든 결과가 없거나 다른 `resultId` 로 `/reading/:id`·`/reading/:id/card` 에 들어오면 입력 화면으로 안내된다
+- [x] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
+- [x] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
+- [x] AC5. `src/app/routes.tsx`를 T3(완료)·T7·T8 외의 Task가 수정하지 않았다 (예외 4건 — chore 2건·04/T6·04/T7, 충돌 없음: RESULT Deviations)
 
 ## Validation Plan
 
