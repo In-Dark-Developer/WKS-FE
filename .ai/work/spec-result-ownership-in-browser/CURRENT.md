@@ -27,15 +27,14 @@ BLOCKED
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - [x] 1. 새 ADR + ADR-20260913 Status 세션 절 대체 표시
-- [x] 2. PRD(Constraints·FR-18·SCR-04/05·Q16 삭제) · ARCHITECTURE(Data Flow·State·Persistence·인증)
-- [x] 3. 03 PLAN T8·AC5·AC6·Validation · 공지 2026-09-14-result-ownership + 색인 (commit f8d6adc)
-- [x] 4. Touches 확장(openapi.yaml 주석·06 PLAN Q16 참조 정리) · Acked 전체 · 03/T8 Owner @jjjung0921 (commit c089d3a)
-- [ ] 5. main 병합 → ai-end --ready → PR ←
+- [x] 2. PRD · ARCHITECTURE · 03 PLAN T8 · 공지 + 색인 (commit f8d6adc)
+- [x] 3. Touches 확장(openapi.yaml 주석·06 PLAN Q16 참조 정리) · Acked 전체 · 03/T8 Owner @jjjung0921 (commit c089d3a)
+- [ ] 4. main 병합 → ai-end --ready → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`f8d6adc`
+`8223a58`
 
 ## Relevant Documents
 

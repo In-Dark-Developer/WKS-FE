@@ -16,13 +16,13 @@ spec(ADR·PRD·ARCHITECTURE·03 PLAN·공지)이 "백엔드 세션 토큰" 대�
 - 새 ADR `ADR-20260914-result-ownership-in-browser`, ADR-20260913 Status 에 세션 절 대체 표시
 - PRD: Constraints 식별 문장 교체, FR-18 문구(결과·카드 주소 + 지도·소개팅, 공유 랜딩 제외), SCR-04/05 에 FR-18, Q16 행 삭제
 - ARCHITECTURE: Data Flow 1·2, State Management, Persistence, Cross-cutting 인증/인가
-- 03 PLAN: Goal·Scope·Out of Scope·Dependencies 문구, T8 추가(Owner 미정), AC5·AC6, Validation Plan
+- 03 PLAN: Goal·Scope·Out of Scope·Dependencies 문구, T8 추가, AC5·AC6, Validation Plan
 - 공지 `2026-09-14-result-ownership` + `.ai/team/README.md` 색인 (commit f8d6adc)
 - Touches 확장 승인 → `docs/api/openapi.yaml` 주석·`docs/phases/06-dating-gate/PLAN.md` 의 Q16 참조 정리, 03/T8 Owner @jjjung0921, Acked 전체 (commit c089d3a)
 
 ## Work In Progress
 
-- 없음 — 소유자 답 대기
+- 없음 — PR 생성은 소유자 확인 대기
 
 ## Files Changed
 
