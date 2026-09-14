@@ -21,7 +21,7 @@ T7. 인연카드를 결과 화면에 합치기
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
