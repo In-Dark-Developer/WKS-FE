@@ -7,7 +7,7 @@
 - Branch: ws/chore-intro-video
 - Task: -/-
 - Issue: none
-- Touches: docs/PRD.md,docs/ARCHITECTURE.md,src/features/intro/,src/app/routes.tsx,src/app/routes.test.tsx,src/ui/assets/video/
+- Touches: docs/PRD.md,docs/ARCHITECTURE.md,src/features/intro/,src/app/routes.tsx,src/app/routes.test.tsx,src/app/App.test.tsx,src/ui/assets/video/
 - Supersedes: none
 - Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork
 
@@ -26,15 +26,15 @@ IN_PROGRESS
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. PRD FR-1·Non-goals, ARCHITECTURE Persistence 를 인트로 포함으로 갱신 ←
+- 1. PRD FR-1·Non-goals, ARCHITECTURE Persistence 를 인트로 포함으로 갱신
 - 2. `src/features/intro/` IntroVideo(8초 영상, 2초 뒤 건너뛰기)·IntroGate(첫 방문 1회 저장)와 테스트
-- 3. `routes.tsx` index 를 IntroGate 로 감싸고 routes 테스트 갱신
-- 4. test·typecheck·lint·브라우저 확인 → 커밋 → PR 준비
+- 3. `routes.tsx` index 를 IntroGate 로 감싸고 routes·App 테스트 갱신
+- 4. test·typecheck·lint·브라우저 확인 → 커밋 → PR 준비 (commit 63410f2) ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`b2cafc9`
+`63410f2`
 
 ## Relevant Documents
 
@@ -45,8 +45,9 @@ IN_PROGRESS
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
 - `src/app/routes.tsx:routes` (index)
+- `src/features/intro/IntroGate.tsx:IntroGate` · `IntroVideo.tsx:IntroVideo` · `introSeen.ts`
 - `src/ui/assets/video/intro.mp4` (406×720, 8초, h264+aac)
 
 ## Next Action
 
-spec 갱신 후 intro feature 구현
+PR 병합 (@jjjung0921) 뒤 iOS Safari·Android Chrome 실기기에서 자동 재생 확인
