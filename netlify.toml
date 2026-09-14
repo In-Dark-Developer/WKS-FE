@@ -7,7 +7,7 @@
 
 # 비밀값이 아니다 — 프론트 번들에 그대로 들어가는 공개 주소.
 [build.environment]
-  VITE_API_BASE_URL = "https://api.threatoffate.site/api"
+  VITE_API_BASE_URL = "https://api.threadoffate.site/api"
 
 # SPA — 새로고침·공유 링크(/s/:shareId) 직접 진입도 index.html 이 받아 라우터가 그린다.
 [[redirects]]

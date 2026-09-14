@@ -16,7 +16,7 @@
 | 05 | [friend-score](05-friend-score/PLAN.md) | @nicerjs23 | 04 | PLANNED | 1/2 | — |
 | 06 | [dating-gate](06-dating-gate/PLAN.md) | @gn00py48 | 03 | PLANNED | 2/3 | — |
 | 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | PLANNED | 0/1 | — |
-| 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 2/6 | — |
+| 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 2/6 | [RESULT](08-launch-readiness/RESULT.md) |
 <!-- phases:end -->
 
 ## Phase Rules

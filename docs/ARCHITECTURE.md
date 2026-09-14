@@ -70,7 +70,7 @@
 
 | System           | Purpose                          | Interface              | Failure Handling                                       |
 |------------------|----------------------------------|------------------------|--------------------------------------------------------|
-| 백엔드 API       | 사주·궁합·매칭·인증·저장          | REST/JSON (`docs/api/`) — 운영 `https://api.threatoffate.site/api` | 타임아웃 후 GET만 재시도 1회(POST는 재시도 안 함), 실패 시 route `errorElement`의 보살 말투 에러 화면 |
+| 백엔드 API       | 사주·궁합·매칭·인증·저장          | REST/JSON (`docs/api/`) — 운영 `https://api.threadoffate.site/api` | 타임아웃 후 GET만 재시도 1회(POST는 재시도 안 함), 실패 시 route `errorElement`의 보살 말투 에러 화면 |
 | 인스타그램 공유  | 인연카드 이미지 공유 · 공유 링크    | Web Share API (files · url) | 미지원 브라우저는 이미지 다운로드 · 클립보드 복사 + Toast 로 폴백 |
 | 정적 호스팅      | SPA 배포와 공유 링크 라우팅       | Netlify(무료) — 개인 fork `jjjung0921/WKS-FE` 를 빌드, `main` 병합마다 Actions `sync-fork` 가 fork 동기화. DNS Route53(apex A `75.2.60.5`), 모든 경로 → `index.html` (ADR-20260914-netlify-personal-fork, `docs/deploy/netlify-fork.md`) | 빌드 실패 시 직전 배포 유지(Netlify 원자적 배포). 공유 링크 미리보기(NFR-3)는 Phase 08 |
 
