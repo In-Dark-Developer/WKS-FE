@@ -1,8 +1,8 @@
 import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
-import { useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
 
 import { AppShell } from '@/app/AppShell';
-import { requireSession } from '@/app/requireSession';
+import { requireMyResultId, requireSession } from '@/app/requireSession';
 import { RootLayout } from '@/app/RootLayout';
 import { RouteError } from '@/app/RouteError';
 import { RouteLoading } from '@/app/RouteLoading';
@@ -13,7 +13,7 @@ import {
   sajuAction,
   type ReadingView,
 } from '@/features/saju';
-import { FriendRanking } from '@/features/friends';
+import { CompatibilityMapScreen, FriendRanking } from '@/features/friends';
 import { IntroGate } from '@/features/intro';
 import { ResultCard, ShareLinkButton } from '@/features/share';
 
@@ -21,6 +21,12 @@ import { ResultCard, ShareLinkButton } from '@/features/share';
 function protectedReadingLoader(args: LoaderFunctionArgs) {
   requireSession(args.params.id);
   return readingLoader(args);
+}
+
+// SCR-08 궁합 지도(05/T3) — 주소에 id 가 없어 보관된 '내 결과'로 결과 loader 를 다시 쓴다(친구 목록이 그 안에 있다).
+function protectedMapLoader(args: LoaderFunctionArgs) {
+  const resultId = requireMyResultId();
+  return readingLoader({ ...args, params: { ...args.params, id: resultId } });
 }
 
 // renderCard(04/T7)·ranking(05)은 여기서 채우고, teaser(06) 슬롯은 그 Phase가 끝나기 전까지 비워 둔다 —
@@ -31,12 +37,38 @@ function ReadingResultRoute() {
   const ranking = (
     <FriendRanking
       emptyAction={<ShareLinkButton nickname={view.nickname} shareId={view.shareId} size="m" />}
-      friends={view.compatibilities ?? []}
+      friends={view.friends ?? []}
+      headerAction={
+        // Figma 798:3138 '지도 보기 >' — UI/14/600 Action/Teal/Default.
+        <Link className="text-ui-14 font-semibold whitespace-nowrap text-primary-500" to="/me/map">
+          지도 보기 &gt;
+        </Link>
+      }
       limit={3}
     />
   );
   return (
     <ReadingResult ranking={ranking} renderCard={(face) => <ResultCard {...face} />} view={view} />
+  );
+}
+
+// SCR-08 궁합 지도 — 05/T2 CompatibilityMapScreen 에 결과 loader 의 친구 목록과 '친구에게 공유'(04/T3)를 잇는다.
+function CompatibilityMapRoute() {
+  const view = useLoaderData<ReadingView>();
+  return (
+    <CompatibilityMapScreen
+      friends={view.friends ?? []}
+      nickname={view.nickname}
+      share={
+        <ShareLinkButton
+          className="w-full"
+          label="친구에게 공유하고 궁합 지도 넓히기"
+          nickname={view.nickname}
+          shareId={view.shareId}
+          variant="accent"
+        />
+      }
+    />
   );
 }
 
@@ -77,7 +109,13 @@ export const routes: RouteObject[] = [
         // 예약: 'pre-register' SCR-09 사전신청 모달 (06/T3, ReadingResult 의 <Outlet /> 에 뜬다, handle backdrop 'mist')
       },
       // 예약: 's/:shareId' SCR-06 공유 랜딩 (Phase 05)
-      // 예약: 'me/map' SCR-08 궁합 지도 (Phase 05, 세션 필요)
+      // SCR-08 궁합 지도 — 05/T2 CompatibilityMapScreen, 조립 05/T3. 결과 화면 순위의 '지도 보기'로 들어온다.
+      {
+        path: 'me/map',
+        loader: protectedMapLoader,
+        handle: { backdrop: 'result' },
+        element: <CompatibilityMapRoute />,
+      },
       // 예약: 'matching' SCR-10 소개팅 후보 (Phase 07, 세션 필요)
     ],
   },

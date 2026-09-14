@@ -29,6 +29,20 @@ test('버튼을 누르면 현재 origin 의 공유 링크를 시트로 넘긴다
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
+test('버튼 글자를 바꿀 수 있다', () => {
+  render(
+    <ShareLinkButton
+      label="친구에게 공유하고 궁합 지도 넓히기"
+      nickname="달빛토끼"
+      shareId="abc"
+    />,
+  );
+
+  expect(
+    screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' }),
+  ).toBeInTheDocument();
+});
+
 test('공유 시트가 없으면 복사하고 복사했다고 알린다', async () => {
   const writeText = vi.fn().mockResolvedValue(undefined);
   setNavigator('clipboard', { writeText });
