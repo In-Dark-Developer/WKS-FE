@@ -21,7 +21,7 @@ spec: result-ownership-in-browser
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
