@@ -21,7 +21,7 @@ T8. 결과 화면을 Figma 사주 카드 화면(658:5075)에 맞추기
 
 ## Status
 
-IN_PROGRESS
+BLOCKED
 
 ## Progress
 
@@ -34,7 +34,7 @@ IN_PROGRESS
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`c6c27e1`
+`937f531`
 
 ## Relevant Documents
 
