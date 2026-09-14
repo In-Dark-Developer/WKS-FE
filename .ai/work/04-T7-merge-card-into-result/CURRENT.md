@@ -28,13 +28,13 @@ BLOCKED
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - [x] 1. share ResultCard(뒤집기+인스타 공유)·앞면 운명 카드·cardLoader 삭제 · saju renderCard · routes 조립·카드 라우트 삭제 (commit 737b218, WIP)
 - [x] 2. DestinyCard 말줄임 제거·connection kind 정리 · preview · test 252·typecheck·lint
-- [ ] 3. 긴 제목(14자) 두 줄 → 설명이 스탬프와 겹침 — 맞춤 규칙 소유자 확인 대기 ←
-- [ ] 4. PLAN SHA · --ready
+- [x] 3. 긴 제목: 글자 수(--title-chars)로 글자 크기 축소, 8종·120자·360/430px 겹침 없음 (commit bf9795f)
+- [ ] 4. PLAN SHA · --ready ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`737b218`
+`f24d050`
 
 ## Relevant Documents
 
@@ -47,4 +47,4 @@ BLOCKED
 
 ## Next Action
 
-소유자 답: 긴 운명 제목을 한 줄에 맞추는 규칙(글자 수로 글자 크기 줄이기 제안) → 구현·측정 → --ready.
+`scripts/ai-end.sh --ready` → 소유자 확인 후 PR.

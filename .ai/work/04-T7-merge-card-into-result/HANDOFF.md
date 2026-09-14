@@ -21,7 +21,7 @@
 
 ## Work In Progress
 
-- 긴 제목 맞춤 규칙 — 소유자 답 대기
+- 없음
 
 
 ## Files Changed
@@ -31,8 +31,8 @@
 
 ## Decisions Made
 
-- 카드는 render prop 슬롯 — saju 가 fortuneOrder 로 앞면 값을 만들고 features 끼리 import 하지 않는다
-- `DestinyCard.test.tsx` 를 Touches 에 추가(삭제한 kind·title 속성 테스트)
+- 카드는 render prop 슬롯 — saju 가 앞면 값, app 이 ResultCard 조립(features 끼리 import 없음) · `DestinyCard.test.tsx` Touches 추가
+- 긴 제목(소유자 선택): `font-size: min(29.565, 298 / --title-chars) × u` — 10자 이하는 Figma 크기, 14자는 21.3. 띄어쓰기 없는 긴 제목은 두 줄로 내려갈 수 있다
 
 
 ## Tests Executed
@@ -42,15 +42,13 @@
 
 ## Test Results
 
-- 252 tests·typecheck·lint 통과
-- 120자(제목 11자 '자식 복으로 여는 문'): 제목 한 줄, 설명 3줄 끝 184.9u < 스탬프 194u — 겹침 없음
-- 120자(제목 14자 '인연 하나에 뿌리내린 나무'): 제목 두 줄, 설명 175~219u 가 결혼운 스탬프(194u)와 겹침
+- 253 tests·typecheck·lint 통과
+- 백엔드 제목 8종 × 설명(합 120자), 360·430px: 제목 모두 한 줄, 설명 끝과 결혼운 스탬프 사이 11.7~18.5u
 
 
 ## Known Problems
 
-- 위 긴 제목 겹침 — T7 Done when 미충족
-- `src/lib/cardImage.ts` 파일 이름이 여전히 `…-인연카드.png` (Touches 밖)
+- `src/lib/cardImage.ts` 파일 이름이 `…-인연카드.png` (Touches 밖)
 - 카카오톡 카드 치우침 원인 미확정(최신 WebKit 재현 안 됨)
 
 
@@ -60,4 +58,4 @@
 
 ## Exact Next Action
 
-소유자에게 긴 제목 맞춤 규칙 확인.
+PR 병합 후 운영 결과 화면에서 카드 뒤집기·인스타 공유 실기기 확인.
