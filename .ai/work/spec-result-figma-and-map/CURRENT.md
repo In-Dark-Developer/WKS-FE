@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/PRD.md,docs/api/openapi.yaml,docs/phases/04-share-and-card/PLAN.md,docs/phases/05-friend-score/PLAN.md,docs/phases/README.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,27 +21,29 @@ spec: result-figma-and-map
 
 ## Status
 
-TODO
+BLOCKED
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 1. PRD SCR-04·FR-3(설명 140자)·FR-4·FR-8(지도 보기·점수순) · openapi CompatibilitySummary 실제 모양 (commit cf9dd74)
+- [x] 2. 04 PLAN T8 · 05 PLAN T3 · phases 표
+- [ ] 3. --ready → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`1b07e8d`
+`cf9dd74`
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `docs/PRD.md` · `docs/api/openapi.yaml` · `docs/phases/04-share-and-card/PLAN.md` T8 · `docs/phases/05-friend-score/PLAN.md` T3 · Figma 658:5075
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/api/schema/result.ts:compatibilitySummarySchema` (05/T3 이 고칠 곳)
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+`scripts/ai-end.sh --ready` → PR.
