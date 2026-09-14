@@ -49,18 +49,35 @@ export function buildStoryFrame(card: HTMLElement): StoryFrame {
   };
 }
 
+// html-to-image 는 프레임의 계산된 스타일을 사본에 그대로 옮긴다. 화면 밖 위치(left 음수)까지 옮기면
+// SVG 안에서 내용이 캔버스 밖에 그려져 투명한 PNG 가 나온다 — 찍는 사본에서만 제자리로 되돌린다.
+const CAPTURE_STYLE: Partial<CSSStyleDeclaration> = { position: 'static', left: '0', top: '0' };
+
+// 방금 붙인 사본의 이미지(십이간지 캐릭터·등급 스탬프)는 아직 디코딩 전이라 그대로 찍으면 빠진다.
+// 깨진 이미지 하나 때문에 공유 전체가 막히지 않도록 디코딩 실패는 넘긴다.
+async function waitForImages(frame: HTMLElement): Promise<void> {
+  const images = [...frame.querySelectorAll('img')];
+  await Promise.all(images.map((image) => image.decode().catch(() => undefined)));
+}
+
 export async function renderCardImage(card: HTMLElement): Promise<Blob> {
   const { frame, remove } = buildStoryFrame(card);
   try {
+    await waitForImages(frame);
     // 초기 번들에 넣지 않는다 — 공유를 누른 사람만 받는다 (NFR-2 250KB gzip).
     const { toBlob } = await import('html-to-image');
     // backgroundColor 는 넘기지 않는다 — 프레임 자신이 불투명한 토큰 그라데이션을 갖고 있어
     // 그대로 찍히고, 여기에 색을 적으면 토큰과 따로 노는 값이 하나 더 생긴다.
-    const blob = await toBlob(frame, {
+    const options = {
       width: STORY_WIDTH,
       height: STORY_HEIGHT,
       pixelRatio: 1,
-    });
+      style: CAPTURE_STYLE,
+    };
+    // WebKit(iOS Safari·카카오톡 인앱)은 SVG 안에 넣은 이미지(배경·캐릭터)를 첫 그리기에 싣지 못해
+    // 처음 한 장은 카드 틀과 글자만 나온다. 한 번 버리고 두 번째를 쓴다.
+    await toBlob(frame, options);
+    const blob = await toBlob(frame, options);
     if (!blob) throw new Error('카드 이미지를 만들지 못했다');
     return blob;
   } finally {
