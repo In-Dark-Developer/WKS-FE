@@ -21,7 +21,7 @@ T8. 결과 화면을 Figma 사주 카드 화면(658:5075)에 맞추기
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
