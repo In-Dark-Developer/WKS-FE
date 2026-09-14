@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-14 · claude-code · -/- · ReadingResult Outlet 주석 정정
+
+- Commits: da99e1a
+- Done: `<Outlet />` 주석에서 인연카드 제거, 형제 라우트임을 명시 (04-T6 확인 요청 처리)
+- Not done: 없음
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 없음
+
 ## 2026-09-14 · ai-stream · -/- · 스트림 열기
 
 - Commits: (open)
