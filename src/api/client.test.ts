@@ -2,9 +2,10 @@ import { z } from 'zod';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import { request } from './client';
-import { clearSession, readSession, writeSession } from './session';
+import { readSession, writeSession } from './session';
 
 const dataSchema = z.object({ id: z.string() });
+const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
 
 function jsonResponse(body: unknown): Response {
   return { json: () => Promise.resolve(body) } as Response;
@@ -27,18 +28,8 @@ test('성공 응답을 데이터로 돌려준다', async () => {
   expect(result).toEqual({ ok: true, data: { id: 'r1' } });
 });
 
-test('세션이 있으면 Authorization 헤더로 싣는다', async () => {
-  writeSession('token-1');
-  const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, data: { id: 'r1' } }));
-  vi.stubGlobal('fetch', fetchMock);
-
-  await request({ method: 'GET', path: '/x' }, dataSchema);
-
-  const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-  expect((init.headers as Record<string, string>).Authorization).toBe('Bearer token-1');
-});
-
-test('세션이 없으면 Authorization 헤더를 싣지 않는다', async () => {
+test('세션이 있어도 Authorization 헤더를 싣지 않는다 — 백엔드에 인증이 없다', async () => {
+  writeSession(RESULT_ID);
   const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, data: { id: 'r1' } }));
   vi.stubGlobal('fetch', fetchMock);
 
@@ -117,35 +108,18 @@ test('POST 는 네트워크 실패를 재시도하지 않는다', async () => {
   expect(result).toEqual({ ok: false, error: { kind: 'network' } });
 });
 
-test('INVALID_TOKEN 응답을 받으면 세션을 지운다', async () => {
-  writeSession('token-1');
+test('INVALID_TOKEN 응답에도 세션을 지우지 않는다 — 사전신청 매직링크 전용 코드다', async () => {
+  writeSession(RESULT_ID);
   vi.stubGlobal(
     'fetch',
     vi
       .fn()
       .mockResolvedValue(
-        jsonResponse({ success: false, error: { code: 'INVALID_TOKEN', message: '세션 만료' } }),
+        jsonResponse({ success: false, error: { code: 'INVALID_TOKEN', message: '토큰 만료' } }),
       ),
   );
 
   await request({ method: 'GET', path: '/x' }, dataSchema);
 
-  expect(readSession()).toBeNull();
-});
-
-test('다른 에러 코드로는 세션을 지우지 않는다', async () => {
-  writeSession('token-1');
-  vi.stubGlobal(
-    'fetch',
-    vi
-      .fn()
-      .mockResolvedValue(
-        jsonResponse({ success: false, error: { code: 'INTERNAL_ERROR', message: '오류' } }),
-      ),
-  );
-
-  await request({ method: 'GET', path: '/x' }, dataSchema);
-
-  expect(readSession()).toEqual({ token: 'token-1' });
-  clearSession();
+  expect(readSession()).toEqual({ resultId: RESULT_ID });
 });

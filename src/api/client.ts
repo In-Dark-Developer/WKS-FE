@@ -1,10 +1,9 @@
 import type { z } from 'zod';
 
-import { clearSession, readSession } from './session';
 import { envelopeSchema, type ErrorCode } from './schema/envelope';
 
-// 백엔드 호출 한 곳 — 토큰 헤더·GET 재시도·응답 봉투 검증을 여기서만 한다
-// (ADR-20260913-server-state-and-session-storage · docs/ARCHITECTURE.md Cross-cutting Concerns).
+// 백엔드 호출 한 곳 — GET 재시도·응답 봉투 검증을 여기서만 한다. 백엔드에 인증이 없어 인증 헤더는 싣지 않는다
+// (ADR-20260913-server-state-and-session-storage · ADR-20260914-result-ownership-in-browser).
 // Base URL 은 `VITE_` 접두 환경변수로만 주입한다. 로컬 dev 백엔드 CORS 는 프론트 localhost:3000 만
 // 허용하므로 vite.config.ts server.port 를 3000 으로 맞춘다(같은 Task Touches).
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api';
@@ -22,13 +21,6 @@ type RequestInput = {
   body?: unknown;
 };
 
-function buildHeaders(): HeadersInit {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const session = readSession();
-  if (session) headers.Authorization = `Bearer ${session.token}`;
-  return headers;
-}
-
 async function requestOnce<TData>(
   input: RequestInput,
   dataSchema: z.ZodType<TData>,
@@ -37,7 +29,7 @@ async function requestOnce<TData>(
   try {
     response = await fetch(`${BASE_URL}${input.path}`, {
       method: input.method,
-      headers: buildHeaders(),
+      headers: { 'Content-Type': 'application/json' },
       body: input.body === undefined ? undefined : JSON.stringify(input.body),
     });
   } catch {
@@ -57,9 +49,6 @@ async function requestOnce<TData>(
 
   if (!envelope.data.success) {
     const { code, message, traceId } = envelope.data.error;
-    // 세션 무효를 알리는 정확한 코드는 백엔드 계약 갱신 대기(PRD Q16) — 그때까지 INVALID_TOKEN 을
-    // 세션 무효 신호로 가정한다(ADR-20260913-server-state-and-session-storage 후속 작업 항목).
-    if (code === 'INVALID_TOKEN') clearSession();
     return { ok: false, error: { kind: 'api', code, message, traceId } };
   }
 

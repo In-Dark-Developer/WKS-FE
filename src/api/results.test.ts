@@ -30,8 +30,10 @@ afterEach(() => {
   localStorage.clear();
 });
 
+const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
+
 test('createResult 는 POST /results 로 계약대로의 본문을 보낸다', async () => {
-  requestMock.mockResolvedValue({ ok: true, data: { resultId: 'r1' } });
+  requestMock.mockResolvedValue({ ok: true, data: { resultId: RESULT_ID } });
 
   const result = await createResult(input);
 
@@ -39,7 +41,23 @@ test('createResult 는 POST /results 로 계약대로의 본문을 보낸다', a
     { method: 'POST', path: '/results', body: input },
     expect.anything(),
   );
-  expect(result).toEqual({ ok: true, data: { resultId: 'r1' } });
+  expect(result).toEqual({ ok: true, data: { resultId: RESULT_ID } });
+});
+
+test('createResult 가 성공하면 응답의 resultId 를 내 결과로 저장한다', async () => {
+  requestMock.mockResolvedValue({ ok: true, data: { resultId: RESULT_ID } });
+
+  await createResult(input);
+
+  expect(readSession()).toEqual({ resultId: RESULT_ID });
+});
+
+test('createResult 가 실패하면 내 결과를 바꾸지 않는다', async () => {
+  requestMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+
+  await createResult(input);
+
+  expect(readSession()).toBeNull();
 });
 
 test('getResult 는 GET /results/{id} 를 부른다', async () => {
@@ -60,14 +78,14 @@ test('계약과 다른 모양의 입력은 개발 중 바로 던진다', async (
   expect(requestMock).not.toHaveBeenCalled();
 });
 
-test('VITE_API_MOCK=true 면 백엔드를 부르지 않고 목 결과를 돌려주며 세션을 만든다', async () => {
+test('VITE_API_MOCK=true 면 백엔드를 부르지 않고 목 결과를 돌려주며 그 resultId 를 저장한다', async () => {
   vi.stubEnv('VITE_API_MOCK', 'true');
 
   const created = await createResult(input);
 
   expect(requestMock).not.toHaveBeenCalled();
-  expect(created.ok).toBe(true);
-  expect(readSession()).not.toBeNull();
+  if (!created.ok) throw new Error('unreachable');
+  expect(readSession()).toEqual({ resultId: created.data.resultId });
 });
 
 test('목 모드에서 방금 만든 resultId 는 다시 조회된다', async () => {
