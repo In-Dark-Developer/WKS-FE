@@ -5,9 +5,9 @@
 - Commits: b9a58c2
 - Done: Phase 05 PLAN — SCR-06 랜딩 → 입력 → SCR-07 궁합 결과, T4(API)·T5·T6(퍼블리싱, 디자인 대기)·T7(조립), AC1~7
 - Not done: 없음
-- Developer changes: 없음 · Upstream changes: 05/T3·04/T8 PLAN 추가(#97·#98) — 겹침 피해 After 로 연결
+- Developer changes: 없음 · Upstream changes: 04/T8(#98)·05/T3(#99) 병합 — compat 스키마 정정 반영
 - Spec changes: 없음 (docs/phases/05 만)
-- Needs your attention: SCR-06·07 디자인(Q9)·Q12 미결 · 현재 compat 스키마가 운영과 달라 T3 병합 전 위험
+- Needs your attention: SCR-06·07 디자인(Q9)·Q12 미결
 - Verification: 운영 Swagger `/shares` 스키마 대조, `--ci`
 
 ## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->

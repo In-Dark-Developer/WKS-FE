@@ -60,11 +60,13 @@ export const fortuneSchema = z.object({
 
 export const compatibilityTierSchema = z.enum(['GUIIN', 'CHALTTEOK', 'BEOT', 'SEUCHIM']);
 
+// 결과 조회의 궁합 한 건 — 백엔드 실제 응답(CompatibilityResponse) 모양이다(openapi CompatibilitySummary, 2026-09-15 대조).
+// 조회한 결과가 링크 주인·방문자 중 어느 쪽인지는 오지 않는다 — 상대 닉네임 고르기는 toReadingView 가 한다.
 export const compatibilitySummarySchema = z.object({
-  nickname: z.string(),
   score: z.number().int().min(0).max(100),
   tier: compatibilityTierSchema,
-  createdAt: z.string(),
+  originNickname: z.string(),
+  guestNickname: z.string(),
 });
 
 export type CompatibilitySummary = z.infer<typeof compatibilitySummarySchema>;

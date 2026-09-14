@@ -1,5 +1,5 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { afterEach, expect, test, vi } from 'vitest';
+import { cleanup, render, screen, within } from '@testing-library/react';
+import { afterEach, expect, test } from 'vitest';
 
 import { CompatibilityMap } from './CompatibilityMap';
 import { CompatibilityMapScreen } from './CompatibilityMapScreen';
@@ -64,13 +64,25 @@ test('인연이 없으면 안내와 버튼 자리를 보인다', () => {
   expect(screen.getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
 });
 
-test('공유 버튼을 누르면 onShare 를 부른다', () => {
-  const onShare = vi.fn();
-  render(<CompatibilityMapScreen friends={friends} nickname="달빛토끼" onShare={onShare} />);
+test('맨 아래 공유 자리에 받은 버튼을 그린다', () => {
+  render(
+    <CompatibilityMapScreen
+      friends={friends}
+      nickname="달빛토끼"
+      share={<button type="button">친구에게 공유하고 궁합 지도 넓히기</button>}
+    />,
+  );
 
   expect(
     screen.getByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
   ).toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' }));
-  expect(onShare).toHaveBeenCalledOnce();
+  expect(
+    screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' }),
+  ).toBeInTheDocument();
+});
+
+test('제목 줄 오른쪽에 받은 링크를 둔다', () => {
+  render(<FriendRanking friends={friends} headerAction={<a href="/me/map">지도 보기 &gt;</a>} />);
+
+  expect(screen.getByRole('link', { name: '지도 보기 >' })).toHaveAttribute('href', '/me/map');
 });

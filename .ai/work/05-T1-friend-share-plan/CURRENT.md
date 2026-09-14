@@ -43,4 +43,4 @@ REVIEW
 
 ## Next Action
 
-소유자 push·PR 승인 대기. 병합 뒤 T4(API 연동)를 연다 — 05/T3 병합이 선행.
+소유자 push·PR 승인 대기. 병합 뒤 T4(API 연동)를 연다.

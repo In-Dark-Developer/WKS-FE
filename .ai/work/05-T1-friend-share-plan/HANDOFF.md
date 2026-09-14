@@ -27,7 +27,7 @@ Phase 05 PLAN 이 공유 링크 흐름(SCR-06 랜딩 → 사주 입력 → SCR-0
 
 - SCR-06·07 은 `src/features/friends/` — 지도·등급 이름과 같은 도메인. 방문자 입력은 `SajuForm` 을 app 이 새 action 과 조립
 - SCR-07 loader 는 `POST /shares/{id}/compatibility` 재호출(이미 있는 조합 200) — 점수 조회 GET 이 계약에 없다
-- 디자인 없는 T5·T6 은 Owner 미정, T4(API)만 즉시 가능(After T3)
+- 디자인 없는 T5·T6 은 Owner 미정, T4(API)는 05/T3 병합(#99)으로 바로 열 수 있다
 
 ## Tests Executed
 
@@ -35,11 +35,10 @@ Phase 05 PLAN 이 공유 링크 흐름(SCR-06 랜딩 → 사주 입력 → SCR-0
 
 ## Test Results
 
-- `CompatibilityResponse` = `{score, tier, originNickname, guestNickname}` — openapi 참조본과 일치, `src/api/schema/result.ts` 는 불일치(05/T3 이 고침)
+- `CompatibilityResponse` = `{score, tier, originNickname, guestNickname}` — openapi 참조본과 일치, `src/api/schema/result.ts` 도 05/T3(#99)이 맞췄다
 
 ## Known Problems
 
-- 현재 코드의 `compatibilitySummarySchema` 가 운영 응답과 달라 친구 궁합 1건만 생겨도 결과 화면이 오류 — 05/T3 Done-when 에 포함, 병합 전까지 위험
 - 백엔드 공유 명세(api.md)의 `compatibilities` 는 옛 모양 `{nickname, score, tier, createdAt}`
 
 ## Unverified Assumptions
@@ -49,4 +48,4 @@ Phase 05 PLAN 이 공유 링크 흐름(SCR-06 랜딩 → 사주 입력 → SCR-0
 
 ## Exact Next Action
 
-PR 병합 → 05/T3 병합 확인 → `ai-stream.sh open 05/T4 share-api`.
+PR 병합 → `ai-stream.sh open 05/T4 share-api`.
