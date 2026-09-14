@@ -21,18 +21,19 @@
   backface-visibility: hidden;
 }
 
-/* 뒷면 — Figma 731:4712. card-back.webp 는 그림자 여백까지 담은 351×469 라 343×461 칸 밖으로 4px 씩 넘친다. */
+/* 뒷면 — Figma 731:4712. card-back.webp 는 그림자 여백까지 담은 351×469 라 앞면(349×461, 사주 카드 화면 658:5102)
+   칸 밖으로 4px 씩 넘친다(가로는 349 에 맞춰 조금 늘인다). */
 [data-connection-card-back] {
   position: relative;
-  aspect-ratio: 343 / 461;
+  aspect-ratio: 349 / 461;
   transform: rotateY(180deg);
 }
 
 [data-connection-card-back] img {
   position: absolute;
   top: -0.868%;
-  left: -1.166%;
-  width: 102.332%;
+  left: -1.146%;
+  width: 102.292%;
   max-width: none;
   height: 101.735%;
 }

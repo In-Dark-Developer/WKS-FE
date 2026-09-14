@@ -23,8 +23,8 @@ type Props = {
 // 인연카드 전용 화면은 결과 화면에 합쳤다(2026-09-15, 04/T7).
 //
 // 치수는 Figma 「UI 최종 - 개발용」 결과 화면 Frame 93(713:4021):
-//   카드 343×461 · 인스타 버튼 713:4070 = Action/Teal/Default · 높이 48 · radius 12 ·
-//   UI/16/600 · instagram 아이콘 24 + 간격 8 · 카드 아래 20.
+//   사주 카드 화면(658:5193): 카드 349×461 → 20 → 인스타 버튼(658:5184, 좌우 8 안쪽 333) = Action/Teal/Default ·
+//   높이 48 · radius 12 · UI/16/600 · instagram 아이콘 24 + 간격 8.
 export function ResultCard(card: Props) {
   const holder = useRef<HTMLDivElement>(null);
   const [making, setMaking] = useState(false);
@@ -62,6 +62,7 @@ export function ResultCard(card: Props) {
       </div>
 
       <Button
+        className="mx-8"
         leadingIcon={<Icon src={instagramIcon} />}
         loading={making}
         loadingLabel={cardMessages.making}
