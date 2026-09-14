@@ -1,0 +1,22 @@
+/* 인트로 영상(406×720)을 화면에 cover 로 채우는 틀. video 의 object-fit 대신 틀 크기를 직접 정해
+   건너뛰기 칸을 영상 좌표에 붙인다 — 화면 비율이 달라져도 영상 속 같은 자리에 온다. */
+[data-intro-frame] {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, calc(100vh * 406 / 720));
+  width: max(100%, calc(100dvh * 406 / 720));
+  aspect-ratio: 406 / 720;
+  translate: -50% -50%;
+}
+
+/* 영상 오른쪽 아래 ✦ 로고(영상 px x 326~351, y 640~665, 중심 338.5·652.5)를 칸이 덮는다 — 영상을 바꾸면 다시
+   잰다. 세로는 칸(높이 44px) 가운데를 로고 가운데에, 가로는 칸 오른쪽 모서리를 로고 오른쪽 조금 바깥에 둔다.
+   틀이 화면보다 커서 잘리므로 칸은 보이는 영역 가장자리에서 8px 안쪽을 넘지 않는다. */
+[data-intro-skip] {
+  position: absolute;
+  height: 44px;
+  right: max(calc(55 / 406 * 100% - 12px), calc((100% - min(100vw, 430px)) / 2 + 8px));
+  bottom: max(calc(67.5 / 720 * 100% - 22px), calc((100% - 100vh) / 2 + 8px));
+  bottom: max(calc(67.5 / 720 * 100% - 22px), calc((100% - 100dvh) / 2 + 8px));
+}
