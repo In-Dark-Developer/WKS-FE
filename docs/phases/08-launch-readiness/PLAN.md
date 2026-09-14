@@ -48,7 +48,7 @@
 
 - [x] T2. 배포 설정 — Done when: `netlify.toml`(빌드·`dist`·운영 `VITE_API_BASE_URL`·`/* → /index.html 200`·자산 캐시)과 조직 저장소 `main` push 마다 개인 fork `main` 을 upstream `main` 으로 덮어쓰는(push, fork 전용 fine-grained 토큰) `.github/workflows/sync-fork.yml`(변수·토큰이 없으면 건너뜀, fork 안에서는 안 돎)이 병합되고, 설정 절차가 `docs/deploy/netlify-fork.md` 에 있으며, AWS 배포 워크플로우·문서가 빠진다 · Touches: `netlify.toml`, `.github/workflows/`, `docs/deploy/` · Owner: @jjjung0921 (commit b565104·cc060d8 — 호스팅 Netlify → Pages → Workers → AWS → 개인 fork Netlify, ADR-20260914-netlify-personal-fork)
 
-- [ ] T3. 운영 연결 확인 — Done when: `docs/deploy/netlify-fork.md` 2~3 이 끝나 `sync-fork` 실행 뒤 Netlify 에 새 배포가 생기고, `https://threadoffate.site`·`www` 가 HTTPS 로 열리며, `https://threadoffate.site/s/test` 새로고침이 앱을 열고, 운영 화면에서 `api.threadoffate.site` 호출이 CORS 오류 없이 간다 — 확인 결과를 RESULT 에 적는다 · Touches: `docs/phases/08-launch-readiness/` · After: T2 · Owner: @jjjung0921
+- [x] T3. 운영 연결 확인 — Done when: `docs/deploy/netlify-fork.md` 2~3 이 끝나 `sync-fork` 실행 뒤 Netlify 에 새 배포가 생기고, `https://threadoffate.site`·`www` 가 HTTPS 로 열리며, `https://threadoffate.site/s/test` 새로고침이 앱을 열고, 운영 화면에서 `api.threadoffate.site` 호출이 CORS 오류 없이 간다 — 확인 결과를 RESULT 에 적는다 · Touches: `docs/phases/08-launch-readiness/` · After: T2 · Owner: @jjjung0921 (commit 311f0b1, de7666f — PR #77)
 
 - [ ] T4. 공유 링크 미리보기 — Done when: `index.html` 에 서비스 공통 OG·Twitter 메타(제목·설명·썸네일·`og:url`)와 썸네일 이미지가 있어 카카오톡·인스타·메신저에 `https://threadoffate.site/s/<id>` 를 붙이면 제목·설명·썸네일이 보이고(SC-6), `shareId` 별 동적 미리보기(Netlify Edge Functions vs 백엔드 렌더)는 ADR 로 채택·기각이 남는다 · Touches: `index.html`, `public/og/`, `docs/decisions/` · After: T3 · Owner: @jjjung0921
 
