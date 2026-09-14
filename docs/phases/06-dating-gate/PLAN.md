@@ -48,7 +48,7 @@
 - PRD Q4 보관 기간 — 동의 고지 문구에 들어간다. 법적 고지라 임의로 정하지 않는다
 - PRD Q10 사진 형식·용량 제한과 자기소개 최대 글자 수 — 검증 규칙
 - 디자인 — MBTI 입력 방식(수정본 Frame 83·85 에 "이게 최선일까" 메모), 연락처는 택1 세그먼트가 아니라 전화번호 필수 + 인스타그램 선택(FR-10, 디자인 갱신 대상)
-- PRD Q16 세션 토큰 — 신청을 '내 신청'으로 식별하는 방법
+- '내 신청' 식별 — 백엔드 세션 토큰은 없다(ADR-20260914-result-ownership-in-browser). `POST /signups` 가 `resultId`(nullable)를 받으므로 브라우저에 보관된 `resultId` 를 실을지 T3 에서 정한다
 
 ## Tasks
 
@@ -64,7 +64,7 @@
 
 ## Relevant Specifications
 
-- `docs/PRD.md` — Screens(SCR-09·SCR-04), FR-9, FR-10, FR-17, NFR-4, Q4·Q10·Q14·Q16
+- `docs/PRD.md` — Screens(SCR-09·SCR-04), FR-9, FR-10, FR-17, NFR-4, Q4·Q10·Q14
 - Figma 「UI 최종 - 개발용」 수정본 558-3526 — 사전신청 모달 5종 · MBTI 드롭다운(Frame 83·85)
 - `docs/ARCHITECTURE.md` — Data Flow 3, Module Boundaries(features·api), Cross-cutting Concerns(인증·에러)
 - `docs/api/openapi.yaml` — `/signups`, `/signups/resend`, `/signups/verify`
