@@ -7,7 +7,6 @@ import { Icon } from '@/ui/Icon';
 import { Toast } from '@/ui/Toast';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
-import { ShareLinkButton } from '../link/ShareLinkButton';
 import { ConnectionCard } from './ConnectionCard';
 import { cardMessages } from './messages';
 import { shareCardImage } from './shareCardImage';
@@ -18,18 +17,15 @@ type Props = {
   title: string;
   description: string;
   grades: readonly { label: string; grade: Grade }[];
-  // 공유 링크 재료. 응답 스키마를 모르도록 값만 받는다 (공지 publishing-first).
-  shareId: string;
 };
 
-// SCR-05 인연카드 화면 — 카드(04/T2) 아래에 '인스타 스토리 공유하기'(FR-5)와
-// '친구에게 공유'(04/T3, FR-4)를 둔다. '카드 뒤집기'는 카드 자신이 갖고 있다.
+// 결과 화면(SCR-04)의 운명 카드와 그 아래 '인스타 스토리 공유하기'(FR-5). '카드 뒤집기'는 카드 자신이 갖고 있다.
+// 인연카드 전용 화면은 결과 화면에 합쳤다(2026-09-15, 04/T7).
 //
-// 치수는 Figma 「UI 최종 - 개발용」 결과 화면 Frame 93(713:4021)에서 가져왔다 — 그 화면이
-// 카드와 인스타 공유 버튼이 함께 놓인 유일한 근거다(인연카드 전용 화면은 디자인에 없다):
-//   카드 y=23·343×461 · 인스타 버튼 713:4070 = Action/Teal/Default · 높이 48 · radius 12 ·
+// 치수는 Figma 「UI 최종 - 개발용」 결과 화면 Frame 93(713:4021):
+//   카드 343×461 · 인스타 버튼 713:4070 = Action/Teal/Default · 높이 48 · radius 12 ·
 //   UI/16/600 · instagram 아이콘 24 + 간격 8 · 카드 아래 20.
-export function ConnectionCardScreen({ shareId, ...card }: Props) {
+export function ResultCard(card: Props) {
   const holder = useRef<HTMLDivElement>(null);
   const [making, setMaking] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -59,27 +55,21 @@ export function ConnectionCardScreen({ shareId, ...card }: Props) {
   }
 
   return (
-    // pt-8 은 앱 셸의 16 과 합쳐 Figma 의 카드 top 23 이 된다.
-    <div className="flex flex-col gap-20 pt-8 pb-24">
-      <h1 className="sr-only">{card.nickname}님의 인연카드</h1>
-
+    <div className="flex flex-col gap-20">
       <div ref={holder}>
         <ConnectionCard {...card} />
       </div>
 
-      <div className="flex flex-col gap-8">
-        <Button
-          leadingIcon={<Icon src={instagramIcon} />}
-          loading={making}
-          loadingLabel={cardMessages.making}
-          onClick={handleShareStory}
-          size="m"
-          variant="accent"
-        >
-          {cardMessages.story}
-        </Button>
-        <ShareLinkButton nickname={card.nickname} shareId={shareId} size="m" />
-      </div>
+      <Button
+        leadingIcon={<Icon src={instagramIcon} />}
+        loading={making}
+        loadingLabel={cardMessages.making}
+        onClick={handleShareStory}
+        size="m"
+        variant="accent"
+      >
+        {cardMessages.story}
+      </Button>
 
       {failed ? (
         <p className="text-ui-14 text-status-error-foreground" role="alert">
