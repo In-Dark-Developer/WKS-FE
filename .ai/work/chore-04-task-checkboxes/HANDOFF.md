@@ -29,7 +29,7 @@ main 에 이미 병합된 04/T3·T4·T5 가 PLAN 에 `[x]` 로 남아, `docs/pha
 ## Decisions Made
 
 - 코드는 건드리지 않고 기록만 맞췄다 — T3·T4·T5 산출물은 main 에 이미 있다 (`src/features/share/link/`, `src/lib/cardImage.ts`, `src/features/share/card/ConnectionCardScreen.tsx`, `/preview/share`·`/preview/card`)
-- 근거 커밋 표기는 02/T1·06/T2 선례를 따라 `Owner: … (commit <sha>)` 형식으로 맞췄다
+- 근거 커밋 표기는 02/T1·06/T2 선례를 따라 `Owner: … (commit 57ed534)` 형식으로 맞췄다
 - T4 는 ADR 이 Done when 조건이라 `ADR-20260914-card-image-rendering` 을 같이 적었다
 - 04/T6(@nicerjs23) 은 손대지 않았다 — 남의 담당이다
 
