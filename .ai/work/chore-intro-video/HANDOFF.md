@@ -2,14 +2,14 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-14
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+첫 방문자가 `/` 에 들어오면 8초 인트로 영상이 재생되고 2초부터 건너뛰기 버튼으로 넘길 수 있으며, 끝나거나 넘기면 사주 입력 화면이 뜨고 다시 보이지 않는다.
 
 ## Work Completed
 
@@ -17,7 +17,7 @@
 
 ## Work In Progress
 
-- 없음
+- spec 갱신 + `src/features/intro/` 구현 (소유자 결정 2026-09-14: 첫 방문 1회 · `/` 만 · spec 과 한 PR)
 
 ## Files Changed
 
@@ -45,4 +45,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+CURRENT Progress 의 ← step 부터
