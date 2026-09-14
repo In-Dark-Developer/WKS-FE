@@ -34,7 +34,10 @@
 
 - [x] T2. 궁합 지도 퍼블리싱 — Done when: Figma 「UI 최종 - 개발용」 지도 「최종」(558:2570, v2 등급별 색 구슬)의 달·궤도·친구 구슬(귀인·찰떡·벗·스침)·등급별 인원 4칸·친구 궁합 순위·빈 상태가 props(내 닉네임·친구 목록 `{ nickname, score, tier }`)로만 렌더되고 `/preview` 에서 가짜 데이터로 확인된다 (테스트 포함). 구슬 배치 규칙이 미정이면(PRD Q11) 디자인 배치를 고정 좌표로 쓴다 · Touches: `src/features/friends/map/`, `src/features/friends/index.ts`, `src/ui/assets/orbs/`, `src/ui/assets/backgrounds/compatibility-map.svg`, `src/app/preview/screens/map.tsx` · Owner: @jjjung0921 (commit 5be8419 — 결과 화면 순위 요약은 `FriendRanking` 을 03/T7 이 `ranking` 슬롯에 넣는다)
 
-<!-- 퍼블리싱 먼저(2026-09-13): T2 는 Phase 04 완료·T1 상세 계획을 기다리지 않는다(props 만). 등급별 인원 계산·조회 연동은 T1 이 채울 Task 다. 03/T6 병합 뒤 시작한다. -->
+- [ ] T3. 궁합 지도 라우트와 결과 화면 '지도 보기' — Done when: `/me/map` 이 `routes.tsx` 에 등록돼 보관된 `resultId` 가 없으면 `/` 로 보내고(FR-18), 있으면 `GET /results/{resultId}` 의 `compatibilities` 를 친구 목록(상대 닉네임 = 내 닉네임이 아닌 쪽, 점수 높은 순)으로 바꿔 `CompatibilityMapScreen` 에 넘기며, 결과 화면 친구 궁합 순위 제목 줄의 '지도 보기 >'(Figma 798:3138)가 `/me/map` 으로 이동하고, `compatibilities` 응답 스키마가 백엔드 실제 모양(`score`·`tier`·`originNickname`·`guestNickname`)으로 파싱된다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/app/routes.test.tsx`, `src/api/schema/result.ts`, `src/api/schema/result.test.ts`, `src/features/saju/readingView.ts`, `src/features/saju/toReadingView.ts`, `src/features/saju/toReadingView.test.ts`, `src/features/friends/`, `src/app/preview/screens/map.tsx`, `src/api/results.ts`, `src/api/results.test.ts` · After: 04/T8 · Owner: @jjjung0921
+
+<!-- T3(2026-09-15): 소유자 결정으로 T1 상세 계획 전에 궁합 지도 라우트를 먼저 연다 — 결과 화면 순위에 '지도 보기'(Figma 798:3138)가 추가됐다. 공유 랜딩·궁합 산출(SCR-06·07)은 여전히 T1 이 채운다.
+     퍼블리싱 먼저(2026-09-13): T2 는 Phase 04 완료·T1 상세 계획을 기다리지 않는다(props 만). 등급별 인원 계산·조회 연동은 T1 이 채울 Task 다. 03/T6 병합 뒤 시작한다. -->
 
 ## Relevant Specifications
 
