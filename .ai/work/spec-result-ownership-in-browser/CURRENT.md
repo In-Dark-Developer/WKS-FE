@@ -21,27 +21,30 @@ spec: result-ownership-in-browser
 
 ## Status
 
-TODO
+BLOCKED
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 1. 새 ADR + ADR-20260913 Status 세션 절 대체 표시
+- [x] 2. PRD(Constraints·FR-18·SCR-04/05·Q16 삭제) · ARCHITECTURE(Data Flow·State·Persistence·인증)
+- [x] 3. 03 PLAN T8·AC5·AC6·Validation · 공지 2026-09-14-result-ownership + 색인 (commit f8d6adc)
+- [ ] 4. 소유자 답 대기 — Touches 확장(Q16 잔여 참조)·Acked ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`1702c5a`
+`f8d6adc`
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `docs/decisions/ADR-20260914-result-ownership-in-browser.md` · `docs/PRD.md` · `docs/ARCHITECTURE.md` · `docs/phases/03-saju-reading/PLAN.md`
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/api/session.ts` · `src/api/results.ts:mockCreateResult` · `src/api/client.ts:buildHeaders` · `src/app/requireSession.ts` · `src/app/routes.tsx:protectedReadingLoader` (T8 이 바꿀 곳 — 이 스트림은 읽기만)
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+소유자 답을 받아 Q16 잔여 참조(`docs/api/openapi.yaml` 6·19줄, `docs/phases/06-dating-gate/PLAN.md` 51·67줄)를 정리하고 Acked 를 채운 뒤 `git merge main` → `scripts/ai-end.sh --ready`.
