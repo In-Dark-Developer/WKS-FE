@@ -21,7 +21,7 @@ spec: merge-card-into-result
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
