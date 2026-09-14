@@ -31,7 +31,7 @@
 - 소유자 결정(2026-09-14): 첫 방문 1회(localStorage) · `/` 에서만 · spec 과 구현 한 PR
 - 건너뛰기는 영상 시각이 아니라 마운트 후 2초 타이머 — 자동 재생이 막혀도 넘길 수 있게
 - 끝까지 가거나 건너뛰었을 때 봤다고 기록 — 보는 중 새로고침하면 다시 나온다
-- 건너뛰기는 `ui/Button` 이 아닌 intro 전용 `<button>` — 디자인시스템에 없는 모양, 토큰만 사용
+- 건너뛰기는 `ui/Button` 이 아닌 intro 전용 button 요소 — 디자인시스템에 없는 모양, 토큰만 사용
 - 조립은 children 으로 — intro 가 saju 를 import 하지 않는다
 
 ## Tests Executed
