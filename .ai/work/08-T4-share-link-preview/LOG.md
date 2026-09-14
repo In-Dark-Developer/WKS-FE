@@ -5,7 +5,7 @@
 ## 2026-09-14 · claude-code · 08/T4 · 제목 교체·공통 OG 메타
 
 - Commits: d32d0e7
-- Done: `<title>`·OG·Twitter 메타 "운명도 꿰어야 사랑이다"
+- Done: title 태그·OG·Twitter 메타 "운명도 꿰어야 사랑이다"
 - Not done: og:image(디자인 대기), 동적 미리보기 ADR, 실제 앱 미리보기 확인
 - Developer changes: 없음
 - Upstream changes: 없음

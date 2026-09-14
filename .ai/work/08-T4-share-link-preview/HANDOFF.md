@@ -9,11 +9,11 @@
 
 ## Goal
 
-`https://threadoffate.site/s/<id>` 를 카카오톡·인스타·메신저에 붙이면 제목·설명·썸네일이 보이고, `shareId` 별 동적 미리보기 채택·기각이 ADR 로 남는다.
+`https://threadoffate.site/s/{shareId}` 를 카카오톡·인스타·메신저에 붙이면 제목·설명·썸네일이 보이고, `shareId` 별 동적 미리보기 채택·기각이 ADR 로 남는다.
 
 ## Work Completed
 
-- `index.html`: `<title>` 운꿰사 → "운명도 꿰어야 사랑이다", `description`·`og:*`(type·site_name·title·description·url·locale)·`twitter:*`(card summary·title·description) (commit d32d0e7, Wip)
+- `index.html`: title 태그 운꿰사 → "운명도 꿰어야 사랑이다", `description`·`og:*`(type·site_name·title·description·url·locale)·`twitter:*`(card summary·title·description) (commit d32d0e7, Wip)
 
 ## Work In Progress
 
@@ -25,7 +25,7 @@
 
 ## Decisions Made
 
-- 소유자 결정: 서비스 이름 교체는 사용자 노출 문구(`<title>`·OG/Twitter 제목)만. 문서 제목·주석·미사용 `src/app/Placeholder.tsx`·테스트 입력값의 "운꿰사" 는 그대로
+- 소유자 결정: 서비스 이름 교체는 사용자 노출 문구(title 태그·OG/Twitter 제목)만. 문서 제목·주석·미사용 `src/app/Placeholder.tsx`·테스트 입력값의 "운꿰사" 는 그대로
 - 설명 문구는 입력 화면 부제 "생년월일로 점지받는 나의 인연"(`src/features/saju/SajuForm.tsx`)을 그대로 쓴다
 - 이미지가 없어 `twitter:card` 는 `summary` — 썸네일이 오면 `summary_large_image`
 
