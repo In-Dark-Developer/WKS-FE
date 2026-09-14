@@ -1,15 +1,13 @@
 # Current State — 04-T6-assemble-card-route
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 04-T6-assemble-card-route
 - Owner: nicerjs23@gmail.com
 - Branch: ws/04-T6-assemble-card-route
 - Task: 04/T6
 - Issue: none
-- Touches: src/app/routes.tsx, src/features/share/cardLoader.ts
+- Touches: src/app/routes.tsx, src/features/share/cardLoader.ts, src/features/share/index.ts, src/features/saju/readingView.ts, src/features/saju/toReadingView.ts
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork
 
 ## Current Phase
 
@@ -21,27 +19,32 @@ T6. 결과 화면·라우트 조립
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. `ReadingView`에 `shareId` 추가 + `toReadingView`가 전달
+- 2. `src/features/share/cardLoader.ts`: `GET /results/{id}` → 인연카드 화면 props(`CardView`)
+- 3. `share/index.ts`에 `cardLoader`·`CardView` export
+- 4. `routes.tsx`: `share` 슬롯에 인연카드 진입 + `ShareLinkButton`, `reading/:id/card` 라우트 등록
+- 5. 테스트(cardLoader 404·503·성공, 라우트 진입·복귀, share 슬롯)
+- 6. `pnpm test|typecheck|lint|build` + `pnpm dev` 실사용 확인
+- 7. HANDOFF·LOG·PLAN(SHA) 정리 → 소유자 승인 후 push ←
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`2d2c9af`
+`9d9b6db`
 
 ## Relevant Documents
 
-- `docs/phases/04-share-and-card/PLAN.md`
+- `docs/phases/04-share-and-card/PLAN.md` T6 · 공지 `2026-09-13-publishing-first`
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/share/card/ConnectionCardScreen.tsx:Props` · `src/features/share/link/ShareLinkButton.tsx`
+- `src/features/saju/ReadingResult.tsx:Props.share` · `src/app/routes.tsx:ReadingResultRoute`
+- `src/api/schema/result.ts:Result` · `src/features/saju/readingLoader.ts`(오류 처리 선례)
 
 ## Next Action
 
-`docs/phases/04-share-and-card/PLAN.md`에서 04/T6의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+구현·테스트·브라우저 확인 끝. 소유자 push 승인 대기.

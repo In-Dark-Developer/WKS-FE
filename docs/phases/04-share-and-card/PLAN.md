@@ -49,7 +49,7 @@
 
 - [x] T5. 인연카드 화면 — Done when: SCR-05 화면이 `ConnectionCard`(T2) 아래에 '카드 뒤집기'·'인스타 스토리 공유하기'·'친구에게 공유'(T3)를 배치하고, '인스타 스토리 공유하기'가 T4 의 PNG 를 `navigator.share({files})` 로 넘기며, `canShare({files})` 가 false 이거나 실패하면 같은 PNG 를 내려받게 하고 안내를 띄우고(FR-16), 만드는 동안 버튼이 잠기고 실패 시 재시도 안내가 뜨며 `/preview/card` 에서 상태를 볼 수 있다 (테스트 포함 — 파일 공유 지원·미지원 분기). 화면은 `src/api/` 를 import 하지 않는다 · Touches: `src/features/share/card/`, `src/features/share/index.ts`, `src/app/preview/screens/card.tsx` · After: T3, T4 · Owner: @gn00py48 (commit 4030b72, af6bb5d)
 
-- [ ] T6. 결과 화면·라우트 조립 — Done when: `/reading/:id/card` 가 `routes.tsx` 에 등록돼 결과 화면에서 인연카드로 들어가고 뒤로 돌아오며, 결과 화면의 비어 있던 `share` 슬롯에 '친구에게 공유'(T3)가 채워지고, loader 의 결과(`fortunes[]`·`nickname`·`zodiac`·`destiny`·`shareId`)가 뷰 모델로 변환돼 두 화면에 전달된다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/share/cardLoader.ts` · After: T5 · Owner: @nicerjs23
+- [x] T6. 결과 화면·라우트 조립 — Done when: `/reading/:id/card` 가 `routes.tsx` 에 등록돼 결과 화면에서 인연카드로 들어가고 뒤로 돌아오며, 결과 화면의 비어 있던 `share` 슬롯에 '친구에게 공유'(T3)가 채워지고, loader 의 결과(`fortunes[]`·`nickname`·`zodiac`·`destiny`·`shareId`)가 뷰 모델로 변환돼 두 화면에 전달된다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/share/cardLoader.ts` · After: T5 · Owner: @nicerjs23 (commit 728c168 — `/reading/:id/card` 는 `reading/:id` 의 형제 라우트다: `ConnectionCardScreen` 이 전체 화면이라 결과 화면의 `<Outlet />` 에 넣으면 결과 아래에 덧붙는다. 그 `<Outlet />` 은 06/T3 사전신청 모달이 쓴다)
 
 <!-- 퍼블리싱 먼저(2026-09-13 공지): T3·T5 는 props 만 받는 화면이고, 응답 → 뷰 모델 변환과 라우트 등록은 조립 Task 인 T6 이 한다.
      T6 의 Touches 에 `src/app/routes.tsx` 를 넣었다 — 그 파일은 03/T7 이 단독 소유했으나 Phase 03 Task 7개가 모두 병합되고 활성 스트림이 없어 소유가 이 Task 로 넘어온다. 06/T3 의 `/reading/:id/pre-register` 등록도 같은 파일이므로, 두 Task 가 동시에 열리면 먼저 연 쪽이 갖고 나중이 `git merge main` 으로 받는다. 리뷰는 `src/app/` Owner 인 @jjjung0921 이 한다.
