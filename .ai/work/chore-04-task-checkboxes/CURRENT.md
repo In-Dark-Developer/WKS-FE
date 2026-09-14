@@ -3,7 +3,7 @@
 <!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
 
 - Stream: chore-04-task-checkboxes
-- Owner: gn00py48@gmail.com
+- Owner: 129026965+gn00py48@users.noreply.github.com
 - Branch: ws/chore-04-task-checkboxes
 - Task: -/-
 - Issue: none
