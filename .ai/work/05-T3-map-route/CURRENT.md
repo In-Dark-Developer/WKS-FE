@@ -21,7 +21,7 @@ T3. 궁합 지도 라우트와 결과 화면 '지도 보기'
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
