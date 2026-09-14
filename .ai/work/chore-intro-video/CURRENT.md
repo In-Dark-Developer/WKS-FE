@@ -21,7 +21,7 @@ chore: intro-video
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
