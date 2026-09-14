@@ -40,7 +40,7 @@
 
 | Check     | Command / Method | Result |
 |-----------|------------------|--------|
-| Tests     | `pnpm test` | pass — 54 files · 254 tests (main d88a16a 병합 후) |
+| Tests     | `pnpm test` | pass — 258 tests (main 1b07e8d 병합 후) |
 | Typecheck | `pnpm typecheck` | pass — 오류 0 |
 | Lint      | `pnpm lint` | pass — eslint `--max-warnings=0` + prettier |
 | Build     | `pnpm build` | pass (500kB 초과 청크 경고 — Phase 08 T5 성능 예산 몫) |
