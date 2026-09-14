@@ -9,11 +9,11 @@
 
 ## Goal
 
-`ReadingResult.tsx` 의 `<Outlet />` 주석이 실제 라우트 구조(인연카드는 `reading/:id` 의 형제 라우트, `<Outlet />` 은 06/T3 사전신청 모달용)와 일치한다.
+`ReadingResult.tsx` 의 Outlet 주석이 실제 라우트 구조(인연카드는 `reading/:id` 의 형제 라우트, Outlet 은 06/T3 사전신청 모달용)와 일치한다.
 
 ## Work Completed
 
-- `src/features/saju/ReadingResult.tsx` 주석: `<Outlet />` 은 사전신청 모달용, 인연카드(`reading/:id/card`)는 형제 라우트 (commit da99e1a)
+- `src/features/saju/ReadingResult.tsx` 주석: Outlet 은 사전신청 모달용, 인연카드(`reading/:id/card`)는 형제 라우트 (commit da99e1a)
 
 ## Work In Progress
 

@@ -5,7 +5,7 @@
 ## 2026-09-14 · claude-code · -/- · ReadingResult Outlet 주석 정정
 
 - Commits: da99e1a
-- Done: `<Outlet />` 주석에서 인연카드 제거, 형제 라우트임을 명시 (04-T6 확인 요청 처리)
+- Done: Outlet 주석에서 인연카드 제거, 형제 라우트임을 명시 (04-T6 확인 요청 처리)
 - Not done: 없음
 - Developer changes: 없음
 - Upstream changes: 없음
