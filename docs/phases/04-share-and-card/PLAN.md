@@ -18,8 +18,7 @@
 ## Scope
 
 - `docs/PRD.md`의 FR-4(공유 링크) · FR-5(인연카드 이미지 공유) · FR-16(폴백)을 구현하는 화면과 상태
-- SCR-05 인연카드(`/reading/:id/card`) — 04/T2 의 `ConnectionCard` 를 화면으로 감싸고 라우트에 등록
-- SCR-04 사주 결과 화면의 `share` 슬롯 — '친구에게 공유' 진입점
+- SCR-04 사주 결과 화면 — 운명 카드의 '카드 뒤집기'와 카드 아래 '인스타 스토리 공유하기', 친구 궁합 순위 빈 상태의 '친구에게 공유' (2026-09-15 — 인연카드 화면 SCR-05 를 결과 화면에 합쳤다, T7)
 - 공유 URL 생성 규칙과 카드 PNG 생성기
 
 ## Out of Scope
@@ -33,7 +32,7 @@
 
 - Phase 03 — T5(결과 화면 `share` 슬롯)·T7(`routes.tsx`·loader) 병합 완료
 - 04/T2 `src/features/share/card/ConnectionCard.tsx` — 앞면·뒷면·뒤집기(props 전용) 병합 완료
-- 디자인 — 공유 시트·Toast 는 디자인시스템 `ShareSheet`(85:1959)·`Toast`(80:651)를 쓴다. 인연카드 화면의 버튼 배치는 「UI 최종 - 개발용」 점지 카드(731:4667) 기준
+- 디자인 — 공유 시트·Toast 는 디자인시스템 `ShareSheet`(85:1959)·`Toast`(80:651)를 쓴다. 결과 화면의 배치는 「UI 최종 - 개발용」 사주 결과 화면 Frame 93(713:4021) 기준(카드 → 인스타 스토리 공유 713:4070 → 행운 → 운세 → 친구 궁합 순위 713:4078), 카드 뒷면·뒤집기 버튼은 점지 카드(731:4667·558:2788)
 - 백엔드 — `shareId` 는 `POST /results`·`GET /results/{resultId}` 응답에 이미 있다. **인연카드 등급은 별도 `cardGrades` 없이 `SharedResult.fortunes[]`(MARRIAGE·CHILDREN·LOVE, `Grade` SS~B)를 그대로 쓴다** — PRD Q3 중 Phase 04 를 막던 부분은 이것으로 닫힌다
 - 미해결 — PRD Q3 의 나머지(후보·운명의 실 API)는 Phase 07 건이라 이 Phase 를 막지 않는다
 
@@ -51,9 +50,12 @@
 
 - [x] T6. 결과 화면·라우트 조립 — Done when: `/reading/:id/card` 가 `routes.tsx` 에 등록돼 결과 화면에서 인연카드로 들어가고 뒤로 돌아오며, 결과 화면의 비어 있던 `share` 슬롯에 '친구에게 공유'(T3)가 채워지고, loader 의 결과(`fortunes[]`·`nickname`·`zodiac`·`destiny`·`shareId`)가 뷰 모델로 변환돼 두 화면에 전달된다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/share/cardLoader.ts` · After: T5 · Owner: @nicerjs23 (commit 728c168 — `/reading/:id/card` 는 `reading/:id` 의 형제 라우트다: `ConnectionCardScreen` 이 전체 화면이라 결과 화면의 `<Outlet />` 에 넣으면 결과 아래에 덧붙는다. 그 `<Outlet />` 은 06/T3 사전신청 모달이 쓴다)
 
+- [ ] T7. 인연카드를 결과 화면에 합치기 — Done when: 결과 화면(SCR-04)이 Figma Frame 93(713:4021) 순서대로 운명 카드 → '인스타 스토리 공유하기' → 행운의 장소·아이템 → 운세 카드 → 친구 궁합 순위로 그려지고, 운명 카드(앞면 `DestinyCard` 운명 카드 문구, 뒷면 점지 카드 뒷면)가 '카드 뒤집기' 버튼으로 앞뒤를 전환하며, '인스타 스토리 공유하기'가 T5 와 같은 동작(앞면 PNG → `navigator.share({files})`, 미지원·실패 시 저장 + 안내, 만드는 동안 잠금, 실패 안내)을 하고, '친구에게 공유'는 친구 궁합 순위가 비어 있을 때 안내 아래에만 있으며, 운명 카드 문구 영역(`[data-destiny-card-destiny]` 의 운명 제목·설명, 합 120자 이내)이 말줄임 없이 전문을 보이고 등급 스탬프와 겹치지 않으며, '인연카드 보기' 버튼·`/reading/:id/card` 라우트·`cardLoader`·`ConnectionCardScreen` 이 없어진다(그 주소는 없는 경로 화면) (테스트 포함). 화면 컴포넌트는 `src/api/` 를 import 하지 않는다 · Touches: `src/app/routes.tsx`, `src/app/routes.test.tsx`, `src/features/saju/ReadingResult.tsx`, `src/features/saju/ReadingResult.test.tsx`, `src/features/share/`, `src/app/preview/screens/card.tsx`, `src/app/preview/screens/reading.tsx`, `src/ui/DestinyCard.css`, `src/ui/DestinyCard.tsx` · After: T6 · Owner: @jjjung0921
+
 <!-- 퍼블리싱 먼저(2026-09-13 공지): T3·T5 는 props 만 받는 화면이고, 응답 → 뷰 모델 변환과 라우트 등록은 조립 Task 인 T6 이 한다.
      T6 의 Touches 에 `src/app/routes.tsx` 를 넣었다 — 그 파일은 03/T7 이 단독 소유했으나 Phase 03 Task 7개가 모두 병합되고 활성 스트림이 없어 소유가 이 Task 로 넘어온다. 06/T3 의 `/reading/:id/pre-register` 등록도 같은 파일이므로, 두 Task 가 동시에 열리면 먼저 연 쪽이 갖고 나중이 `git merge main` 으로 받는다. 리뷰는 `src/app/` Owner 인 @jjjung0921 이 한다.
      T6 Owner 를 @nicerjs23 으로 둔 근거는 공지 publishing-first 의 '연동·라우트는 조립 Task' 원칙과 03/T7 담당이다 — 본인 확인 전까지는 제안이며 PR 리뷰에서 확정한다.
+     T7(2026-09-15): 소유자 결정으로 인연카드 전용 화면(T5·T6 의 `/reading/:id/card`)을 결과 화면에 합친다 — Figma 결과 화면에 '인연카드 보기'가 없고 인스타 스토리 공유가 카드 바로 아래에 있다. 카드 뒤집기는 자동 연출이 아니라 버튼이다. 결과 화면에 인연이 생긴 뒤의 공유 진입은 추후 네비게이션 바(궁합 지도)로 간다.
      T4 를 T5 에서 뗀 이유: 이미지 생성은 외부 의존성 판단(ADR)이 걸려 있어 화면 작업과 속도가 다르다. T3 은 T4·T5 와 파일이 겹치지 않으므로 병렬로 연다. -->
 
 ## Relevant Specifications
@@ -66,8 +68,8 @@
 
 ## Acceptance Criteria
 
-- [ ] AC1. 결과 화면의 '친구에게 공유'가 현재 origin 기준 `/s/<shareId>` 를 공유 시트로 넘기고, Web Share 가 없는 브라우저에서는 클립보드 복사와 완료 안내로 대체된다 (FR-4)
-- [ ] AC2. `/reading/:id/card` 에서 인연카드 앞면·뒷면이 보이고 '카드 뒤집기'로 전환되며, 등급은 `fortunes[]` 의 SS~B 문자 등급이다 (FR-5)
+- [ ] AC1. 결과 화면(친구 궁합 순위가 비어 있을 때)의 '친구에게 공유'가 현재 origin 기준 `/s/<shareId>` 를 공유 시트로 넘기고, Web Share 가 없는 브라우저에서는 클립보드 복사와 완료 안내로 대체된다 (FR-4)
+- [ ] AC2. 결과 화면(`/reading/:id`)의 운명 카드가 '카드 뒤집기'로 앞면·뒷면을 전환하고, 등급은 `fortunes[]` 의 SS~B 문자 등급이다. 별도 인연카드 화면·'인연카드 보기' 버튼은 없다 (FR-5)
 - [ ] AC3. '인스타 스토리 공유하기'가 카드를 PNG 로 만들어 Web Share(파일)로 넘긴다 (FR-5)
 - [ ] AC4. 파일 공유를 지원하지 않는 브라우저에서 같은 PNG 를 저장할 수 있고 안내가 뜬다 (FR-16)
 - [ ] AC5. `src/features/share/` 와 `src/ui/` 의 화면 컴포넌트가 `src/api/` 를 import 하지 않고, 모든 화면 상태를 `/preview` 에서 가짜 데이터로 볼 수 있다 (publishing-first)
