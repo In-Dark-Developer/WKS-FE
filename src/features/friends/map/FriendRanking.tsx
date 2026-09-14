@@ -8,6 +8,8 @@ type Props = {
   limit?: number;
   // 인연이 없을 때 안내 아래 둘 버튼 — 예: '친구에게 공유'.
   emptyAction?: ReactNode;
+  // 제목 줄 오른쪽 — 결과 화면의 '지도 보기 >'(Figma 798:3138).
+  headerAction?: ReactNode;
 };
 
 const badgeText: Record<CompatibilityTier, string> = {
@@ -18,7 +20,7 @@ const badgeText: Record<CompatibilityTier, string> = {
 };
 
 // Figma RankingList(80:614) — 지도 최종 v2(558:2679) 모양. friends 는 순위 순서다.
-export function FriendRanking({ friends, limit, emptyAction }: Props) {
+export function FriendRanking({ friends, limit, emptyAction, headerAction }: Props) {
   const rows = limit === undefined ? friends : friends.slice(0, limit);
   const titleId = useId();
 
@@ -27,9 +29,12 @@ export function FriendRanking({ friends, limit, emptyAction }: Props) {
       aria-labelledby={titleId}
       className="flex flex-col gap-8 rounded-16 border border-neutral bg-opacity-card-neutral-0-50 pr-12 pb-8 pl-8"
     >
-      <h2 className="px-8 pt-16 pb-8 text-ui-18 font-semibold text-primary" id={titleId}>
-        친구 궁합 순위
-      </h2>
+      <div className="flex items-center justify-between gap-8 px-8 pt-16 pb-8">
+        <h2 className="text-ui-18 font-semibold text-primary" id={titleId}>
+          친구 궁합 순위
+        </h2>
+        {headerAction}
+      </div>
       {rows.length === 0 ? (
         // Figma ContentState Empty · Inline (결과 화면 713:4078)
         <div

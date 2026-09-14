@@ -109,7 +109,7 @@ test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () =>
     data: {
       ...stubResult,
       compatibilities: [
-        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-13T00:00:00Z' },
+        { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '친구1' },
       ],
     },
   });
@@ -118,6 +118,50 @@ test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () =>
 
   expect(await screen.findByText('친구1')).toBeInTheDocument();
   expect(screen.getByText('92')).toBeInTheDocument();
+});
+
+// 05/T3 조립 — 궁합 지도(`/me/map`)와 결과 화면 순위의 '지도 보기'.
+
+test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서 친구가 점수 높은 순으로 보인다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({
+    ok: true,
+    data: {
+      ...stubResult,
+      compatibilities: [
+        { score: 61, tier: 'BEOT', originNickname: '달빛토끼', guestNickname: '민수' },
+        { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '달빛토끼' },
+      ],
+    },
+  });
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+  fireEvent.click(await screen.findByRole('link', { name: '지도 보기 >' }));
+
+  expect(
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/me/map');
+  expect(getResultMock).toHaveBeenLastCalledWith(RESULT_ID);
+  const ranking = screen.getByRole('region', { name: '친구 궁합 순위' });
+  expect(
+    within(ranking)
+      .getAllByRole('listitem')
+      .map((row) => row.textContent),
+  ).toEqual([expect.stringContaining('서연'), expect.stringContaining('민수')]);
+  expect(
+    screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' }),
+  ).toBeInTheDocument();
+});
+
+test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 보낸다', async () => {
+  const router = renderAt('/me/map');
+
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+  expect(getResultMock).not.toHaveBeenCalled();
 });
 
 // 04/T7 조립 — 인연카드 화면을 결과 화면에 합쳤다(카드 뒤집기·인스타 스토리 공유, 빈 순위의 친구에게 공유).
@@ -156,7 +200,7 @@ test('친구 궁합 순위가 있으면 결과 화면에 친구에게 공유가 
     data: {
       ...stubResult,
       compatibilities: [
-        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-13T00:00:00Z' },
+        { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '친구1' },
       ],
     },
   });

@@ -15,6 +15,8 @@ type Props = {
   variant?: 'primary' | 'accent' | 'secondary' | 'ghost' | 'apricot';
   // Figma 결과 화면(713:4021)의 CTA 는 높이 48(size m)이다. 기본은 Button 과 같은 l.
   size?: 'm' | 'l';
+  // 버튼 글자 — 궁합 지도(Figma 558:2625)는 '친구에게 공유하고 궁합 지도 넓히기'다. 기본은 '친구에게 공유'.
+  label?: string;
   className?: string;
 };
 
@@ -25,6 +27,7 @@ export function ShareLinkButton({
   nickname,
   variant = 'secondary',
   size = 'l',
+  label = shareLinkMessages.button,
   className,
 }: Props) {
   const [sharing, setSharing] = useState(false);
@@ -60,7 +63,7 @@ export function ShareLinkButton({
         size={size}
         variant={variant}
       >
-        {shareLinkMessages.button}
+        {label}
       </Button>
 
       {showLink ? (
