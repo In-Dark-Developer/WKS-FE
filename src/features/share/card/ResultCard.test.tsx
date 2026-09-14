@@ -34,14 +34,26 @@ function storyButton() {
   return screen.getByRole('button', { name: '인스타 스토리 공유하기' });
 }
 
-test('운명 카드와 카드 뒤집기, 인스타 스토리 공유를 보여준다', () => {
+test('뒷면부터 보이고 카드 뒤집기로 운명 카드 앞면을 연다', () => {
   render(<ResultCard {...card} />);
 
-  expect(screen.getByRole('region', { name: '달빛토끼님의 운명 카드' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '카드 뒤집기' })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: '운명도 꿰어야 사랑이다' })).toBeInTheDocument();
+  expect(screen.queryByRole('region', { name: '달빛토끼님의 운명 카드' })).not.toBeInTheDocument();
   expect(storyButton()).toBeInTheDocument();
   // 친구에게 공유는 결과 화면의 친구 궁합 순위(빈 상태)가 갖는다.
   expect(screen.queryByRole('button', { name: '친구에게 공유' })).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  expect(screen.getByRole('region', { name: '달빛토끼님의 운명 카드' })).toBeInTheDocument();
+});
+
+test('뒷면이 보이는 중에도 스토리 공유는 앞면을 넘긴다', async () => {
+  render(<ResultCard {...card} />);
+  fireEvent.click(storyButton());
+
+  await screen.findByRole('button', { name: '인스타 스토리 공유하기' });
+  const [node] = shareCardImage.mock.calls[0] ?? [];
+  expect(node instanceof HTMLElement ? node.dataset.destinyCard : null).toBe('');
 });
 
 test('스토리 공유는 카드 앞면만 넘긴다', async () => {

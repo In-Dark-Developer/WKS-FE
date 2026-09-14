@@ -32,7 +32,7 @@ export function ResultCard(card: Props) {
   const [notice, setNotice] = useState<string | null>(null);
 
   async function shareStory() {
-    // 이미지에는 앞면만 담는다 — 뒤집기 버튼과 뒷면은 카드 밖이다.
+    // 이미지에는 앞면만 담는다 — 뒷면이 보이는 중이어도 앞면 DOM 은 있다. 뒤집기 버튼과 뒷면은 카드 밖이다.
     const front = holder.current?.querySelector('[data-destiny-card]');
     if (!(front instanceof HTMLElement)) return;
 
@@ -57,7 +57,8 @@ export function ResultCard(card: Props) {
   return (
     <div className="flex flex-col gap-20">
       <div ref={holder}>
-        <ConnectionCard {...card} />
+        {/* 결과 화면에 들어오면 뒷면부터 보이고 '카드 뒤집기'로 앞면을 연다 (PRD FR-5). */}
+        <ConnectionCard {...card} initialFace="back" />
       </div>
 
       <Button
