@@ -7,9 +7,9 @@
 - Branch: ws/04-T8-result-figma
 - Task: 04/T8
 - Issue: none
-- Touches: src/features/saju/ReadingResult.tsx, src/features/saju/ReadingResult.test.tsx, src/features/saju/readingView.ts, src/features/saju/sections/, src/features/friends/map/FriendRanking.tsx, src/ui/DestinyCard.css, src/ui/DestinyCard.tsx, src/ui/DestinyCard.test.tsx, src/app/preview/screens/card.tsx, src/app/preview/screens/reading.tsx, src/app/routes.test.tsx
+- Touches: src/features/saju/ReadingResult.tsx, src/features/saju/ReadingResult.test.tsx, src/features/saju/readingView.ts, src/features/saju/sections/, src/features/friends/map/FriendRanking.tsx, src/ui/DestinyCard.css, src/ui/DestinyCard.tsx, src/ui/DestinyCard.test.tsx, src/app/preview/screens/card.tsx, src/app/preview/screens/reading.tsx, src/app/routes.test.tsx, src/features/saju/ReadingResult.css, src/features/share/card/ResultCard.tsx, src/features/share/card/ConnectionCard.css, docs/phases/04-share-and-card/PLAN.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,27 +21,31 @@ T8. 결과 화면을 Figma 사주 카드 화면(658:5075)에 맞추기
 
 ## Status
 
-TODO
+BLOCKED
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 1. 레이아웃: 콘텐츠 349(좌우 13), 카드 349×461, 인스타 버튼·순위 좌우 8 안쪽 333 (commit 2f07677)
+- [x] 2. 행운 아이템→장소, 운세 연애→결혼→자녀 간격 24, 카드 배경·테두리 Figma 값
+- [x] 3. FriendRanking RankingList 모양 · 설명 칸 폭 297·140자 · 제목 맞춤 상수 312
+- [x] 4. test 258·typecheck·lint · 375px 좌표 Figma 대조
+- [ ] 5. spec PR #97 병합 대기 → --ready → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`1b07e8d`
+`e106563`
 
 ## Relevant Documents
 
-- `docs/phases/04-share-and-card/PLAN.md`
+- Figma 658:5075 · `docs/phases/04-share-and-card/PLAN.md` T8 · `docs/PRD.md` FR-3
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/saju/ReadingResult.tsx` · `src/ui/DestinyCard.css` · `src/features/friends/map/FriendRanking.tsx`
 
 ## Next Action
 
-`docs/phases/04-share-and-card/PLAN.md`에서 04/T8의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+#97 병합 뒤 `git merge origin/main` → `scripts/ai-end.sh --ready` → PR.
