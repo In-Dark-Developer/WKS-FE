@@ -7,9 +7,9 @@
 - Branch: ws/spec-result-ownership-in-browser
 - Task: -/-
 - Issue: none
-- Touches: docs/decisions/,docs/PRD.md,docs/ARCHITECTURE.md,docs/phases/03-saju-reading/PLAN.md,.ai/team/announcements/,.ai/team/README.md
+- Touches: docs/decisions/,docs/PRD.md,docs/ARCHITECTURE.md,docs/phases/03-saju-reading/PLAN.md,docs/phases/06-dating-gate/PLAN.md,docs/api/openapi.yaml,.ai/team/announcements/,.ai/team/README.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -29,7 +29,8 @@ BLOCKED
 - [x] 1. 새 ADR + ADR-20260913 Status 세션 절 대체 표시
 - [x] 2. PRD(Constraints·FR-18·SCR-04/05·Q16 삭제) · ARCHITECTURE(Data Flow·State·Persistence·인증)
 - [x] 3. 03 PLAN T8·AC5·AC6·Validation · 공지 2026-09-14-result-ownership + 색인 (commit f8d6adc)
-- [ ] 4. 소유자 답 대기 — Touches 확장(Q16 잔여 참조)·Acked ←
+- [x] 4. Touches 확장(openapi.yaml 주석·06 PLAN Q16 참조 정리) · Acked 전체 · 03/T8 Owner @jjjung0921 (commit c089d3a)
+- [ ] 5. main 병합 → ai-end --ready → PR ←
 
 ## Last Checkpoint
 
@@ -47,4 +48,4 @@ BLOCKED
 
 ## Next Action
 
-소유자 답을 받아 Q16 잔여 참조(`docs/api/openapi.yaml` 6·19줄, `docs/phases/06-dating-gate/PLAN.md` 51·67줄)를 정리하고 Acked 를 채운 뒤 `git merge main` → `scripts/ai-end.sh --ready`.
+`git merge origin/main` → `scripts/ai-end.sh --ready` → 소유자 확인 후 PR 생성.

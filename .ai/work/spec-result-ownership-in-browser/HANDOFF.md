@@ -18,6 +18,7 @@ spec(ADR·PRD·ARCHITECTURE·03 PLAN·공지)이 "백엔드 세션 토큰" 대�
 - ARCHITECTURE: Data Flow 1·2, State Management, Persistence, Cross-cutting 인증/인가
 - 03 PLAN: Goal·Scope·Out of Scope·Dependencies 문구, T8 추가(Owner 미정), AC5·AC6, Validation Plan
 - 공지 `2026-09-14-result-ownership` + `.ai/team/README.md` 색인 (commit f8d6adc)
+- Touches 확장 승인 → `docs/api/openapi.yaml` 주석·`docs/phases/06-dating-gate/PLAN.md` 의 Q16 참조 정리, 03/T8 Owner @jjjung0921, Acked 전체 (commit c089d3a)
 
 ## Work In Progress
 
@@ -25,7 +26,7 @@ spec(ADR·PRD·ARCHITECTURE·03 PLAN·공지)이 "백엔드 세션 토큰" 대�
 
 ## Files Changed
 
-- `docs/decisions/ADR-20260914-result-ownership-in-browser.md`(신규) · `docs/decisions/ADR-20260913-server-state-and-session-storage.md` · `docs/PRD.md` · `docs/ARCHITECTURE.md` · `docs/phases/03-saju-reading/PLAN.md` · `.ai/team/announcements/2026-09-14-result-ownership.md`(신규) · `.ai/team/README.md`
+- `docs/decisions/ADR-20260914-result-ownership-in-browser.md`(신규) · `docs/decisions/ADR-20260913-server-state-and-session-storage.md` · `docs/PRD.md` · `docs/ARCHITECTURE.md` · `docs/phases/03-saju-reading/PLAN.md` · `.ai/team/announcements/2026-09-14-result-ownership.md`(신규) · `.ai/team/README.md` · `docs/api/openapi.yaml`(주석) · `docs/phases/06-dating-gate/PLAN.md`
 
 ## Decisions Made
 
@@ -34,7 +35,7 @@ spec(ADR·PRD·ARCHITECTURE·03 PLAN·공지)이 "백엔드 세션 토큰" 대�
 
 ## Tests Executed
 
-- 없음 (문서만). `ai-stream.sh announce --check` 통과
+- 없음 (문서만). `ai-stream.sh announce --check` 통과 · `npx @redocly/cli lint docs/api/openapi.yaml` valid(경고 4 — 주석만 바꿔 기존 경고)
 
 ## Test Results
 
@@ -42,9 +43,7 @@ spec(ADR·PRD·ARCHITECTURE·03 PLAN·공지)이 "백엔드 세션 토큰" 대�
 
 ## Known Problems
 
-- Touches 밖에 닫힌 Q16 을 가리키는 문장이 남아 있다: `docs/api/openapi.yaml` 6·19줄(주석), `docs/phases/06-dating-gate/PLAN.md` 51·67줄. Touches 확장 승인 후 이 스트림에서 고치거나 각 소유자에게 넘긴다
-- CURRENT `Acked:` 가 비어 있다 — Required 공지 확인 전에는 병합되지 않는다
-- 03/T8 Owner 미정
+- 없음
 
 ## Unverified Assumptions
 
@@ -52,4 +51,4 @@ spec(ADR·PRD·ARCHITECTURE·03 PLAN·공지)이 "백엔드 세션 토큰" 대�
 
 ## Exact Next Action
 
-소유자에게 Touches 확장·Acked·T8 Owner 를 확인받고, 그 뒤 `git merge main` → `scripts/ai-end.sh --ready`.
+`git merge origin/main` → `scripts/ai-end.sh --ready` → 소유자 확인 후 PR 생성. 병합 뒤 03/T8 스트림(`ai-stream.sh open 03/T8 result-ownership-guard`)을 연다.

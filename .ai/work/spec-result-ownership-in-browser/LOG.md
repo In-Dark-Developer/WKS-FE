@@ -4,14 +4,14 @@
 
 ## 2026-09-14 · claude-code · -/- · 세션 토큰 → 보관된 resultId 로 spec 전환
 
-- Commits: f8d6adc
+- Commits: f8d6adc, c089d3a
 - Done: ADR-20260914-result-ownership-in-browser, PRD·ARCHITECTURE·03 PLAN(T8) 갱신, 공지 2026-09-14-result-ownership
-- Not done: Q16 잔여 참조(openapi.yaml 주석, 06 PLAN) — Touches 밖, 승인 대기 · Acked 미기입
+- Not done: PR 생성(소유자 확인 대기)
 - Developer changes: 없음
 - Upstream changes: 없음
-- Spec changes: PRD Constraints·FR-18·Q16 닫힘 · ARCHITECTURE State/Persistence/인증 · ADR 신규
-- Needs your attention: Touches 확장 여부 · Required 공지 Acked · 03/T8 Owner
-- Verification: 문서만 — `ai-stream.sh announce --check` 통과, test/typecheck/lint 대상 코드 변경 없음
+- Spec changes: PRD Constraints·FR-18·Q16 닫힘 · ARCHITECTURE State/Persistence/인증 · ADR 신규 · openapi.yaml 주석 · 06 PLAN 의존성
+- Needs your attention: Touches 확장·Acked 전체·T8 Owner 는 소유자 지시로 반영
+- Verification: 문서만 — announce --check 통과, redocly lint valid, 코드 변경 없음
 
 ## 2026-09-14 · ai-stream · -/- · 스트림 열기
 
