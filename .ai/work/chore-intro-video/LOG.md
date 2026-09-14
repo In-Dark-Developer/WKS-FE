@@ -4,8 +4,8 @@
 
 ## 2026-09-14 · claude-code · -/- · 첫 방문 인트로 영상
 
-- Commits: 63410f2
-- Done: `/` 첫 방문에 8초 인트로(2초 뒤 건너뛰기), 끝나면 사주 입력. FR-1 범위 복귀
+- Commits: 63410f2, 1d87965
+- Done: `/` 첫 방문에 8초 인트로(2초 뒤 우측 위 반투명 건너뛰기), 끝나면 사주 입력. FR-1 복귀
 - Not done: 실기기 자동 재생 확인
 - Developer changes: `src/ui/assets/video/intro.mp4` 소유자 추가
 - Upstream changes: 없음

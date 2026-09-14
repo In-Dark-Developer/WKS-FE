@@ -15,6 +15,7 @@
 
 - PRD FR-1(첫 방문 1회 · 2초 건너뛰기 · `/` 만)·SCR-01·Non-goals, ARCHITECTURE Persistence(`wks:intro-seen`) 갱신 (commit 63410f2)
 - `src/features/intro/`: `IntroVideo`(음소거 자동 재생, 2초 타이머 뒤 건너뛰기, 끝·오류 시 종료) · `IntroGate`(첫 방문이면 인트로, 끝나면 children) · `introSeen`
+- 건너뛰기: 우측 위 반투명(흰 50%·테두리 80%·blur) 버튼 (commit 1d87965, 소유자 참고 캡처)
 - `routes.tsx` index 를 `IntroGate` 로 감쌈. routes·App 테스트는 인트로를 본 방문자로 시작
 
 ## Work In Progress
@@ -30,6 +31,7 @@
 - 소유자 결정(2026-09-14): 첫 방문 1회(localStorage) · `/` 에서만 · spec 과 구현 한 PR
 - 건너뛰기는 영상 시각이 아니라 마운트 후 2초 타이머 — 자동 재생이 막혀도 넘길 수 있게
 - 끝까지 가거나 건너뛰었을 때 봤다고 기록 — 보는 중 새로고침하면 다시 나온다
+- 건너뛰기는 `ui/Button` 이 아닌 intro 전용 `<button>` — 디자인시스템에 없는 모양, 토큰만 사용
 - 조립은 children 으로 — intro 가 saju 를 import 하지 않는다
 
 ## Tests Executed
