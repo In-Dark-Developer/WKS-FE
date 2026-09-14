@@ -15,7 +15,7 @@
 
 - PRD FR-1(첫 방문 1회 · 2초 건너뛰기 · `/` 만)·SCR-01·Non-goals, ARCHITECTURE Persistence(`wks:intro-seen`) 갱신 (commit 63410f2)
 - `src/features/intro/`: `IntroVideo`(음소거 자동 재생, 2초 타이머 뒤 건너뛰기, 끝·오류 시 종료) · `IntroGate`(첫 방문이면 인트로, 끝나면 children) · `introSeen`
-- 건너뛰기: 우측 위 반투명(흰 50%·테두리 80%·blur) 버튼 (commit 1d87965, 소유자 참고 캡처)
+- 건너뛰기: 반투명(흰 50%·테두리 80%·blur) 칸이 영상 속 ✦ 로고를 0초부터 가리고 2초부터 버튼이 된다 (commit 1d87965·d8705fe, `IntroVideo.css`)
 - `routes.tsx` index 를 `IntroGate` 로 감쌈. routes·App 테스트는 인트로를 본 방문자로 시작
 
 ## Work In Progress
@@ -32,6 +32,7 @@
 - 건너뛰기는 영상 시각이 아니라 마운트 후 2초 타이머 — 자동 재생이 막혀도 넘길 수 있게
 - 끝까지 가거나 건너뛰었을 때 봤다고 기록 — 보는 중 새로고침하면 다시 나온다
 - 건너뛰기는 `ui/Button` 이 아닌 intro 전용 button 요소 — 디자인시스템에 없는 모양, 토큰만 사용
+- 영상을 CSS 틀(406:720 cover)로 채워 칸을 영상 좌표에 붙이고, 보이는 영역 8px 안쪽으로 막는다 — 영상을 바꾸면 로고 좌표 재측정
 - 조립은 children 으로 — intro 가 saju 를 import 하지 않는다
 
 ## Tests Executed
@@ -48,7 +49,7 @@
 
 - 첫 방문자는 1MB 영상을 받는다 — 08/T5 LCP 측정에 영향 가능
 - 세션 없이 결과 링크로 들어와 `/` 로 튕긴 첫 방문자에게는 인트로가 뜬다
-- 영상 오른쪽 아래에 ✦ 워터마크가 들어 있다(영상 원본)
+- 768×1024 같은 세로로 긴 태블릿 창에서는 로고 오른쪽 끝 약 3px 이 화면 가장자리에 남는다 (360~430px 폰·1280×720 은 전부 가림)
 
 ## Unverified Assumptions
 

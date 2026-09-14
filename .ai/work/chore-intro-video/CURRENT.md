@@ -26,15 +26,16 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. PRD FR-1·ARCHITECTURE Persistence 갱신 · 2. `src/features/intro/` IntroVideo(8초 영상, 2초 뒤 건너뛰기)·IntroGate(첫 방문 1회 저장)와 테스트
+- 1. spec 갱신 · 2. `src/features/intro/` IntroVideo(8초 영상, 2초 뒤 건너뛰기)·IntroGate(첫 방문 1회 저장)와 테스트
 - 3. `routes.tsx` index 를 IntroGate 로 감싸고 routes·App 테스트 갱신
 - 4. test·typecheck·lint·브라우저 확인 → 커밋 → PR 준비 (commit 63410f2)
-- 5. 건너뛰기를 우측 위 반투명 버튼으로 (commit 1d87965) ←
+- 5. 건너뛰기를 우측 위 반투명 버튼으로 (commit 1d87965)
+- 6. 건너뛰기를 영상 속 ✦ 로고 위로 옮겨 0초부터 가림 (commit d8705fe) ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`1d87965`
+`d8705fe`
 
 ## Relevant Documents
 
@@ -42,7 +43,6 @@ REVIEW
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
 - `src/app/routes.tsx:routes` (index) · `src/features/intro/IntroGate.tsx:IntroGate` · `IntroVideo.tsx:IntroVideo` · `introSeen.ts`
 
 ## Next Action
