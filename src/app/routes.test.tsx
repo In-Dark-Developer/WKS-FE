@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
@@ -89,6 +89,63 @@ test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () =>
 
   expect(await screen.findByText('친구1')).toBeInTheDocument();
   expect(screen.getByText('92')).toBeInTheDocument();
+});
+
+// 04/T6 조립 — 결과 화면 share 슬롯과 인연카드 화면(`/reading/:id/card`).
+
+test('share 슬롯에 인연카드 입구와 친구에게 공유가 채워져 있다', async () => {
+  writeSession('token-1');
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  renderAt('/reading/abc');
+
+  expect(await screen.findByRole('button', { name: '인연카드 보기' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
+});
+
+test('인연카드 보기를 누르면 카드 화면으로 가고, 돌아가기로 결과 화면에 돌아온다', async () => {
+  writeSession('token-1');
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = renderAt('/reading/abc');
+  fireEvent.click(await screen.findByRole('button', { name: '인연카드 보기' }));
+
+  expect(
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 인연카드' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/reading/abc/card');
+  // 카드 화면은 결과 화면 아래에 덧붙는 것이 아니라 대신 뜬다(형제 라우트).
+  expect(screen.queryByRole('heading', { name: '달빛토끼님의 사주 결과' })).not.toBeInTheDocument();
+  expect(screen.getByRole('main')).toHaveAttribute('data-backdrop', 'result');
+
+  fireEvent.click(screen.getByRole('link', { name: '결과로 돌아가기' }));
+
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/reading/abc');
+});
+
+test('세션 없이 인연카드 화면에 들어오면 입력 화면으로 보낸다', async () => {
+  const router = renderAt('/reading/abc/card');
+
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+});
+
+test('인연카드 화면의 등급은 결혼·자녀·연애 순으로 카드에 실린다', async () => {
+  writeSession('token-1');
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  renderAt('/reading/abc/card');
+
+  expect(
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 인연카드' }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '카드 뒤집기' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '인스타 스토리 공유하기' })).toBeInTheDocument();
 });
 
 test('결과 조회가 실패하면 오류 화면을 보인다', async () => {

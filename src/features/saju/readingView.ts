@@ -12,6 +12,8 @@ export type ReadingView = {
   fortunes: Record<FortuneKey, { grade: Grade; content: string }>;
   luckyPlace: string;
   luckyItem: string;
+  // 공유 링크·인연카드 진입에 쓰는 공개 UUID(FR-4·FR-5) — 조립(04/T6)이 share feature 에 넘긴다.
+  shareId: string;
   // 결과 화면 하단 순위 요약(FR-8) — 05/T2 FriendRanking 이 그린다(조립은 T7). saju 는 friends
   // feature 를 import 하지 않으므로 타입은 api 계약(CompatibilitySummary) 그대로 둔다.
   compatibilities?: readonly CompatibilitySummary[];

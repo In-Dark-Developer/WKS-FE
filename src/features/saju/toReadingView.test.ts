@@ -34,6 +34,7 @@ test('fortunes 배열을 카테고리별 key 로 바꾼다', () => {
     },
     luckyPlace: '만해광장',
     luckyItem: '책',
+    shareId: 's1',
     compatibilities: [],
   });
 });

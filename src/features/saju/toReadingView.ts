@@ -25,6 +25,7 @@ export function toReadingView(result: Result): ReadingView {
     },
     luckyPlace: result.luckyPlace,
     luckyItem: result.luckyItem,
+    shareId: result.shareId,
     compatibilities: result.compatibilities,
   };
 }
