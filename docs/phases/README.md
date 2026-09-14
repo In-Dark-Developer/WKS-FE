@@ -10,13 +10,13 @@
 | #  | Phase | Lead | Depends on | Status | Tasks | Result |
 |----|-------|------|------------|--------|-------|--------|
 | 01 | [project-setup](01-project-setup/PLAN.md) | @jjjung0921 | none | DONE | 6/6 | [RESULT](01-project-setup/RESULT.md) |
-| 02 | [design-system](02-design-system/PLAN.md) | @gn00py48 | 01 | PLANNED | 6/6 | — |
+| 02 | [design-system](02-design-system/PLAN.md) | @gn00py48 | 01 | DONE | 6/6 | [RESULT](02-design-system/RESULT.md) |
 | 03 | [saju-reading](03-saju-reading/PLAN.md) | @nicerjs23 | 02 | PLANNED | 7/7 | — |
 | 04 | [share-and-card](04-share-and-card/PLAN.md) | @gn00py48 | 03 | PLANNED | 6/6 | — |
 | 05 | [friend-score](05-friend-score/PLAN.md) | @nicerjs23 | 04 | PLANNED | 1/2 | — |
 | 06 | [dating-gate](06-dating-gate/PLAN.md) | @gn00py48 | 03 | PLANNED | 2/3 | — |
 | 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | PLANNED | 0/1 | — |
-| 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 2/6 | [RESULT](08-launch-readiness/RESULT.md) |
+| 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 3/6 | [RESULT](08-launch-readiness/RESULT.md) |
 <!-- phases:end -->
 
 ## Phase Rules
