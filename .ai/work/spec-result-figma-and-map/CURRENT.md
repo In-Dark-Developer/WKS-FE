@@ -21,7 +21,7 @@ spec: result-figma-and-map
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
