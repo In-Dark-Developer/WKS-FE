@@ -9,24 +9,27 @@
 - Issue: none
 - Touches: docs/phases/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract-r2, 2026-09-13-backend-contract, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork
 
 ## Current Phase
 
-— (Task 밖 스트림)
+04 — share-and-card (Lead @gn00py48) · 기록만 고치는 chore 스트림
 
 ## Current Task
 
-chore: 04-task-checkboxes
+chore: 04-task-checkboxes — main 에 병합된 04/T3·T4·T5 를 PLAN 에 `[x]` 로 반영하고 phases 표를 다시 만든다
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 1. main 에서 T3·T4·T5 산출물과 커밋 확인
+- [x] 2. PLAN Tasks 3줄 `[x]` + `(commit …)` 표기
+- [x] 3. `ai-stream.sh phases` 로 표 재생성
+- [x] 4. 검증 4종 · `ai-end.sh --ci`
 
 ## Last Checkpoint
 
@@ -35,13 +38,13 @@ TODO
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `AGENTS.md` · `docs/phases/04-share-and-card/PLAN.md` · `docs/phases/README.md`
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- 없음 (문서만 고친다)
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 열고 @jjjung0921 에게 병합을 요청한다 (공지 netlify-personal-fork).
