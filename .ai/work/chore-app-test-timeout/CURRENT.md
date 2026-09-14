@@ -21,17 +21,17 @@ chore: app-test-timeout
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- `/preview` 테스트 대기 시간 늘리기 (commit e51bb53) — 완료
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`2a70b42`
+`e51bb53`
 
 ## Relevant Documents
 
@@ -40,8 +40,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/app/App.test.tsx:/preview 테스트`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+`scripts/ai-end.sh --ready` 로 PR 을 올리고 리뷰를 받는다.
