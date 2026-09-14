@@ -1,6 +1,6 @@
 # Architecture — 운꿰사 (WKS) 프론트엔드
 
-- Last updated: 2026-09-13
+- Last updated: 2026-09-14
 - Related ADRs: ADR-20260911-frontend-stack-and-repo-scope, ADR-20260913-server-state-and-session-storage
 
 ## System Overview
@@ -64,7 +64,7 @@
 
 ## Persistence
 
-브라우저에 저장하는 것은 localStorage `wks:session` 한 키의 세션 토큰뿐이다(인트로는 MVP에서 제외됐다). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
+브라우저에 저장하는 것은 localStorage 두 키뿐이다: `wks:session` 세션 토큰(`src/api/session.ts`)과 `wks:intro-seen` 인트로를 봤는지 여부(`src/features/intro/introSeen.ts`, FR-1). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
 
 ## External Systems
 
