@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 import type { Result } from '@/api/schema/result';
 import { writeSession } from '@/api/session';
@@ -29,6 +29,11 @@ const stubResult: Result = {
   compatibilities: [],
 };
 
+// 인트로(FR-1)는 첫 방문에만 뜬다 — 입력 화면을 보는 테스트는 이미 본 방문자로 시작한다.
+beforeEach(() => {
+  localStorage.setItem('wks:intro-seen', '1');
+});
+
 afterEach(() => {
   cleanup();
   localStorage.clear();
@@ -47,6 +52,26 @@ test('루트 경로가 화면을 렌더한다', async () => {
   expect(
     await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
   ).toBeInTheDocument();
+});
+
+test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
+  localStorage.clear();
+  renderAt('/');
+
+  expect(screen.getByLabelText('인트로 영상')).toBeInTheDocument();
+});
+
+test('첫 방문이라도 결과 화면으로 바로 들어오면 인트로가 없다', async () => {
+  localStorage.clear();
+  writeSession('token-1');
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  renderAt('/reading/abc');
+
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByLabelText('인트로 영상')).not.toBeInTheDocument();
 });
 
 test('세션 없이 결과 화면에 들어오면 입력 화면으로 보낸다', async () => {

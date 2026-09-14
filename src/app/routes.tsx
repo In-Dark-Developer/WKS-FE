@@ -14,6 +14,7 @@ import {
   type ReadingView,
 } from '@/features/saju';
 import { FriendRanking } from '@/features/friends';
+import { IntroGate } from '@/features/intro';
 import { ConnectionCardScreen, ShareLinkButton, cardLoader, type CardView } from '@/features/share';
 import { Button } from '@/ui/Button';
 
@@ -90,8 +91,16 @@ export const routes: RouteObject[] = [
       </AppShell>
     ),
     children: [
-      // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7
-      { index: true, element: <SajuForm />, action: sajuAction },
+      // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7. 첫 방문이면 SCR-01 인트로가 먼저 뜬다(FR-1).
+      {
+        index: true,
+        element: (
+          <IntroGate>
+            <SajuForm />
+          </IntroGate>
+        ),
+        action: sajuAction,
+      },
       // SCR-04 사주 결과 — 03/T5 ReadingResult (세션 필요), loader 03/T7
       {
         path: 'reading/:id',
