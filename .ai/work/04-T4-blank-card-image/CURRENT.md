@@ -21,7 +21,7 @@ T4. 카드 이미지 생성
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
