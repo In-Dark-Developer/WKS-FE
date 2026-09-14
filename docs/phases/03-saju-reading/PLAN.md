@@ -73,7 +73,7 @@
 - [x] AC6. 이 브라우저가 만든 결과가 없거나 다른 `resultId` 로 `/reading/:id`·`/reading/:id/card` 에 들어오면 입력 화면으로 안내된다
 - [x] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
 - [x] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
-- [x] AC5. `src/app/routes.tsx`를 T3(완료)·T7·T8 외의 Task가 수정하지 않았다 (예외 3건 — chore 2건·04/T6, 충돌 없음: RESULT Deviations)
+- [x] AC5. `src/app/routes.tsx`를 T3(완료)·T7·T8 외의 Task가 수정하지 않았다 (예외 4건 — chore 2건·04/T6·04/T7, 충돌 없음: RESULT Deviations)
 
 ## Validation Plan
 

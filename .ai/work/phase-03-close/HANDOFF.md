@@ -26,7 +26,7 @@ Phase 03 saju-reading 이 AC 근거와 함께 `RESULT.md` 로 닫히고 PLAN Sta
 
 ## Decisions Made
 
-- AC5 는 `[x]` + 예외 명시로 처리 — 예외 3건(chore 2건 @jjjung0921·04/T6 소유 이관) 모두 충돌 없음. 리뷰에서 PARTIALLY_DONE 으로 봐야 하면 되돌린다.
+- AC5 는 `[x]` + 예외 명시로 처리 — 예외 4건(chore 2건 @jjjung0921·04/T6·04/T7) 모두 충돌 없음. 리뷰에서 PARTIALLY_DONE 으로 봐야 하면 되돌린다.
 - AC1 은 목 대신 운영 사이트로 확인 — 로컬 3000 은 백엔드 CORS 403 이라 실제 백엔드로 못 붙는다.
 
 ## Tests Executed
@@ -36,13 +36,12 @@ Phase 03 saju-reading 이 AC 근거와 함께 `RESULT.md` 로 닫히고 PLAN Sta
 
 ## Test Results
 
-- 259 tests pass, typecheck·lint 0, build 성공
+- 254 tests pass(main 병합 후), typecheck·lint 0, build 성공
 - 운영: POST 201·GET 200, 콘솔 에러 0, 새 브라우저는 `/` 로 이동
 
 ## Known Problems
 
 - 백엔드 CORS: `localhost:3000` 403 · `localhost:5173` 200 — PLAN 의 "3000 만 허용"과 다름. @hairyung2002 확인 필요
-- 운명 제목·설명이 실제 응답에서 말줄임(`DestinyCard.css` ellipsis·line-clamp 2)
 
 ## Unverified Assumptions
 

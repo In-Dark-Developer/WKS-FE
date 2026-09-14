@@ -1,5 +1,6 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
 import { FortuneLoading, ReadingResult, type ReadingView } from '@/features/saju';
+import { ResultCard } from '@/features/share';
 import { DestinyCard } from '@/ui/DestinyCard';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
@@ -52,9 +53,10 @@ export const preview: PreviewScreen = {
   order: 1,
   backdrop: 'result',
   states: {
-    결과: () => <ReadingResult view={view} />,
+    결과: () => <ReadingResult renderCard={(face) => <ResultCard {...face} />} view={view} />,
     '긴 제목': () => (
       <ReadingResult
+        renderCard={(face) => <ResultCard {...face} />}
         view={{
           ...view,
           nickname: '여덟글자닉네임',
