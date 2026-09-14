@@ -28,8 +28,8 @@ BLOCKED
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - [x] 1. `session.ts` `{ v: 2, resultId }` · `results.ts` 성공 시 저장 · `client.ts` 토큰 코드 삭제 (+ test) · `requireSession(id)`·routes (commit 55dc225, WIP)
 - [x] 3. test 258·typecheck·lint · 목 모드 브라우저 완주·불일치 redirect
-- [ ] 4. 실제 백엔드 1회 완주 — 소유자 확인 대기(운영이면 DB 1건·LLM 1회) ←
-- [ ] 5. PLAN T8 체크·SHA · --ready
+- [x] 4. 운영 API 1회 완주(resultId 1ad9f001-…) · 보관값 없는 브라우저 → `/`
+- [ ] 5. PLAN T8 체크·SHA · --ready ←
 
 ## Last Checkpoint
 
@@ -47,4 +47,4 @@ BLOCKED
 
 ## Next Action
 
-소유자에게 실제 백엔드 완주 방법(운영 1회 제출 vs 다른 환경) 확인 후 Progress step 4.
+`git merge origin/main` → `scripts/ai-end.sh --ready` → 소유자 확인 후 PR.
