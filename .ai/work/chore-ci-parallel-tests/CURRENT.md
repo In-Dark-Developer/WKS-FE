@@ -28,7 +28,7 @@ REVIEW
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - [x] 1. ci.yml: test·typecheck·lint 를 matrix 병렬 job, 집계 job 'commands' 유지 (commit 7e7e0cf)
 - [x] 2. vitest pool vmThreads 측정·적용 — 2 워커 13.9s → 2.6s, 3회 모두 264 통과
-- [ ] 3. PR CI 에서 실제 시간 확인 ←
+- [x] 3. PR CI: 전체 90s → 50s, test 단계 46s → 11s
 
 ## Last Checkpoint
 
@@ -46,4 +46,4 @@ REVIEW
 
 ## Next Action
 
-PR CI 실행 시간 확인.
+PR #100 병합 대기.

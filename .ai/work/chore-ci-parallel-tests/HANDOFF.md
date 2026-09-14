@@ -36,6 +36,7 @@ CI 대기 시간을 줄이되 test·typecheck·lint 는 그대로 필수로 둔�
 ## Test Results
 
 - 기본 13.9s · vmThreads 2.6~3.1s(264 통과) · threads 12.6s · no-isolate 13 failed
+- PR CI(run 34868409852): 전체 90s → 50s · test 단계 46s → 11s · test/typecheck/lint job 33~40s 병렬 · commands 집계 성공
 
 ## Known Problems
 
@@ -43,8 +44,8 @@ CI 대기 시간을 줄이되 test·typecheck·lint 는 그대로 필수로 둔�
 
 ## Unverified Assumptions
 
-- CI(2 vCPU)에서도 비슷한 비율로 줄어든다 — PR 실행으로 확인
+- 없음
 
 ## Exact Next Action
 
-PR CI 시간 확인 후 결과 보고.
+PR 병합 후 다음 PR 들의 CI 시간 관찰.
