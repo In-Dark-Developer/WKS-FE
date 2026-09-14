@@ -13,16 +13,7 @@ import './DestinyCard.css';
 // 백엔드 Grade 값 그대로 (docs/api/openapi.yaml) — 높은 순.
 export type Grade = 'SS' | 'S' | 'A+' | 'A' | 'B+' | 'B';
 
-// destiny: 사주 결과의 운명 카드(713:4026) · connection: 인연카드 앞면(731:4668, 십이간지 카드 731:4740).
-type Kind = 'destiny' | 'connection';
-
-const copy: Record<Kind, { heading: string; subject: string; lead: string }> = {
-  destiny: { heading: '님의 운명 카드', subject: '운명', lead: '당신의 운명은' },
-  connection: { heading: '님의 인연카드', subject: '인연', lead: '당신의 인연 운명은..' },
-};
-
 type Props = {
-  kind?: Kind;
   nickname: string;
   zodiac: Zodiac;
   title: string;
@@ -67,26 +58,12 @@ function cssVars(vars: Record<string, number>): CSSProperties {
 // 스탬프 줄의 top (패널 기준) — Figma 결과 화면 운명 카드(713:4027).
 const gradeRowTops = [194, 238, 286];
 
-// Figma 「UI 최종 - 개발용」 운명 카드·인연카드 앞면. 카드 폭에 맞춰 통째로 비례 축소된다.
-export function DestinyCard({
-  kind = 'destiny',
-  nickname,
-  zodiac,
-  title,
-  description,
-  grades,
-  className,
-}: Props) {
+// Figma 「UI 최종 - 개발용」 결과 화면 운명 카드(713:4026). 카드 폭에 맞춰 통째로 비례 축소된다.
+export function DestinyCard({ nickname, zodiac, title, description, grades, className }: Props) {
   const [left, top, width] = characterBox[zodiac];
-  const { heading, subject, lead } = copy[kind];
 
   return (
-    <section
-      aria-label={`${nickname}${heading}`}
-      className={className}
-      data-destiny-card=""
-      data-kind={kind}
-    >
+    <section aria-label={`${nickname}님의 운명 카드`} className={className} data-destiny-card="">
       <div data-destiny-card-panel="">
         <ZodiacCharacter
           data-destiny-card-character=""
@@ -96,16 +73,14 @@ export function DestinyCard({
         <header data-destiny-card-header="">
           <h2>
             <span>{nickname}</span>
-            {heading}
+            님의 운명 카드
           </h2>
-          <p>
-            {bodhisattvaNames[zodiac]}님이 당신의 {subject}을 점지했어요.
-          </p>
+          <p>{bodhisattvaNames[zodiac]}님이 당신의 운명을 점지했어요.</p>
         </header>
         <div data-destiny-card-destiny="">
           <p>
-            <span>{lead}</span>
-            <strong title={title}>{title}</strong>
+            <span>당신의 운명은</span>
+            <strong style={cssVars({ '--title-chars': title.length })}>{title}</strong>
           </p>
           <p>{description}</p>
         </div>

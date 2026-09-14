@@ -44,26 +44,19 @@ test('등급은 줄마다 이름과 스탬프 이미지로 읽힌다', () => {
   expect(screen.getByRole('img', { name: 'B 등급' })).toBeInTheDocument();
 });
 
-test('긴 운명 제목은 잘려도 전체 문구를 title 로 남긴다', () => {
+test('긴 운명 제목·설명도 말줄임 없이 전문을 그린다', () => {
   const longTitle = '깔깔깔깔깔깔깔깔깔깔깔깔';
   renderCard(longTitle);
 
-  expect(screen.getByText(longTitle)).toHaveAttribute('title', longTitle);
+  // 잘리지 않으므로 전체 문구를 따로 담을 title 속성도 없다 (PRD FR-3 — 합 120자 이내).
+  expect(screen.getByText(longTitle)).not.toHaveAttribute('title');
 });
 
-test('인연카드는 인연 문구로 바뀐다', () => {
-  render(
-    <DestinyCard
-      description="설명"
-      grades={[{ label: '연애운', grade: 'A' }]}
-      kind="connection"
-      nickname="달빛토끼"
-      title="이런 운명"
-      zodiac="RAT"
-    />,
-  );
+test('제목 글자 수를 글자 크기 계산에 넘긴다', () => {
+  renderCard('인연 하나에 뿌리내린 나무');
 
-  const card = screen.getByRole('region', { name: '달빛토끼님의 인연카드' });
-  expect(within(card).getByText('찍어보살님이 당신의 인연을 점지했어요.')).toBeInTheDocument();
-  expect(within(card).getByText('당신의 인연 운명은..')).toBeInTheDocument();
+  // 긴 제목은 CSS 가 이 값으로 글자 크기를 줄여 한 줄에 둔다 (DestinyCard.css).
+  expect(
+    screen.getByText('인연 하나에 뿌리내린 나무').style.getPropertyValue('--title-chars'),
+  ).toBe('14');
 });

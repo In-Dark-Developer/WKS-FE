@@ -73,30 +73,25 @@
   gap: calc(4 * var(--u));
   font-family: var(--font-sungkok);
   font-size: calc(14 * var(--u));
+}
+
+[data-destiny-card-destiny] span {
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
-/* 인연카드는 앞말이 16px (Figma 731:4741). */
-[data-destiny-card][data-kind='connection'] [data-destiny-card-destiny] span {
-  font-size: calc(16 * var(--u));
-}
-
-/* 운명 제목은 길이가 보장되지 않는다 — 한 줄 말줄임. */
+/* 운명 제목·설명은 합쳐 120자 이내다(PRD FR-3) — 말줄임 없이 전문을 보인다.
+   제목은 한 줄에 들도록 글자 수(--title-chars)로 글자 크기를 줄인다. 한 줄 폭은 앞말 뒤 약 214px 이고
+   성곡체 한글 제목(띄어쓰기 포함)은 글자당 0.72em 안쪽이라 298 = 214 / 0.72 이다. 10자 이하는 Figma 크기 그대로.
+   띄어쓰기 없는 긴 제목처럼 그래도 넘치면 두 줄로 내려간다. */
 [data-destiny-card-destiny] strong {
   min-width: 0;
-  overflow: hidden;
-  font-size: calc(29.565 * var(--u));
+  font-size: calc(min(29.565, 298 / var(--title-chars, 1)) * var(--u));
   font-weight: 400;
-  text-overflow: ellipsis;
 }
 
-/* 설명은 두 줄까지. */
 [data-destiny-card-destiny] p + p {
-  display: -webkit-box;
-  overflow: hidden;
   white-space: pre-line;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 
 [data-destiny-card-grades] > div {

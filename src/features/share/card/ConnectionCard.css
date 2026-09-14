@@ -1,4 +1,4 @@
-/* 인연카드 — 앞면(DestinyCard)과 뒷면을 같은 칸에 겹쳐 두고 Y축으로 뒤집는다. */
+/* 결과 화면 운명 카드 — 앞면(DestinyCard)과 뒷면을 같은 칸에 겹쳐 두고 Y축으로 뒤집는다. */
 [data-connection-card] {
   position: relative;
   display: grid;
