@@ -21,7 +21,7 @@ T3. 궁합 지도 라우트와 결과 화면 '지도 보기'
 
 ## Status
 
-REVIEW
+BLOCKED
 
 ## Progress
 
@@ -36,7 +36,7 @@ REVIEW
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`bf7b178`
+`4b9bb89`
 
 ## Relevant Documents
 
@@ -49,4 +49,4 @@ REVIEW
 
 ## Next Action
 
-`scripts/ai-end.sh --ready` → PR. #98(04/T8) 병합 뒤 `git merge origin/main` — FriendRanking 제목 줄 충돌 해결 필요.
+PR #99 병합 대기.

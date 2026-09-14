@@ -42,7 +42,6 @@
 
 ## Known Problems
 
-- #98(04/T8)이 FriendRanking 제목 줄을 바꿔 병합 시 충돌 — 이 스트림에서 해결
 - 실제 친구 궁합이 있는 운영 데이터로는 미확인(공유 랜딩 SCR-06 이 아직 없어 궁합을 만들 경로가 없다)
 - 백엔드 api-spec.md 의 compatibilities 모양 불일치 — 백엔드 담당에게 알릴 것
 
@@ -52,4 +51,4 @@
 
 ## Exact Next Action
 
-#98 병합 → git merge origin/main(FriendRanking 충돌 해결) → push.
+PR 병합 후 운영에서 결과 → 지도 보기 → 궁합 지도 확인.

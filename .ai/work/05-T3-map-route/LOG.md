@@ -8,9 +8,9 @@
 - Done: /me/map 라우트·지도 보기·compatibilities 실제 모양·지도 공유 버튼 연결
 - Not done: 없음
 - Developer changes: 없음
-- Upstream changes: 없음
+- Upstream changes: #98 병합 — FriendRanking 제목 줄 충돌 해결(p-16 + headerAction)
 - Spec changes: 없음 (spec 은 #97)
-- Needs your attention: #98 병합 뒤 FriendRanking 충돌 해결 필요
+- Needs your attention: 백엔드 api-spec 궁합 모양 불일치 알림
 - Verification: test 264·typecheck·lint, 목 모드 브라우저 흐름
 
 ## 2026-09-15 · ai-stream · 05/T3 · 스트림 열기
