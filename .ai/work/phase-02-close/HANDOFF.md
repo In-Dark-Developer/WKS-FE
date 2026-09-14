@@ -42,7 +42,7 @@ Phase 02 design-system 이 AC1~AC5 근거와 함께 `RESULT.md` 로 닫히고, P
 
 ## Test Results
 
-- 전부 통과 — 52 files / 238 tests, `src/ui` 만 보면 20 files / 88 tests
+- 전부 통과 — 52 files / 238 tests, `src/ui` 만 보면 20 files / 88 tests (main #84 병합 후 재실행 동일)
 - main 의 `App.test.tsx` 실패는 PR #82 로 해소돼 이 스트림 시점에는 초록이다
 
 ## Known Problems
@@ -56,4 +56,4 @@ Phase 02 design-system 이 AC1~AC5 근거와 함께 `RESULT.md` 로 닫히고, P
 
 ## Exact Next Action
 
-close 커밋 → `ai-end.sh --ready` → PR. 병합 후 `ai-stream.sh tag 02`.
+병합 후 `ai-stream.sh tag 02` 를 실행한다.
