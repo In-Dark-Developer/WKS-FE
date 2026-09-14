@@ -8,6 +8,8 @@ import { fortuneOrder, type ReadingView } from './readingView';
 import { FortuneSection } from './sections/FortuneSection';
 import { LuckySection } from './sections/LuckySection';
 
+import './ReadingResult.css';
+
 // 운명 카드 앞면에 들어가는 값 — 뷰 모델에서 saju 가 만들고, 카드(뒤집기·인스타 공유)는 조립하는 쪽이 그린다.
 export type ReadingCardFace = {
   nickname: string;
@@ -25,7 +27,8 @@ type Props = {
   teaser?: ReactNode; // 06 사전신청 티저
 };
 
-// SCR-04 사주 결과 — Figma 「UI 최종 - 개발용」 사주 결과 화면 Frame 93 (내 사주, 713:4021).
+// SCR-04 사주 결과 — Figma 사주 카드 화면(658:5075): 카드·인스타 공유 → 16 → 행운 → 16 → 운세 → 16 → 친구 궁합 순위.
+// 순위는 좌우 8 안쪽(333)에 둔다.
 // 하위 라우트(사전신청 모달)는 맨 아래 <Outlet /> 에 뜬다.
 export function ReadingResult({ view, renderCard, ranking, teaser }: Props) {
   const face: ReadingCardFace = {
@@ -37,12 +40,12 @@ export function ReadingResult({ view, renderCard, ranking, teaser }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-16 pt-8 pb-24">
+    <div className="flex flex-col gap-16 pt-8 pb-24" data-reading-result="">
       <h1 className="sr-only">{view.nickname}님의 사주 결과</h1>
       {renderCard(face)}
       <LuckySection item={view.luckyItem} place={view.luckyPlace} />
       <FortuneSection fortunes={view.fortunes} />
-      {ranking}
+      {ranking ? <div className="mx-8">{ranking}</div> : null}
       {teaser}
       <Outlet />
     </div>

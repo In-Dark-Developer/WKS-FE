@@ -53,11 +53,16 @@ test('카드 자리에 뷰 모델의 앞면 값을 넘기고 행운·운세 세 
   expect(
     screen.getByText('카드 자리 달빛토끼 꽃길만 걷는 인연 결혼운S 자녀운A 연애운B+'),
   ).toBeInTheDocument();
+  // Figma 사주 카드 화면(658:5087·658:5088) 순서: 아이템 → 장소, 운세는 연애 → 결혼 → 자녀.
+  expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
+    '행운의 아이템',
+    '행운의 장소',
+  ]);
   expect(screen.getByText('행운의 장소').nextElementSibling).toHaveTextContent('만해광장');
   expect(screen.getByText('행운의 아이템').nextElementSibling).toHaveTextContent('작은 책 한 권');
   expect(
     screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent),
-  ).toEqual(['결혼운', '자녀운', '연애운']);
+  ).toEqual(['연애운', '결혼운', '자녀운']);
   expect(screen.getByText('연애 풀이')).toBeInTheDocument();
 });
 

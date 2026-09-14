@@ -15,10 +15,10 @@ const card = {
   ],
 } as const;
 
-// 가장 긴 운명 제목(14자, 백엔드 destiny-titles.txt) + 설명 105자 = 119자 (운영 응답 문체).
+// 가장 긴 운명 제목(14자, 백엔드 destiny-titles.txt) + 가장 긴 설명(공백 포함 140자, PRD FR-3 · Figma 658:5130).
 const longTitle = '인연 하나에 뿌리내린 나무';
 const longDescription =
-  '단단한 흙과 뜨거운 불의 기운이 만나 속이 깊고 책임감이 아주 강한 성향입니다. 차분하게 내실을 다지며 살아간다면 앞으로의 삶에 평온함과 든든한 안정감이 자연스럽게 찾아올 거예요. 곧 좋은';
+  '우연처럼 시작된 만남도 어쩌면 오래전부터 정해진 인연일지 몰라요. 사주 속 흐름을 따라 나와 잘 맞는 사람을 찾고, 설레는 인연을 직접 만나보세요. 오늘의 작은 선택이 생각지 못한 새로운 사랑의 시작이 될지도 모릅니다. 오늘의 작은 선택이 생각지 못한';
 
 const zodiacs: readonly Zodiac[] = [
   'RAT',
@@ -44,8 +44,8 @@ export const preview: PreviewScreen = {
     '카드 + 인스타 공유': () => <ResultCard {...card} />,
     앞면: () => <ConnectionCard {...card} />,
     뒷면: () => <ConnectionCard {...card} initialFace="back" />,
-    // PRD FR-3 — 운명 제목·설명 합 120자. 말줄임 없이 전문이 보이고 등급 스탬프와 겹치지 않아야 한다.
-    '문구 120자': () => (
+    // PRD FR-3 — 설명 140자·긴 제목. 말줄임 없이 전문이 보여야 한다.
+    '문구 최대 길이': () => (
       <ConnectionCard {...card} description={longDescription} title={longTitle} />
     ),
     '십이간지 12종': () => (
