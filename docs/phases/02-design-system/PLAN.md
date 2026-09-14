@@ -1,6 +1,6 @@
 # Phase 02 — design-system
 
-- Status: PLANNED
+- Status: DONE
 - Lead: @gn00py48
 - Depends on: 01
 - Start: TBD · End: 2026-09-17 (MVP 마감 — PRD Constraints)
@@ -59,11 +59,11 @@ Figma의 디자인 토큰과 공통 컴포넌트가 `src/ui/`에 코드로 존�
 
 ## Acceptance Criteria
 
-- [ ] AC1. 화면 코드가 색·폰트·간격을 토큰으로만 참조한다
-- [ ] AC2. 공통 컴포넌트가 모두 렌더 테스트를 갖는다
-- [ ] AC3. 모달과 폼을 키보드만으로 조작할 수 있고 모든 입력에 라벨이 있다
-- [ ] AC4. `src/ui/`가 `src/api/`·`src/features/`를 import 하지 않는다
-- [ ] AC5. T2~T6이 서로의 파일을 수정하지 않았다 (각 PR의 diff가 자기 Touches 안)
+- [x] AC1. 화면 코드가 색·폰트·간격을 토큰으로만 참조한다
+- [x] AC2. 공통 컴포넌트가 모두 렌더 테스트를 갖는다
+- [x] AC3. 모달과 폼을 키보드만으로 조작할 수 있고 모든 입력에 라벨이 있다
+- [x] AC4. `src/ui/`가 `src/api/`·`src/features/`를 import 하지 않는다
+- [x] AC5. T2~T6이 서로의 파일을 수정하지 않았다 (각 PR의 diff가 자기 Touches 안)
 
 ## Validation Plan
 
