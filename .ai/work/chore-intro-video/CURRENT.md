@@ -26,8 +26,7 @@ IN_PROGRESS
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. PRD FR-1·Non-goals, ARCHITECTURE Persistence 를 인트로 포함으로 갱신
-- 2. `src/features/intro/` IntroVideo(8초 영상, 2초 뒤 건너뛰기)·IntroGate(첫 방문 1회 저장)와 테스트
+- 1. PRD FR-1·ARCHITECTURE Persistence 갱신 · 2. `src/features/intro/` IntroVideo(8초 영상, 2초 뒤 건너뛰기)·IntroGate(첫 방문 1회 저장)와 테스트
 - 3. `routes.tsx` index 를 IntroGate 로 감싸고 routes·App 테스트 갱신
 - 4. test·typecheck·lint·브라우저 확인 → 커밋 → PR 준비 (commit 63410f2) ←
 
@@ -38,15 +37,13 @@ IN_PROGRESS
 
 ## Relevant Documents
 
-- `docs/PRD.md` (FR-1, Non-goals) · `docs/ARCHITECTURE.md` (Persistence)
-- `docs/decisions/ADR-20260913-server-state-and-session-storage.md` (세션 키 규칙 — 인트로 키는 별개)
+- `docs/PRD.md` (FR-1) · `docs/ARCHITECTURE.md` (Persistence)
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- `src/app/routes.tsx:routes` (index)
+- `src/app/routes.tsx:routes` (index) · `src/ui/assets/video/intro.mp4` (406×720, 8초)
 - `src/features/intro/IntroGate.tsx:IntroGate` · `IntroVideo.tsx:IntroVideo` · `introSeen.ts`
-- `src/ui/assets/video/intro.mp4` (406×720, 8초, h264+aac)
 
 ## Next Action
 
