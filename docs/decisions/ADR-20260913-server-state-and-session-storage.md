@@ -1,6 +1,6 @@
 # ADR-20260913: 서버 상태는 React Router 데이터 API로 읽고, 세션은 `api`가 localStorage 한 키에 보관한다
 
-- Status: Accepted
+- Status: Accepted — 세션 보관 절은 Superseded by ADR-20260914-result-ownership-in-browser (서버 상태 절은 유효)
 - Date: 2026-09-13
 - Deciders: @jjjung0921 (제안) / 리뷰어는 PR 승인자
 
