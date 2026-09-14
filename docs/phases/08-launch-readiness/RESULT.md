@@ -13,7 +13,7 @@
 
 ## Not Completed
 
-- T3. 운영 연결 확인 — 도메인 레코드·백엔드 HTTPS·CORS 대기 (아래 2026-09-14 점검)
+- T3. 운영 연결 확인 — Netlify 도메인 HTTPS 인증서 대기 (아래 2026-09-14 재점검). DNS 레코드·백엔드 HTTPS·CORS 는 해결됨
 - T4 ~ T6 — 시작 전
 
 ## Deviations from Plan
@@ -22,6 +22,22 @@
 - 도메인 표기가 `threatoffate.site` 로 잘못 적혀 있었다 — 실제 도메인은 `threadoffate.site`(thread of fate). 2026-09-14 저장소 설정·문서를 고쳤다(대체된 ADR·지난 공지 본문은 그대로)
 
 ## Validation Results
+
+### T3 운영 연결 재점검 — 2026-09-14 14:40 KST (`dig @8.8.8.8`, `curl`, `gh run list`)
+
+| Check | Method | Result |
+|-------|--------|--------|
+| fork 동기화 | Actions `sync-fork` 최근 3회 (push, 최신 `2d2c9af`) | ✅ 모두 success |
+| Netlify 사이트 | `curl https://wks-fe.netlify.app/` · `…/s/test` | ✅ 200 · 200 — 사이트 이름이 `effulgent-torrone-699094` → `wks-fe` 로 바뀜(옛 주소 404) |
+| apex 레코드 | `dig A threadoffate.site` | ✅ `75.2.60.5` (TTL 300) |
+| www 레코드 | `dig CNAME www.threadoffate.site` | ✅ `wks-fe.netlify.app` |
+| 도메인이 Netlify 에 붙음 | `curl http://www.threadoffate.site/` · `curl --resolve threadoffate.site:80:75.2.60.5 http://threadoffate.site/s/test` | ✅ 301 → `http://threadoffate.site/` (`server: Netlify`) · 200 `text/html` |
+| 빌드된 API 주소 | 운영 번들 `assets/index-DS_V52x0.js` | ✅ `https://api.threadoffate.site/api` |
+| 자산 캐시 | `curl -I …/assets/index-*.js` | ✅ `public,max-age=31536000,immutable` |
+| `https://threadoffate.site`·`www` | `curl -v https://…` | ❌ 인증서가 `*.netlify.app` — 도메인 인증서 미발급 (Netlify "Pending DNS verification") |
+| 백엔드 HTTPS | `curl https://api.threadoffate.site/api/health` · `http://…` | ✅ 200 `{"status":"UP"}` · HTTP 는 301 → HTTPS |
+| CORS | `OPTIONS https://api.threadoffate.site/api/results` (POST, `content-type`), Origin 3개 | ✅ 200, `Access-Control-Allow-Origin` 이 `https://threadoffate.site`·`https://www.threadoffate.site`·`https://wks-fe.netlify.app` 각각 반사 |
+| 운영 화면에서 API 호출 | 브라우저 | ⏸ 인증서 발급 뒤 확인 |
 
 ### T3 운영 연결 점검 — 2026-09-14 (`dig @8.8.8.8`, `curl`)
 
@@ -41,12 +57,12 @@
 
 ## Known Issues
 
-- 백엔드 HTTPS(443) 미설정 — 운영 화면에서 API 호출이 전부 실패한다
+- `threadoffate.site`·`www` HTTPS 인증서 미발급 — 운영 주소가 HTTPS 로 열리지 않는다
+- 운영 문서 `docs/deploy/netlify-fork.md` 가 옛 사이트 이름 `effulgent-torrone-699094.netlify.app` 을 적고 있다
 - 운영 배포는 개인 계정(fork·Netlify·토큰)에 묶여 있다 (ADR-20260914-netlify-personal-fork)
 
 ## Follow-up Work
 
-- 백엔드: `api.threadoffate.site` TLS 인증서·443, CORS 허용 origin 3개, 운영 `/api` 접두 확인
-- 백엔드(Route53): apex A `75.2.60.5`, `www` CNAME `effulgent-torrone-699094.netlify.app`
-- 소유자: Netlify Domain management 에 `threadoffate.site` 추가
-- 위가 끝나면 T3 재점검(같은 표)
+- 소유자(@jjjung0921): Netlify Domain management 에서 DNS 검증 재시도 → HTTPS 인증서 발급
+- 발급되면 T3 재점검: `https://threadoffate.site`·`www`·`/s/test` 새로고침, 운영 화면 API 호출(CORS)
+- `docs/deploy/netlify-fork.md` 의 사이트 이름을 `wks-fe.netlify.app` 으로 고친다 (T3 Touches 밖 — 별도 스트림)
