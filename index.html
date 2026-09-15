@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>운명도 꿰어야 사랑이다</title>
     <meta name="description" content="생년월일로 점지받는 나의 인연" />
-    <!-- 공유 링크 미리보기(08/T4, SC-6) — 크롤러는 JS 를 실행하지 않으므로 모든 경로가 같은 메타를 받는다. 썸네일(og:image)은 디자인 전달 후 추가한다. -->
+    <!-- 공유 링크 미리보기(08/T4, SC-6) — 크롤러는 JS 를 실행하지 않으므로 모든 경로가 같은 메타를 받는다(ADR-20260915-share-preview-static-meta). 이미지는 크롤러가 절대 주소로 가져가므로 해시 없는 public/og/ 에 둔다. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="운명도 꿰어야 사랑이다" />
     <meta property="og:title" content="운명도 꿰어야 사랑이다" />
     <meta property="og:description" content="생년월일로 점지받는 나의 인연" />
     <meta property="og:url" content="https://threadoffate.site/" />
     <meta property="og:locale" content="ko_KR" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://threadoffate.site/og/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="675" />
+    <meta property="og:image:alt" content="운명도 꿰어야 사랑이다" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="운명도 꿰어야 사랑이다" />
     <meta name="twitter:description" content="생년월일로 점지받는 나의 인연" />
+    <meta name="twitter:image" content="https://threadoffate.site/og/og.jpg" />
   </head>
   <body>
     <div id="root"></div>
