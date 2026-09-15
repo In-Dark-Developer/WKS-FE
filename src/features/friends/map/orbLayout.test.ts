@@ -47,3 +47,26 @@ test.each([
     }
   }
 });
+
+test('흐르는 구슬은 같은 궤도끼리 주기를 똑같이 나눠 출발하고, 보이는 호의 양 끝이 지도 칸 안이다', () => {
+  const placed = placeOrbs(friendsOf(['BEOT', 'GUIIN', 'BEOT', 'BEOT']));
+  const beot = placed.filter(({ friend }) => friend.tier === 'BEOT').map(({ travel }) => travel);
+
+  const gaps = beot.map(({ phase }) => (phase - (beot[0]?.phase ?? 0) + 1) % 1);
+  expect(gaps.map((gap) => gap.toFixed(6))).toEqual([0, 1 / 3, 2 / 3].map((gap) => gap.toFixed(6)));
+  // 귀인은 벗과 다른 출발(엇갈림)이다.
+  const guiin = placed.find(({ friend }) => friend.tier === 'GUIIN');
+  expect(guiin?.travel.phase).not.toBe(beot[0]?.phase);
+  for (const { cx, cy, r, from, span } of placed.map(({ travel }) => travel)) {
+    expect(span).toBeGreaterThan(0);
+    for (const degree of [from, from + span]) {
+      const radian = (degree * Math.PI) / 180;
+      const x = cx + r * Math.cos(radian);
+      const y = cy + r * Math.sin(radian);
+      expect(x).toBeGreaterThan(0);
+      expect(x).toBeLessThan(323);
+      expect(y).toBeGreaterThan(0);
+      expect(y).toBeLessThan(439);
+    }
+  }
+});

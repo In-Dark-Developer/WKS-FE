@@ -64,11 +64,14 @@
   position: absolute;
   top: calc((var(--y) - var(--d) / 2) * var(--u));
   left: calc(var(--x) * var(--u));
+  translate: -50% 0;
+}
+
+[data-compatibility-map-orb] {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: calc(8 * var(--u));
-  translate: -50% 0;
 }
 
 [data-compatibility-map-orbs] img {
@@ -88,11 +91,10 @@
   opacity: 0.7;
 }
 
-/* 궤도 선·달·구슬 레이어 — 05/T9. 패널과 같은 크기이고, 3명 이상일 때 달 중심(36.53, 431.58)으로 한 덩어리로 돈다. */
+/* 궤도 선·달·구슬 레이어 — 05/T9. 패널과 같은 크기. */
 [data-compatibility-map-sky] {
   position: absolute;
   inset: 0;
-  transform-origin: calc(36.53 * var(--u)) calc(431.58 * var(--u));
 }
 
 /* 궤도 선·달 — 에셋 중심이 (--cx, --cy), 한 변이 2 × --r. 기본 transform-origin(가운데)이 곧 레이어 중심이다. */
@@ -106,37 +108,71 @@
   height: calc(var(--r) * 2 * var(--u));
 }
 
-/* 구슬 원 중심을 축으로 반대로 돌려 닉네임이 늘 똑바로 선다. */
-[data-compatibility-map-orbs] li {
-  transform-origin: 50% calc(var(--d) / 2 * var(--u));
-}
-
 @keyframes compatibility-map-spin {
   to {
     rotate: 360deg;
   }
 }
 
-@keyframes compatibility-map-unspin {
+/* 흐르는 구슬 — li 는 궤도 중심에 선 팔이 되어 from° → from° + 2 × span° 를 돈다. 앞 절반(보이는 호)만 보인다. */
+@keyframes compatibility-map-orb-arm {
+  from {
+    rotate: calc(var(--from) * 1deg);
+  }
   to {
-    rotate: -360deg;
+    rotate: calc((var(--from) + 2 * var(--span)) * 1deg);
   }
 }
 
-/* 동작 줄이기 설정이 없을 때만 돈다 — 설정한 사용자는 멈춘 지도를 본다. */
+/* 구슬 몸은 팔과 반대로 돌아 닉네임이 똑바로 선다. */
+@keyframes compatibility-map-orb-body {
+  from {
+    rotate: calc(var(--from) * -1deg);
+  }
+  to {
+    rotate: calc((var(--from) + 2 * var(--span)) * -1deg);
+  }
+}
+
+@keyframes compatibility-map-orb-blink {
+  0% {
+    opacity: 0;
+  }
+  4%,
+  46% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 동작 줄이기 설정이 없을 때만 움직인다 — 설정한 사용자는 멈춘 지도를 본다. */
 @media (prefers-reduced-motion: no-preference) {
-  /* 0~2명 — 궤도 선만 저마다 제자리에서 돈다(선 자리는 그대로, 밝은 구간만 흐른다). */
-  [data-motion='orbits'] [data-compatibility-map-orbit] {
+  /* 궤도 선은 저마다 제자리에서 돈다(선 자리는 그대로, 밝은 구간만 흐른다). */
+  [data-compatibility-map-orbit] {
     animation: compatibility-map-spin 30s linear infinite;
   }
 
-  /* 3명 이상 — 궤도 선과 구슬이 달 중심으로 함께 돈다. 달과 닉네임은 반대로 돌려 제자리·똑바로 둔다. */
-  [data-motion='orbs'] [data-compatibility-map-sky] {
-    animation: compatibility-map-spin 30s linear infinite;
-  }
-
-  [data-motion='orbs'] [data-compatibility-map-moon],
+  /* 3명 이상 — 구슬이 자기 궤도의 보이는 구간을 15초 흐르고 15초 숨는다. */
   [data-motion='orbs'] [data-compatibility-map-orbs] li {
-    animation: compatibility-map-unspin 30s linear infinite;
+    top: calc(var(--cy) * var(--u));
+    left: calc(var(--cx) * var(--u));
+    translate: none;
+    animation:
+      compatibility-map-orb-arm 30s linear infinite,
+      compatibility-map-orb-blink 30s linear infinite;
+    animation-delay: calc(var(--phase) * -30s);
+  }
+
+  [data-motion='orbs'] [data-compatibility-map-orb] {
+    position: absolute;
+    top: calc(var(--d) / -2 * var(--u));
+    left: calc(var(--r) * var(--u));
+    translate: -50% 0;
+    transform-origin: 50% calc(var(--d) / 2 * var(--u));
+    animation: compatibility-map-orb-body 30s linear infinite;
+    animation-delay: calc(var(--phase) * -30s);
   }
 }

@@ -29,8 +29,8 @@ const orbits = [
 ] as const;
 const moonLayer = { cx: 36.53, cy: 431.58, r: 244 } as const;
 
-// 친구가 이만큼 이상이면 궤도 선과 구슬이 달 중심으로 한 덩어리로 돈다 — 같은 중심·같은 속도라 구슬 간격이
-// 그대로여서 겹치지 않는다. 그보다 적으면 궤도 선만 저마다 제자리에서 돈다 (PRD FR-8).
+// 궤도 선은 늘 제자리에서 돈다. 친구가 이만큼 이상이면 구슬도 자기 궤도의 보이는 구간을 흐른다 — 보이는 시간과
+// 숨는 시간이 같고 같은 궤도 친구는 주기를 똑같이 나눠 출발해 간격이 늘 같아 겹치지 않는다 (PRD FR-8).
 const SPIN_ORBS_FROM = 3;
 
 // React 의 CSSProperties 타입은 커스텀 속성(--x)을 모르므로 단언한다.
@@ -75,18 +75,30 @@ export function CompatibilityMap({ nickname, friends, variant = 'mine' }: Props)
             style={cssVars({ '--cx': moonLayer.cx, '--cy': moonLayer.cy, '--r': moonLayer.r })}
           />
           <ul data-compatibility-map-orbs="">
-            {placed.map(({ friend, x, y }) => {
+            {placed.map(({ friend, x, y, travel }) => {
               const look = tierLooks[friend.tier];
               return (
                 <li
                   key={friend.nickname}
-                  style={cssVars({ '--x': x, '--y': y, '--d': look.orbSize })}
+                  style={cssVars({
+                    '--x': x,
+                    '--y': y,
+                    '--d': look.orbSize,
+                    '--cx': travel.cx,
+                    '--cy': travel.cy,
+                    '--r': travel.r,
+                    '--from': travel.from,
+                    '--span': travel.span,
+                    '--phase': travel.phase,
+                  })}
                 >
-                  <img alt="" src={look.orb} />
-                  <span>
-                    {friend.nickname}
-                    <span className="sr-only"> {look.label}</span>
-                  </span>
+                  <div data-compatibility-map-orb="">
+                    <img alt="" src={look.orb} />
+                    <span>
+                      {friend.nickname}
+                      <span className="sr-only"> {look.label}</span>
+                    </span>
+                  </div>
                 </li>
               );
             })}

@@ -16,7 +16,15 @@ export const tierOrbits: Record<
 // 구슬 중심이 들어갈 칸 — 좌우 끝, 위의 제목, 아래 닉네임 자리를 비운다.
 const bounds = { left: 24, right: 299, top: 96, bottom: 400 };
 
-export type PlacedOrb = { friend: Friend; x: number; y: number };
+// x·y — 멈춘 자리(친구 2명 이하·동작 줄이기). travel — 흐르는 구슬(3명 이상): 궤도 중심 (cx, cy)·반지름 r 의 원을
+// from° 에서 시작해 보이는 호 span° 를 한 주기의 앞 절반 동안 지나고, 뒤 절반은 보이지 않는 span° 를 더 간다.
+// phase 는 주기 안의 출발 위치(0~1) — 같은 궤도 친구끼리 똑같이 나눠 간격이 늘 같고, 궤도마다 엇갈린다.
+export type PlacedOrb = {
+  friend: Friend;
+  x: number;
+  y: number;
+  travel: { cx: number; cy: number; r: number; from: number; span: number; phase: number };
+};
 
 function pointAt(tier: CompatibilityTier, degree: number) {
   const orbit = tierOrbits[tier];
@@ -48,6 +56,8 @@ export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
   const counts = new Map<CompatibilityTier, number>();
   for (const friend of friends) counts.set(friend.tier, (counts.get(friend.tier) ?? 0) + 1);
 
+  // 등급(궤도)마다 출발을 엇갈려 여러 궤도의 구슬이 한꺼번에 숨지 않게 한다 — 다른 궤도끼리는 반지름이 달라 겹치지 않는다.
+  const tiers = [...counts.keys()];
   const seen = new Map<CompatibilityTier, number>();
   return friends.map((friend) => {
     const index = seen.get(friend.tier) ?? 0;
@@ -55,6 +65,19 @@ export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
     const count = counts.get(friend.tier) ?? 1;
     const [start, end] = visibleArc(friend.tier);
     const degree = start + ((end - start) * (index + 1)) / (count + 1);
-    return { friend, ...pointAt(friend.tier, degree) };
+    const orbit = tierOrbits[friend.tier];
+    return {
+      friend,
+      ...pointAt(friend.tier, degree),
+      // 벗 궤도(271.9 × 267.6)도 원으로 흐른다 — 선에서 벗어나는 폭은 2px 안이다.
+      travel: {
+        cx: orbit.cx,
+        cy: orbit.cy,
+        r: (orbit.rx + orbit.ry) / 2,
+        from: start,
+        span: end - start,
+        phase: (index / count + tiers.indexOf(friend.tier) / tiers.length) % 1,
+      },
+    };
   });
 }
