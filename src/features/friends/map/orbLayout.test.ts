@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { placeOrbs, tierOrbits } from './orbLayout';
+import { placeOrbs, tierOrbits, type PlacedOrb } from './orbLayout';
 import { tierLooks, tierOrder, type CompatibilityTier, type Friend } from './tiers';
 
 function friendsOf(tiers: CompatibilityTier[]): Friend[] {
@@ -112,4 +112,19 @@ test('보이는 호의 양 끝이 지도 칸 안이다', () => {
   const guiin = placed.find(({ friend }) => friend.tier === 'GUIIN');
   const beot = placed.find(({ friend }) => friend.tier === 'BEOT');
   expect(guiin?.travel.phase).not.toBe(beot?.travel.phase);
+});
+
+test('흐르는 구슬은 멈춘 자리보다 긴 호(지도 패널 끝까지)를 흐르고, 멈춘 자리는 제목·닉네임 자리를 비운다', () => {
+  for (const tier of tierOrder) {
+    const [{ x, y, travel }] = placeOrbs(friendsOf([tier])) as [PlacedOrb];
+
+    expect(x).toBeGreaterThanOrEqual(24);
+    expect(x).toBeLessThanOrEqual(299);
+    expect(y).toBeGreaterThanOrEqual(96);
+    expect(y).toBeLessThanOrEqual(400);
+    const radian = (travel.from * Math.PI) / 180;
+    const startX = travel.cx + travel.r * Math.cos(radian);
+    // 흐름 시작점은 멈춘 칸 밖(패널 가장자리 쪽)까지 나간다.
+    expect(startX < 24 || travel.cy + travel.r * Math.sin(radian) < 96).toBe(true);
+  }
 });

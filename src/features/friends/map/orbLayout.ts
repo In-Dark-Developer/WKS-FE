@@ -13,8 +13,13 @@ export const tierOrbits: Record<
   SEUCHIM: { cx: 64.5, cy: 405.5, rx: 326.5, ry: 326.5 },
 };
 
-// 구슬 중심이 들어갈 칸 — 좌우 끝, 위의 제목, 아래 닉네임 자리를 비운다.
-const bounds = { left: 24, right: 299, top: 96, bottom: 400 };
+type Bounds = { left: number; right: number; top: number; bottom: number };
+
+// 멈춘 구슬 중심이 들어갈 칸 — 좌우 끝, 위의 제목, 아래 닉네임 자리를 비운다.
+const restBounds: Bounds = { left: 24, right: 299, top: 96, bottom: 400 };
+// 흐르는 구슬이 보이는 칸 — 지도 패널 끝까지. 바깥 궤도일수록 보이는 호가 길어지고 가장자리에서 옅어진다
+// (제목 뒤로 지나갈 수 있다, 2026-09-15 소유자 결정).
+const travelBounds: Bounds = { left: 0, right: 323, top: 0, bottom: 439 };
 
 // x·y — 멈춘 자리(친구 2명 이하·동작 줄이기). travel — 흐르는 구슬(3명 이상): 궤도 중심 (cx, cy)·반지름 r 의 원을
 // from° 에서 한 주기(duration 초)에 loop° 돈다. 보이는 호 span° 를 늘 VISIBLE_SECONDS 에 지나고 나머지는 숨는다.
@@ -42,16 +47,16 @@ function pointAt(tier: CompatibilityTier, degree: number) {
   return { x: orbit.cx + orbit.rx * Math.cos(radian), y: orbit.cy + orbit.ry * Math.sin(radian) };
 }
 
-function isInside({ x, y }: { x: number; y: number }) {
+function isInside({ x, y }: { x: number; y: number }, bounds: Bounds) {
   return x >= bounds.left && x <= bounds.right && y >= bounds.top && y <= bounds.bottom;
 }
 
 // 궤도 위쪽 반원에서 칸 안에 보이는 가장 긴 호(1° 단위)를 [시작, 끝] 각도로 돌려준다.
-function visibleArc(tier: CompatibilityTier): [number, number] {
+function visibleArc(tier: CompatibilityTier, bounds: Bounds): [number, number] {
   let best: [number, number] = [-90, -90];
   let runStart: number | null = null;
   for (let degree = -180; degree <= 0; degree += 1) {
-    if (isInside(pointAt(tier, degree))) {
+    if (isInside(pointAt(tier, degree), bounds)) {
       runStart ??= degree;
       if (degree - runStart > best[1] - best[0]) best = [runStart, degree];
     } else {
@@ -98,15 +103,19 @@ export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
     const index = seen.get(friend.tier) ?? 0;
     seen.set(friend.tier, index + 1);
     const count = counts.get(friend.tier) ?? 1;
-    const [start, end] = visibleArc(friend.tier);
-    const span = end - start;
     const orbit = tierOrbits[friend.tier];
     const r = (orbit.rx + orbit.ry) / 2;
     const seed = seedOf(friend.nickname);
-    const arcPx = (span * Math.PI * r) / 180;
 
-    // 멈춘 자리: 보이는 호를 count 칸으로 나눈다(양 끝에 반 칸씩 여유).
-    const degree = start + span * jittered(index, count, MIN_GAP_PX / arcPx, seed);
+    // 멈춘 자리: 제목·닉네임 자리를 비운 호를 count 칸으로 나눈다(양 끝에 반 칸씩 여유).
+    const [restStart, restEnd] = visibleArc(friend.tier, restBounds);
+    const restSpan = restEnd - restStart;
+    const restArcPx = (restSpan * Math.PI * r) / 180;
+    const degree = restStart + restSpan * jittered(index, count, MIN_GAP_PX / restArcPx, seed);
+
+    const [start, end] = visibleArc(friend.tier, travelBounds);
+    const span = end - start;
+    const arcPx = (span * Math.PI * r) / 180;
     // 흐르는 둘레: 보이는 호의 2배(보이는 시간 = 숨는 시간). 친구가 많아 칸이 최소 간격보다 좁아지면 숨는 구간을
     // 늘린다 — 속도가 같아 보이는 시간은 그대로이고 숨는 시간만 길어진다.
     const stretch = Math.max(1, (count * MIN_GAP_PX) / (2 * arcPx));
