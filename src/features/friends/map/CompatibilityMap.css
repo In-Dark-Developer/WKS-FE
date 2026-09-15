@@ -87,3 +87,56 @@
   white-space: nowrap;
   opacity: 0.7;
 }
+
+/* 궤도 선·달·구슬 레이어 — 05/T9. 패널과 같은 크기이고, 3명 이상일 때 달 중심(36.53, 431.58)으로 한 덩어리로 돈다. */
+[data-compatibility-map-sky] {
+  position: absolute;
+  inset: 0;
+  transform-origin: calc(36.53 * var(--u)) calc(431.58 * var(--u));
+}
+
+/* 궤도 선·달 — 에셋 중심이 (--cx, --cy), 한 변이 2 × --r. 기본 transform-origin(가운데)이 곧 레이어 중심이다. */
+[data-compatibility-map-orbit],
+[data-compatibility-map-moon] {
+  position: absolute;
+  top: calc((var(--cy) - var(--r)) * var(--u));
+  left: calc((var(--cx) - var(--r)) * var(--u));
+  width: calc(var(--r) * 2 * var(--u));
+  max-width: none;
+  height: calc(var(--r) * 2 * var(--u));
+}
+
+/* 구슬 원 중심을 축으로 반대로 돌려 닉네임이 늘 똑바로 선다. */
+[data-compatibility-map-orbs] li {
+  transform-origin: 50% calc(var(--d) / 2 * var(--u));
+}
+
+@keyframes compatibility-map-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes compatibility-map-unspin {
+  to {
+    rotate: -360deg;
+  }
+}
+
+/* 동작 줄이기 설정이 없을 때만 돈다 — 설정한 사용자는 멈춘 지도를 본다. */
+@media (prefers-reduced-motion: no-preference) {
+  /* 0~2명 — 궤도 선만 저마다 제자리에서 돈다(선 자리는 그대로, 밝은 구간만 흐른다). */
+  [data-motion='orbits'] [data-compatibility-map-orbit] {
+    animation: compatibility-map-spin 30s linear infinite;
+  }
+
+  /* 3명 이상 — 궤도 선과 구슬이 달 중심으로 함께 돈다. 달과 닉네임은 반대로 돌려 제자리·똑바로 둔다. */
+  [data-motion='orbs'] [data-compatibility-map-sky] {
+    animation: compatibility-map-spin 30s linear infinite;
+  }
+
+  [data-motion='orbs'] [data-compatibility-map-moon],
+  [data-motion='orbs'] [data-compatibility-map-orbs] li {
+    animation: compatibility-map-unspin 30s linear infinite;
+  }
+}
