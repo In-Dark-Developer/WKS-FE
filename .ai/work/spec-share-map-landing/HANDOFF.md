@@ -37,7 +37,7 @@
 
 ## Test Results
 
-- `ai-end.sh --ci` 결과는 LOG 참고
+- `ai-end.sh --ci` 통과
 
 ## Known Problems
 
