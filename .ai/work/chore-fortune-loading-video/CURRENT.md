@@ -21,7 +21,7 @@ chore: fortune-loading-video
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
@@ -32,7 +32,7 @@ IN_PROGRESS
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`e734aeb`
+`ecf9bec`
 
 ## Relevant Documents
 
