@@ -50,14 +50,15 @@
 
 - [x] T3. 운영 연결 확인 — Done when: `docs/deploy/netlify-fork.md` 2~3 이 끝나 `sync-fork` 실행 뒤 Netlify 에 새 배포가 생기고, `https://threadoffate.site`·`www` 가 HTTPS 로 열리며, `https://threadoffate.site/s/test` 새로고침이 앱을 열고, 운영 화면에서 `api.threadoffate.site` 호출이 CORS 오류 없이 간다 — 확인 결과를 RESULT 에 적는다 · Touches: `docs/phases/08-launch-readiness/` · After: T2 · Owner: @jjjung0921 (commit 311f0b1, de7666f — PR #77)
 
-- [ ] T4. 공유 링크 미리보기 — Done when: `index.html` 에 서비스 공통 OG·Twitter 메타(제목·설명·썸네일·`og:url`)와 썸네일 이미지가 있어 카카오톡·인스타·메신저에 `https://threadoffate.site/s/<id>` 를 붙이면 제목·설명·썸네일이 보이고(SC-6), `shareId` 별 동적 미리보기(Netlify Edge Functions vs 백엔드 렌더)는 ADR 로 채택·기각이 남는다 · Touches: `index.html`, `public/og/`, `docs/decisions/` · After: T3 · Owner: @jjjung0921
+- [ ] T4. 공유 링크 미리보기 — Done when: `index.html` 에 서비스 공통 OG·Twitter 메타(제목·설명·썸네일·`og:url`)와 썸네일 이미지가 있어 카카오톡·인스타·메신저에 `https://threadoffate.site/s/<id>` 를 붙이면 제목·설명·썸네일이 보이고(SC-6), `shareId` 별 동적 미리보기(Netlify Edge Functions vs 백엔드 렌더)는 ADR 로 채택·기각이 남는다 · Touches: `index.html`, `public/og/`, `docs/decisions/`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48 (메타·썸네일·ADR 은 @jjjung0921 commit d32d0e7·b19cf37·5ff0930, 남은 것은 앱별 미리보기 확인)
 
-- [ ] T5. 성능 예산 측정 — Done when: 운영 주소를 Lighthouse 모바일(느린 4G) 3회 측정한 LCP 중앙값 < 2.5s 와 초기 JS < 250KB gzip 이 RESULT 에 기록되고, 넘으면 원인(폰트·이미지·번들)을 줄이는 변경이 병합되며, 빌드 산출물의 JS gzip 크기를 CI 가 검사해 250KB 를 넘으면 실패한다 (NFR-2) · Touches: `scripts/check-bundle-size.mjs`, `.github/workflows/ci.yml`, `package.json` · After: T3 · Owner: @jjjung0921
+- [ ] T5. 성능 예산 측정 — Done when: 운영 주소를 Lighthouse 모바일(느린 4G) 3회 측정한 LCP 중앙값 < 2.5s 와 초기 JS < 250KB gzip 이 RESULT 에 기록되고, 넘으면 원인(폰트·이미지·번들)을 줄이는 변경이 병합되며, 빌드 산출물의 JS gzip 크기를 CI 가 검사해 250KB 를 넘으면 실패한다 (NFR-2) · Touches: `scripts/check-bundle-size.mjs`, `.github/workflows/ci.yml`, `package.json`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48
 
-- [ ] T6. 출시 점검 — Done when: iOS Safari·Android Chrome 실기기 각 1대에서 SC-1~6 절차와 360·390·430px 가로 스크롤 0·키보드 폼 완주·본문 대비 4.5:1 을 확인해 결과·발견한 문제(이슈 번호)를 RESULT 에 남긴다 (NFR-1·5·6) · Touches: `docs/phases/08-launch-readiness/` · After: T3, T4 · Owner: @jjjung0921
+- [ ] T6. 출시 점검 — Done when: iOS Safari·Android Chrome 실기기 각 1대에서 SC-1~6 절차와 360·390·430px 가로 스크롤 0·키보드 폼 완주·본문 대비 4.5:1 을 확인해 결과·발견한 문제(이슈 번호)를 RESULT 에 남긴다 (NFR-1·5·6) · Touches: `docs/phases/08-launch-readiness/` · After: T3, T4 · Owner: @nicerjs23
 
 <!-- T2 는 소유자 지시(2026-09-13 "Phase 08 계획이랑 같이 올려줘")로 계획 PR 에 함께 들어갔다. 호스팅이 Netlify → Cloudflare Pages → Workers → AWS S3 + CloudFront → 개인 fork + Netlify 무료(ADR-20260914-netlify-personal-fork)로 바뀌며 재작업됐다. T3·T6 은 사람이 계정·실기기로 확인하는 Task 라 코드 Touches 가 없다.
-     T5 의 CI 검사는 `.github/workflows/ci.yml` 을 고친다 — 병합 전 Lead 리뷰. Depends on 05·07 은 T6(SC-3~5)만 해당하고 T2~T5 는 지금 시작할 수 있다. -->
+     T5 의 CI 검사는 `.github/workflows/ci.yml` 을 고친다 — 병합 전 Lead 리뷰.
+     2026-09-15 Lead(@jjjung0921) 위임(plan-08-delegate): T4 확인·T5 → @gn00py48(`src/ui/` 폰트·에셋 Owner, 06/T3 이 Q14 대기), T6 → @nicerjs23(05·07 흐름을 만든 사람, 07 병합 뒤 9-18 부터). 인수 방법·현재 상태는 `.ai/work/plan-08-delegate/HANDOFF.md`. Depends on 05·07 은 T6(SC-3~5)만 해당하고 T2~T5 는 지금 시작할 수 있다. -->
 
 ## Relevant Specifications
 
