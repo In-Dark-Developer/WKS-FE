@@ -7,37 +7,37 @@
 
 ## Goal
 
-공유 링크로 들어온 친구의 사주로 궁합 점수와 등급(귀인 ≥90 · 찰떡 75–89 · 벗 61–74 · 스침 ≤60)이 산출되어 양쪽 궁합 지도(구슬·등급별 인원·순위)와 결과 화면 하단 순위 요약에 쌓인다.
+공유 링크를 받은 사람이 링크 주인의 궁합 지도를 보고(SCR-06), '내 사주 내용도 확인하기'로 자기 사주를 만들거나(없을 때) 바로 이어서 궁합이 산출되어, 궁합 점수와 등급(귀인 ≥90 · 찰떡 75–89 · 벗 61–74 · 스침 ≤60)이 양쪽 결과 화면 순위와 궁합 지도(구슬·등급별 인원·순위)에 쌓인다.
 
 ## Motivation
 
-Phase 04 가 결과를 밖으로 내보내는 링크(`/s/<shareId>`)를 만들었지만, 그 링크를 누른 친구가 도착할 화면이 없다. 지금 친구는 없는 경로 화면을 본다. 이 Phase 가 링크의 도착지(공유 랜딩) → 친구의 사주 입력 → 궁합 결과를 잇고, 그 결과가 링크 주인의 순위·지도에 쌓이게 해야 '공유 → 친구 유입 → 소개팅' 흐름의 두 번째 고리가 닫힌다.
-궁합 지도(SCR-08)는 퍼블리싱(T2)과 라우트(T3)가 이미 따로 진행 중이다. 이 계획이 채우는 것은 **공유 링크로 들어온 방문자 쪽 흐름**이다. SCR-06·07 디자인이 아직 없어서 퍼블리싱-먼저 원칙대로 디자인이 필요 없는 API 연동(T4)을 먼저 열고, 화면 퍼블리싱(T5·T6)은 디자인이 오면 연다.
+Phase 04 가 결과를 밖으로 내보내는 링크(`/s/<shareId>`)를 만들었지만, 그 링크를 누른 친구가 도착할 화면이 없다. 지금 친구는 없는 경로 화면을 본다. 이 Phase 가 링크의 도착지(친구의 궁합 지도) → 친구의 사주 → 궁합 산출을 잇고, 그 결과가 양쪽 순위·지도에 쌓이게 해야 '공유 → 친구 유입 → 소개팅' 흐름의 두 번째 고리가 닫힌다.
+궁합 지도(SCR-08)의 퍼블리싱(T2)과 라우트(T3), 공유·궁합 API(T4)는 병합됐다. 2026-09-15 소유자가 흐름을 확정했다 — 공유받은 사람은 별도 랜딩이 아니라 **링크 주인의 궁합 지도**(Figma 713:3956)를 보고, 별도 궁합 결과 화면(SCR-07) 없이 **자기 결과 화면**으로 간다. 그래서 남은 일은 지도 화면의 방문자 변형(T5)과 흐름 조립(T7), 인트로 카운트다운(T8)이다.
 
 ## Scope
 
-- 공유 링크 흐름: SCR-06 공유 랜딩(`/s/:shareId`) → 방문자 사주 입력(SCR-02 `SajuForm` 재사용, `/s/:shareId/input`) → SCR-07 궁합 결과(`/s/:shareId/result`) — FR-6, FR-7, FR-14, FR-15
-- `src/api/` — `GET /shares/{shareId}` · `POST /shares/{shareId}/compatibility` 호출과 zod 스키마, 목 응답 경로
-- 궁합 산출 뒤 링크 주인의 결과 화면 순위(SCR-04)·궁합 지도(SCR-08)에 방문자가 나타나는 것의 확인 (FR-8, FR-14 — 표시는 T2·T3 몫)
-- 이미 진행 중: SCR-08 궁합 지도 퍼블리싱(T2) · `/me/map` 라우트와 `compatibilities` 스키마 정정(T3)
+- 공유 링크 흐름: SCR-06 `/s/:shareId`(링크 주인의 궁합 지도 + '내 사주 내용도 확인하기') → 보관된 내 결과가 없으면 `/`(SCR-01 인트로 → SCR-02 사주 입력) → 궁합 생성 → SCR-04 `/reading/:resultId` — FR-6, FR-7, FR-14, FR-15
+- 공유받은 `shareId` 의 탭 단위 보관(sessionStorage) — 입력 중 이탈·새로고침에도 궁합까지 이어진다
+- SCR-01 인트로 건너뛰기 칸의 2초 카운트다운 (FR-1)
+- 궁합 산출 뒤 양쪽 결과 화면 순위(SCR-04)·궁합 지도(SCR-08)에 상대가 나타나는 것의 확인 (FR-8, FR-14 — 표시는 T2·T3 몫)
+- 병합됨: SCR-08 궁합 지도 퍼블리싱(T2) · `/me/map` 라우트와 `compatibilities` 스키마 정정(T3) · 공유·궁합 API(T4)
 
 ## Out of Scope
 
 - 궁합 점수·등급 계산 — 백엔드가 `score`·`tier` 를 준다(FR-7, 화면은 계산하지 않는다)
+- 궁합 결과 전용 화면(SCR-07) — 2026-09-15 삭제. 점수는 양쪽 순위·지도에서 본다
 - 궁합 지도 구슬 배치 규칙(PRD Q11) — T2 가 디자인 고정 좌표로 처리했다
-- 공유 링크 미리보기 OG 메타·썸네일(NFR-3) — Phase 08 T4
+- 공유 링크 미리보기 OG 메타·썸네일(NFR-3) — Phase 08 T4. `shareId` 별 동적 미리보기는 기각(ADR-20260915-share-preview-static-meta)
 - 방문자 → 소개팅 사전신청 연결 — Phase 06
 - 궁합 결과 이미지 공유 — 디자인·기획에 없다
 
 ## Dependencies
 
 - Phase 04 — Task 8/8 병합, Phase 종료(@gn00py48) 전이다. 조립 Task(T7)는 `routes.tsx` 를 04/T8·05/T3 병합본 위에서 고친다
-- 05/T3 병합됨(#99) — `compatibilitySummarySchema` 가 운영 백엔드 `CompatibilityResponse`(`{ score, tier, originNickname, guestNickname }`, 2026-09-15 `/v3/api-docs`)로 정정됐다. T4 는 그 스키마를 재사용한다
-- **SCR-06 공유 랜딩 · SCR-07 궁합 결과 디자인 — 현재 없음 (PRD Q9).** T5·T6 은 디자인이 오기 전에는 열지 않는다. T4 는 디자인이 필요 없다
-- PRD Q12 — 공유 랜딩에서 링크 주인의 닉네임을 보이는가. 결정 전까지 T5 는 닉네임을 선택 prop 으로 받는다(없으면 닉네임 없는 문구)
-- 백엔드 계약 — `GET /shares/{shareId}` 는 `SharedResultResponse`(결과와 같고 `resultId`·`shareId` 없음, 404 `RESULT_NOT_FOUND`). `POST /shares/{shareId}/compatibility` 는 `{ guestResultId }` → 새로 만들면 201, 이미 있는 조합이면 재계산 없이 200(같은 값), 링크 주인 결과와 같으면 400 `SELF_COMPATIBILITY`, `score(A,B) == score(B,A)`. `docs/api/openapi.yaml` 참조본과 운영 Swagger 가 일치한다(2026-09-15)
-- 세션 — 공지 `2026-09-14-result-ownership`: `/s/:shareId` 는 가드가 없고, `guestResultId` 는 이 브라우저가 보관한 `resultId` 다. 방문자가 입력하면 보관값이 방문자의 새 결과로 바뀐다
-- 미정 — 이미 사주를 본 방문자(보관된 `resultId` 있음)가 입력을 건너뛰고 바로 궁합을 볼 수 있는가. 디자인이 없어 결정하지 않는다. 기본은 FR-6 대로 다시 입력받는다(T7), 디자인이 건너뛰기를 보이면 T7 에서 바꾼다
+- 05/T3 병합됨(#99) — `compatibilitySummarySchema` 가 운영 백엔드 `CompatibilityResponse`(`{ score, tier, originNickname, guestNickname }`, 2026-09-15 `/v3/api-docs`)로 정정됐다. 05/T4 병합됨(#102) — `getSharedResult`·`createCompatibility`
+- 디자인 — SCR-06 = 「궁합 지도 확인」(713:3956): SCR-08(558:2571)과 같은 지도·등급별 인원·순위, 부제 "닉네임님과의 궁합 지도예요.", 맨 아래 Button/Primary '내 사주 내용도 확인하기'. 주인 친구가 0명이면 순위 빈 상태는 SCR-08 그대로(소유자 2026-09-15)
+- 백엔드 계약 — `GET /shares/{shareId}` 는 `SharedResultResponse`(결과와 같고 `resultId`·`shareId` 없음, 404 `RESULT_NOT_FOUND`). `POST /shares/{shareId}/compatibility` 는 `{ guestResultId }` → 새로 만들면 201, 이미 있는 조합이면 재계산 없이 200(같은 값), 링크 주인 결과와 같으면 400 `SELF_COMPATIBILITY`. 궁합은 origin·guest 양쪽 `GET /results/{id}` 의 `compatibilities` 에 내려온다(WKS-BE `CompatibilityRepository.findAllByResultIdOrderByCreatedAtDesc`, cb3fb39)
+- 세션 — 공지 `2026-09-14-result-ownership`: `/s/:shareId` 는 가드가 없고, `guestResultId` 는 이 브라우저가 보관한 `resultId` 다. 보관된 결과가 있으면 입력을 건너뛴다(소유자 2026-09-15)
 - 로컬 확인 — 운영 백엔드 CORS 가 `http://localhost:3000` 을 막고 `http://localhost:5173` 은 허용한다(2026-09-15, Phase 03 RESULT Known Issues). 실제 백엔드로 흐름을 확인할 때는 5173 으로 띄우거나 해결을 기다린다
 
 ## Tasks
@@ -53,37 +53,39 @@ Phase 04 가 결과를 밖으로 내보내는 링크(`/s/<shareId>`)를 만들�
 
 - [x] T4. 공유·궁합 API 연동 — Done when: `src/api/shares.ts` 의 `getSharedResult(shareId)`·`createCompatibility(shareId, guestResultId)` 가 `request()` 로 호출하고 응답을 zod 로 파싱해 `ApiOutcome` 을 돌려주며, `SharedResultResponse` 는 `resultId`·`shareId` 없이 파싱되고 `compatibilities` 는 05/T3 이 정정한 `compatibilitySummarySchema` 를 재사용하며, 201·200 이 같은 성공으로, 404 `RESULT_NOT_FOUND`·400 `SELF_COMPATIBILITY` 가 `{ kind: 'api', code }` 로 구분되고, POST 는 재시도하지 않으며, `VITE_API_MOCK=true` 면 파일 안 목 응답(주인 1명·결정적 점수·보관 `resultId` 가 주인과 같으면 `SELF_COMPATIBILITY`)을 돌려준다 (테스트 포함) · Touches: `src/api/shares.ts`, `src/api/shares.test.ts`, `src/api/schema/share.ts`, `src/api/schema/share.test.ts` · Owner: @nicerjs23 (commit 27e78a1)
 
-- [ ] T5. SCR-06 공유 랜딩 퍼블리싱 — Done when: SCR-06 디자인대로 링크 주인 닉네임(선택 prop — Q12)과 '내 사주로 궁합 보기' CTA 가 props 로만 렌더되고, 주인의 사주 요약(운명 제목·설명·등급·십이간지)이 props 에도 DOM 에도 없으며(FR-15), `/preview` 에서 닉네임 있음·없음 두 상태를 가짜 데이터로 볼 수 있다 (테스트 포함). `src/api/` 를 import 하지 않는다 · Touches: `src/features/friends/landing/`, `src/features/friends/index.ts`, `src/app/preview/screens/share-landing.tsx` · Owner: 미정 (디자인 도착 후 배정 — Q9)
+- [ ] T5. SCR-06 방문자용 궁합 지도 퍼블리싱 — Done when: `CompatibilityMapScreen` 이 방문자 변형(Figma 713:3956 — 제목 "<주인 닉네임>님의 궁합 지도", 부제 "<주인 닉네임>님과의 궁합 지도예요.")을 props 로 렌더하고, 맨 아래 슬롯에 둘 버튼 모양(Button/Primary '내 사주 내용도 확인하기')이 SCR-08 공유 버튼과 같은 자리에 오며, 화면 props·DOM 에 주인의 운명·등급·십이간지·행운이 없고(FR-15), `/preview` 에서 방문자 변형의 친구 있음·없음(순위 빈 상태는 SCR-08 과 같음)을 가짜 데이터로 볼 수 있다 (테스트 포함). `src/api/` 를 import 하지 않는다 · Touches: `src/features/friends/map/CompatibilityMapScreen.tsx`, `src/features/friends/map/CompatibilityMap.tsx` (각 `*.test.tsx`), `src/features/friends/index.ts`, `src/app/preview/screens/map.tsx` · Owner: 미정 (Lead 배정)
 
-- [ ] T6. SCR-07 궁합 결과 퍼블리싱 — Done when: SCR-07 디자인대로 두 닉네임·점수(0–100)·등급 이름과 색(`tiers.ts` 의 귀인·찰떡·벗·스침 — 화면이 점수로 등급을 계산하지 않는다)과 '나도 내 사주 보기'(내 결과로)·'친구에게 공유' CTA 가 props 로만 렌더되고, `/preview` 에서 네 등급 각각과 '자기 링크'(SELF_COMPATIBILITY 안내) 상태를 가짜 데이터로 볼 수 있다 (테스트 포함). `src/api/` 를 import 하지 않는다 · Touches: `src/features/friends/compatibility/`, `src/features/friends/index.ts`, `src/app/preview/screens/compatibility-result.tsx` · Owner: 미정 (디자인 도착 후 배정 — Q9)
+<!-- T6(SCR-07 궁합 결과 퍼블리싱)은 2026-09-15 소유자 결정으로 삭제했다 — 방문자는 궁합 생성 뒤 자기 결과 화면으로 간다. 번호는 다시 쓰지 않는다(05/T4 HANDOFF 등이 T7 을 가리킨다). -->
 
-- [ ] T7. 공유 링크 흐름 조립 — Done when: `routes.tsx` 에 가드 없는 `s/:shareId`(loader `GET /shares/{shareId}` → 랜딩 뷰 모델, 404 는 없는 링크 오류 화면) · `s/:shareId/input`(`SajuForm` + 방문자 action: `POST /results` 성공 → `POST /shares/{shareId}/compatibility`(방금 보관된 `resultId`) → `/s/:shareId/result` 로 이동, 실패는 `{ formError: 'connection' }` 로 입력값 유지) · `s/:shareId/result`(loader: 보관된 `resultId` 가 없으면 `/s/:shareId` 로, 있으면 같은 POST 로 기존 값 200 을 받아 새로고침에도 같은 점수, `SELF_COMPATIBILITY` 면 `/reading/:resultId` 로)가 등록되고, 궁합이 만들어진 뒤 링크 주인의 `GET /results/{id}` `compatibilities` 에 방문자가 들어간다 (테스트 포함 — 목 응답·라우트 테스트) · Touches: `src/app/routes.tsx`, `src/app/routes.test.tsx`, `src/features/friends/shareLandingLoader.ts`, `src/features/friends/guestSajuAction.ts`, `src/features/friends/compatibilityLoader.ts` (각 `*.test.ts`), `src/features/friends/index.ts` · After: T4, T5, T6, 04/T8 · Owner: @nicerjs23
+- [ ] T7. 공유 링크 흐름 조립 — Done when: ① 가드 없는 `s/:shareId` 의 loader 가 `GET /shares/{shareId}` 를 방문자용 지도 뷰 모델(주인 닉네임 + `compatibilities` 를 T3 과 같은 규칙의 친구 목록으로)로 바꾸고 `shareId` 를 sessionStorage 에 보관하며, 404 는 없는 링크 오류 화면이다 ② '내 사주 내용도 확인하기'는 보관된 `resultId` 가 없으면 `/` 로, 있으면 입력 없이 궁합 생성으로 간다 ③ `/` 의 `sajuAction` 은 `POST /results` 성공 뒤 보관된 `shareId` 가 있으면 `/reading/:resultId` 대신 궁합 생성으로 간다 ④ 궁합 생성(`POST /shares/{shareId}/compatibility`, `guestResultId` = 보관된 `resultId`)은 201·200 과 `SELF_COMPATIBILITY` 에서 보관한 `shareId` 를 지우고 `/reading/:resultId` 로 보내며, 그 밖의 실패는 오류를 안내하고 `shareId` 를 남겨 다시 시도하면 입력 없이 재시도된다(결과가 두 번 만들어지지 않는다) ⑤ 궁합이 만들어진 뒤 양쪽 `GET /results/{id}` `compatibilities` 에 상대가 들어간다 (테스트 포함 — 목 응답·loader·action·라우트 테스트). sessionStorage 값은 읽을 때 zod 로 파싱한다 · Touches: `src/app/routes.tsx`, `src/app/routes.test.tsx`, `src/api/pendingShare.ts`, `src/api/pendingShare.test.ts`, `src/features/saju/sajuAction.ts`, `src/features/saju/sajuAction.test.ts`, `src/features/friends/shareMapLoader.ts`, `src/features/friends/joinShareLoader.ts` (각 `*.test.ts`), `src/features/friends/index.ts` · After: T5, 04/T8 · Owner: @nicerjs23
 
-<!-- 05/T1 상세 계획(2026-09-15, @nicerjs23): 디자인(Q9)이 없어 T4(API)만 바로 열 수 있다. T5·T6 은 디자인이 오면 Owner 를 정해 연다 — 화면 퍼블리싱이 T2·T3·04/T8 을 해 온 @jjjung0921 쪽과 겹치지 않게 배정한다.
-     SCR-06·07 을 friends feature 에 둔 이유: 궁합 지도(T2)·등급 이름(`friends/map/tiers.ts`)과 같은 도메인이고, share feature 는 링크를 '내보내는' 쪽(04)이다. 방문자 입력은 saju 의 `SajuForm` 을 app 이 새 action 과 함께 조립한다(features 끼리 import 금지).
-     SCR-07 loader 가 POST 를 다시 부르는 이유: 백엔드가 이미 있는 조합을 재계산 없이 200 으로 주므로 새로고침·재방문에도 같은 점수를 받는 유일한 경로다(점수만 조회하는 GET 이 계약에 없다). -->
+- [ ] T8. 인트로 건너뛰기 카운트다운 — Done when: SCR-01 인트로의 건너뛰기 칸이 처음 2초 동안 숫자(2 → 1)를 1초마다 바꿔 보여주고 2초에 '건너뛰기' 버튼으로 바뀌며(칸 크기·위치는 지금과 같다), 카운트다운 숫자는 스크린리더에 버튼이 아님을 알린다(`aria-hidden` 또는 상태 문구), 공유 링크 랜딩에서 `/` 로 온 첫 방문자에게도 인트로가 뜬다 (테스트 포함 — 가짜 타이머) · Touches: `src/features/intro/IntroVideo.tsx`, `src/features/intro/IntroVideo.test.tsx` · Owner: 미정 (Lead 배정)
+
+<!-- 05/T1 상세 계획(2026-09-15, @nicerjs23) → 2026-09-15 소유자 흐름 확정(spec-share-map-landing)으로 T5 재정의·T6 삭제·T7 재정의·T8 추가.
+     SCR-06 을 friends feature 에 둔 이유: 궁합 지도(T2)와 같은 화면이고, share feature 는 링크를 '내보내는' 쪽(04)이다. features 끼리 import 금지라 saju 의 `sajuAction` 은 `src/api/pendingShare.ts` 로만 보관 `shareId` 를 읽는다.
+     궁합 생성을 별도 경로(예: `s/:shareId/join` loader)로 모으면 SCR-06 버튼과 `sajuAction` 두 입구가 같은 처리·오류 화면을 쓴다 — 경로 이름은 T7 이 정한다. 백엔드가 이미 있는 조합을 200 으로 주므로 재시도·새로고침에 안전하다. -->
 
 ## Relevant Specifications
 
-- `docs/PRD.md` — Screens(SCR-06·07·08), FR-6, FR-7, FR-8, FR-14, FR-15
-- Figma 「UI 최종 - 개발용」 — 지도 섹션(최종 v2: 등급별 색 구슬), 사주 결과 화면 Frame 51(친구 궁합 순위 빈 상태)
-- `docs/ARCHITECTURE.md` — Data Flow, Module Boundaries
+- `docs/PRD.md` — Screens(SCR-01·06·07·08)와 공유 링크 흐름 문단, FR-1, FR-6, FR-7, FR-8, FR-14, FR-15
+- Figma 「UI 최종 - 개발용」 — 지도 「최종」(558:2571, v2 등급별 색 구슬), 「궁합 지도 확인」(713:3956, 공유받은 사람), 사주 결과 화면 Frame 51(친구 궁합 순위 빈 상태)
+- `docs/ARCHITECTURE.md` — Data Flow 2, Persistence, Module Boundaries
 - `docs/api/openapi.yaml`
 
 ## Acceptance Criteria
 
-- [ ] AC1. 공유 링크(`/s/<shareId>`)로 들어오면 세션 없이 랜딩이 열리고, 링크 주인의 사주 요약(운명 제목·설명·등급·십이간지)이 화면과 DOM 어디에도 없다. 닉네임은 Q12 결정대로 보이거나 숨는다 (FR-15, FR-18)
-- [ ] AC2. 방문자가 사주를 입력하면 두 사람의 궁합 점수(0–100)와 등급(귀인·찰떡·벗·스침)이 보이고, 등급은 응답 `tier` 그대로다 (FR-6, FR-7)
-- [ ] AC3. 궁합 결과를 새로고침하거나 다시 열어도 같은 점수가 보이고, 보관된 결과 없이 결과 주소로 오면 랜딩으로 안내된다
-- [ ] AC4. 궁합이 만들어진 뒤 링크 주인의 결과 화면 친구 궁합 순위와 궁합 지도에 방문자가 나타난다 (FR-8, FR-14)
-- [ ] AC5. 없는 `shareId` 는 오류 화면, 자기 링크로 궁합을 요청하면 자기 결과로 안내되고, 연결 실패 시 입력값이 남은 채 재시도 안내가 뜬다
-- [ ] AC6. `src/features/friends/` 의 화면 컴포넌트가 `src/api/` 를 import 하지 않고, SCR-06·07 의 모든 상태를 `/preview` 에서 가짜 데이터로 볼 수 있다 (publishing-first)
-- [ ] AC7. 새 화면·로직에 테스트가 있고 Commands 4개가 경고 없이 통과한다
+- [ ] AC1. 공유 링크(`/s/<shareId>`)로 들어오면 세션 없이 링크 주인의 궁합 지도(주인 닉네임 제목·방문자 부제·구슬·등급별 인원·순위)와 '내 사주 내용도 확인하기'가 보이고, 주인의 사주 요약(운명 제목·설명·등급·십이간지·행운)이 화면과 DOM 어디에도 없다 (FR-15, FR-18)
+- [ ] AC2. 이 브라우저에 결과가 없는 방문자가 버튼을 누르면 `/` 로 가서(첫 방문이면 인트로) 사주를 입력하고, 입력을 마치면 궁합이 만들어진 뒤 자기 결과 화면으로 간다. 결과가 있는 방문자는 입력 없이 바로 궁합이 만들어지고 자기 결과 화면으로 간다 (FR-6)
+- [ ] AC3. 궁합이 만들어진 뒤 양쪽 결과 화면 친구 궁합 순위와 궁합 지도에 상대가 응답 `tier` 그대로의 등급과 점수로 나타난다 (FR-7, FR-8, FR-14)
+- [ ] AC4. 사주 입력 중 새로고침해도 같은 탭이면 궁합까지 이어지고, 탭을 새로 열면 공유 흐름이 이어지지 않는다(sessionStorage)
+- [ ] AC5. 없는 `shareId` 는 오류 화면, 자기 링크면 궁합 없이 자기 결과로 가고, 궁합 생성 실패는 오류를 안내하며 다시 시도하면 사주를 다시 입력하지 않고 재시도된다
+- [ ] AC6. 인트로 건너뛰기 칸이 2초 동안 2 → 1 카운트다운 뒤 '건너뛰기' 버튼이 된다 (FR-1)
+- [ ] AC7. `src/features/friends/` 의 화면 컴포넌트가 `src/api/` 를 import 하지 않고, SCR-06 의 상태를 `/preview` 에서 가짜 데이터로 볼 수 있다 (publishing-first). 새 화면·로직에 테스트가 있고 Commands 4개가 경고 없이 통과한다
 
 ## Validation Plan
 
-- AC1·AC6: T5 컴포넌트 테스트(주인 요약 텍스트 부재 단언) + `src/features/friends/` 에서 `@/api` grep + `/preview` 수동 확인
-- AC2·AC5: T4 API 테스트(201·200·404·SELF_COMPATIBILITY·스키마 위반) · T7 action·loader·라우트 테스트(목 응답)
-- AC3: T7 라우트 테스트 — 보관값 없음·있음, 같은 POST 200 재호출
-- AC4: 실제 백엔드로 브라우저 두 개(주인·방문자) 수동 1회 — 주인이 결과를 만들고 `/s/<shareId>` 를 방문자 브라우저에서 입력한 뒤 주인 결과 새로고침. 운영이면 결과 2건·궁합 1건·LLM 2회가 생긴다. 로컬은 5173 포트(CORS)
+- AC1·AC7: T5 컴포넌트 테스트(주인 요약 텍스트 부재 단언) + `src/features/friends/` 에서 `@/api` grep + `/preview` 수동 확인
+- AC2·AC4·AC5: T7 loader·action·라우트 테스트(목 응답 — 보관 결과 없음·있음, 201·200·404·SELF_COMPATIBILITY·연결 실패 뒤 재시도, sessionStorage 보관·삭제)
+- AC3: 실제 백엔드로 브라우저 두 개(주인·방문자) 수동 1회 — 주인이 결과를 만들고 `/me/map` 에서 공유한 링크를 방문자 브라우저에서 열어 입력한 뒤 양쪽 결과·지도 새로고침. 운영이면 결과 2건·궁합 1건·LLM 2회가 생긴다. 로컬은 5173 포트(CORS)
+- AC6: T8 컴포넌트 테스트(가짜 타이머 0·1·2초) + 실기기 1회
 - AC7: `pnpm test` · `pnpm typecheck` · `pnpm lint` · `pnpm build`
