@@ -114,13 +114,13 @@
   }
 }
 
-/* 흐르는 구슬 — li 는 궤도 중심에 선 팔이 되어 from° → from° + 2 × span° 를 돈다. 앞 절반(보이는 호)만 보인다. */
+/* 흐르는 구슬 — 팔이 궤도 중심에 서서 from° → from° + loop° 를 돈다. */
 @keyframes compatibility-map-orb-arm {
   from {
     rotate: calc(var(--from) * 1deg);
   }
   to {
-    rotate: calc((var(--from) + 2 * var(--span)) * 1deg);
+    rotate: calc((var(--from) + var(--loop)) * 1deg);
   }
 }
 
@@ -130,21 +130,7 @@
     rotate: calc(var(--from) * -1deg);
   }
   to {
-    rotate: calc((var(--from) + 2 * var(--span)) * -1deg);
-  }
-}
-
-@keyframes compatibility-map-orb-blink {
-  0% {
-    opacity: 0;
-  }
-  4%,
-  46% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
+    rotate: calc((var(--from) + var(--loop)) * -1deg);
   }
 }
 
@@ -155,15 +141,32 @@
     animation: compatibility-map-spin 30s linear infinite;
   }
 
-  /* 3명 이상 — 구슬이 자기 궤도의 보이는 구간을 15초 흐르고 15초 숨는다. */
+  /* 3명 이상 — 구슬이 자기 궤도의 보이는 호만 흐른다. 보이는 호를 10초에 지나고(orbLayout VISIBLE_SECONDS) 나머지 둘레는
+     숨는다. 숨김은 시간이 아니라 자리로 한다 — li 를 패널 크기로 펴고 궤도 중심에서 보이는 호 각도만 드러내는 부채꼴
+     마스크를 씌운다(양 끝 12% 는 서서히). 그래서 붐비는 궤도가 둘레(loop)·주기를 늘려도 보이는 시간이 그대로다. */
   [data-motion='orbs'] [data-compatibility-map-orbs] li {
+    --fade: calc(var(--span) * 0.12);
+    --arc: conic-gradient(
+      from calc((var(--from) + 90) * 1deg) at calc(var(--cx) * var(--u)) calc(var(--cy) * var(--u)),
+      transparent 0deg,
+      black calc(var(--fade) * 1deg),
+      black calc((var(--span) - var(--fade)) * 1deg),
+      transparent calc(var(--span) * 1deg)
+    );
+
+    inset: 0;
+    translate: none;
+    -webkit-mask-image: var(--arc);
+    mask-image: var(--arc);
+  }
+
+  [data-motion='orbs'] [data-compatibility-map-orb-arm] {
+    position: absolute;
     top: calc(var(--cy) * var(--u));
     left: calc(var(--cx) * var(--u));
-    translate: none;
-    animation:
-      compatibility-map-orb-arm 30s linear infinite,
-      compatibility-map-orb-blink 30s linear infinite;
-    animation-delay: calc(var(--phase) * -30s);
+    animation: compatibility-map-orb-arm linear infinite;
+    animation-duration: calc(var(--duration) * 1s);
+    animation-delay: calc(var(--phase) * var(--duration) * -1s);
   }
 
   [data-motion='orbs'] [data-compatibility-map-orb] {
@@ -172,7 +175,8 @@
     left: calc(var(--r) * var(--u));
     translate: -50% 0;
     transform-origin: 50% calc(var(--d) / 2 * var(--u));
-    animation: compatibility-map-orb-body 30s linear infinite;
-    animation-delay: calc(var(--phase) * -30s);
+    animation: compatibility-map-orb-body linear infinite;
+    animation-duration: calc(var(--duration) * 1s);
+    animation-delay: calc(var(--phase) * var(--duration) * -1s);
   }
 }

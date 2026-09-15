@@ -17,13 +17,23 @@ export const tierOrbits: Record<
 const bounds = { left: 24, right: 299, top: 96, bottom: 400 };
 
 // x·y — 멈춘 자리(친구 2명 이하·동작 줄이기). travel — 흐르는 구슬(3명 이상): 궤도 중심 (cx, cy)·반지름 r 의 원을
-// from° 에서 시작해 보이는 호 span° 를 한 주기의 앞 절반 동안 지나고, 뒤 절반은 보이지 않는 span° 를 더 간다.
-// phase 는 주기 안의 출발 위치(0~1) — 같은 궤도 친구끼리 똑같이 나눠 간격이 늘 같고, 궤도마다 엇갈린다.
+// from° 에서 한 주기(duration 초)에 loop° 돈다. 보이는 호 span° 를 늘 VISIBLE_SECONDS 에 지나고 나머지는 숨는다.
+// 보통 loop = 2 × span(보이는 시간 = 숨는 시간)이고, 한 궤도에 친구가 많으면 loop 를 늘려 최소 간격을 지킨다.
+// phase 는 주기 안의 출발 위치(0~1) — 같은 궤도 친구끼리 칸을 나눠 간격을 지키고, 궤도마다 엇갈린다.
 export type PlacedOrb = {
   friend: Friend;
   x: number;
   y: number;
-  travel: { cx: number; cy: number; r: number; from: number; span: number; phase: number };
+  travel: {
+    cx: number;
+    cy: number;
+    r: number;
+    from: number;
+    span: number;
+    loop: number;
+    duration: number;
+    phase: number;
+  };
 };
 
 function pointAt(tier: CompatibilityTier, degree: number) {
@@ -51,7 +61,32 @@ function visibleArc(tier: CompatibilityTier): [number, number] {
   return best;
 }
 
-// 친구(순위 순서)를 자기 등급 색 궤도 위에 놓는다 — 같은 궤도의 친구는 보이는 호를 똑같이 나눠 벌려 둔다.
+// 같은 궤도 구슬 중심 사이 최소 거리(px) — 가장 큰 구슬 지름(귀인 30.6)에 닉네임 글자 여유를 더한 값.
+const MIN_GAP_PX = 44;
+
+// 흐르는 구슬이 보이는 호를 지나는 시간(초) — 2026-09-15 소유자 결정.
+export const VISIBLE_SECONDS = 10;
+
+// 닉네임으로 정하는 0~1 값(FNV-1a) — 같은 친구는 새로고침해도 같은 자리에 있다.
+function seedOf(nickname: string): number {
+  let hash = 0x811c9dc5;
+  for (const char of nickname) {
+    hash ^= char.codePointAt(0) ?? 0;
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash / 0x1_0000_0000;
+}
+
+// n 칸으로 나눈 i 번째 칸 가운데에서 친구마다 조금 비껴 난 자리(0~1). 비껴 나는 폭을 (칸 너비 - 최소 간격)
+// 안으로 묶어 이웃 칸과의 거리가 최소 간격 아래로 내려가지 않는다. 칸이 최소 간격보다 좁으면 가운데에 둔다.
+function jittered(index: number, slots: number, minGap: number, seed: number): number {
+  const width = 1 / slots;
+  const room = Math.max(0, width - minGap);
+  return (index + 0.5) * width + (seed - 0.5) * room;
+}
+
+// 친구(순위 순서)를 자기 등급 색 궤도 위에 놓는다 — 같은 궤도의 친구는 보이는 호를 나눈 칸 안에서 친구마다
+// 고정된 랜덤으로 비껴 난 자리에 둔다(최소 간격 보장).
 export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
   const counts = new Map<CompatibilityTier, number>();
   for (const friend of friends) counts.set(friend.tier, (counts.get(friend.tier) ?? 0) + 1);
@@ -64,8 +99,20 @@ export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
     seen.set(friend.tier, index + 1);
     const count = counts.get(friend.tier) ?? 1;
     const [start, end] = visibleArc(friend.tier);
-    const degree = start + ((end - start) * (index + 1)) / (count + 1);
+    const span = end - start;
     const orbit = tierOrbits[friend.tier];
+    const r = (orbit.rx + orbit.ry) / 2;
+    const seed = seedOf(friend.nickname);
+    const arcPx = (span * Math.PI * r) / 180;
+
+    // 멈춘 자리: 보이는 호를 count 칸으로 나눈다(양 끝에 반 칸씩 여유).
+    const degree = start + span * jittered(index, count, MIN_GAP_PX / arcPx, seed);
+    // 흐르는 둘레: 보이는 호의 2배(보이는 시간 = 숨는 시간). 친구가 많아 칸이 최소 간격보다 좁아지면 숨는 구간을
+    // 늘린다 — 속도가 같아 보이는 시간은 그대로이고 숨는 시간만 길어진다.
+    const stretch = Math.max(1, (count * MIN_GAP_PX) / (2 * arcPx));
+    const loop = 2 * span * stretch;
+    const phase = jittered(index, count, MIN_GAP_PX / (2 * arcPx * stretch), seed) - 0.5 / count;
+
     return {
       friend,
       ...pointAt(friend.tier, degree),
@@ -73,10 +120,12 @@ export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
       travel: {
         cx: orbit.cx,
         cy: orbit.cy,
-        r: (orbit.rx + orbit.ry) / 2,
+        r,
         from: start,
-        span: end - start,
-        phase: (index / count + tiers.indexOf(friend.tier) / tiers.length) % 1,
+        span,
+        loop,
+        duration: (VISIBLE_SECONDS * loop) / span,
+        phase: (phase + tiers.indexOf(friend.tier) / tiers.length + 1) % 1,
       },
     };
   });

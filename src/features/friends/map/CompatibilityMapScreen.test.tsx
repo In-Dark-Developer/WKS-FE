@@ -18,15 +18,15 @@ const friends: Friend[] = [
   { nickname: '다정한친구', score: 61, tier: 'BEOT' },
 ];
 
-test('지도는 친구 수를 알리고 구슬은 앞의 다섯 명까지 그린다', () => {
+test('지도는 친구 수를 알리고 친구 모두를 구슬로 그린다', () => {
   render(<CompatibilityMap friends={friends} nickname="달빛토끼" />);
 
   const map = screen.getByRole('region', { name: '달빛토끼님의 궁합 지도' });
   expect(within(map).getByText('내 친구 6명과의 인연을 그린 지도에요')).toBeInTheDocument();
   const orbs = within(map).getAllByRole('listitem');
-  expect(orbs).toHaveLength(5);
+  expect(orbs).toHaveLength(6);
   expect(orbs[0]).toHaveTextContent('영채 귀인');
-  expect(within(map).queryByText('다정한친구')).not.toBeInTheDocument();
+  expect(within(map).getByText('다정한친구')).toBeInTheDocument();
 });
 
 test('친구가 없으면 지도에 구슬 없이 안내한다', () => {
@@ -108,7 +108,7 @@ test('방문자 지도는 링크 주인의 지도와 부제를 보이고 버튼 
   const map = screen.getByRole('region', { name: '달빛토끼님의 궁합 지도' });
   expect(within(map).getByText('달빛토끼님과의 궁합 지도예요.')).toBeInTheDocument();
   expect(within(map).queryByText(/내 친구/)).not.toBeInTheDocument();
-  expect(within(map).getAllByRole('listitem')).toHaveLength(5);
+  expect(within(map).getAllByRole('listitem')).toHaveLength(6);
   expect(screen.getByRole('button', { name: '내 사주 내용도 확인하기' })).toBeInTheDocument();
 });
 
