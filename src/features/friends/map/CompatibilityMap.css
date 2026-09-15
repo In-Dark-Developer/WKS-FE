@@ -143,9 +143,10 @@
 
   /* 3명 이상 — 구슬이 자기 궤도의 보이는 호만 흐른다. 보이는 호를 10초에 지나고(orbLayout VISIBLE_SECONDS) 나머지 둘레는
      숨는다. 숨김은 시간이 아니라 자리로 한다 — li 를 패널 크기로 펴고 궤도 중심에서 보이는 호 각도만 드러내는 부채꼴
-     마스크를 씌운다(양 끝 12% 는 서서히). 그래서 붐비는 궤도가 둘레(loop)·주기를 늘려도 보이는 시간이 그대로다. */
+     마스크를 씌운다(양 끝 10° 는 서서히). 그래서 붐비는 궤도가 둘레(loop)·주기를 늘려도 보이는 시간이 그대로다. */
   [data-motion='orbs'] [data-compatibility-map-orbs] li {
-    --fade: calc(var(--span) * 0.12);
+    /* 옅어지는 폭은 모든 궤도에서 10° — 폭(px)이 궤도 둘레에 비례해 바깥 궤도일수록 길게 옅어진다. */
+    --fade: 10;
     --arc: conic-gradient(
       from calc((var(--from) + 90) * 1deg) at calc(var(--cx) * var(--u)) calc(var(--cy) * var(--u)),
       transparent 0deg,
