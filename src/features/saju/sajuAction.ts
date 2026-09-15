@@ -35,15 +35,17 @@ function toResultRequestInput(value: unknown): ResultRequestInput {
 }
 
 // 사주 입력 action 을 만든다 — POST /results 성공 뒤 갈 곳만 입구마다 다르다: `/` 는 내 결과, 공유 링크 입력은
-// 궁합 생성(`/s/:shareId/join`, 05/T10). 실패는(연결·스키마·백엔드 에러 모두) SajuForm 이 아는 유일한 모양
+// 궁합을 만든 뒤 친구의 궁합 지도(05/T10). 실패는(연결·스키마·백엔드 에러 모두) SajuForm 이 아는 유일한 모양
 // `{ formError: 'connection' }`으로 돌려줘 입력값을 유지한 채 안내한다(ARCHITECTURE Cross-cutting — 스키마 위반·
 // 네트워크 실패도 사용자에게는 같은 안내).
-export function createSajuAction(nextPath: (resultId: string, args: ActionFunctionArgs) => string) {
+export function createSajuAction(
+  nextPath: (resultId: string, args: ActionFunctionArgs) => string | Promise<string>,
+) {
   return async function action(args: ActionFunctionArgs) {
     const input = toResultRequestInput(await args.request.json());
     const outcome = await createResult(input);
 
-    if (outcome.ok) return redirect(nextPath(outcome.data.resultId, args));
+    if (outcome.ok) return redirect(await nextPath(outcome.data.resultId, args));
 
     console.error('POST /results 실패', outcome.error);
     return { formError: 'connection' as const };

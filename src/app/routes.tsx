@@ -23,6 +23,7 @@ import {
 import {
   CompatibilityMapScreen,
   FriendRanking,
+  joinShare,
   joinShareLoader,
   shareInputLoader,
   shareMapLoader,
@@ -92,7 +93,7 @@ function CompatibilityMapRoute() {
 }
 
 // SCR-06 공유 링크 입력(Figma 720:3653) — 사주 입력 폼에 링크 주인 닉네임이 든 설명과 '운명 지도 확인하기'.
-// 첫 방문이면 인트로가 먼저 뜬다(FR-1). 제출하면 결과를 만들고 궁합 생성(join)으로 간다 (05/T10, FR-6).
+// 첫 방문이면 인트로가 먼저 뜬다(FR-1). 제출하면 결과·궁합을 만들고 친구의 궁합 지도로 간다 (05/T10, FR-6).
 function ShareInputRoute() {
   const view = useLoaderData<ShareInputView>();
   return (
@@ -105,12 +106,15 @@ function ShareInputRoute() {
   );
 }
 
-const shareSajuAction = createSajuAction(
-  (_resultId, { params }) => `/s/${encodeURIComponent(params.shareId ?? '')}/join`,
-);
+// 결과를 만든 요청에서 궁합까지 만들고 지도로 간다 — 입력 → 지도 한 번의 이동이라 뒤로가기가 입력으로 온다.
+// 궁합이 연결 문제로 실패하면 재시도 주소(join)로 간다.
+const shareSajuAction = createSajuAction(async (resultId, { params }) => {
+  const shareId = params.shareId ?? '';
+  return (await joinShare(shareId, resultId)) ?? `/s/${encodeURIComponent(shareId)}/join`;
+});
 
 // SCR-13 친구의 궁합 지도(Figma 720:3668) — 뒤로가기 + 방문자 궁합 지도(05/T5) + '내 사주 내용도 확인하기'.
-// 뒤로가기는 브라우저 이전 페이지다: 입력에서 왔으면 입력, 링크로 바로 왔으면(입력을 건너뛴 redirect 는 기록이
+// 뒤로가기는 브라우저 이전 페이지다: 입력에서 왔으면 입력, 링크로 바로 왔으면(입력을 건너뛴 이동은 replace 라 기록이
 // 남지 않는다) 채팅 앱 등 앱 밖 이전 페이지 (FR-6).
 function SharedMapRoute() {
   const view = useLoaderData<SharedMapView>();
@@ -205,7 +209,7 @@ export const routes: RouteObject[] = [
         action: shareSajuAction,
         element: <ShareInputRoute />,
       },
-      // 궁합 생성 — 화면 없이 redirect 로만 끝난다(지도·입력·내 결과). 실패만 오류 화면을 그린다.
+      // 궁합 재시도 — 화면 없이 이동으로만 끝난다(지도·입력·내 결과). 실패만 '다시 시도하기' 오류를 그린다.
       {
         path: 's/:shareId/join',
         loader: joinShareLoader,
