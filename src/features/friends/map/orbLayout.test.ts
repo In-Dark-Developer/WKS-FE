@@ -49,9 +49,9 @@ test.each([
 });
 
 // 흐르는 궤도 둘레(한 주기에 도는 거리) 위에서 두 출발 위치 사이의 짧은 쪽 거리(px).
-function loopGapPx(a: { phase: number; r: number; span: number }, b: { phase: number }): number {
+function loopGapPx(a: { phase: number; r: number; loop: number }, b: { phase: number }): number {
   const diff = Math.abs(a.phase - b.phase) % 1;
-  const loopPx = (2 * a.span * Math.PI * a.r) / 180;
+  const loopPx = (a.loop * Math.PI * a.r) / 180;
   return Math.min(diff, 1 - diff) * loopPx;
 }
 
@@ -69,19 +69,29 @@ test.each([
   ['찰떡', 'CHALTTEOK'],
   ['벗', 'BEOT'],
   ['스침', 'SEUCHIM'],
-] as const)('%s 궤도에 여러 명이 흘러도 출발 간격이 최소 간격(44px) 이상이다', (_name, tier) => {
-  for (const count of [2, 3, 5]) {
-    const travels = placeOrbs(friendsOf(Array.from({ length: count }, () => tier))).map(
-      ({ travel }) => travel,
-    );
-    const loopPx = (2 * (travels[0]?.span ?? 0) * Math.PI * (travels[0]?.r ?? 0)) / 180;
-    const expected = Math.min(44, loopPx / count);
-    for (const [i, a] of travels.entries()) {
-      for (const b of travels.slice(i + 1)) {
-        expect(loopGapPx(a, b)).toBeGreaterThanOrEqual(expected - 0.001);
+] as const)(
+  '%s 궤도에 몇 명이 흘러도 출발 간격이 44px 이상이고 보이는 호는 늘 10초에 지난다',
+  (_name, tier) => {
+    for (const count of [2, 3, 5, 12, 30]) {
+      const travels = placeOrbs(friendsOf(Array.from({ length: count }, () => tier))).map(
+        ({ travel }) => travel,
+      );
+      for (const [i, a] of travels.entries()) {
+        expect((a.duration * a.span) / a.loop).toBeCloseTo(10, 6);
+        expect(a.loop).toBeGreaterThanOrEqual(2 * a.span - 0.001);
+        for (const b of travels.slice(i + 1)) {
+          expect(loopGapPx(a, b)).toBeGreaterThanOrEqual(44 - 0.001);
+        }
       }
     }
-  }
+  },
+);
+
+test('붐비지 않는 궤도는 보이는 시간과 숨는 시간이 같다(한 주기 20초)', () => {
+  const [travel] = placeOrbs(friendsOf(['GUIIN', 'GUIIN'])).map((orb) => orb.travel);
+
+  expect(travel?.loop).toBeCloseTo(2 * (travel?.span ?? 0), 6);
+  expect(travel?.duration).toBeCloseTo(20, 6);
 });
 
 test('보이는 호의 양 끝이 지도 칸 안이다', () => {

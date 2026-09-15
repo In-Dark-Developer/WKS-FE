@@ -13,6 +13,25 @@ const friends: Friend[] = [
   { nickname: '다정한친구', score: 61, tier: 'BEOT' },
 ];
 
+// 한 궤도에 44px 간격이 들어가지 않을 만큼 붐빈 상태 — 숨는 시간이 늘어나는지 본다(스침 10명·귀인 8명·찰떡 6명).
+const crowdedFriends: Friend[] = [
+  ...Array.from({ length: 8 }, (_, i) => ({
+    nickname: `귀인${i + 1}`,
+    score: 99 - i,
+    tier: 'GUIIN' as const,
+  })),
+  ...Array.from({ length: 6 }, (_, i) => ({
+    nickname: `찰떡${i + 1}`,
+    score: 88 - i,
+    tier: 'CHALTTEOK' as const,
+  })),
+  ...Array.from({ length: 10 }, (_, i) => ({
+    nickname: `스침${i + 1}`,
+    score: 50 - i,
+    tier: 'SEUCHIM' as const,
+  })),
+];
+
 // SCR-08 궁합 지도 — 05/T2. SCR-13 친구의 궁합 지도(링크 주인의 지도) — 05/T5·T10.
 export const preview: PreviewScreen = {
   title: 'SCR-08 궁합 지도',
@@ -20,6 +39,9 @@ export const preview: PreviewScreen = {
   backdrop: 'result',
   states: {
     '친구 6명': () => <CompatibilityMapScreen friends={friends} nickname="달빛토끼" />,
+    '친구 24명(붐비는 궤도)': () => (
+      <CompatibilityMapScreen friends={crowdedFriends} nickname="달빛토끼" />
+    ),
     '친구 2명': () => <CompatibilityMapScreen friends={friends.slice(0, 2)} nickname="달빛토끼" />,
     '빈 상태': () => <CompatibilityMapScreen friends={[]} nickname="달빛토끼" />,
     'SCR-13 친구의 궁합 지도': () => (

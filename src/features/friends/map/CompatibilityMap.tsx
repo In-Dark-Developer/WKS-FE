@@ -16,8 +16,7 @@ export type MapVariant = 'mine' | 'visitor';
 
 type Props = { nickname: string; friends: readonly Friend[]; variant?: MapVariant };
 
-// 구슬은 등급 색 궤도 위에 놓는다 — 달에서 가까운 줄부터 귀인·찰떡·벗·스침(orbLayout, 2026-09-15 소유자 결정).
-const MAX_ORBS = 5;
+// 구슬은 등급 색 궤도 위에 놓는다 — 달에서 가까운 줄부터 귀인·찰떡·벗·스침(orbLayout). 친구 수 제한은 없다.
 
 // 궤도 선·달 — 배경 SVG 에서 떼어 낸 레이어(05/T9). 원래 그리던 순서대로 둔다. (cx, cy) 는 패널 323px 기준 중심,
 // r 은 에셋 한 변의 절반이다(에셋 중심 = 레이어 중심이라 제자리 회전이 된다).
@@ -48,7 +47,7 @@ function subtitle(nickname: string, friendCount: number, variant: MapVariant) {
 
 // 궁합 지도의 지도 카드 — Figma 「UI 최종 - 개발용」 지도 최종 v2(558:2628) · 궁합 지도 확인(713:3956). friends 는 순위 순서다.
 export function CompatibilityMap({ nickname, friends, variant = 'mine' }: Props) {
-  const placed = placeOrbs(friends.slice(0, MAX_ORBS));
+  const placed = placeOrbs(friends);
   const motion = friends.length >= SPIN_ORBS_FROM ? 'orbs' : 'orbits';
 
   return (
@@ -89,15 +88,19 @@ export function CompatibilityMap({ nickname, friends, variant = 'mine' }: Props)
                     '--r': travel.r,
                     '--from': travel.from,
                     '--span': travel.span,
+                    '--loop': travel.loop,
+                    '--duration': travel.duration,
                     '--phase': travel.phase,
                   })}
                 >
-                  <div data-compatibility-map-orb="">
-                    <img alt="" src={look.orb} />
-                    <span>
-                      {friend.nickname}
-                      <span className="sr-only"> {look.label}</span>
-                    </span>
+                  <div data-compatibility-map-orb-arm="">
+                    <div data-compatibility-map-orb="">
+                      <img alt="" src={look.orb} />
+                      <span>
+                        {friend.nickname}
+                        <span className="sr-only"> {look.label}</span>
+                      </span>
+                    </div>
                   </div>
                 </li>
               );
