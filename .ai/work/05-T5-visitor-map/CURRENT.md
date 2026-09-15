@@ -21,21 +21,16 @@ T5. SCR-06 방문자용 궁합 지도 퍼블리싱
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. Figma 713:3956 확인 — 부제 "<닉네임>님과의 궁합 지도예요.", Button/Primary = apricot/300·L 56, 내용 아래 16px (done)
-- 2. `CompatibilityMap`·`CompatibilityMapScreen` 에 `variant: 'mine' | 'visitor'` ←
-- 3. 테스트 — 방문자 부제·주인 요약 부재·버튼 자리
-- 4. `/preview` 방문자 친구 있음·없음
-- 5. test·typecheck·lint·build → PRLast Checkpoint
-
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`243c319`
-
-## Relevant Documents
+- 1. Figma 713:3956 확인 — 부제·Button/Primary(apricot/300, L 56)·내용 아래 16px (done)
+- 2. `CompatibilityMap`·`CompatibilityMapScreen` `variant: 'mine' | 'visitor'` (commit 573adfb)
+- 3. 테스트 2개 — 방문자 부제·버튼 자리·빈 상태 (done)
+- 4. `/preview` 방문자 지도 친구 있음·없음, 390px 화면 확인 (done)
+- 5. test·typecheck·lint·build → PR ←Relevant Documents
 
 - `docs/phases/05-friend-score/PLAN.md`
 
@@ -46,4 +41,4 @@ IN_PROGRESS
 
 ## Next Action
 
-`docs/phases/05-friend-score/PLAN.md`에서 05/T5의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰(@nicerjs23 `src/features/` Owner) → 병합(fork 소유자) → 05/T7 이 `variant="visitor"` 와 버튼을 조립
