@@ -14,7 +14,8 @@
 
 ## Not Completed
 
-- T4 ~ T6 — 시작 전
+- T4 — 메타·썸네일·ADR·카카오톡 확인은 끝났고(2026-09-15), 앱별 미리보기 확인이 **1차 실패**다 (아래 Validation Results)
+- T5 ~ T6 — 시작 전
 
 ## Deviations from Plan
 
@@ -22,6 +23,26 @@
 - 도메인 표기가 `threatoffate.site` 로 잘못 적혀 있었다 — 실제 도메인은 `threadoffate.site`(thread of fate). 2026-09-14 저장소 설정·문서를 고쳤다(대체된 ADR·지난 공지 본문은 그대로)
 
 ## Validation Results
+
+### T4 공유 링크 미리보기 — 1차 실기기 검증 **실패** · 2026-09-15 (iPhone 13 · Safari · 운영)
+
+실제 '친구에게 공유'로 만든 `/s/<shareId>` 링크로 확인했다. 앱별 미리보기를 보기 전에 링크 진입에서 막혀 **AC3 를 판정하지 못했다.**
+
+| Check | Method | Result |
+|-------|--------|--------|
+| `/s/<id>` 가 OG 메타를 주는가 | `curl https://threadoffate.site/s/test` | ✅ og 9개 + twitter 4개 (SPA 폴백이 `index.html` 을 준다) |
+| og 이미지 | `curl -I https://threadoffate.site/og/og-v2.jpg` | ✅ 200 · `image/jpeg` · 224,795B · 리다이렉트 0 · 1200×630 명시 |
+| `www` → apex | `curl -o /dev/null -w %{redirect_url} https://www.threadoffate.site/` | ✅ 301 → `https://threadoffate.site/` |
+| 다른 경로도 같은 메타 | `curl https://threadoffate.site/reading/abc` | ✅ 동일 (정적 메타 — ADR-20260915) |
+| 카카오톡 미리보기 | @jjjung0921 (2026-09-15, 공유 디버거 캐시 초기화 후) | ✅ 제목·설명·썸네일 |
+| **인스타 DM · iMessage · 라인** | iPhone 13 Safari | ⏸ **미확인** — 아래 진입 문제로 중단 |
+| 내 기기에서 내 링크 진입 | iPhone 13 · iOS 26.3.1 · Safari (카카오톡에서) | ✅ 스펙대로 — 내 결과(SCR-04)로 간다. 백엔드 `SELF_COMPATIBILITY`, PRD FR-6 |
+| 사생활 보호 탭 진입 | 같은 기기 | ✅ 스펙대로 — 인트로(FR-1) 뒤 공유 링크 입력(SCR-06). 주소는 `/s/:shareId` 그대로 |
+| 결과 화면 운명 카드 | 같은 기기 스크린샷 실측(390px) | ❌ **뒷면이 왼쪽으로 넘쳐 비대칭**(앞면 좌우 13 정상), **앞면 높이 536 > 비율값 480**. 인스타 버튼(348·좌우 8)은 정상 — `chore` 스트림으로 분리 |
+| Safari 기능 지원 | iOS 26.3.1 | ✅ 해당 없음 — `container-type`·`cqw`·`color-mix`·Tailwind v4(16.4+) 모두 지원. 초기 가설 폐기 |
+
+판정 — **AC3 은 카카오톡만 확인됐고 인스타 DM·기타 메신저는 미확인이다.** 진입 동작 2건은 스펙대로였고(FR-6·SCR-06), 카드 레이아웃 1건만 실제 결함이다. 2차 검증은 **다른 기기에서 남의 링크**로 하고 미리보기 **카드 탭**이 `shareId` 를 유지하는지도 함께 본다.
+
 
 ### T3 운영 연결 재점검 — 2026-09-14 14:40·14:50 KST (`dig @8.8.8.8`, `curl`, `gh run list`)
 
