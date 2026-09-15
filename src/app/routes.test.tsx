@@ -8,10 +8,13 @@ import { writeSession } from '@/api/session';
 import { routes } from '@/app/routes';
 
 // getResult 는 src/api/ 경계 — 라우트 조립만 확인하니 실제 요청을 보내지 않는다 (CONVENTIONS 8장).
-const { getResultMock } = vi.hoisted(() => ({ getResultMock: vi.fn() }));
+const { getResultMock, createResultMock } = vi.hoisted(() => ({
+  getResultMock: vi.fn(),
+  createResultMock: vi.fn(),
+}));
 vi.mock('@/api/results', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/results')>();
-  return { ...actual, getResult: getResultMock };
+  return { ...actual, getResult: getResultMock, createResult: createResultMock };
 });
 const { getSharedResultMock, createCompatibilityMock } = vi.hoisted(() => ({
   getSharedResultMock: vi.fn(),
@@ -56,6 +59,7 @@ afterEach(() => {
   localStorage.clear();
   sessionStorage.clear();
   getResultMock.mockReset();
+  createResultMock.mockReset();
   getSharedResultMock.mockReset();
   createCompatibilityMock.mockReset();
 });
@@ -268,7 +272,7 @@ test('없는 경로는 오류 화면과 처음으로 가는 링크를 보인다'
   expect(screen.getByRole('link', { name: '처음으로 돌아가기' })).toHaveAttribute('href', '/');
 });
 
-// 05/T7 조립 — 공유 링크를 받은 사람: 링크 주인의 궁합 지도 → '내 사주 내용도 확인하기' → 궁합 → 내 결과.
+// 05/T10 조립 — 공유 링크를 받은 사람: 사주 입력 → 결과·궁합 → 링크 주인의 궁합 지도(뒤로가기) → 내 사주.
 
 const SHARE_ID = '5a951b51-21d5-4601-91b9-560de47aaaca';
 
@@ -285,51 +289,85 @@ const sharedOwner: SharedResult = {
   ],
 };
 
-test('공유 링크로 들어오면 세션 없이 링크 주인의 궁합 지도와 내 사주 확인 버튼이 보인다', async () => {
+const compatibility = {
+  ok: true,
+  data: { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '보살' },
+} as const;
+
+function fillValidSaju() {
+  fireEvent.click(screen.getByRole('radio', { name: '여자' }));
+  fireEvent.change(screen.getByRole('textbox', { name: '생년월일' }), {
+    target: { value: '2002-01-01' },
+  });
+  fireEvent.click(screen.getByRole('combobox', { name: '태어난 시간' }));
+  fireEvent.click(screen.getByRole('option', { name: '묘시(卯時) 05:30 ~ 07:30' }));
+  fireEvent.change(screen.getByRole('textbox', { name: '닉네임' }), { target: { value: '보살' } });
+}
+
+test('공유 링크로 들어오면 세션 없이 링크 주인 닉네임이 든 사주 입력이 보인다', async () => {
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
 
   renderAt(`/s/${SHARE_ID}`);
 
   expect(
-    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
+    await screen.findByText(
+      '아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.',
+    ),
   ).toBeInTheDocument();
-  expect(screen.getByText('달빛토끼님과의 궁합 지도예요.')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '내 사주 내용도 확인하기' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
   // 주인의 사주 요약은 화면에 없다 (FR-15).
   expect(screen.queryByText('꽃길만 걷는 인연')).not.toBeInTheDocument();
-  expect(getSharedResultMock).toHaveBeenCalledWith(SHARE_ID);
 });
 
-test('내 결과가 없으면 버튼이 사주 입력으로 보내고 궁합은 아직 만들지 않는다', async () => {
+test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로 가며, 뒤로가기는 입력 폼으로 돌아간다', async () => {
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+  // 실제 createResult 는 성공하면 내 resultId 를 보관한다.
+  createResultMock.mockImplementation(() => {
+    writeSession(RESULT_ID);
+    return Promise.resolve({ ok: true, data: stubResult });
+  });
+  createCompatibilityMock.mockResolvedValue(compatibility);
 
   const router = renderAt(`/s/${SHARE_ID}`);
-  fireEvent.click(await screen.findByRole('button', { name: '내 사주 내용도 확인하기' }));
+  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  fillValidSaju();
+  fireEvent.click(screen.getByRole('button', { name: '운명 지도 확인하기' }));
 
   expect(
-    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
   ).toBeInTheDocument();
-  expect(router.state.location.pathname).toBe('/');
-  expect(createCompatibilityMock).not.toHaveBeenCalled();
-  expect(sessionStorage.getItem('wks:pending-share')).toContain(SHARE_ID);
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}/map`);
+  expect(createCompatibilityMock).toHaveBeenCalledWith(SHARE_ID, RESULT_ID);
+  expect(screen.getByText('달빛토끼님과의 궁합 지도예요.')).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+
+  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}`);
 });
 
-test('내 결과가 있으면 버튼이 궁합을 만들고 내 결과 화면으로 보낸다', async () => {
+test('내 결과가 있으면 링크로 들어올 때 입력 없이 궁합을 만들고 지도로 가며, 내 사주 버튼은 내 결과로 간다', async () => {
   writeSession(RESULT_ID);
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
-  createCompatibilityMock.mockResolvedValue({
-    ok: true,
-    data: { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '나' },
-  });
+  createCompatibilityMock.mockResolvedValue(compatibility);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
 
   const router = renderAt(`/s/${SHARE_ID}`);
+
   fireEvent.click(await screen.findByRole('button', { name: '내 사주 내용도 확인하기' }));
 
   expect(await screen.findByRole('button', { name: '카드 뒤집기' })).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
-  expect(createCompatibilityMock).toHaveBeenCalledWith(SHARE_ID, RESULT_ID);
-  expect(sessionStorage.getItem('wks:pending-share')).toBeNull();
+  expect(createCompatibilityMock).toHaveBeenCalledTimes(1);
+});
+
+test('결과 없이 친구의 궁합 지도 주소로 오면 공유 링크 입력으로 보낸다', async () => {
+  getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+
+  const router = renderAt(`/s/${SHARE_ID}/map`);
+
+  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}`);
 });
 
 test('궁합 생성이 연결 문제로 실패하면 다시 시도할 수 있는 오류를 보인다', async () => {

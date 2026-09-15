@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
-import { readPendingShare, writePendingShare } from '@/api/pendingShare';
+import { hasJoinedShare } from '@/api/joinedShares';
 import { writeSession } from '@/api/session';
 
 const { createCompatibilityMock } = vi.hoisted(() => ({ createCompatibilityMock: vi.fn() }));
@@ -25,10 +25,6 @@ function args(): LoaderFunctionArgs {
   };
 }
 
-function location(response: Response): string | null {
-  return response.headers.get('Location');
-}
-
 afterEach(() => {
   createCompatibilityMock.mockReset();
   localStorage.clear();
@@ -36,17 +32,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-test('내 결과가 없으면 궁합을 부르지 않고 shareId 를 보관한 채 사주 입력으로 보낸다', async () => {
+test('내 결과가 없으면 궁합을 부르지 않고 공유 링크 입력으로 보낸다', async () => {
   const response = await joinShareLoader(args());
 
-  expect(location(response)).toBe('/');
+  expect(response.headers.get('Location')).toBe(`/s/${SHARE_ID}`);
   expect(createCompatibilityMock).not.toHaveBeenCalled();
-  expect(readPendingShare()).toBe(SHARE_ID);
 });
 
-test('내 결과가 있으면 그 결과로 궁합을 만들고 보관값을 지운 뒤 내 결과로 보낸다', async () => {
+test('내 결과로 궁합을 만들면 이 탭의 기록에 남기고 친구의 궁합 지도로 보낸다', async () => {
   writeSession(MY_RESULT_ID);
-  writePendingShare(SHARE_ID);
   createCompatibilityMock.mockResolvedValue({
     ok: true,
     data: { score: 93, tier: 'GUIIN', originNickname: '주인', guestNickname: '나' },
@@ -55,13 +49,12 @@ test('내 결과가 있으면 그 결과로 궁합을 만들고 보관값을 지
   const response = await joinShareLoader(args());
 
   expect(createCompatibilityMock).toHaveBeenCalledWith(SHARE_ID, MY_RESULT_ID);
-  expect(location(response)).toBe(`/reading/${MY_RESULT_ID}`);
-  expect(readPendingShare()).toBeNull();
+  expect(response.headers.get('Location')).toBe(`/s/${SHARE_ID}/map`);
+  expect(hasJoinedShare(SHARE_ID)).toBe(true);
 });
 
 test('자기 링크면 궁합 없이 내 결과로 보낸다', async () => {
   writeSession(MY_RESULT_ID);
-  writePendingShare(SHARE_ID);
   createCompatibilityMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'SELF_COMPATIBILITY', message: '본인' },
@@ -69,29 +62,26 @@ test('자기 링크면 궁합 없이 내 결과로 보낸다', async () => {
 
   const response = await joinShareLoader(args());
 
-  expect(location(response)).toBe(`/reading/${MY_RESULT_ID}`);
-  expect(readPendingShare()).toBeNull();
+  expect(response.headers.get('Location')).toBe(`/reading/${MY_RESULT_ID}`);
+  expect(hasJoinedShare(SHARE_ID)).toBe(false);
 });
 
-test('없는 링크면 404 를 던지고 보관값을 지운다', async () => {
+test('없는 링크면 404 를 던진다', async () => {
   writeSession(MY_RESULT_ID);
-  writePendingShare(SHARE_ID);
   createCompatibilityMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
   });
 
   await expect(joinShareLoader(args())).rejects.toMatchObject({ status: 404 });
-  expect(readPendingShare()).toBeNull();
 });
 
-test('연결 실패는 503 을 던지고 다시 시도할 수 있게 보관값을 남긴다', async () => {
+test('연결 실패는 원인을 콘솔에 남기고 503 을 던진다', async () => {
   const log = vi.spyOn(console, 'error').mockImplementation(() => {});
   writeSession(MY_RESULT_ID);
-  writePendingShare(SHARE_ID);
   createCompatibilityMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
 
   await expect(joinShareLoader(args())).rejects.toMatchObject({ status: 503 });
-  expect(readPendingShare()).toBe(SHARE_ID);
+  expect(hasJoinedShare(SHARE_ID)).toBe(false);
   expect(log).toHaveBeenCalled();
 });

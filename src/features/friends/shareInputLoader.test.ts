@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
+import { markShareJoined } from '@/api/joinedShares';
 import type { SharedResult } from '@/api/schema/share';
 import { writeSession } from '@/api/session';
 
@@ -10,7 +11,7 @@ vi.mock('@/api/shares', async (importOriginal) => {
   return { ...actual, getSharedResult: getSharedResultMock };
 });
 
-import { shareMapLoader } from './shareMapLoader';
+import { shareInputLoader } from './shareInputLoader';
 
 const SHARE_ID = '5a951b51-21d5-4601-91b9-560de47aaaca';
 const MY_RESULT_ID = '90585fc0-7e6a-4e6b-8de7-47cd169c60b5';
@@ -26,59 +27,54 @@ const owner: SharedResult = {
   ],
   luckyItem: '파란색 팔찌',
   luckyPlace: '팔정도',
-  compatibilities: [
-    { nickname: '민수', score: 61, tier: 'BEOT', createdAt: '2026-09-15T02:00:00Z' },
-    { nickname: '서연', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T01:00:00Z' },
-  ],
+  compatibilities: [],
 };
 
 function args(): LoaderFunctionArgs {
   return {
-    request: new Request(`http://test/s/${SHARE_ID}/map`),
+    request: new Request(`http://test/s/${SHARE_ID}`),
     params: { shareId: SHARE_ID },
     context: {},
-    url: new URL(`http://test/s/${SHARE_ID}/map`),
-    pattern: '/s/:shareId/map',
+    url: new URL(`http://test/s/${SHARE_ID}`),
+    pattern: '/s/:shareId',
   };
 }
 
 afterEach(() => {
   getSharedResultMock.mockReset();
   localStorage.clear();
+  sessionStorage.clear();
   vi.restoreAllMocks();
 });
 
-test('내 결과가 없으면 공유 링크 입력으로 보낸다', async () => {
-  await expect(shareMapLoader(args())).rejects.toSatisfy(
-    (response: Response) => response.headers.get('Location') === `/s/${SHARE_ID}`,
+test('내 결과가 없으면 링크 주인 닉네임만 돌려준다', async () => {
+  getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
+
+  expect(await shareInputLoader(args())).toEqual({ ownerNickname: '달빛토끼' });
+});
+
+test('내 결과가 있고 이 탭에서 이 링크로 궁합을 만든 적이 없으면 입력 없이 궁합 생성으로 보낸다', async () => {
+  writeSession(MY_RESULT_ID);
+
+  await expect(shareInputLoader(args())).rejects.toSatisfy(
+    (response: Response) => response.headers.get('Location') === `/s/${SHARE_ID}/join`,
   );
   expect(getSharedResultMock).not.toHaveBeenCalled();
 });
 
-test('링크 주인의 닉네임·점수 높은 순 친구 목록·내 resultId 만 돌려준다', async () => {
+test('이 탭에서 이미 궁합을 만든 링크로 돌아오면 입력 폼을 보인다', async () => {
   writeSession(MY_RESULT_ID);
+  markShareJoined(SHARE_ID);
   getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
 
-  expect(await shareMapLoader(args())).toEqual({
-    shareId: SHARE_ID,
-    nickname: '달빛토끼',
-    friends: [
-      { nickname: '서연', score: 92, tier: 'GUIIN' },
-      { nickname: '민수', score: 61, tier: 'BEOT' },
-    ],
-    myResultId: MY_RESULT_ID,
-  });
+  expect(await shareInputLoader(args())).toEqual({ ownerNickname: '달빛토끼' });
 });
 
-test('없는 링크는 404, 연결 실패는 503 을 던진다', async () => {
-  writeSession(MY_RESULT_ID);
-  vi.spyOn(console, 'error').mockImplementation(() => {});
-  getSharedResultMock.mockResolvedValueOnce({
+test('없는 링크는 404 를 던진다', async () => {
+  getSharedResultMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
   });
-  await expect(shareMapLoader(args())).rejects.toMatchObject({ status: 404 });
 
-  getSharedResultMock.mockResolvedValueOnce({ ok: false, error: { kind: 'network' } });
-  await expect(shareMapLoader(args())).rejects.toMatchObject({ status: 503 });
+  await expect(shareInputLoader(args())).rejects.toMatchObject({ status: 404 });
 });

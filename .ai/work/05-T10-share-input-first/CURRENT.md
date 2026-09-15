@@ -7,9 +7,9 @@
 - Branch: ws/05-T10-share-input-first
 - Task: 05/T10
 - Issue: none
-- Touches: src/app/routes.tsx, src/app/routes.test.tsx, src/api/pendingShare.ts, src/api/pendingShare.test.ts, src/features/saju/SajuForm.tsx, src/features/saju/SajuForm.test.tsx, src/features/saju/sajuAction.ts, src/features/saju/sajuAction.test.ts, src/features/friends/shareMapLoader.ts, src/features/friends/joinShareLoader.ts, src/features/friends/shareInputLoader.ts, src/features/friends/shareSajuAction.ts (각 *.test.ts), src/features/friends/index.ts, src/features/friends/map/CompatibilityMapScreen.tsx, src/features/friends/map/CompatibilityMapScreen.test.tsx, src/app/preview/screens/map.tsx
+- Touches: src/app/routes.tsx, src/app/routes.test.tsx, src/api/pendingShare.ts, src/api/pendingShare.test.ts, src/api/joinedShares.ts, src/api/joinedShares.test.ts, src/features/saju/SajuForm.tsx, src/features/saju/SajuForm.test.tsx, src/features/saju/sajuAction.ts, src/features/saju/sajuAction.test.ts, src/features/saju/index.ts, src/features/friends/shareMapLoader.ts, src/features/friends/joinShareLoader.ts, src/features/friends/shareInputLoader.ts (각 *.test.ts), src/features/friends/index.ts, src/features/friends/map/CompatibilityMapScreen.tsx, src/features/friends/map/CompatibilityMapScreen.test.tsx, src/ui/assets/icons/angle-small-left.svg, src/app/preview/screens/map.tsx
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,12 +21,16 @@ T10. 공유 링크 입력 먼저로 재조립
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. `pendingShare` → `joinedShares`(이 탭에서 궁합 만든 링크 기록) ←
+- 2. `createSajuAction`(다음 경로 주입) · `SajuForm` 문구 props·결과 대기 화면
+- 3. friends loader 3개(입력·join·지도)
+- 4. 지도 화면 뒤로가기 슬롯 · routes 조립 · preview
+- 5. 테스트 · 운영 백엔드 흐름 확인 → PR
 
 ## Last Checkpoint
 
