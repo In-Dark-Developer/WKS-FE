@@ -21,21 +21,20 @@ T10. 공유 링크 입력 먼저로 재조립
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. `pendingShare` → `joinedShares`(이 탭에서 궁합 만든 링크 기록) ←
-- 2. `createSajuAction`(다음 경로 주입) · `SajuForm` 문구 props·결과 대기 화면
-- 3. friends loader 3개(입력·join·지도)
-- 4. 지도 화면 뒤로가기 슬롯 · routes 조립 · preview
-- 5. 테스트 · 운영 백엔드 흐름 확인 → PR
+- 1. `pendingShare` → `joinedShares` (done) · 2. `createSajuAction`(다음 경로 주입, async) · `SajuForm` 문구 props·결과 대기 화면 (done)
+- 3. loader: 입력(건너뛰면 궁합 후 replace 지도)·지도·join(재시도 전용) (done)
+- 4. 지도 뒤로가기 슬롯 · routes · preview (commit 7851f37)
+- 5. 뒤로가기 기록 버그 수정(궁합을 action·입력 loader 가 직접) · mock 브라우저 흐름 확인 (commit b44fa5d) → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`cdc232c`
+`b44fa5d`
 
 ## Relevant Documents
 
@@ -48,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-`docs/phases/05-friend-score/PLAN.md`에서 05/T10의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰(@nicerjs23 `src/features/`·`src/api/` · @gn00py48 `src/ui/` 아이콘) → 병합(fork 소유자) → 실기기 공유 흐름(SC-3)
