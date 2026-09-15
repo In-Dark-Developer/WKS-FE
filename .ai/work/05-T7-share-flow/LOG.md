@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-15 · claude-code · 05/T7 · 공유 링크 받는 쪽 흐름
+
+- Commits: 0a01628
+- Done: pendingShare·shareMapLoader·joinShareLoader·sajuAction 분기·routes 조립, 테스트 16개, 운영 백엔드 브라우저 확인
+- Not done: 운영에서 사주 입력 제출 경로(테스트로만), 실기기 SC-3
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: PLAN T7 Owner 를 @jjjung0921 로 바꿈
+
 ## 2026-09-15 · ai-stream · 05/T7 · 스트림 열기
 
 - Commits: (open)

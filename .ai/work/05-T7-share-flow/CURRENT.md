@@ -21,21 +21,20 @@ T7. 공유 링크 흐름 조립
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. `src/api/pendingShare.ts` — sessionStorage `wks:pending-share` ←
-- 2. `shareMapLoader`(`s/:shareId`) · `joinShareLoader`(`s/:shareId/join`)
-- 3. `sajuAction` — 보관 shareId 있으면 join 으로
-- 4. `routes.tsx` 조립(방문자 지도·버튼·join 오류 화면) + 라우트 테스트
-- 5. 운영 백엔드로 흐름 확인 → PR
+- 1. `src/api/pendingShare.ts` — sessionStorage `wks:pending-share` (done)
+- 2. `shareMapLoader`(`s/:shareId`) · `joinShareLoader`(`s/:shareId/join`) (done)
+- 3. `sajuAction` join 분기 (done) · 4. `routes.tsx` 조립(방문자 지도·버튼·join 오류 화면) + 라우트 테스트 (commit 0a01628)
+- 5. 운영 백엔드로 흐름 확인 (done) → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`5d00eef`
+`0a01628`
 
 ## Relevant Documents
 
@@ -48,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-`docs/phases/05-friend-score/PLAN.md`에서 05/T7의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰(@nicerjs23 `src/features/`·`src/api/` Owner) → 병합(fork 소유자) → 실기기 두 대로 SC-3
