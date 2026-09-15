@@ -63,7 +63,9 @@ Phase 04 가 결과를 밖으로 내보내는 링크(`/s/<shareId>`)를 만들�
 
 - [x] T9. 궁합 지도 애니메이션 — Done when: 궁합 지도 카드(SCR-08·SCR-06 공통, `CompatibilityMap`)에서 배경 SVG 의 궤도 선 4장과 달이 분리된 레이어로 그려지고, 구슬이 자기 등급 색 궤도(달에서 가까운 줄부터 귀인·찰떡·벗·스침) 위에 놓이며, 궤도 선은 늘 제자리에서 30초에 한 바퀴 돌고, 친구 3명 이상이면 구슬이 자기 궤도의 보이는 구간을 15초 흐르고 15초 숨었다 다시 나오며(같은 궤도는 주기를 똑같이 나눠 출발해 겹치지 않고, 궤도마다 출발을 엇갈려 한꺼번에 숨지 않는다), 닉네임 글자는 늘 똑바로 서며, `prefers-reduced-motion: reduce` 면 멈춘 자리에 있고, `/preview` 에서 친구 2명·6명 상태로 두 모드를 볼 수 있다 (테스트 포함 — 인원별 모드·궤도 배치·겹침·출발 위치). 새 의존성 없이 CSS 애니메이션으로 한다 · Touches: `src/features/friends/map/CompatibilityMap.tsx`, `src/features/friends/map/CompatibilityMap.css`, `src/features/friends/map/CompatibilityMapScreen.test.tsx`, `src/features/friends/map/orbLayout.ts`, `src/features/friends/map/orbLayout.test.ts`, `src/ui/assets/backgrounds/compatibility-map.svg`, `src/ui/assets/backgrounds/compatibility-orbit-*.svg`, `src/ui/assets/backgrounds/compatibility-moon.svg` · After: T5 · Owner: @jjjung0921 (commit a763e6e)
 
-<!-- 05/T1 상세 계획(2026-09-15, @nicerjs23) → 2026-09-15 소유자 흐름 확정(spec-share-map-landing)으로 T5 재정의·T6 삭제·T7 재정의·T8 추가. 2026-09-15 소유자 결정(spec-map-motion)으로 T9 추가 — 궤도 선마다 중심이 달라, 구슬을 각자 궤도 중심으로 돌리면 서로 거리가 바뀌어 겹칠 수 있다. 달 중심으로 한 덩어리로 돌리는 안은 달이 패널 왼쪽 아래라 반 바퀴 동안 구슬이 칸 밖으로 나가 기각했다(`/preview` 확인). 소유자 결정으로 구슬은 자기 궤도의 보이는 구간만 흐르고 같은 시간 숨는다.
+- [ ] T10. 공유 링크 입력 먼저로 재조립 — Done when: ① `s/:shareId` 가 첫 방문이면 인트로 뒤 사주 입력 폼을 보이고(제목 "운명도 꿰어야 사랑이다", 부제 "아래 정보를 입력하고 나와 <주인 닉네임> 님의 귀인 궁합을 관계로 확인해보아요.", 버튼 '운명 지도 확인하기' — Figma 720:3653), 없는 링크는 오류 화면이다 ② 보관된 내 `resultId` 가 있고 이 탭에서 이 링크로 궁합을 만든 기록이 없으면 입력 없이 `s/:shareId/join` 으로 간다 ③ 제출 중에는 결과 대기 화면(`FortuneLoading`)을 보이고 — `/` 사주 입력도 같다 — `POST /results` 성공 뒤 `s/:shareId/join` 으로 간다 ④ join 은 궁합을 만들고 이 탭의 궁합 기록(sessionStorage)에 shareId 를 남긴 뒤 `s/:shareId/map` 으로, `SELF_COMPATIBILITY` 는 `/reading/:resultId` 로, 결과 없음은 `s/:shareId` 로, 그 밖의 실패는 '다시 시도하기' 오류로 간다 ⑤ `s/:shareId/map` 은 결과가 없으면 `s/:shareId` 로 보내고, 있으면 '뒤로가기'(직전 앱 페이지가 있으면 그리로, 없으면 브라우저 이전 페이지) + 방문자 궁합 지도 + '내 사주 내용도 확인하기'(`/reading/:resultId`)를 보인다(Figma 720:3668) ⑥ `/` 의 `sajuAction` 은 공유 흐름과 무관하게 `/reading/:resultId` 로 간다 (테스트 포함 — loader·action·라우트 테스트) · Touches: `src/app/routes.tsx`, `src/app/routes.test.tsx`, `src/api/pendingShare.ts`, `src/api/pendingShare.test.ts`, `src/features/saju/SajuForm.tsx`, `src/features/saju/SajuForm.test.tsx`, `src/features/saju/sajuAction.ts`, `src/features/saju/sajuAction.test.ts`, `src/features/friends/shareMapLoader.ts`, `src/features/friends/joinShareLoader.ts`, `src/features/friends/shareInputLoader.ts`, `src/features/friends/shareSajuAction.ts` (각 `*.test.ts`), `src/features/friends/index.ts`, `src/features/friends/map/CompatibilityMapScreen.tsx`, `src/features/friends/map/CompatibilityMapScreen.test.tsx`, `src/app/preview/screens/map.tsx` · After: T7, T9 · Owner: @jjjung0921
+
+<!-- 05/T1 상세 계획(2026-09-15, @nicerjs23) → 2026-09-15 소유자 흐름 확정(spec-share-map-landing)으로 T5 재정의·T6 삭제·T7 재정의·T8 추가. 2026-09-15 소유자 흐름 개정(spec-share-input-first)으로 T10 추가 — 링크 진입 화면이 지도가 아니라 사주 입력(720:3653)이고, 입력 뒤 주인 지도(720:3668, 뒤로가기)를 거쳐 내 사주로 간다. T7 의 `/` 경유와 결과 화면 직행은 T10 이 대체한다. 2026-09-15 소유자 결정(spec-map-motion)으로 T9 추가 — 궤도 선마다 중심이 달라, 구슬을 각자 궤도 중심으로 돌리면 서로 거리가 바뀌어 겹칠 수 있다. 달 중심으로 한 덩어리로 돌리는 안은 달이 패널 왼쪽 아래라 반 바퀴 동안 구슬이 칸 밖으로 나가 기각했다(`/preview` 확인). 소유자 결정으로 구슬은 자기 궤도의 보이는 구간만 흐르고 같은 시간 숨는다.
      SCR-06 을 friends feature 에 둔 이유: 궁합 지도(T2)와 같은 화면이고, share feature 는 링크를 '내보내는' 쪽(04)이다. features 끼리 import 금지라 saju 의 `sajuAction` 은 `src/api/pendingShare.ts` 로만 보관 `shareId` 를 읽는다.
      궁합 생성을 별도 경로(예: `s/:shareId/join` loader)로 모으면 SCR-06 버튼과 `sajuAction` 두 입구가 같은 처리·오류 화면을 쓴다 — 경로 이름은 T7 이 정한다. 백엔드가 이미 있는 조합을 200 으로 주므로 재시도·새로고침에 안전하다. -->
 
@@ -76,10 +78,10 @@ Phase 04 가 결과를 밖으로 내보내는 링크(`/s/<shareId>`)를 만들�
 
 ## Acceptance Criteria
 
-- [ ] AC1. 공유 링크(`/s/<shareId>`)로 들어오면 세션 없이 링크 주인의 궁합 지도(주인 닉네임 제목·방문자 부제·구슬·등급별 인원·순위)와 '내 사주 내용도 확인하기'가 보이고, 주인의 사주 요약(운명 제목·설명·등급·십이간지·행운)이 화면과 DOM 어디에도 없다 (FR-15, FR-18)
-- [ ] AC2. 이 브라우저에 결과가 없는 방문자가 버튼을 누르면 `/` 로 가서(첫 방문이면 인트로) 사주를 입력하고, 입력을 마치면 궁합이 만들어진 뒤 자기 결과 화면으로 간다. 결과가 있는 방문자는 입력 없이 바로 궁합이 만들어지고 자기 결과 화면으로 간다 (FR-6)
+- [ ] AC1. 공유 링크(`/s/<shareId>`)로 들어오면 세션 없이 링크 주인 닉네임이 들어간 사주 입력이 보이고(첫 방문이면 인트로 뒤), 입력을 마치면 링크 주인의 궁합 지도(`/s/<shareId>/map`)에서 뒤로가기·지도·'내 사주 내용도 확인하기'가 보이며, 두 화면 어디에도 주인의 사주 요약이 없다 (FR-6, FR-15, FR-18)
+- [ ] AC2. 제출 중 결과 대기 화면이 보이고, 결과·궁합이 만들어진 뒤 주인 지도에 내가 보인다. 결과가 이미 있는 방문자는 링크로 들어오면 입력 없이 지도로 간다. 지도에서 뒤로가기로 돌아온 입력 화면은 폼을 보여준다 (FR-6)
 - [ ] AC3. 궁합이 만들어진 뒤 양쪽 결과 화면 친구 궁합 순위와 궁합 지도에 상대가 응답 `tier` 그대로의 등급과 점수로 나타난다 (FR-7, FR-8, FR-14)
-- [ ] AC4. 사주 입력 중 새로고침해도 같은 탭이면 궁합까지 이어지고, 탭을 새로 열면 공유 흐름이 이어지지 않는다(sessionStorage)
+- [ ] AC4. 지도(`/s/<shareId>/map`)를 새로고침해도 같은 지도가 보이고, 결과 없이 그 주소로 오면 입력으로 간다. '내 사주 내용도 확인하기'는 자기 결과로 간다
 - [ ] AC5. 없는 `shareId` 는 오류 화면, 자기 링크면 궁합 없이 자기 결과로 가고, 궁합 생성 실패는 오류를 안내하며 다시 시도하면 사주를 다시 입력하지 않고 재시도된다
 - [ ] AC6. 인트로 건너뛰기 칸이 2초 동안 2 → 1 카운트다운 뒤 '건너뛰기' 버튼이 된다 (FR-1)
 - [ ] AC8. 궁합 지도의 구슬이 등급 색 궤도 위에 있고, 궤도 선은 30초에 한 바퀴 돌며, 3명 이상이면 구슬이 보이는 구간을 15초 흐르고 15초 숨되 구슬끼리 겹치지 않고, 동작 줄이기 설정에서는 멈춘다 (FR-8)
@@ -87,8 +89,8 @@ Phase 04 가 결과를 밖으로 내보내는 링크(`/s/<shareId>`)를 만들�
 
 ## Validation Plan
 
-- AC1·AC7: T5 컴포넌트 테스트(주인 요약 텍스트 부재 단언) + `src/features/friends/` 에서 `@/api` grep + `/preview` 수동 확인
-- AC2·AC4·AC5: T7 loader·action·라우트 테스트(목 응답 — 보관 결과 없음·있음, 201·200·404·SELF_COMPATIBILITY·연결 실패 뒤 재시도, sessionStorage 보관·삭제)
+- AC1·AC7: T5·T10 컴포넌트·라우트 테스트(주인 요약 텍스트 부재 단언) + `src/features/friends/` 화면에서 `@/api` grep + `/preview` 수동 확인
+- AC2·AC4·AC5: T10 loader·action·라우트 테스트(목 응답 — 결과 없음·있음·뒤로 온 입력, 201·200·404·SELF_COMPATIBILITY·연결 실패 뒤 재시도, 지도 새로고침)
 - AC3: 실제 백엔드로 브라우저 두 개(주인·방문자) 수동 1회 — 주인이 결과를 만들고 `/me/map` 에서 공유한 링크를 방문자 브라우저에서 열어 입력한 뒤 양쪽 결과·지도 새로고침. 운영이면 결과 2건·궁합 1건·LLM 2회가 생긴다. 로컬은 5173 포트(CORS)
 - AC6: T8 컴포넌트 테스트(가짜 타이머 0·1·2초) + 실기기 1회
 - AC8: T9 컴포넌트 테스트(인원별 모드) + `/preview` 2명·5명 수동 확인 + 브라우저 `prefers-reduced-motion` 에뮬레이션 1회
