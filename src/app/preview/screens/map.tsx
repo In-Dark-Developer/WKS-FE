@@ -11,7 +11,7 @@ const friends: Friend[] = [
   { nickname: '다정한친구', score: 61, tier: 'BEOT' },
 ];
 
-// SCR-08 궁합 지도 — 05/T2.
+// SCR-08 궁합 지도 — 05/T2. SCR-06 방문자 지도(링크 주인의 지도) — 05/T5.
 export const preview: PreviewScreen = {
   title: 'SCR-08 궁합 지도',
   order: 3,
@@ -20,6 +20,30 @@ export const preview: PreviewScreen = {
     '친구 6명': () => <CompatibilityMapScreen friends={friends} nickname="달빛토끼" />,
     '친구 2명': () => <CompatibilityMapScreen friends={friends.slice(0, 2)} nickname="달빛토끼" />,
     '빈 상태': () => <CompatibilityMapScreen friends={[]} nickname="달빛토끼" />,
+    'SCR-06 방문자 지도': () => (
+      <CompatibilityMapScreen
+        friends={friends.slice(0, 5)}
+        nickname="달빛토끼"
+        share={
+          <Button className="w-full" variant="apricot">
+            내 사주 내용도 확인하기
+          </Button>
+        }
+        variant="visitor"
+      />
+    ),
+    'SCR-06 방문자 지도 · 친구 없음': () => (
+      <CompatibilityMapScreen
+        friends={[]}
+        nickname="달빛토끼"
+        share={
+          <Button className="w-full" variant="apricot">
+            내 사주 내용도 확인하기
+          </Button>
+        }
+        variant="visitor"
+      />
+    ),
     '결과 화면 순위 요약': () => (
       <div className="flex flex-col gap-16">
         <FriendRanking friends={friends} limit={3} />
