@@ -81,6 +81,31 @@ test('맨 아래 공유 자리에 받은 버튼을 그린다', () => {
   ).toBeInTheDocument();
 });
 
+test('방문자 지도는 링크 주인의 지도와 부제를 보이고 버튼 자리에 받은 버튼을 그린다', () => {
+  render(
+    <CompatibilityMapScreen
+      friends={friends}
+      nickname="달빛토끼"
+      share={<button type="button">내 사주 내용도 확인하기</button>}
+      variant="visitor"
+    />,
+  );
+
+  const map = screen.getByRole('region', { name: '달빛토끼님의 궁합 지도' });
+  expect(within(map).getByText('달빛토끼님과의 궁합 지도예요.')).toBeInTheDocument();
+  expect(within(map).queryByText(/내 친구/)).not.toBeInTheDocument();
+  expect(within(map).getAllByRole('listitem')).toHaveLength(5);
+  expect(screen.getByRole('button', { name: '내 사주 내용도 확인하기' })).toBeInTheDocument();
+});
+
+test('방문자 지도는 친구가 없어도 같은 부제이고 순위 빈 상태는 내 지도와 같다', () => {
+  render(<CompatibilityMapScreen friends={[]} nickname="달빛토끼" variant="visitor" />);
+
+  expect(screen.getByText('달빛토끼님과의 궁합 지도예요.')).toBeInTheDocument();
+  expect(screen.queryByText('아직 지도에 그린 인연이 없어요')).not.toBeInTheDocument();
+  expect(screen.getByRole('status')).toHaveTextContent('아직 인연이 없어요');
+});
+
 test('제목 줄 오른쪽에 받은 링크를 둔다', () => {
   render(<FriendRanking friends={friends} headerAction={<a href="/me/map">지도 보기 &gt;</a>} />);
 
