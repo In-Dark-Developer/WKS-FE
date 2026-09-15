@@ -1,7 +1,5 @@
 # Current State — 08-T4-preview-check
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 08-T4-preview-check
 - Owner: gn00py48@gmail.com
 - Branch: ws/08-T4-preview-check
@@ -25,22 +23,26 @@ TODO
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 운영 메타·og 이미지·리다이렉트 `curl` 확인 (13개 태그 · 200 · 301)
+- [x] 1차 실기기 검증 접수 → 보고 3건 판정 (결함 0건)
+- [x] Figma 658:5075 실측 · `/preview/reading` 브라우저 실측으로 카드 레이아웃 확인
+- [x] RESULT 검증표 · HANDOFF 원인 기록
+- [ ] 인스타 DM·iMessage·라인 미리보기 스크린샷 → RESULT AC3 → PLAN T4 `[x]` ←
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`6dca724`
+`8870d5c`
 
 ## Relevant Documents
 
-- `docs/phases/08-launch-readiness/PLAN.md`
+- `docs/phases/08-launch-readiness/PLAN.md` — T4 Done when
+- `docs/phases/08-launch-readiness/RESULT.md` — 검증 결과를 쌓는 곳
+- `docs/decisions/ADR-20260915-share-preview-static-meta.md` — 정적 메타 결정
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `index.html` — OG·Twitter 메타 13개 (`og:url` 은 루트 고정)
+- `public/og/og-v2.jpg` — 1200×630 썸네일
 
 ## Next Action
 
