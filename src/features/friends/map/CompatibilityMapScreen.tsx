@@ -13,14 +13,24 @@ type Props = {
   // 맨 아래 버튼 자리 — mine 은 '친구에게 공유하고 궁합 지도 넓히기', visitor 는 '내 사주 내용도 확인하기'.
   // friends 는 share feature·라우팅을 모르므로 app 이 채운다.
   share?: ReactNode;
+  // 맨 위 '뒤로가기' 자리 — 친구의 궁합 지도(SCR-13, Figma 720:3668)만 쓴다. 이동은 app 이 정한다.
+  back?: ReactNode;
   // visitor 는 주인의 사주 요약 없이 지도·등급별 인원·순위만 보인다(FR-15) — 이 화면은 요약을 받지도 않는다.
   variant?: MapVariant;
 };
 
-// SCR-08 궁합 지도(558:2625) · SCR-06 공유 링크 랜딩 = 링크 주인의 궁합 지도(713:3956).
-export function CompatibilityMapScreen({ nickname, friends, share, variant = 'mine' }: Props) {
+// SCR-08 궁합 지도(558:2625) · SCR-13 친구의 궁합 지도 = 링크 주인의 궁합 지도(720:3668).
+export function CompatibilityMapScreen({
+  nickname,
+  friends,
+  share,
+  back,
+  variant = 'mine',
+}: Props) {
   return (
     <div className="flex flex-col gap-12 pt-4 pb-24">
+      {/* 뒤로가기 줄과 지도 사이 48px(720:3668) — gap-12 에 더한다(32 + 4 + 12). */}
+      {back ? <div className="mb-32 pb-4">{back}</div> : null}
       <h1 className="sr-only">{nickname}님의 궁합 지도</h1>
       <CompatibilityMap friends={friends} nickname={nickname} variant={variant} />
       <RelationStats friends={friends} />

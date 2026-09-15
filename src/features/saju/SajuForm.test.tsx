@@ -8,11 +8,11 @@ afterEach(() => {
   cleanup();
 });
 
-function renderForm(action: (body: unknown) => Promise<unknown> | unknown) {
+function renderForm(action: (body: unknown) => Promise<unknown> | unknown, form = <SajuForm />) {
   const router = createMemoryRouter([
     {
       path: '/',
-      element: <SajuForm />,
+      element: form,
       action: async ({ request }) => action(await request.json()),
     },
   ]);
@@ -98,7 +98,7 @@ test('음력을 고르면 윤달 체크가 나타나고 함께 보낸다', async
   );
 });
 
-test('전송 중에는 로딩 버튼을 보이고 연결에 실패하면 입력값을 유지한 채 안내한다', async () => {
+test('전송 중에는 결과 대기 화면을 보이고 연결에 실패하면 입력값을 유지한 채 안내한다', async () => {
   let fail = () => {};
   renderForm(
     () =>
@@ -110,7 +110,9 @@ test('전송 중에는 로딩 버튼을 보이고 연결에 실패하면 입력�
   fillValid();
   fireEvent.click(screen.getByRole('button', { name: '점지 확인하기' }));
 
-  expect(await screen.findByRole('button', { name: '처리 중' })).toBeDisabled();
+  // 전송 중에는 폼 대신 결과 대기 화면이 보인다(SCR-03).
+  expect(await screen.findByRole('status')).toHaveTextContent('보살님이 점지해주는 중입니다');
+  expect(screen.queryByRole('button', { name: '처리 중' })).not.toBeInTheDocument();
 
   fail();
 
@@ -120,4 +122,14 @@ test('전송 중에는 로딩 버튼을 보이고 연결에 실패하면 입력�
   expect(screen.getByRole('textbox', { name: '닉네임' })).toHaveValue('보살');
   expect(screen.getByRole('textbox', { name: '생년월일' })).toHaveValue('20020101');
   expect(screen.getByRole('button', { name: '점지 확인하기' })).toBeEnabled();
+});
+
+test('설명과 버튼 글자를 바꿀 수 있다', () => {
+  renderForm(
+    vi.fn(),
+    <SajuForm description="나와 달빛토끼 님의 궁합" submitLabel="운명 지도 확인하기" />,
+  );
+
+  expect(screen.getByText('나와 달빛토끼 님의 궁합')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
 });

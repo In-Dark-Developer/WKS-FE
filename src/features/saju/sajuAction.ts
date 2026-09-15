@@ -1,6 +1,5 @@
 import { redirect, type ActionFunctionArgs } from 'react-router-dom';
 
-import { readPendingShare } from '@/api/pendingShare';
 import { createResult, type ResultRequestInput } from '@/api/results';
 
 function isGender(value: unknown): value is ResultRequestInput['gender'] {
@@ -35,20 +34,23 @@ function toResultRequestInput(value: unknown): ResultRequestInput {
   return { gender, calendarType, isLeapMonth, birthDate, birthTime, nickname };
 }
 
-// SCR-02 `/` action — POST /results. 성공하면 `/reading/:resultId`로 이동한다. 공유 링크로 들어와 보관된
-// shareId 가 있으면 대신 `/s/:shareId/join` 으로 가서 궁합을 만든 뒤 내 결과로 간다(FR-6, 05/T7). 실패는(연결·스키마·
-// 백엔드 에러 모두) SajuForm 이 아는 유일한 모양 `{ formError: 'connection' }`으로 돌려줘 입력값을
-// 유지한 채 안내한다(ARCHITECTURE Cross-cutting — 스키마 위반·네트워크 실패도 사용자에게는 같은 안내).
-export async function sajuAction({ request }: ActionFunctionArgs) {
-  const input = toResultRequestInput(await request.json());
-  const outcome = await createResult(input);
+// 사주 입력 action 을 만든다 — POST /results 성공 뒤 갈 곳만 입구마다 다르다: `/` 는 내 결과, 공유 링크 입력은
+// 궁합을 만든 뒤 친구의 궁합 지도(05/T10). 실패는(연결·스키마·백엔드 에러 모두) SajuForm 이 아는 유일한 모양
+// `{ formError: 'connection' }`으로 돌려줘 입력값을 유지한 채 안내한다(ARCHITECTURE Cross-cutting — 스키마 위반·
+// 네트워크 실패도 사용자에게는 같은 안내).
+export function createSajuAction(
+  nextPath: (resultId: string, args: ActionFunctionArgs) => string | Promise<string>,
+) {
+  return async function action(args: ActionFunctionArgs) {
+    const input = toResultRequestInput(await args.request.json());
+    const outcome = await createResult(input);
 
-  if (outcome.ok) {
-    const pendingShareId = readPendingShare();
-    if (pendingShareId) return redirect(`/s/${encodeURIComponent(pendingShareId)}/join`);
-    return redirect(`/reading/${outcome.data.resultId}`);
-  }
+    if (outcome.ok) return redirect(await nextPath(outcome.data.resultId, args));
 
-  console.error('POST /results 실패', outcome.error);
-  return { formError: 'connection' as const };
+    console.error('POST /results 실패', outcome.error);
+    return { formError: 'connection' as const };
+  };
 }
+
+// SCR-02 `/` action — 성공하면 `/reading/:resultId`로 간다.
+export const sajuAction = createSajuAction((resultId) => `/reading/${resultId}`);

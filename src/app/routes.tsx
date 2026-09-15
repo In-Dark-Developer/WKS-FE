@@ -15,6 +15,7 @@ import { RouteLoading } from '@/app/RouteLoading';
 import {
   ReadingResult,
   SajuForm,
+  createSajuAction,
   readingLoader,
   sajuAction,
   type ReadingView,
@@ -22,13 +23,18 @@ import {
 import {
   CompatibilityMapScreen,
   FriendRanking,
+  joinShare,
   joinShareLoader,
+  shareInputLoader,
   shareMapLoader,
+  type ShareInputView,
   type SharedMapView,
 } from '@/features/friends';
 import { IntroGate } from '@/features/intro';
 import { ResultCard, ShareLinkButton } from '@/features/share';
+import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
 import { Button } from '@/ui/Button';
+import { Icon } from '@/ui/Icon';
 import { ContentState } from '@/ui/state/ContentState';
 
 // 세션 가드(T3·T8) 뒤에 결과 loader(T7)를 잇는다 — 이 브라우저가 만든 결과가 아니면 redirect('/')로 끝난다.
@@ -86,17 +92,53 @@ function CompatibilityMapRoute() {
   );
 }
 
-// SCR-06 공유 링크 랜딩 = 링크 주인의 궁합 지도(05/T5 visitor). '내 사주 내용도 확인하기'(Figma 713:3956)는
-// join 으로 간다 — 내 결과가 없으면 거기서 사주 입력으로, 있으면 궁합을 만들고 내 결과로 (05/T7, FR-6).
+// SCR-06 공유 링크 입력(Figma 720:3653) — 사주 입력 폼에 링크 주인 닉네임이 든 설명과 '운명 지도 확인하기'.
+// 첫 방문이면 인트로가 먼저 뜬다(FR-1). 제출하면 결과·궁합을 만들고 친구의 궁합 지도로 간다 (05/T10, FR-6).
+function ShareInputRoute() {
+  const view = useLoaderData<ShareInputView>();
+  return (
+    <IntroGate>
+      <SajuForm
+        description={`아래 정보를 입력하고 나와 ${view.ownerNickname} 님의 귀인 궁합을 관계로 확인해보아요.`}
+        submitLabel="운명 지도 확인하기"
+      />
+    </IntroGate>
+  );
+}
+
+// 결과를 만든 요청에서 궁합까지 만들고 지도로 간다 — 입력 → 지도 한 번의 이동이라 뒤로가기가 입력으로 온다.
+// 궁합이 연결 문제로 실패하면 재시도 주소(join)로 간다.
+const shareSajuAction = createSajuAction(async (resultId, { params }) => {
+  const shareId = params.shareId ?? '';
+  return (await joinShare(shareId, resultId)) ?? `/s/${encodeURIComponent(shareId)}/join`;
+});
+
+// SCR-13 친구의 궁합 지도(Figma 720:3668) — 뒤로가기 + 방문자 궁합 지도(05/T5) + '내 사주 내용도 확인하기'.
+// 뒤로가기는 브라우저 이전 페이지다: 입력에서 왔으면 입력, 링크로 바로 왔으면(입력을 건너뛴 이동은 replace 라 기록이
+// 남지 않는다) 채팅 앱 등 앱 밖 이전 페이지 (FR-6).
 function SharedMapRoute() {
   const view = useLoaderData<SharedMapView>();
   const navigate = useNavigate();
   return (
     <CompatibilityMapScreen
+      back={
+        <button
+          className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
+          onClick={() => void navigate(-1)}
+          type="button"
+        >
+          <Icon src={angleSmallLeft} />
+          뒤로가기
+        </button>
+      }
       friends={view.friends}
       nickname={view.nickname}
       share={
-        <Button className="w-full" onClick={() => void navigate('join')} variant="apricot">
+        <Button
+          className="w-full"
+          onClick={() => void navigate(`/reading/${view.myResultId}`)}
+          variant="apricot"
+        >
           내 사주 내용도 확인하기
         </Button>
       }
@@ -106,7 +148,7 @@ function SharedMapRoute() {
 }
 
 // 궁합 생성 실패 화면 — 없는 링크(404)는 공통 오류, 연결·서버 실패는 같은 주소로 다시 시도한다.
-// 보관한 shareId·내 결과가 남아 있어 다시 시도해도 사주를 다시 입력하지 않는다 (FR-6).
+// 내 결과가 남아 있어 다시 시도해도 사주를 다시 입력하지 않는다 (FR-6).
 function JoinShareError() {
   const error = useRouteError();
   if (isRouteErrorResponse(error) && error.status === 404) return <RouteError />;
@@ -160,19 +202,26 @@ export const routes: RouteObject[] = [
         element: <ReadingResultRoute />,
         // 예약: 'pre-register' SCR-09 사전신청 모달 (06/T3, ReadingResult 의 <Outlet /> 에 뜬다, handle backdrop 'mist')
       },
-      // SCR-06 공유 링크 랜딩 — 가드 없음(FR-18). loader 05/T7, 화면 05/T5.
+      // SCR-06 공유 링크 입력 — 가드 없음(FR-18). 내 결과가 있으면 loader 가 join 으로 보낸다 (05/T10).
       {
         path: 's/:shareId',
-        loader: shareMapLoader,
-        handle: { backdrop: 'result' },
-        element: <SharedMapRoute />,
+        loader: shareInputLoader,
+        action: shareSajuAction,
+        element: <ShareInputRoute />,
       },
-      // 궁합 생성 — 화면 없이 redirect 로만 끝난다(`/` 또는 `/reading/:id`). 실패만 오류 화면을 그린다.
+      // 궁합 재시도 — 화면 없이 이동으로만 끝난다(지도·입력·내 결과). 실패만 '다시 시도하기' 오류를 그린다.
       {
         path: 's/:shareId/join',
         loader: joinShareLoader,
         handle: { backdrop: 'result' },
         errorElement: <JoinShareError />,
+      },
+      // SCR-13 친구의 궁합 지도 — 내 결과가 없으면 입력으로 (05/T10).
+      {
+        path: 's/:shareId/map',
+        loader: shareMapLoader,
+        handle: { backdrop: 'result' },
+        element: <SharedMapRoute />,
       },
       // SCR-08 궁합 지도 — 05/T2 CompatibilityMapScreen, 조립 05/T3. 결과 화면 순위의 '지도 보기'로 들어온다.
       {

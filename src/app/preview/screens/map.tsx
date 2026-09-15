@@ -1,6 +1,8 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
 import { CompatibilityMapScreen, FriendRanking, type Friend } from '@/features/friends';
+import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
 import { Button } from '@/ui/Button';
+import { Icon } from '@/ui/Icon';
 
 const friends: Friend[] = [
   { nickname: '영채', score: 94, tier: 'GUIIN' },
@@ -11,7 +13,7 @@ const friends: Friend[] = [
   { nickname: '다정한친구', score: 61, tier: 'BEOT' },
 ];
 
-// SCR-08 궁합 지도 — 05/T2. SCR-06 방문자 지도(링크 주인의 지도) — 05/T5.
+// SCR-08 궁합 지도 — 05/T2. SCR-13 친구의 궁합 지도(링크 주인의 지도) — 05/T5·T10.
 export const preview: PreviewScreen = {
   title: 'SCR-08 궁합 지도',
   order: 3,
@@ -20,8 +22,17 @@ export const preview: PreviewScreen = {
     '친구 6명': () => <CompatibilityMapScreen friends={friends} nickname="달빛토끼" />,
     '친구 2명': () => <CompatibilityMapScreen friends={friends.slice(0, 2)} nickname="달빛토끼" />,
     '빈 상태': () => <CompatibilityMapScreen friends={[]} nickname="달빛토끼" />,
-    'SCR-06 방문자 지도': () => (
+    'SCR-13 친구의 궁합 지도': () => (
       <CompatibilityMapScreen
+        back={
+          <button
+            className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
+            type="button"
+          >
+            <Icon src={angleSmallLeft} />
+            뒤로가기
+          </button>
+        }
         friends={friends.slice(0, 5)}
         nickname="달빛토끼"
         share={
@@ -32,7 +43,7 @@ export const preview: PreviewScreen = {
         variant="visitor"
       />
     ),
-    'SCR-06 방문자 지도 · 친구 없음': () => (
+    'SCR-13 친구의 궁합 지도 · 친구 없음': () => (
       <CompatibilityMapScreen
         friends={[]}
         nickname="달빛토끼"

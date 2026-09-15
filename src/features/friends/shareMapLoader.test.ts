@@ -1,8 +1,8 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
-import { readPendingShare } from '@/api/pendingShare';
 import type { SharedResult } from '@/api/schema/share';
+import { writeSession } from '@/api/session';
 
 const { getSharedResultMock } = vi.hoisted(() => ({ getSharedResultMock: vi.fn() }));
 vi.mock('@/api/shares', async (importOriginal) => {
@@ -13,6 +13,7 @@ vi.mock('@/api/shares', async (importOriginal) => {
 import { shareMapLoader } from './shareMapLoader';
 
 const SHARE_ID = '5a951b51-21d5-4601-91b9-560de47aaaca';
+const MY_RESULT_ID = '90585fc0-7e6a-4e6b-8de7-47cd169c60b5';
 
 const owner: SharedResult = {
   nickname: '달빛토끼',
@@ -31,53 +32,53 @@ const owner: SharedResult = {
   ],
 };
 
-function args(shareId: string | undefined): LoaderFunctionArgs {
+function args(): LoaderFunctionArgs {
   return {
-    request: new Request(`http://test/s/${shareId ?? ''}`),
-    params: { shareId },
+    request: new Request(`http://test/s/${SHARE_ID}/map`),
+    params: { shareId: SHARE_ID },
     context: {},
-    url: new URL(`http://test/s/${shareId ?? ''}`),
-    pattern: '/s/:shareId',
+    url: new URL(`http://test/s/${SHARE_ID}/map`),
+    pattern: '/s/:shareId/map',
   };
 }
 
 afterEach(() => {
   getSharedResultMock.mockReset();
-  sessionStorage.clear();
+  localStorage.clear();
   vi.restoreAllMocks();
 });
 
-test('링크 주인의 닉네임과 점수 높은 순 친구 목록만 돌려주고 shareId 를 보관한다', async () => {
+test('내 결과가 없으면 공유 링크 입력으로 보낸다', async () => {
+  await expect(shareMapLoader(args())).rejects.toSatisfy(
+    (response: Response) => response.headers.get('Location') === `/s/${SHARE_ID}`,
+  );
+  expect(getSharedResultMock).not.toHaveBeenCalled();
+});
+
+test('링크 주인의 닉네임·점수 높은 순 친구 목록·내 resultId 만 돌려준다', async () => {
+  writeSession(MY_RESULT_ID);
   getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
 
-  const view = await shareMapLoader(args(SHARE_ID));
-
-  expect(view).toEqual({
+  expect(await shareMapLoader(args())).toEqual({
     shareId: SHARE_ID,
     nickname: '달빛토끼',
     friends: [
       { nickname: '서연', score: 92, tier: 'GUIIN' },
       { nickname: '민수', score: 61, tier: 'BEOT' },
     ],
+    myResultId: MY_RESULT_ID,
   });
-  expect(getSharedResultMock).toHaveBeenCalledWith(SHARE_ID);
-  expect(readPendingShare()).toBe(SHARE_ID);
 });
 
-test('없는 링크는 404 를 던지고 shareId 를 보관하지 않는다', async () => {
-  getSharedResultMock.mockResolvedValue({
+test('없는 링크는 404, 연결 실패는 503 을 던진다', async () => {
+  writeSession(MY_RESULT_ID);
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getSharedResultMock.mockResolvedValueOnce({
     ok: false,
     error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
   });
+  await expect(shareMapLoader(args())).rejects.toMatchObject({ status: 404 });
 
-  await expect(shareMapLoader(args(SHARE_ID))).rejects.toMatchObject({ status: 404 });
-  expect(readPendingShare()).toBeNull();
-});
-
-test('연결 실패는 원인을 콘솔에 남기고 503 을 던진다', async () => {
-  const log = vi.spyOn(console, 'error').mockImplementation(() => {});
-  getSharedResultMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
-
-  await expect(shareMapLoader(args(SHARE_ID))).rejects.toMatchObject({ status: 503 });
-  expect(log).toHaveBeenCalled();
+  getSharedResultMock.mockResolvedValueOnce({ ok: false, error: { kind: 'network' } });
+  await expect(shareMapLoader(args())).rejects.toMatchObject({ status: 503 });
 });
