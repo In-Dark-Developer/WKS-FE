@@ -28,9 +28,15 @@ REVIEW
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 1. Figma 713:3956 확인 — 부제·Button/Primary(apricot/300, L 56)·내용 아래 16px (done)
 - 2. `CompatibilityMap`·`CompatibilityMapScreen` `variant: 'mine' | 'visitor'` (commit 573adfb)
-- 3. 테스트 2개 — 방문자 부제·버튼 자리·빈 상태 (done)
-- 4. `/preview` 방문자 지도 친구 있음·없음, 390px 화면 확인 (done)
-- 5. test·typecheck·lint·build → PR ←Relevant Documents
+- 3. 테스트 2개 · `/preview` 방문자 지도 두 상태 390px 확인 (done)
+- 4. test·typecheck·lint·build → PR ←
+
+## Last Checkpoint
+
+<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
+`d6d460f`
+
+## Relevant Documents
 
 - `docs/phases/05-friend-score/PLAN.md`
 
