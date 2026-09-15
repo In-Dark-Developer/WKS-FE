@@ -109,7 +109,7 @@ test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () =>
     data: {
       ...stubResult,
       compatibilities: [
-        { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '친구1' },
+        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T02:00:00Z' },
       ],
     },
   });
@@ -129,8 +129,8 @@ test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서
     data: {
       ...stubResult,
       compatibilities: [
-        { score: 61, tier: 'BEOT', originNickname: '달빛토끼', guestNickname: '민수' },
-        { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '달빛토끼' },
+        { nickname: '민수', score: 61, tier: 'BEOT', createdAt: '2026-09-15T02:00:00Z' },
+        { nickname: '서연', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T01:00:00Z' },
       ],
     },
   });
@@ -200,7 +200,7 @@ test('친구 궁합 순위가 있으면 결과 화면에 친구에게 공유가 
     data: {
       ...stubResult,
       compatibilities: [
-        { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '친구1' },
+        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T02:00:00Z' },
       ],
     },
   });

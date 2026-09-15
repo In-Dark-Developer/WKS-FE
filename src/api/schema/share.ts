@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { compatibilitySummarySchema, resultSchema } from './result';
+import { compatibilityTierSchema, resultSchema } from './result';
 
 // docs/api/openapi.yaml `/shares` 경로의 스키마 — 운영 Swagger(`/v3/api-docs`, 2026-09-15)와 대조했다.
 
@@ -17,7 +17,13 @@ export const compatibilityRequestSchema = z.object({
   guestResultId: z.string().uuid(),
 });
 
-// 같은 요청의 응답(CompatibilityResponse). 결과 조회의 `compatibilities[]` 항목과 백엔드가 같은 타입을 쓴다.
-export const compatibilitySchema = compatibilitySummarySchema;
+// 같은 요청의 응답(openapi CompatibilityResult · Swagger CompatibilityResponse) — 두 닉네임이 온다.
+// 조회의 `compatibilities[]` 항목(`nickname`·`createdAt`)과는 모양이 다르다(2026-09-15 운영 호출 대조).
+export const compatibilitySchema = z.object({
+  score: z.number().int().min(0).max(100),
+  tier: compatibilityTierSchema,
+  originNickname: z.string(),
+  guestNickname: z.string(),
+});
 
 export type Compatibility = z.infer<typeof compatibilitySchema>;
