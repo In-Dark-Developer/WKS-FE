@@ -15,7 +15,7 @@
 
 - 서버측 사전 점검 — `/s/:shareId`·`/reading/:id` 가 OG·Twitter 메타 13개를 주고, og 이미지 200·`image/jpeg`·224KB·1200×630, `www`→apex 301
 - 1차 실기기 검증(iPhone 13 · iOS 26.3.1 · Safari · 카카오톡에서 진입)을 RESULT 에 기록 — 미리보기 판정 전에 화면 확인으로 빠졌다
-- 보고된 3건을 코드·Figma·스크린샷으로 판정: 2건은 스펙대로, 1건(카드 레이아웃)만 실제 결함
+- 보고된 3건을 코드·Figma·**브라우저 실측**으로 판정 — 3건 모두 결함이 아니었다(2건 스펙대로, 1건 재현 실패)
 
 ## Work In Progress
 
@@ -32,7 +32,7 @@
 
 ## Tests Executed
 
-- `pnpm test` · `pnpm typecheck` · `pnpm lint` · `pnpm build` · `curl` 운영 메타 · Figma `658:5075` 실측 대조
+- `pnpm test` · `pnpm typecheck` · `pnpm lint` · `pnpm build` · `curl` 운영 메타 · Figma `658:5075` 실측 · `/preview/reading` 브라우저 실측
 
 ## Test Results
 
@@ -43,13 +43,13 @@
 
 1. **[스펙대로 — 고칠 것 없음] 내 결과가 있는 기기에서 내 링크를 열면 내 결과로 간다.** `shareInputLoader` → `joinShare` → 백엔드 `SELF_COMPATIBILITY` → `/reading/:내resultId`. PRD **FR-6** 이 명시한다("자기 링크면 궁합 없이 자기 결과(SCR-04)로 간다"). 공유 흐름은 **다른 기기·다른 사람 링크**로만 검증된다.
 2. **[스펙대로 — 고칠 것 없음] 사생활 보호 탭에서 인트로 뒤 '사주 입력 화면' 이 뜨는 것은 SCR-06 이다.** `IntroGate` 는 이동하지 않고 children 을 바꿀 뿐이라 주소는 `/s/:shareId` 그대로다. 홈(`/`)과 구분되는 표시: 설명이 "아래 정보를 입력하고 나와 OO 님의 귀인 궁합을…", 버튼이 **'운명 지도 확인하기'**(홈은 "생년월일로 점지받는 나의 인연" · '점지 확인하기'). 재검증 때 이 두 가지로 확인한다.
-3. **[실제 결함 — Touches 밖] 운명 카드 뒷면이 왼쪽으로 넘치고 앞면 높이가 비율을 넘는다.** iPhone 13(390px) 스크린샷 실측 — 앞면은 좌우 13 으로 맞는데 **뒷면 흰 테두리가 화면 왼쪽 끝(0)에 붙어 비대칭**이고, **앞면 카드 높이 536 이 `aspect-ratio: 349/461` 의 480 보다 ~56 크다**. 인스타 버튼(좌우 8, 348)은 정상이라 셸·간격 문제가 아니다. 후보: `[data-connection-card-back] img` 의 `width: 102.292%; left: -1.146%` 오버행, `[data-destiny-card]` 가 내용 overflow 로 `aspect-ratio` 를 넘겨 늘어나는 것. **고칠 파일은 `src/ui/DestinyCard.css`·`src/features/share/card/ConnectionCard.css` 로 08/T4 Touches 밖이다.** `src/ui/` Owner 는 @gn00py48 — `chore` 스트림을 연다. 실측이 스케일된 스크린샷 기준이라 `/preview/card` 390px 재현이 먼저다.
+3. **[재현 실패 — 결함 아님] 카드 레이아웃은 Figma 와 정확히 일치한다.** 스크린샷만 보고 "뒷면이 왼쪽으로 넘친다·앞면 높이가 비율을 넘는다"고 적었던 1차 판단은 **틀렸다.** `/preview/reading` 을 띄워 `getBoundingClientRect` 로 실측한 결과 — 카드 좌 13 / 우 13, 인스타 버튼 좌 21 / 우 21(= 13 + 8), 뒷면 이미지 오버행 좌 8.4 / 우 8.4 로 **모두 대칭**이고, 앞면 높이 533.6 이 `aspect-ratio: 349/461` 값 533.7 과 일치하며 뒤집기 전후 높이가 같다. '긴 제목' 상태에서도 카드 높이가 그대로고 문구 칸 아래로 280px 이 남으며 가로 스크롤이 없다. 축소된 스크린샷에서 `card-back.webp` 의 부드러운 가장자리가 배경과 섞여 왼쪽이 화면 끝에 붙은 것처럼 보였을 뿐이다. **chore 스트림을 열지 않았다 — 고칠 것이 없다.**
 
 ## Unverified Assumptions
 
 - 미리보기 **카드**(링크 텍스트가 아니라)를 탭할 때 `og:url` 로 가는지 — 앱마다 다르고 아직 확인되지 않았다.
-- 3번의 두 수치는 스크린샷 측정치다 — 로컬 재현으로 확정해야 한다.
+- 소유자가 본 '깨짐' 이 무엇이었는지 아직 특정되지 않았다. 결과 화면이 **뒷면부터** 시작하는 것(`ResultCard initialFace="back"`, 04/T7 결정)이 기대와 달라 보였을 가능성이 있다.
 
 ## Exact Next Action
 
-`chore` 스트림(`ai-stream.sh open chore card-layout-overflow --touches src/ui/DestinyCard.css,src/features/share/card/ConnectionCard.css`)으로 3번을 `/preview/card` 390px 에서 재현·수정하고, 08/T4 는 **다른 기기**에서 남의 링크로 2차 검증(카드 탭 포함)해 RESULT AC3 을 채운다.
+08/T4 2차 검증 — **다른 기기**에서 남의 `/s/:shareId` 를 열어 SCR-06 문구·버튼으로 확인하고, 카카오 미리보기 **카드 탭**이 `shareId` 를 지키는지 본 뒤 인스타 DM·기타 메신저 스크린샷으로 RESULT AC3 을 채운다.
