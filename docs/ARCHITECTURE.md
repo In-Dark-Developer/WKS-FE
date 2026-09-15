@@ -53,7 +53,7 @@
 ## Data Flow
 
 1. 사주 보기 — 입력 폼(`features/saju`) → `api`가 요청 스키마로 검증해 POST → 응답 봉투(`{success,data|error}`)를 zod로 파싱 → 응답의 `resultId`를 `api`가 이 브라우저의 '내 결과'로 보관 → `/reading/:id`로 이동해 loader가 보관된 `resultId`와 `:id`가 같은지 확인한 뒤 `GET /results/{id}` → 결과 화면이 운명 카드(운명 제목·설명, 결혼운·자녀운·연애운 등급, 행운의 장소·아이템)를 렌더 → `shareId`(공유 링크 재료)와 인연카드 등급(`cardGrades` — 계약에 없어 요청 중, PRD Q3)을 `features/share`에 넘긴다.
-2. 친구 궁합 — 궁합 지도(`/me/map`)의 '친구에게 공유하고 궁합 지도 넓히기'가 `/s/:shareId` 를 공유 → 받은 사람이 `/s/:shareId`(가드 없음)로 진입해 `GET /shares/{shareId}` 로 링크 주인의 궁합 지도(`features/friends`: 구슬·등급별 인원·순위)를 본다 — 결과 전문이 오지만 화면은 닉네임과 `compatibilities` 만 쓰고 사주 요약은 숨긴다(FR-15). 이때 `shareId` 를 sessionStorage 에 보관한다 → '내 사주 내용도 확인하기' → 보관된 내 `resultId` 가 없으면 `/`(인트로·사주 입력)에서 `POST /results` 로 결과를 만들고, 있으면 입력을 건너뛴다 → `POST /shares/{shareId}/compatibility`(`guestResultId` = 보관된 내 `resultId`) → 보관한 `shareId` 를 지우고 `/reading/:resultId` 로 이동한다. 별도 궁합 결과 화면은 없다 — 궁합은 두 결과의 `compatibilities` 에 모두 들어가 양쪽 결과 화면 순위와 궁합 지도에 보인다. `SELF_COMPATIBILITY` 면 자기 결과로, 그 밖의 실패는 오류 안내. 등급별 인원 수는 `compatibilities` 에서 `lib`의 순수 함수가 센다.
+2. 친구 궁합 — 궁합 지도(`/me/map`)의 '친구에게 공유하고 궁합 지도 넓히기'가 `/s/:shareId` 를 공유 → 받은 사람이 `/s/:shareId`(가드 없음, 첫 방문이면 인트로)로 진입해 `GET /shares/{shareId}` 로 링크 주인 닉네임을 받아 사주 입력(`features/saju` 폼 + 공유용 문구)을 본다. 보관된 내 `resultId` 가 있고 이 탭에서 이 링크로 궁합을 만든 적이 없으면 입력을 건너뛴다 → 제출하면 결과 대기 화면을 보이며 `POST /results`(내 `resultId` 보관) → `/s/:shareId/join` loader 가 `POST /shares/{shareId}/compatibility`(`guestResultId` = 보관된 내 `resultId`) → 이 탭에서 궁합을 만든 링크로 sessionStorage 에 기록 → `/s/:shareId/map` 에서 다시 `GET /shares/{shareId}` 로 링크 주인의 궁합 지도(`features/friends`: 구슬·등급별 인원·순위, 사주 요약은 숨긴다 — FR-15)를 본다 → '내 사주 내용도 확인하기'로 `/reading/:resultId`. 궁합은 두 결과의 `compatibilities` 에 모두 들어가 양쪽 결과 화면 순위와 궁합 지도에 보인다. `SELF_COMPATIBILITY` 면 자기 결과로, 그 밖의 실패는 오류 안내(다시 시도는 join 만 다시 부른다). 등급별 인원 수는 `compatibilities` 에서 `lib`의 순수 함수가 센다.
 3. 운명의 실 — 결과 화면의 사전신청 티저 → 모달(`features/profile`)에서 추가 정보 등록·동의(동의 전에는 전송하지 않는다) → 후보 카드 열람(`features/matching`, 축제 당일 2026-09-29부터) → '보내기' 호출 → 상대가 '당기기'를 하면 성립 응답에 연락처(전화번호, 등록했다면 인스타그램 아이디)가 포함되어 화면에 공개된다. 앱 내 채팅은 없다.
 
 ## State Management
@@ -64,7 +64,7 @@
 
 ## Persistence
 
-브라우저에 저장하는 것은 localStorage 두 키와 sessionStorage 한 키다: localStorage `wks:session` 이 브라우저가 만든 내 결과의 `resultId`(`src/api/session.ts`)과 `wks:intro-seen` 인트로를 봤는지 여부(`src/features/intro/introSeen.ts`, FR-1), sessionStorage 에 공유 링크로 들어와 궁합을 만들기 전까지의 `shareId`(탭을 닫으면 사라진다 — 키 이름과 모듈은 05/T7 이 정한다, FR-6). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
+브라우저에 저장하는 것은 localStorage 두 키와 sessionStorage 한 키다: localStorage `wks:session` 이 브라우저가 만든 내 결과의 `resultId`(`src/api/session.ts`)과 `wks:intro-seen` 인트로를 봤는지 여부(`src/features/intro/introSeen.ts`, FR-1), sessionStorage 에 이 탭에서 궁합을 만든 공유 링크의 `shareId`(탭을 닫으면 사라진다 — 뒤로가기로 돌아온 입력 화면이 입력을 건너뛰지 않게 한다, FR-6). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
 
 ## External Systems
 
