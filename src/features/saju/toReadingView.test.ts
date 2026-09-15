@@ -43,10 +43,10 @@ test('궁합을 상대 닉네임의 친구 목록으로 바꾸고 점수 높은 
   const withFriends: Result = {
     ...result,
     compatibilities: [
-      // 내가 링크 주인이면 상대는 방문자, 내가 방문자면 상대는 링크 주인이다.
-      { score: 61, tier: 'BEOT', originNickname: result.nickname, guestNickname: '민수' },
-      { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: result.nickname },
-      { score: 75, tier: 'CHALTTEOK', originNickname: result.nickname, guestNickname: '지현' },
+      // 응답 순서는 createdAt 내림차순이고 nickname 은 백엔드가 고른 상대 닉네임이다.
+      { nickname: '민수', score: 61, tier: 'BEOT', createdAt: '2026-09-15T03:00:00Z' },
+      { nickname: '서연', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T02:00:00Z' },
+      { nickname: '지현', score: 75, tier: 'CHALTTEOK', createdAt: '2026-09-15T01:00:00Z' },
     ],
   };
 

@@ -34,7 +34,7 @@ Phase 04 가 결과를 밖으로 내보내는 링크(`/s/<shareId>`)를 만들�
 ## Dependencies
 
 - Phase 04 — Task 8/8 병합, Phase 종료(@gn00py48) 전이다. 조립 Task(T7)는 `routes.tsx` 를 04/T8·05/T3 병합본 위에서 고친다
-- 05/T3 병합됨(#99) — `compatibilitySummarySchema` 가 운영 백엔드 `CompatibilityResponse`(`{ score, tier, originNickname, guestNickname }`, 2026-09-15 `/v3/api-docs`)로 정정됐다. 05/T4 병합됨(#102) — `getSharedResult`·`createCompatibility`
+- 05/T3 병합됨(#99), 05/T4 병합됨(#102) — `getSharedResult`·`createCompatibility`. 운영 호출 대조(2026-09-15, chore-compat-list-schema): 조회(`GET /results/{id}`·`GET /shares/{id}`)의 `compatibilities[]` 는 `{ nickname(상대), score, tier, createdAt }`(`compatibilitySummarySchema`), 궁합 생성 응답은 `{ score, tier, originNickname, guestNickname }`(`compatibilitySchema`)이다. 운영 Swagger 는 조회 목록도 두 닉네임 모양이라고 적지만 실제와 다르다 — 응답은 실측을 따른다
 - 디자인 — SCR-06 = 「궁합 지도 확인」(713:3956): SCR-08(558:2571)과 같은 지도·등급별 인원·순위, 부제 "닉네임님과의 궁합 지도예요.", 맨 아래 Button/Primary '내 사주 내용도 확인하기'. 주인 친구가 0명이면 순위 빈 상태는 SCR-08 그대로(소유자 2026-09-15)
 - 백엔드 계약 — `GET /shares/{shareId}` 는 `SharedResultResponse`(결과와 같고 `resultId`·`shareId` 없음, 404 `RESULT_NOT_FOUND`). `POST /shares/{shareId}/compatibility` 는 `{ guestResultId }` → 새로 만들면 201, 이미 있는 조합이면 재계산 없이 200(같은 값), 링크 주인 결과와 같으면 400 `SELF_COMPATIBILITY`. 궁합은 origin·guest 양쪽 `GET /results/{id}` 의 `compatibilities` 에 내려온다(WKS-BE `CompatibilityRepository.findAllByResultIdOrderByCreatedAtDesc`, cb3fb39)
 - 세션 — 공지 `2026-09-14-result-ownership`: `/s/:shareId` 는 가드가 없고, `guestResultId` 는 이 브라우저가 보관한 `resultId` 다. 보관된 결과가 있으면 입력을 건너뛴다(소유자 2026-09-15)

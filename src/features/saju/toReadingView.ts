@@ -30,14 +30,10 @@ export function toReadingView(result: Result): ReadingView {
   };
 }
 
-// 궁합 한 건에는 링크 주인(origin)·방문자(guest) 닉네임이 둘 다 온다 — 상대는 내 닉네임이 아닌 쪽이다.
-// 두 닉네임이 같으면 어느 쪽이든 글자가 같다. 순위는 점수 높은 순(FR-8)이고 같은 점수는 응답 순서(최근 순)를 지킨다.
+// 궁합 한 건의 `nickname` 은 백엔드가 이미 고른 상대 닉네임이다(내가 링크 주인이든 방문자든).
+// 순위는 점수 높은 순(FR-8)이고 같은 점수는 응답 순서(최근 순)를 지킨다.
 function toFriends(result: Result): NonNullable<ReadingView['friends']> {
   return result.compatibilities
-    .map(({ score, tier, originNickname, guestNickname }) => ({
-      nickname: originNickname === result.nickname ? guestNickname : originNickname,
-      score,
-      tier,
-    }))
+    .map(({ nickname, score, tier }) => ({ nickname, score, tier }))
     .sort((a, b) => b.score - a.score);
 }

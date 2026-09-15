@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 
 import { compatibilityRequestSchema, compatibilitySchema, sharedResultSchema } from './share';
 
-// 운영 Swagger(`/v3/api-docs`, 2026-09-15) SharedResultResponse 모양.
+// 운영 `GET /shares/{shareId}` 실제 응답 모양(2026-09-15 호출 대조).
 const sharedResult = {
   nickname: '서연',
   zodiac: 'HORSE',
@@ -14,7 +14,9 @@ const sharedResult = {
   ],
   luckyItem: '파란 부채',
   luckyPlace: '팔정도 앞',
-  compatibilities: [{ score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '지현' }],
+  compatibilities: [
+    { nickname: '지현', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T05:32:20.100339Z' },
+  ],
 };
 
 const GUEST_ID = '3f2a9c1e-1234-4a1b-8c1a-abcdef123456';
@@ -23,14 +25,12 @@ test('공유 결과는 resultId·shareId 없이 통과한다', () => {
   expect(sharedResultSchema.safeParse(sharedResult).success).toBe(true);
 });
 
-test('공유 결과의 궁합 목록이 옛 모양(nickname·createdAt)이면 실패한다', () => {
-  const oldShape = {
+test('공유 결과의 궁합 목록이 궁합 생성 응답 모양(닉네임 쌍)이면 실패한다', () => {
+  const pairShape = {
     ...sharedResult,
-    compatibilities: [
-      { nickname: '지현', score: 92, tier: 'GUIIN', createdAt: '2026-09-11T12:04:00Z' },
-    ],
+    compatibilities: [{ score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '지현' }],
   };
-  expect(sharedResultSchema.safeParse(oldShape).success).toBe(false);
+  expect(sharedResultSchema.safeParse(pairShape).success).toBe(false);
 });
 
 test('궁합 요청은 guestResultId UUID 가 있어야 한다', () => {

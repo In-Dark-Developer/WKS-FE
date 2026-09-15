@@ -77,22 +77,22 @@ test('grade 가 6단계 밖이면 실패한다 (2026-09-13 r2 계약)', () => {
   expect(resultSchema.safeParse({ ...validResult, fortunes: invalidFortunes }).success).toBe(false);
 });
 
-test('궁합 한 건은 백엔드 실제 모양(originNickname·guestNickname)으로 통과한다', () => {
+test('궁합 한 건은 운영 실제 모양(상대 nickname·createdAt)으로 통과한다', () => {
   const withFriend = {
     ...validResult,
-    compatibilities: [{ score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '민수' }],
+    compatibilities: [
+      { nickname: '민수', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T05:32:20.100339Z' },
+    ],
   };
   expect(resultSchema.safeParse(withFriend).success).toBe(true);
 });
 
-test('궁합 한 건에 닉네임 쌍이 없으면 실패한다', () => {
-  const oldShape = {
+test('궁합 한 건이 궁합 생성 응답 모양(닉네임 쌍)이면 실패한다', () => {
+  const pairShape = {
     ...validResult,
-    compatibilities: [
-      { nickname: '민수', score: 92, tier: 'GUIIN', createdAt: '2026-09-11T12:04:00Z' },
-    ],
+    compatibilities: [{ score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '민수' }],
   };
-  expect(resultSchema.safeParse(oldShape).success).toBe(false);
+  expect(resultSchema.safeParse(pairShape).success).toBe(false);
 });
 
 test('compatibilities 가 없으면 실패한다', () => {

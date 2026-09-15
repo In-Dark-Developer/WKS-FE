@@ -60,13 +60,14 @@ export const fortuneSchema = z.object({
 
 export const compatibilityTierSchema = z.enum(['GUIIN', 'CHALTTEOK', 'BEOT', 'SEUCHIM']);
 
-// 결과 조회의 궁합 한 건 — 백엔드 실제 응답(CompatibilityResponse) 모양이다(openapi CompatibilitySummary, 2026-09-15 대조).
-// 조회한 결과가 링크 주인·방문자 중 어느 쪽인지는 오지 않는다 — 상대 닉네임 고르기는 toReadingView 가 한다.
+// 결과·공유 조회의 궁합 한 건(openapi CompatibilitySummary). `nickname` 은 조회한 결과 기준의 상대 닉네임이다.
+// 운영 Swagger 는 CompatibilityResponse(두 닉네임)라고 적지만 실제 응답은 이 모양이다(2026-09-15 운영 호출 대조).
+// 궁합 생성 응답은 모양이 달라 share.ts 의 compatibilitySchema 가 따로 갖는다.
 export const compatibilitySummarySchema = z.object({
+  nickname: z.string(),
   score: z.number().int().min(0).max(100),
   tier: compatibilityTierSchema,
-  originNickname: z.string(),
-  guestNickname: z.string(),
+  createdAt: z.string(),
 });
 
 export type CompatibilitySummary = z.infer<typeof compatibilitySummarySchema>;
