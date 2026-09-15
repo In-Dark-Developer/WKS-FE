@@ -4,7 +4,7 @@
 
 - From: claude-code
 - To: 없음
-- Date: 2026-09-14
+- Date: 2026-09-15
 - Phase / Task: 08/T4
 
 ## Goal
@@ -14,6 +14,7 @@
 ## Work Completed
 
 - `index.html`: title 태그 운꿰사 → "운명도 꿰어야 사랑이다", `description`·`og:*`(type·site_name·title·description·url·locale)·`twitter:*`(card summary·title·description) (commit d32d0e7, Wip)
+- ADR-20260915-share-preview-static-meta: 동적 미리보기(Edge Functions·백엔드 렌더) 기각, 공통 메타 채택 — 재검토 조건 Q12 (commit 16129b5, Wip)
 
 ## Work In Progress
 
@@ -21,12 +22,13 @@
 
 ## Files Changed
 
-- `index.html`
+- `index.html` · `docs/decisions/ADR-20260915-share-preview-static-meta.md`
 
 ## Decisions Made
 
 - 소유자 결정: 서비스 이름 교체는 사용자 노출 문구(title 태그·OG/Twitter 제목)만. 문서 제목·주석·미사용 `src/app/Placeholder.tsx`·테스트 입력값의 "운꿰사" 는 그대로
 - 설명 문구는 입력 화면 부제 "생년월일로 점지받는 나의 인연"(`src/features/saju/SajuForm.tsx`)을 그대로 쓴다
+- 동적 미리보기 기각 근거: 바꿀 재료가 닉네임뿐이고 노출 여부(Q12) 미정, 마감 9/17 — PR 리뷰에서 소유자가 뒤집을 수 있다
 - 이미지가 없어 `twitter:card` 는 `summary` — 썸네일이 오면 `summary_large_image`
 
 ## Tests Executed
@@ -44,8 +46,8 @@
 
 ## Unverified Assumptions
 
-- 없음
+- 썸네일 대신 인연카드 앞면 캡처(PLAN Dependencies 대안)를 쓸지 — 2026-09-14 소유자 결정은 디자인 대기
 
 ## Exact Next Action
 
-썸네일을 받으면 `public/og/` 에 넣고 `og:image`(절대 주소)·`og:image:width/height`·`twitter:card summary_large_image` 추가 → 동적 미리보기 ADR → 병합·배포 뒤 카카오 공유 디버거로 확인
+썸네일을 받으면 `public/og/` 에 넣고 `og:image`(절대 주소)·`og:image:width/height`·`twitter:card summary_large_image` 추가 → 병합·배포 뒤 카카오 공유 디버거로 확인

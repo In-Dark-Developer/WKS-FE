@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-15 · claude-code · 08/T4 · 동적 미리보기 ADR
+
+- Commits: 16129b5
+- Done: ADR-20260915-share-preview-static-meta(공통 메타 채택·동적 기각), main 병합, 공지 result-ownership 확인(Touches 무관)
+- Not done: og:image(디자인 대기 — figma-assets 에도 없음), 실제 앱 미리보기 확인
+- Developer changes: 없음
+- Upstream changes: main 121커밋 유입 — Touches(index.html·public/og·docs/decisions) 겹침 없음(ADR 신규 파일만)
+- Spec changes: 없음
+- Needs your attention: 썸네일 전달 또는 인연카드 캡처 대체 결정, ADR 방향 확인
+
 ## 2026-09-14 · claude-code · 08/T4 · 제목 교체·공통 OG 메타
 
 - Commits: d32d0e7
