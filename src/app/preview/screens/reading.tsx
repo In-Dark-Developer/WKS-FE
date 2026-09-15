@@ -1,5 +1,6 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
 import { FortuneLoading, ReadingResult, type ReadingView } from '@/features/saju';
+import { ResultCard } from '@/features/share';
 import { DestinyCard } from '@/ui/DestinyCard';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
@@ -28,6 +29,7 @@ const view: ReadingView = {
   },
   luckyPlace: '만해광장',
   luckyItem: '작은 책 한 권',
+  shareId: '9f0d3f1e-0000-4000-8000-000000000001',
 };
 
 const zodiacs: readonly Zodiac[] = [
@@ -51,9 +53,10 @@ export const preview: PreviewScreen = {
   order: 1,
   backdrop: 'result',
   states: {
-    결과: () => <ReadingResult view={view} />,
+    결과: () => <ReadingResult renderCard={(face) => <ResultCard {...face} />} view={view} />,
     '긴 제목': () => (
       <ReadingResult
+        renderCard={(face) => <ResultCard {...face} />}
         view={{
           ...view,
           nickname: '여덟글자닉네임',

@@ -1,9 +1,15 @@
 import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 import { App } from '@/app/App';
 
+// 인트로(FR-1)는 첫 방문에만 뜬다 — 셸 안의 입력 화면을 보려고 이미 본 방문자로 시작한다.
+beforeEach(() => {
+  localStorage.setItem('wks:intro-seen', '1');
+});
+
 afterEach(() => {
+  localStorage.clear();
   cleanup();
   window.history.pushState({}, '', '/');
 });

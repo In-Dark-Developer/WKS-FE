@@ -3,7 +3,7 @@
 # - 2026-09-13: 백엔드가 공개한 api-spec.md(Base URL /api · 공통 봉투 {success,data|error})로 통째로 교체했다 (Phase 01 T6 · Q3).
 # - 2026-09-13 r2: WKS-BE dev b61f849(api-spec.md 20:49) 대조로 다시 맞췄다 — 사주 입력(calendarType·isLeapMonth, birthRegion 제거, 시진 가운데 시각·자시 두 칸),
 #   결과 응답(shareId·zodiac·등급 6단계·compatibilities), 공유 경로(/shares/{shareId} 조회·궁합), traceId 미구현.
-# - 디자인·PRD 에는 있으나 이 계약에 없는 것(세션 토큰 Q16 · 인연카드 등급 cardGrades · 사전신청 추가 정보 Q14 · 후보 · 운명의 실)은 넣지 않았다 — PRD Open Questions.
+# - 디자인·PRD 에는 있으나 이 계약에 없는 것(인연카드 등급 cardGrades · 사전신청 추가 정보 Q14 · 후보 · 운명의 실)은 넣지 않았다 — PRD Open Questions.
 # - 백엔드 문서가 값을 확정하지 않은 곳은 description 에 [미확인] 을 붙였다.
 # - 검증 예: npx @redocly/cli lint docs/api/openapi.yaml
 openapi: 3.1.0
@@ -16,7 +16,7 @@ info:
     - JSON 키는 camelCase. 날짜는 `yyyy-MM-dd`, 시각은 ISO-8601 UTC(`Z`). **null 필드도 키를 유지한다.**
     - `error.message` 는 사용자에게 그대로 보여줄 수 있는 한국어다. 문서의 `traceId` 는 백엔드 코드(ErrorResponse)에 아직 없다.
     - Swagger UI `/swagger-ui.html` · OpenAPI JSON `/v3/api-docs` 는 참고용이고 원본은 백엔드의 api-spec.md 다.
-security: []   # 계약에 인증·세션이 아직 없다. 프론트는 백엔드 세션 토큰으로 식별하기로 했고(PRD Q16) 계약 갱신 대기 중이다
+security: []   # 사주·궁합에 인증·세션이 없다 — 백엔드는 링크 키(resultId·shareId, UUIDv4)만 쓰고 토큰을 발급하지 않는다 (ADR-20260914-result-ownership-in-browser)
 servers:
   - url: https://api.threadoffate.site/api
     description: "운영 (ADR-20260914-netlify-personal-fork) — 프론트 origin https://threadoffate.site·https://www.threadoffate.site 를 CORS 에 허용해야 한다. /api 접두는 백엔드 확인 전 가정 [미확인]"
@@ -302,7 +302,7 @@ components:
         compatibilities:
           type: array
           items: { $ref: "#/components/schemas/CompatibilitySummary" }
-          description: "생성 응답은 빈 배열, 조회는 createdAt 내림차순. 상대의 생년월일·성별·resultId 는 내려오지 않는다 — 닉네임과 점수만"
+          description: "생성 응답은 빈 배열, 조회는 궁합 생성 시각 내림차순(시각 필드는 내려오지 않는다). 상대의 생년월일·성별·resultId 는 내려오지 않는다 — 닉네임과 점수만"
     Result:
       allOf:
         - type: object
@@ -328,13 +328,16 @@ components:
       enum: [GUIIN, CHALTTEOK, BEOT, SEUCHIM]
       description: "궁합 등급 — 귀인 90~100 · 찰떡 75~89 · 벗 61~74 · 스침 0~60 (2026-09-13 기획 확정). 화면은 tier 값만 쓰고 구간을 계산하지 않는다"
     CompatibilitySummary:
+      # 2026-09-15 WKS-BE dev 대조: 백엔드 코드(ResultResponse.compatibilities = CompatibilityResponse)와 운영 Swagger 는
+      # 이 모양이다. 백엔드 api-spec.md 의 { nickname, score, tier, createdAt } 는 코드와 다르다 — 백엔드에 알린다.
+      # 조회한 결과가 링크 주인(origin)인지 방문자(guest)인지는 응답에 없다 — 상대 닉네임은 내 닉네임이 아닌 쪽이다.
       type: object
-      required: [nickname, score, tier, createdAt]
+      required: [score, tier, originNickname, guestNickname]
       properties:
-        nickname: { type: string, description: "상대 닉네임" }
         score: { type: integer, minimum: 0, maximum: 100 }
         tier: { $ref: "#/components/schemas/CompatibilityTier" }
-        createdAt: { type: string, format: date-time }
+        originNickname: { type: string, description: 링크 주인 }
+        guestNickname: { type: string, description: 방문자 }
     CompatibilityResult:
       type: object
       required: [score, tier, originNickname, guestNickname]

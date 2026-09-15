@@ -77,6 +77,24 @@ test('grade 가 6단계 밖이면 실패한다 (2026-09-13 r2 계약)', () => {
   expect(resultSchema.safeParse({ ...validResult, fortunes: invalidFortunes }).success).toBe(false);
 });
 
+test('궁합 한 건은 백엔드 실제 모양(originNickname·guestNickname)으로 통과한다', () => {
+  const withFriend = {
+    ...validResult,
+    compatibilities: [{ score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '민수' }],
+  };
+  expect(resultSchema.safeParse(withFriend).success).toBe(true);
+});
+
+test('궁합 한 건에 닉네임 쌍이 없으면 실패한다', () => {
+  const oldShape = {
+    ...validResult,
+    compatibilities: [
+      { nickname: '민수', score: 92, tier: 'GUIIN', createdAt: '2026-09-11T12:04:00Z' },
+    ],
+  };
+  expect(resultSchema.safeParse(oldShape).success).toBe(false);
+});
+
 test('compatibilities 가 없으면 실패한다', () => {
   const withoutCompatibilities: Partial<typeof validResult> = { ...validResult };
   delete withoutCompatibilities.compatibilities;

@@ -1,6 +1,6 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 import type { Result } from '@/api/schema/result';
 import { writeSession } from '@/api/session';
@@ -13,8 +13,12 @@ vi.mock('@/api/results', async (importOriginal) => {
   return { ...actual, getResult: getResultMock };
 });
 
+// 보관된 resultId 는 UUID 로 파싱되므로 주소의 id 도 UUID 로 쓴다.
+const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
+const OTHER_RESULT_ID = '7b91d26f-2222-4222-8222-222222222222';
+
 const stubResult: Result = {
-  resultId: 'abc',
+  resultId: RESULT_ID,
   shareId: '11111111-1111-4111-8111-111111111111',
   nickname: '달빛토끼',
   zodiac: 'PIG',
@@ -28,6 +32,11 @@ const stubResult: Result = {
   luckyItem: '작은 책 한 권',
   compatibilities: [],
 };
+
+// 인트로(FR-1)는 첫 방문에만 뜬다 — 입력 화면을 보는 테스트는 이미 본 방문자로 시작한다.
+beforeEach(() => {
+  localStorage.setItem('wks:intro-seen', '1');
+});
 
 afterEach(() => {
   cleanup();
@@ -49,8 +58,28 @@ test('루트 경로가 화면을 렌더한다', async () => {
   ).toBeInTheDocument();
 });
 
+test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
+  localStorage.clear();
+  renderAt('/');
+
+  expect(screen.getByLabelText('인트로 영상')).toBeInTheDocument();
+});
+
+test('첫 방문이라도 결과 화면으로 바로 들어오면 인트로가 없다', async () => {
+  localStorage.clear();
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  renderAt(`/reading/${RESULT_ID}`);
+
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByLabelText('인트로 영상')).not.toBeInTheDocument();
+});
+
 test('세션 없이 결과 화면에 들어오면 입력 화면으로 보낸다', async () => {
-  const router = renderAt('/reading/abc');
+  const router = renderAt(`/reading/${RESULT_ID}`);
 
   expect(
     await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
@@ -58,47 +87,159 @@ test('세션 없이 결과 화면에 들어오면 입력 화면으로 보낸다'
   expect(router.state.location.pathname).toBe('/');
 });
 
-test('세션이 있으면 결과 화면에 머문다', async () => {
-  writeSession('token-1');
+test('이 브라우저가 만든 결과면 결과 화면에 머문다', async () => {
+  writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
 
-  const router = renderAt('/reading/abc');
+  const router = renderAt(`/reading/${RESULT_ID}`);
 
   expect(
     await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
   ).toBeInTheDocument();
-  expect(router.state.location.pathname).toBe('/reading/abc');
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
   expect(screen.getByRole('main')).toHaveAttribute('data-backdrop', 'result');
   // 친구 궁합 순위(05/T2 FriendRanking)가 ranking 슬롯에 조립돼 있다 — 인연이 없을 때 안내.
   expect(screen.getByText('아직 인연이 없어요')).toBeInTheDocument();
 });
 
 test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () => {
-  writeSession('token-1');
+  writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: true,
     data: {
       ...stubResult,
       compatibilities: [
-        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-13T00:00:00Z' },
+        { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '친구1' },
       ],
     },
   });
 
-  renderAt('/reading/abc');
+  renderAt(`/reading/${RESULT_ID}`);
 
   expect(await screen.findByText('친구1')).toBeInTheDocument();
   expect(screen.getByText('92')).toBeInTheDocument();
 });
 
+// 05/T3 조립 — 궁합 지도(`/me/map`)와 결과 화면 순위의 '지도 보기'.
+
+test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서 친구가 점수 높은 순으로 보인다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({
+    ok: true,
+    data: {
+      ...stubResult,
+      compatibilities: [
+        { score: 61, tier: 'BEOT', originNickname: '달빛토끼', guestNickname: '민수' },
+        { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '달빛토끼' },
+      ],
+    },
+  });
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+  fireEvent.click(await screen.findByRole('link', { name: '지도 보기 >' }));
+
+  expect(
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/me/map');
+  expect(getResultMock).toHaveBeenLastCalledWith(RESULT_ID);
+  const ranking = screen.getByRole('region', { name: '친구 궁합 순위' });
+  expect(
+    within(ranking)
+      .getAllByRole('listitem')
+      .map((row) => row.textContent),
+  ).toEqual([expect.stringContaining('서연'), expect.stringContaining('민수')]);
+  expect(
+    screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' }),
+  ).toBeInTheDocument();
+});
+
+test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 보낸다', async () => {
+  const router = renderAt('/me/map');
+
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+  expect(getResultMock).not.toHaveBeenCalled();
+});
+
+// 04/T7 조립 — 인연카드 화면을 결과 화면에 합쳤다(카드 뒤집기·인스타 스토리 공유, 빈 순위의 친구에게 공유).
+
+test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·인스타 스토리 공유를 갖고 인연카드 입구는 없다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  renderAt(`/reading/${RESULT_ID}`);
+
+  // 들어오면 카드 뒷면부터 보인다 (PRD FR-5).
+  expect(await screen.findByRole('img', { name: '운명도 꿰어야 사랑이다' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '인스타 스토리 공유하기' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '인연카드 보기' })).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  expect(screen.getByRole('region', { name: '달빛토끼님의 운명 카드' })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: 'SS 등급' })).toBeInTheDocument();
+});
+
+test('친구 궁합 순위가 비어 있으면 안내 아래에 친구에게 공유가 있다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  renderAt(`/reading/${RESULT_ID}`);
+
+  const empty = (await screen.findByText('아직 인연이 없어요')).closest('[role="status"]');
+  if (!(empty instanceof HTMLElement)) throw new Error('빈 상태 안내가 없다');
+  expect(within(empty).getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
+});
+
+test('친구 궁합 순위가 있으면 결과 화면에 친구에게 공유가 없다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({
+    ok: true,
+    data: {
+      ...stubResult,
+      compatibilities: [
+        { score: 92, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '친구1' },
+      ],
+    },
+  });
+
+  renderAt(`/reading/${RESULT_ID}`);
+
+  expect(await screen.findByText('친구1')).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '친구에게 공유' })).not.toBeInTheDocument();
+});
+
+test('없어진 인연카드 주소는 없는 경로 화면이다', async () => {
+  writeSession(RESULT_ID);
+
+  renderAt(`/reading/${RESULT_ID}/card`);
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('찾는 점지가 없어요');
+  expect(getResultMock).not.toHaveBeenCalled();
+});
+
+test('다른 결과를 만든 브라우저로 결과 화면에 들어오면 입력 화면으로 보낸다', async () => {
+  writeSession(OTHER_RESULT_ID);
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+  expect(getResultMock).not.toHaveBeenCalled();
+});
+
 test('결과 조회가 실패하면 오류 화면을 보인다', async () => {
-  writeSession('token-1');
+  writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
   });
 
-  renderAt('/reading/abc');
+  renderAt(`/reading/${RESULT_ID}`);
 
   expect(await screen.findByRole('alert')).toHaveTextContent('찾는 점지가 없어요');
 });

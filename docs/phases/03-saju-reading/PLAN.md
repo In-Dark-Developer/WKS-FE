@@ -1,13 +1,13 @@
 # Phase 03 — saju-reading
 
-- Status: PLANNED
+- Status: DONE
 - Lead: @nicerjs23
 - Depends on: 02
 - Start: TBD · End: 2026-09-17 (MVP 마감 — PRD Constraints)
 
 ## Goal
 
-사주 입력 폼에서 시작해 운명 카드 결과 화면(운명 제목·설명, 연애운·결혼운·자녀운 등급 SS~B 6단계, 행운의 장소(동국대)·아이템)이 뜨고, 그 결과가 백엔드 응답에서 온다. 세션 없이 결과 화면에 들어오면 입력으로 안내된다.
+사주 입력 폼에서 시작해 운명 카드 결과 화면(운명 제목·설명, 연애운·결혼운·자녀운 등급 SS~B 6단계, 행운의 장소(동국대)·아이템)이 뜨고, 그 결과가 백엔드 응답에서 온다. 이 브라우저가 만들지 않은 결과 화면에 들어오면 입력으로 안내된다.
 
 ## Motivation
 
@@ -17,7 +17,7 @@
 
 - 사주 입력 폼(SCR-02): 성별(남/여) · 달력 기준(양/음력) · 생년월일 8자리 · 12시진 셀렉트 + '몰라요' · 닉네임 1–8자 (태어난 지역은 받지 않고 `birthRegion` 필드도 보내지 않는다 — 계약에서 빠짐), 기본/오류/연결문제/로딩 4상태
 - 결과 대기(SCR-03)와 결과 화면(SCR-04): 운명 카드(십이간지 캐릭터·'○○보살님' 치환·운명 제목·설명·3영역 문자 등급 스탬프 SS~B 6단계), 행운의 장소·아이템 카드, 운세 카드 3장, 보살 말투 문구
-- 세션 없음·만료 시 입력 화면으로 안내 (FR-18)
+- 이 브라우저가 만든 결과가 아니면(보관된 `resultId` 없음·다름) 입력 화면으로 안내 (FR-18)
 - `src/api/` 클라이언트: 요청/응답 zod 스키마, 에러·타임아웃 처리, 서버 상태 캐시 방식 결정(ADR)
 - 백엔드 준비 전 개발을 위한 목(mock) 응답 경로
 
@@ -26,12 +26,12 @@
 - 인트로 — MVP 제외 (PRD Non-goals)
 - 공유 링크·인연카드·'인스타 스토리 공유하기' 버튼 (Phase 04)
 - 궁합 점수·결과 화면 하단 '친구 궁합 순위' 섹터·사전신청 티저 (Phase 05·06)
-- 로그인/세션 UI — 백엔드 인증 방식 확정 전까지 최소로만
+- 로그인/세션 UI — 백엔드에 인증이 없다 (ADR-20260914-result-ownership-in-browser)
 
 ## Dependencies
 
 - Phase 02 — T4는 02/T2(기본 입력)·02/T6(Select) 병합 후, T3의 SCR-12 는 02/T4(`ContentState`)를 쓴다
-- 백엔드 계약 `POST /results` · `GET /results/{id}` — WKS-BE dev b61f849 로 참조본 갱신(2026-09-13 r2, `docs/api/openapi.yaml`): `calendarType`·`isLeapMonth`·`birthTime` 가운데 시각, 응답 `shareId`·`zodiac`·`fortunes[].grade` 6단계. 세션 토큰은 계약에 없다(Q16)
+- 백엔드 계약 `POST /results` · `GET /results/{id}` — WKS-BE dev b61f849 로 참조본 갱신(2026-09-13 r2, `docs/api/openapi.yaml`): `calendarType`·`isLeapMonth`·`birthTime` 가운데 시각, 응답 `shareId`·`zodiac`·`fortunes[].grade` 6단계. 세션 토큰은 계약에 없고 백엔드가 발급하지 않는다 — '내 결과'는 브라우저가 보관한 `resultId` (2026-09-14, ADR-20260914-result-ownership-in-browser)
 - 백엔드 dev(b61f849)에 `POST /results` · `GET /results/{id}` · `GET /shares/{shareId}` · `POST /shares/{shareId}/compatibility` 가 있다 — 목 응답 경로는 백엔드 없이 개발·테스트할 때 쓴다
 - 로컬 연동: 백엔드 CORS 는 `http://localhost:3000` 만 허용 — `vite.config.ts` `server.port` 를 3000 으로 맞춘다 (T1 Touches)
 - 결과 대기 디자인(디자인시스템 FortuneLoading)과 결과 에러 상태 디자인
@@ -52,9 +52,11 @@
 
 - [x] T7. 입력·결과 연동 — Done when: `/` 가 SajuForm 과 action(검증된 SajuInput → `POST /results` → 세션 저장 → `/reading/:id` 로 redirect, 연결 실패는 `{ formError: 'connection' }`)으로, `/reading/:id` 가 loader(`GET /results/{id}` → `ReadingView` 변환)로 동작하고, 404·503·스키마 위반이 errorElement 로 가며, 백엔드 준비 전에는 T1 의 목 응답으로 입력 → 결과를 완주한다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/saju/sajuAction.ts`, `src/features/saju/readingLoader.ts`, `src/features/saju/toReadingView.ts` · After: T1, T4, T5 · Owner: @nicerjs23 (commit 90c8cd8, ranking 슬롯 05/T2 FriendRanking 조립 누락분은 commit 019c4ef 로 채움)
 
+- [x] T8. 결과 주인 확인을 보관된 `resultId` 로 전환 — Done when: `createResult` 가 목·실제 공통으로 성공 응답의 `resultId` 를 `wks:session` 에 `{ v: 2, resultId }` 로 저장하고(이전 `{ v: 1, token }` 값은 세션 없음으로 지워진다, 목 응답의 가짜 토큰 쓰기는 없어진다), `/reading/:id`·`/reading/:id/card` 가드가 보관된 `resultId` 가 없거나 `:id` 와 다르면 `/` 로 보내며, `client.ts` 가 `Authorization` 헤더를 싣지 않고 `INVALID_TOKEN` 에 세션을 지우지 않고, 실제 백엔드로 입력 → 결과 → 인연카드를 이탈 없이 완주한다 (테스트 포함) · Touches: `src/api/session.ts`, `src/api/session.test.ts`, `src/api/results.ts`, `src/api/results.test.ts`, `src/api/client.ts`, `src/api/client.test.ts`, `src/app/requireSession.ts`, `src/app/routes.tsx`, `src/app/routes.test.tsx` · After: T7 · Owner: @jjjung0921 (commit 55dc225 — 운영 API 로 입력 → 결과 → 인연카드 완주 확인 2026-09-14)
+
 <!-- 선후는 각 Task 의 After: 가 기준이다 (T4 After: T1 · T5 After: T6 · T7 After: T1·T4·T5). T5·T6 은 T1 없이 진행한다.
      퍼블리싱 먼저(2026-09-13): 화면(T4·T5)은 props 뷰 모델로만 그리고 `/preview` 에서 가짜 데이터로 확인한다. 데이터 연결(action·loader·응답→뷰 모델 변환)은 T7 이 한다. T5 담당 @nicerjs23 → @jjjung0921, 연동은 T7 @nicerjs23.
-     라우트 파일은 충돌 지점이라 한 Task 만 소유한다 — T3(완료) 이후는 T7. 다른 Task는 자기 화면 컴포넌트·loader·action만 export 한다. preview 는 `App.tsx`(T6)에서 붙여 routes.tsx 와 겹치지 않는다.
+     라우트 파일은 충돌 지점이라 한 Task 만 소유한다 — T3(완료) 이후는 T7, T7(완료) 이후 가드 전환은 T8(2026-09-14, `session.ts`·`client.ts` 도 T8). 다른 Task는 자기 화면 컴포넌트·loader·action만 export 한다. preview 는 `App.tsx`(T6)에서 붙여 routes.tsx 와 겹치지 않는다.
      옵션 값(12시진)은 `features/saju/options.ts`(T4)에 두고 ui Select(02/T6)에는 props로만 넘긴다. API 파일은 자원별로 나눈다 — `client.ts`는 T1, `session.ts`(localStorage 세션 보관 — ADR-20260913-server-state-and-session-storage)는 T3 소유이고 다른 Task는 import 만. `session.ts`를 T1에서 T3으로 옮겼다(2026-09-13) — T3의 가드가 T1을 기다리지 않게. -->
 
 ## Relevant Specifications
@@ -66,15 +68,16 @@
 
 ## Acceptance Criteria
 
-- [ ] AC1. 입력 → 결과를 이탈 없이 완주할 수 있다
-- [ ] AC2. 태어난 시간을 '몰라요'로 두어도 결과를 받을 수 있고, 음력·윤달 입력이 전송되며, 지역 입력 없이 `birthRegion` 필드를 보내지 않는다
-- [ ] AC6. 세션 없이 `/reading/:id`에 들어오면 입력 화면으로 안내된다
-- [ ] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
-- [ ] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
-- [ ] AC5. `src/app/routes.tsx`를 T3(완료)·T7 외의 Task가 수정하지 않았다
+- [x] AC1. 입력 → 결과를 이탈 없이 완주할 수 있다
+- [x] AC2. 태어난 시간을 '몰라요'로 두어도 결과를 받을 수 있고, 음력·윤달 입력이 전송되며, 지역 입력 없이 `birthRegion` 필드를 보내지 않는다
+- [x] AC6. 이 브라우저가 만든 결과가 없거나 다른 `resultId` 로 `/reading/:id`·`/reading/:id/card` 에 들어오면 입력 화면으로 안내된다
+- [x] AC3. 백엔드 응답이 스키마와 다르면 화면이 깨지지 않고 에러 안내가 뜬다
+- [x] AC4. 입력 폼과 결과 화면에 단위·컴포넌트 테스트가 있다
+- [x] AC5. `src/app/routes.tsx`를 T3(완료)·T7·T8 외의 Task가 수정하지 않았다 (예외 4건 — chore 2건·04/T6·04/T7, 충돌 없음: RESULT Deviations)
 
 ## Validation Plan
 
-- AC1·AC2: 목 응답으로 흐름 수동 확인 + 폼 테스트
+- AC1·AC2: 목 응답으로 흐름 수동 확인 + 폼 테스트 + 실제 백엔드로 입력 → 결과 → 인연카드 1회 완주(T8 — 운영이면 DB 1건·LLM 1회가 생긴다)
+- AC6: 라우트 테스트 — 보관값 없음·다른 `resultId`·같은 `resultId` 세 경우를 결과·인연카드 화면에서 각각. 수동으로 다른 브라우저에서 결과 주소를 열어 `/` 로 가는지 확인
 - AC3: 스키마 위반 응답을 주입한 테스트
 - AC4: `pnpm test`

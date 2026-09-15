@@ -23,8 +23,19 @@ test('공유 시트를 지원하면 시트로 넘기고 복사하지 않는다',
   setNavigator('clipboard', { writeText });
 
   await expect(shareLink(url, meta)).resolves.toBe('shared');
-  expect(share).toHaveBeenCalledWith({ title: meta.title, text: meta.text, url });
+  expect(share).toHaveBeenCalledWith({ title: meta.title, text: `${meta.text}\n${url}` });
   expect(writeText).not.toHaveBeenCalled();
+});
+
+test('링크는 문구 뒤 줄바꿈 다음에 두어 받는 앱이 문구를 링크에 이어 붙이지 않게 한다', async () => {
+  const share = vi.fn().mockResolvedValue(undefined);
+  setNavigator('share', share);
+
+  await shareLink(url, meta);
+
+  const [data] = share.mock.calls[0] as [ShareData];
+  expect(data).not.toHaveProperty('url');
+  expect(data.text?.split('\n')).toEqual([meta.text, url]);
 });
 
 test('사용자가 공유 시트를 닫으면 아무것도 하지 않는다', async () => {

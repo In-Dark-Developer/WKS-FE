@@ -34,19 +34,27 @@ test('fortunes 배열을 카테고리별 key 로 바꾼다', () => {
     },
     luckyPlace: '만해광장',
     luckyItem: '책',
-    compatibilities: [],
+    shareId: 's1',
+    friends: [],
   });
 });
 
-test('compatibilities 를 그대로 전달한다(ranking 슬롯이 쓴다)', () => {
+test('궁합을 상대 닉네임의 친구 목록으로 바꾸고 점수 높은 순으로 둔다', () => {
   const withFriends: Result = {
     ...result,
     compatibilities: [
-      { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-13T00:00:00Z' },
+      // 내가 링크 주인이면 상대는 방문자, 내가 방문자면 상대는 링크 주인이다.
+      { score: 61, tier: 'BEOT', originNickname: result.nickname, guestNickname: '민수' },
+      { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: result.nickname },
+      { score: 75, tier: 'CHALTTEOK', originNickname: result.nickname, guestNickname: '지현' },
     ],
   };
 
-  expect(toReadingView(withFriends).compatibilities).toEqual(withFriends.compatibilities);
+  expect(toReadingView(withFriends).friends).toEqual([
+    { nickname: '서연', score: 92, tier: 'GUIIN' },
+    { nickname: '지현', score: 75, tier: 'CHALTTEOK' },
+    { nickname: '민수', score: 61, tier: 'BEOT' },
+  ]);
 });
 
 test('fortunes 순서가 바뀌어도 카테고리로 찾는다', () => {

@@ -1,6 +1,6 @@
 # Architecture — 운꿰사 (WKS) 프론트엔드
 
-- Last updated: 2026-09-13
+- Last updated: 2026-09-14
 - Related ADRs: ADR-20260911-frontend-stack-and-repo-scope, ADR-20260913-server-state-and-session-storage
 
 ## System Overview
@@ -52,19 +52,19 @@
 
 ## Data Flow
 
-1. 사주 보기 — 입력 폼(`features/saju`) → `api`가 요청 스키마로 검증해 POST → 응답 봉투(`{success,data|error}`)를 zod로 파싱 → 응답과 함께 백엔드가 발급한 세션 토큰을 `api`가 보관(발급·전달 방식은 PRD Q16) → 결과 화면이 운명 카드(운명 제목·설명, 결혼운·자녀운·연애운 등급, 행운의 장소·아이템)를 렌더 → `shareId`(공유 링크 재료)와 인연카드 등급(`cardGrades` — 계약에 없어 요청 중, PRD Q3)을 `features/share`에 넘긴다.
-2. 친구 궁합 — 공유 링크(`/s/:shareId`)로 진입 → 링크 주인의 공개 결과를 `GET /shares/{shareId}`로 조회(결과 전문이 오지만 화면은 닉네임만 쓰고 사주 요약은 숨긴다 — FR-15) → 방문자가 자기 사주를 입력(`POST /results`) → `POST /shares/{shareId}/compatibility`(`guestResultId`)로 궁합 점수 응답(점수 + 등급)을 받아 표시하고, 양쪽의 궁합 지도(`features/friends`: 구슬·등급별 인원·순위)에 반영된다. 등급별 인원 수는 `GET /results/{resultId}`의 `compatibilities`에서 `lib`의 순수 함수가 센다.
+1. 사주 보기 — 입력 폼(`features/saju`) → `api`가 요청 스키마로 검증해 POST → 응답 봉투(`{success,data|error}`)를 zod로 파싱 → 응답의 `resultId`를 `api`가 이 브라우저의 '내 결과'로 보관 → `/reading/:id`로 이동해 loader가 보관된 `resultId`와 `:id`가 같은지 확인한 뒤 `GET /results/{id}` → 결과 화면이 운명 카드(운명 제목·설명, 결혼운·자녀운·연애운 등급, 행운의 장소·아이템)를 렌더 → `shareId`(공유 링크 재료)와 인연카드 등급(`cardGrades` — 계약에 없어 요청 중, PRD Q3)을 `features/share`에 넘긴다.
+2. 친구 궁합 — 공유 링크(`/s/:shareId`)로 진입 → 링크 주인의 공개 결과를 `GET /shares/{shareId}`로 조회(결과 전문이 오지만 화면은 닉네임만 쓰고 사주 요약은 숨긴다 — FR-15) → 방문자가 자기 사주를 입력(`POST /results` — 방문자의 `resultId`가 이 브라우저의 '내 결과'로 보관된다. 랜딩에는 가드가 없다) → `POST /shares/{shareId}/compatibility`(`guestResultId` = 보관된 방문자 `resultId`)로 궁합 점수 응답(점수 + 등급)을 받아 표시하고, 양쪽의 궁합 지도(`features/friends`: 구슬·등급별 인원·순위)에 반영된다. 등급별 인원 수는 `GET /results/{resultId}`의 `compatibilities`에서 `lib`의 순수 함수가 센다.
 3. 운명의 실 — 결과 화면의 사전신청 티저 → 모달(`features/profile`)에서 추가 정보 등록·동의(동의 전에는 전송하지 않는다) → 후보 카드 열람(`features/matching`, 축제 당일 2026-09-29부터) → '보내기' 호출 → 상대가 '당기기'를 하면 성립 응답에 연락처(전화번호, 등록했다면 인스타그램 아이디)가 포함되어 화면에 공개된다. 앱 내 채팅은 없다.
 
 ## State Management
 
 - 서버 상태(사주 결과, 친구 점수, 후보, 실 상태)는 백엔드가 소유한다. 화면은 React Router 데이터 API로 읽고 쓴다 — 읽기는 route `loader`, 쓰기는 `action`·`useFetcher`가 `src/api/` 함수를 부르고, loader·action은 feature가 export 해 `src/app/routes.tsx`가 등록한다. 요청/캐시 라이브러리는 두지 않는다. `/reading/:id` 하위 화면은 부모 loader 데이터(`useRouteLoaderData`)를 공유하고 결과 본문은 다시 부르지 않으며, `compatibilities`를 보여 주는 화면은 진입마다 다시 부른다(ADR-20260913-server-state-and-session-storage).
 - 폼·모달·블러 해제 여부 같은 화면 상태는 해당 feature 안의 지역 상태로 둔다. 전역 스토어는 도입하지 않는다.
-- 로그인은 없다. 백엔드가 보낸 세션 토큰만으로 '내 결과·내 신청·내 실'을 찾고 세션을 유지한다. 공유 링크 재료는 `shareId`다 — 계약의 `GET /results/{resultId}`는 토큰 계약(Q16) 전까지 본인 결과 조회에 `resultId`를 쓴다. 토큰은 `src/api/session.ts`만 읽고 쓴다: localStorage 키 `wks:session`에 `{ v: 1, token }`을 두고 읽을 때 zod로 파싱한다(실패·스토리지 예외는 세션 없음). 토큰을 받는 응답에서 쓰고 `src/api/client.ts` 한 곳에서만 요청에 싣는다. 만료는 시계로 판단하지 않고 백엔드가 세션 무효로 응답하면 `clearSession()` 후 `/`로 보낸다. 발급 시점·전달 방식·만료 코드는 백엔드 계약 갱신 대기(PRD Q16) — 그 전까지는 목 응답의 토큰으로 개발한다.
+- 로그인도 백엔드 세션 토큰도 없다 — 백엔드는 사주·궁합에 인증을 두지 않는다. '내 결과'는 이 브라우저가 `POST /results`로 만든 `resultId` 하나다. `src/api/session.ts`만 읽고 쓴다: localStorage 키 `wks:session`에 `{ v: 2, resultId }`를 두고 읽을 때 zod로 파싱한다(실패·스토리지 예외는 세션 없음, 파싱 실패면 키를 지운다). `src/api/results.ts`의 `createResult`가 성공 응답(목·실제 공통)에서 쓰고, 새 결과가 이전 값을 덮어쓴다. 공유 링크 재료는 `shareId`이고 `resultId`는 본인 결과 조회와 `guestResultId`에만 쓴다. 요청에 싣는 인증 헤더는 없다(ADR-20260914-result-ownership-in-browser).
 
 ## Persistence
 
-브라우저에 저장하는 것은 localStorage `wks:session` 한 키의 세션 토큰뿐이다(인트로는 MVP에서 제외됐다). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
+브라우저에 저장하는 것은 localStorage 두 키뿐이다: `wks:session` 이 브라우저가 만든 내 결과의 `resultId`(`src/api/session.ts`)과 `wks:intro-seen` 인트로를 봤는지 여부(`src/features/intro/introSeen.ts`, FR-1). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
 
 ## External Systems
 
@@ -81,7 +81,7 @@
 
 ## Cross-cutting Concerns
 
-- 인증/인가: 로그인·비밀번호는 없다. 사주 결과 생성 시 백엔드가 세션 토큰을 발급하고 프론트가 보관해 이후 요청에 실어 보내며, 내 데이터는 토큰으로만 찾는다(전달 방식은 PRD Q16). 사전신청의 학교 웹메일 매직링크는 백엔드가 처리하고 프론트 완료 페이지로 302. 보호된 화면은 route loader가 `readSession()`이 없으면, api가 세션 무효 응답을 받으면 사주 입력(`/`)으로 리다이렉트한다.
+- 인증/인가: 로그인·비밀번호·세션 토큰은 없다. 백엔드는 사주·궁합 조회를 추측할 수 없는 링크 키(`resultId`·`shareId`, UUIDv4)만으로 허용한다. 사전신청의 학교 웹메일 매직링크는 백엔드가 처리하고 프론트 완료 페이지로 302. 보호된 화면은 route loader가 가드한다 — 주소에 결과 id가 있는 화면(`/reading/:id` 하위)은 보관된 `resultId`가 `:id`와 같을 때만, 주소에 id가 없는 화면(`/me/map`·`/matching`)은 보관된 `resultId`가 있을 때만 통과하고, 아니면 사주 입력(`/`)으로 리다이렉트한다. 공유 랜딩(`/s/:shareId`)은 가드하지 않는다. 이 가드는 브라우저 안의 안내이며, 보안 경계는 백엔드가 소유한 링크 키의 추측 불가능성이다.
 - 설정: `VITE_` 접두 환경변수(`VITE_API_BASE_URL` 등)로만 주입한다. 비밀값은 프론트엔드에 두지 않는다.
 - 에러 처리: 응답 스키마 검증 실패와 네트워크 실패를 구분해 사용자에게는 같은 안내 화면을, 콘솔에는 원인을 남긴다.
 - 관측성: 로깅·분석 도구는 TBD (Phase 08).

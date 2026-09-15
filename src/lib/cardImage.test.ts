@@ -16,9 +16,19 @@ function makeCard(): HTMLElement {
   return card;
 }
 
+// jsdom 의 img 에는 decode 가 없다 — 테스트마다 결과를 정한다.
+const decode = vi.fn<() => Promise<void>>();
+Object.defineProperty(HTMLImageElement.prototype, 'decode', {
+  configurable: true,
+  value: function (this: HTMLImageElement) {
+    return decode.call(this);
+  },
+});
+
 afterEach(() => {
   document.body.replaceChildren();
   toBlob.mockReset();
+  decode.mockReset();
 });
 
 test('스토리 규격 프레임에 카드 사본을 넣는다', () => {
@@ -67,6 +77,58 @@ test('PNG Blob 을 돌려주고 프레임을 치운다', async () => {
     expect.objectContaining({ width: 1080, height: 1920 }),
   );
   expect(document.querySelector('[data-story-frame]')).toBeNull();
+});
+
+test('찍는 사본에서는 화면 밖 위치를 되돌린다 — 그대로 두면 투명 PNG 가 나온다', async () => {
+  const card = makeCard();
+  toBlob.mockResolvedValue(new Blob(['png'], { type: 'image/png' }));
+
+  await renderCardImage(card);
+
+  expect(toBlob).toHaveBeenCalledWith(
+    expect.any(HTMLElement),
+    expect.objectContaining({ style: { position: 'static', left: '0', top: '0' } }),
+  );
+});
+
+test('사본의 이미지 디코딩이 끝난 뒤에 찍는다', async () => {
+  const card = makeCard();
+  card.append(document.createElement('img'));
+  let finishDecode: (() => void) | undefined;
+  decode.mockImplementation(
+    () =>
+      new Promise<void>((resolve) => {
+        finishDecode = resolve;
+      }),
+  );
+  toBlob.mockResolvedValue(new Blob(['png'], { type: 'image/png' }));
+
+  const rendering = renderCardImage(card);
+  await Promise.resolve();
+  expect(toBlob).not.toHaveBeenCalled();
+
+  finishDecode?.();
+  await rendering;
+  expect(toBlob).toHaveBeenCalled();
+});
+
+test('WebKit 이 첫 장에 이미지를 빠뜨리므로 한 장을 버리고 두 번째를 쓴다', async () => {
+  const card = makeCard();
+  const first = new Blob(['first'], { type: 'image/png' });
+  const second = new Blob(['second'], { type: 'image/png' });
+  toBlob.mockResolvedValueOnce(first).mockResolvedValueOnce(second);
+
+  await expect(renderCardImage(card)).resolves.toBe(second);
+  expect(toBlob).toHaveBeenCalledTimes(2);
+});
+
+test('이미지 하나가 디코딩에 실패해도 찍는다', async () => {
+  const card = makeCard();
+  card.append(document.createElement('img'));
+  decode.mockRejectedValue(new Error('broken'));
+  toBlob.mockResolvedValue(new Blob(['png'], { type: 'image/png' }));
+
+  await expect(renderCardImage(card)).resolves.toBeInstanceOf(Blob);
 });
 
 test('라이브러리가 null 을 주면 실패로 알린다', async () => {

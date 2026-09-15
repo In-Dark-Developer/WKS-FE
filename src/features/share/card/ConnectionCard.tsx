@@ -15,12 +15,12 @@ type Props = {
   zodiac: Zodiac;
   title: string;
   description: string;
-  // 앞면 등급 줄 — 디자인은 결혼운·자녀운·연애운, PRD FR-5 는 연애운·결혼운·운명운(PRD Q3 미정)이라 이름째 받는다.
+  // 앞면 등급 줄 — 결혼운·자녀운·연애운(PRD FR-5). 순서·이름은 부르는 쪽이 정한다.
   grades: readonly { label: string; grade: Grade }[];
   initialFace?: Face;
 };
 
-// SCR-05 인연카드 — 앞면(Figma 731:4668·십이간지 카드 731:4740)·뒷면(731:4712)과 '카드 뒤집기'(FR-5).
+// 결과 화면 운명 카드 — 앞면(운명 카드, Figma 713:4026)·뒷면(점지 카드 뒷면 731:4712)과 '카드 뒤집기'(FR-5).
 export function ConnectionCard({ initialFace = 'front', ...front }: Props) {
   const [face, setFace] = useState<Face>(initialFace);
   const isBack = face === 'back';
@@ -29,7 +29,7 @@ export function ConnectionCard({ initialFace = 'front', ...front }: Props) {
     <div data-connection-card="" data-face={face}>
       <div data-connection-card-inner="">
         <div aria-hidden={isBack} inert={isBack}>
-          <DestinyCard kind="connection" {...front} />
+          <DestinyCard {...front} />
         </div>
         <div aria-hidden={!isBack} data-connection-card-back="" inert={!isBack}>
           <img alt="운명도 꿰어야 사랑이다" draggable={false} src={cardBack} />
