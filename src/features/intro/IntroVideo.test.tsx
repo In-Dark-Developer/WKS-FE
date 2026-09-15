@@ -22,6 +22,18 @@ test('건너뛰기 버튼은 2초가 지나야 나타난다', () => {
   expect(screen.getByRole('button', { name: '건너뛰기' })).toBeInTheDocument();
 });
 
+test('건너뛰기 전 칸에 남은 초를 2 → 1 로 센다', () => {
+  const { container } = render(<IntroVideo onFinish={() => {}} />);
+  const countdown = () => container.querySelector('[data-intro-countdown]')?.textContent;
+
+  expect(countdown()).toBe('2');
+  act(() => vi.advanceTimersByTime(1000));
+  expect(countdown()).toBe('1');
+  act(() => vi.advanceTimersByTime(1000));
+  expect(countdown()).toBeUndefined();
+  expect(screen.getByRole('button', { name: '건너뛰기' })).toBeInTheDocument();
+});
+
 test('건너뛰기를 누르면 끝낸다', () => {
   const onFinish = vi.fn();
   render(<IntroVideo onFinish={onFinish} />);
