@@ -73,3 +73,17 @@ test('다른 Phase 의 슬롯과 하위 라우트를 제자리에 그린다', ()
   expect(screen.getByText('티저 자리')).toBeInTheDocument();
   expect(screen.getByText('하위 화면')).toBeInTheDocument();
 });
+
+test('뒤로가기 자리에 받은 버튼을 카드 위에 둔다', () => {
+  render(
+    <ReadingResult
+      back={<button type="button">뒤로가기</button>}
+      renderCard={() => <p>카드 자리</p>}
+      view={view}
+    />,
+  );
+
+  const back = screen.getByRole('button', { name: '뒤로가기' });
+  const card = screen.getByText('카드 자리');
+  expect(back.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});

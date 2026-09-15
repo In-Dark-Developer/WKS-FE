@@ -120,21 +120,6 @@ test('방문자 지도는 친구가 없어도 같은 부제이고 순위 빈 상
   expect(screen.getByRole('status')).toHaveTextContent('아직 인연이 없어요');
 });
 
-test('뒤로가기 자리에 받은 버튼을 지도 위에 둔다', () => {
-  render(
-    <CompatibilityMapScreen
-      back={<button type="button">뒤로가기</button>}
-      friends={friends}
-      nickname="달빛토끼"
-      variant="visitor"
-    />,
-  );
-
-  const back = screen.getByRole('button', { name: '뒤로가기' });
-  const map = screen.getByRole('region', { name: '달빛토끼님의 궁합 지도' });
-  expect(back.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-});
-
 test('제목 줄 오른쪽에 받은 링크를 둔다', () => {
   render(<FriendRanking friends={friends} headerAction={<a href="/me/map">지도 보기 &gt;</a>} />);
 

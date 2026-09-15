@@ -1,7 +1,9 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
 import { FortuneLoading, ReadingResult, type ReadingView } from '@/features/saju';
 import { ResultCard } from '@/features/share';
+import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
 import { DestinyCard } from '@/ui/DestinyCard';
+import { Icon } from '@/ui/Icon';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
 const view: ReadingView = {
@@ -54,6 +56,21 @@ export const preview: PreviewScreen = {
   backdrop: 'result',
   states: {
     결과: () => <ReadingResult renderCard={(face) => <ResultCard {...face} />} view={view} />,
+    '친구의 궁합 지도에서 옴(뒤로가기)': () => (
+      <ReadingResult
+        back={
+          <button
+            className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
+            type="button"
+          >
+            <Icon src={angleSmallLeft} />
+            뒤로가기
+          </button>
+        }
+        renderCard={(face) => <ResultCard {...face} />}
+        view={view}
+      />
+    ),
     '긴 제목': () => (
       <ReadingResult
         renderCard={(face) => <ResultCard {...face} />}

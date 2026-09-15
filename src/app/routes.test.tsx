@@ -120,6 +120,8 @@ test('이 브라우저가 만든 결과면 결과 화면에 머문다', async ()
   expect(screen.getByRole('main')).toHaveAttribute('data-backdrop', 'result');
   // 친구 궁합 순위(05/T2 FriendRanking)가 ranking 슬롯에 조립돼 있다 — 인연이 없을 때 안내.
   expect(screen.getByText('아직 인연이 없어요')).toBeInTheDocument();
+  // 뒤로가기는 친구의 궁합 지도에서 들어왔을 때만 있다 (FR-6).
+  expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
 });
 
 test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () => {
@@ -272,7 +274,7 @@ test('없는 경로는 오류 화면과 처음으로 가는 링크를 보인다'
   expect(screen.getByRole('link', { name: '처음으로 돌아가기' })).toHaveAttribute('href', '/');
 });
 
-// 05/T10 조립 — 공유 링크를 받은 사람: 사주 입력 → 결과·궁합 → 링크 주인의 궁합 지도(뒤로가기) → 내 사주.
+// 05/T10 조립 — 공유 링크를 받은 사람: 사주 입력 → 결과·궁합 → 링크 주인의 궁합 지도 ⇄ 내 사주(뒤로가기).
 
 const SHARE_ID = '5a951b51-21d5-4601-91b9-560de47aaaca';
 
@@ -319,7 +321,7 @@ test('공유 링크로 들어오면 세션 없이 링크 주인 닉네임이 든
   expect(screen.queryByText('꽃길만 걷는 인연')).not.toBeInTheDocument();
 });
 
-test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로 가며, 뒤로가기는 입력 폼으로 돌아간다', async () => {
+test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로 가며, 지도에는 뒤로가기가 없다', async () => {
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
   // 실제 createResult 는 성공하면 내 resultId 를 보관한다.
   createResultMock.mockImplementation(() => {
@@ -339,14 +341,10 @@ test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로
   expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}/map`);
   expect(createCompatibilityMock).toHaveBeenCalledWith(SHARE_ID, RESULT_ID);
   expect(screen.getByText('달빛토끼님과의 궁합 지도예요.')).toBeInTheDocument();
-
-  fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
-
-  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
-  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}`);
+  expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
 });
 
-test('내 결과가 있으면 링크로 들어올 때 입력 없이 궁합을 만들고 지도로 가며, 내 사주 버튼은 내 결과로 간다', async () => {
+test('내 결과가 있으면 링크로 들어올 때 입력 없이 궁합을 만들고 지도로 가며, 내 사주의 뒤로가기는 지도로 돌아온다', async () => {
   writeSession(RESULT_ID);
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
   createCompatibilityMock.mockResolvedValue(compatibility);
@@ -358,6 +356,13 @@ test('내 결과가 있으면 링크로 들어올 때 입력 없이 궁합을 �
 
   expect(await screen.findByRole('button', { name: '카드 뒤집기' })).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+
+  fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+
+  expect(
+    await screen.findByRole('button', { name: '내 사주 내용도 확인하기' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}/map`);
   expect(createCompatibilityMock).toHaveBeenCalledTimes(1);
 });
 

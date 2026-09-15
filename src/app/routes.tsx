@@ -3,9 +3,11 @@ import {
   Link,
   isRouteErrorResponse,
   useLoaderData,
+  useLocation,
   useNavigate,
   useRouteError,
 } from 'react-router-dom';
+import { z } from 'zod';
 
 import { AppShell } from '@/app/AppShell';
 import { requireMyResultId, requireSession } from '@/app/requireSession';
@@ -49,11 +51,18 @@ function protectedMapLoader(args: LoaderFunctionArgs) {
   return readingLoader({ ...args, params: { ...args.params, id: resultId } });
 }
 
+// 지도 → 내 사주 이동 기록의 표시 — 이동 기록(history state)은 런타임 경계 입력이라 파싱해서 읽는다.
+const fromSharedMapState = z.object({ from: z.literal('shared-map') });
+
 // renderCard(04/T7)·ranking(05)은 여기서 채우고, teaser(06) 슬롯은 그 Phase가 끝나기 전까지 비워 둔다 —
 // saju 는 share·friends 를 import 하지 않으므로 조립은 app 이 한다(ARCHITECTURE Module Boundaries).
 // '친구에게 공유'(04/T3)는 Figma 결과 화면(713:4078)대로 친구 궁합 순위가 비어 있을 때 안내 아래에만 둔다(PRD FR-4).
+// 친구의 궁합 지도에서 '내 사주 내용도 확인하기'로 들어왔을 때만(Figma 720:3587) 맨 위 '뒤로가기'가 그 지도로 돌아간다 —
+// 지도가 이동 기록에 표시를 남기고 앞 페이지가 그 지도라 브라우저 이전 페이지로 간다(FR-6). 표시는 새로고침에도 남는다.
 function ReadingResultRoute() {
   const view = useLoaderData<ReadingView>();
+  const navigate = useNavigate();
+  const fromSharedMap = fromSharedMapState.safeParse(useLocation().state).success;
   const ranking = (
     <FriendRanking
       emptyAction={<ShareLinkButton nickname={view.nickname} shareId={view.shareId} size="m" />}
@@ -68,7 +77,23 @@ function ReadingResultRoute() {
     />
   );
   return (
-    <ReadingResult ranking={ranking} renderCard={(face) => <ResultCard {...face} />} view={view} />
+    <ReadingResult
+      back={
+        fromSharedMap ? (
+          <button
+            className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
+            onClick={() => void navigate(-1)}
+            type="button"
+          >
+            <Icon src={angleSmallLeft} />
+            뒤로가기
+          </button>
+        ) : null
+      }
+      ranking={ranking}
+      renderCard={(face) => <ResultCard {...face} />}
+      view={view}
+    />
   );
 }
 
@@ -113,30 +138,23 @@ const shareSajuAction = createSajuAction(async (resultId, { params }) => {
   return (await joinShare(shareId, resultId)) ?? `/s/${encodeURIComponent(shareId)}/join`;
 });
 
-// SCR-13 친구의 궁합 지도(Figma 720:3668) — 뒤로가기 + 방문자 궁합 지도(05/T5) + '내 사주 내용도 확인하기'.
-// 뒤로가기는 브라우저 이전 페이지다: 입력에서 왔으면 입력, 링크로 바로 왔으면(입력을 건너뛴 이동은 replace 라 기록이
-// 남지 않는다) 채팅 앱 등 앱 밖 이전 페이지 (FR-6).
+// SCR-13 친구의 궁합 지도(Figma 720:3668) — 방문자 궁합 지도(05/T5) + '내 사주 내용도 확인하기'(뒤로가기 없음).
+// 내 사주로는 push 로 가서 내 사주의 '뒤로가기'가 이 지도로 돌아온다 (FR-6).
 function SharedMapRoute() {
   const view = useLoaderData<SharedMapView>();
   const navigate = useNavigate();
   return (
     <CompatibilityMapScreen
-      back={
-        <button
-          className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
-          onClick={() => void navigate(-1)}
-          type="button"
-        >
-          <Icon src={angleSmallLeft} />
-          뒤로가기
-        </button>
-      }
       friends={view.friends}
       nickname={view.nickname}
       share={
         <Button
           className="w-full"
-          onClick={() => void navigate(`/reading/${view.myResultId}`)}
+          onClick={() =>
+            void navigate(`/reading/${view.myResultId}`, {
+              state: { from: 'shared-map' } satisfies z.infer<typeof fromSharedMapState>,
+            })
+          }
           variant="apricot"
         >
           내 사주 내용도 확인하기
