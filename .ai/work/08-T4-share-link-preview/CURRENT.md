@@ -21,20 +21,20 @@ T4. 공유 링크 미리보기
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 1. index.html 제목 운꿰사 → 운명도 꿰어야 사랑이다, 공통 OG·Twitter 메타(이미지 제외)
-- 2. og:image 썸네일 — 디자인 전달 대기 (2026-09-15 figma-assets 에도 없음) ←
+- 2. og:image 썸네일 — 디자인 전달 대기 — `public/og/og.jpg` 1200×675 (commit b19cf37)
 - 3. shareId 별 동적 미리보기 ADR (Netlify Edge Functions vs 백엔드 렌더) — 공통 메타 채택, 동적 기각 (ADR-20260915-share-preview-static-meta)
 - 4. 카카오·인스타·메신저 미리보기 확인 → PLAN T4 체크
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`fa300f1`
+`b19cf37`
 
 ## Relevant Documents
 
@@ -47,4 +47,4 @@ BLOCKED
 
 ## Next Action
 
-디자인에서 썸네일(1200×630 권장)을 받으면 `public/og/` 에 넣고 `og:image`·`og:image:width/height`·`twitter:card summary_large_image` 추가 → 병합·배포 뒤 카카오 공유 디버거로 확인
+PR 병합(fork 소유자) → Netlify 배포 뒤 카카오 공유 디버거·인스타·메신저에 `https://threadoffate.site/s/test` 붙여 미리보기 확인 → PLAN T4 체크
