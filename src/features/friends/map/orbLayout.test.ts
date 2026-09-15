@@ -48,15 +48,44 @@ test.each([
   }
 });
 
-test('흐르는 구슬은 같은 궤도끼리 주기를 똑같이 나눠 출발하고, 보이는 호의 양 끝이 지도 칸 안이다', () => {
-  const placed = placeOrbs(friendsOf(['BEOT', 'GUIIN', 'BEOT', 'BEOT']));
-  const beot = placed.filter(({ friend }) => friend.tier === 'BEOT').map(({ travel }) => travel);
+// 흐르는 궤도 둘레(한 주기에 도는 거리) 위에서 두 출발 위치 사이의 짧은 쪽 거리(px).
+function loopGapPx(a: { phase: number; r: number; span: number }, b: { phase: number }): number {
+  const diff = Math.abs(a.phase - b.phase) % 1;
+  const loopPx = (2 * a.span * Math.PI * a.r) / 180;
+  return Math.min(diff, 1 - diff) * loopPx;
+}
 
-  const gaps = beot.map(({ phase }) => (phase - (beot[0]?.phase ?? 0) + 1) % 1);
-  expect(gaps.map((gap) => gap.toFixed(6))).toEqual([0, 1 / 3, 2 / 3].map((gap) => gap.toFixed(6)));
-  // 귀인은 벗과 다른 출발(엇갈림)이다.
-  const guiin = placed.find(({ friend }) => friend.tier === 'GUIIN');
-  expect(guiin?.travel.phase).not.toBe(beot[0]?.phase);
+test('같은 친구는 늘 같은 자리이고, 같은 궤도 구슬 자리는 똑같이 나눈 칸에서 조금씩 비껴 난다', () => {
+  const friends = friendsOf(['CHALTTEOK', 'CHALTTEOK', 'CHALTTEOK']);
+
+  expect(placeOrbs(friends)).toEqual(placeOrbs(friends));
+  const phases = placeOrbs(friends).map(({ travel }) => travel.phase);
+  const gaps = phases.map((phase, i) => (phase - (phases[(i + 1) % phases.length] ?? 0) + 1) % 1);
+  expect(gaps.some((gap) => Math.abs(gap - 1 / 3) > 0.001)).toBe(true);
+});
+
+test.each([
+  ['귀인', 'GUIIN'],
+  ['찰떡', 'CHALTTEOK'],
+  ['벗', 'BEOT'],
+  ['스침', 'SEUCHIM'],
+] as const)('%s 궤도에 여러 명이 흘러도 출발 간격이 최소 간격(44px) 이상이다', (_name, tier) => {
+  for (const count of [2, 3, 5]) {
+    const travels = placeOrbs(friendsOf(Array.from({ length: count }, () => tier))).map(
+      ({ travel }) => travel,
+    );
+    const loopPx = (2 * (travels[0]?.span ?? 0) * Math.PI * (travels[0]?.r ?? 0)) / 180;
+    const expected = Math.min(44, loopPx / count);
+    for (const [i, a] of travels.entries()) {
+      for (const b of travels.slice(i + 1)) {
+        expect(loopGapPx(a, b)).toBeGreaterThanOrEqual(expected - 0.001);
+      }
+    }
+  }
+});
+
+test('보이는 호의 양 끝이 지도 칸 안이다', () => {
+  const placed = placeOrbs(friendsOf(['BEOT', 'GUIIN', 'BEOT', 'BEOT']));
   for (const { cx, cy, r, from, span } of placed.map(({ travel }) => travel)) {
     expect(span).toBeGreaterThan(0);
     for (const degree of [from, from + span]) {
@@ -69,4 +98,8 @@ test('흐르는 구슬은 같은 궤도끼리 주기를 똑같이 나눠 출발�
       expect(y).toBeLessThan(439);
     }
   }
+  // 궤도마다 출발을 엇갈린다.
+  const guiin = placed.find(({ friend }) => friend.tier === 'GUIIN');
+  const beot = placed.find(({ friend }) => friend.tier === 'BEOT');
+  expect(guiin?.travel.phase).not.toBe(beot?.travel.phase);
 });

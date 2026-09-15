@@ -138,8 +138,8 @@
   0% {
     opacity: 0;
   }
-  4%,
-  46% {
+  6%,
+  44% {
     opacity: 1;
   }
   50%,
@@ -155,15 +155,15 @@
     animation: compatibility-map-spin 30s linear infinite;
   }
 
-  /* 3명 이상 — 구슬이 자기 궤도의 보이는 구간을 15초 흐르고 15초 숨는다. */
+  /* 3명 이상 — 구슬이 자기 궤도의 보이는 구간을 10초 흐르고 10초 숨는다(한 주기 20초, 나타남·사라짐 1.2초 포함). */
   [data-motion='orbs'] [data-compatibility-map-orbs] li {
     top: calc(var(--cy) * var(--u));
     left: calc(var(--cx) * var(--u));
     translate: none;
     animation:
-      compatibility-map-orb-arm 30s linear infinite,
-      compatibility-map-orb-blink 30s linear infinite;
-    animation-delay: calc(var(--phase) * -30s);
+      compatibility-map-orb-arm 20s linear infinite,
+      compatibility-map-orb-blink 20s linear infinite;
+    animation-delay: calc(var(--phase) * -20s);
   }
 
   [data-motion='orbs'] [data-compatibility-map-orb] {
@@ -172,7 +172,7 @@
     left: calc(var(--r) * var(--u));
     translate: -50% 0;
     transform-origin: 50% calc(var(--d) / 2 * var(--u));
-    animation: compatibility-map-orb-body 30s linear infinite;
-    animation-delay: calc(var(--phase) * -30s);
+    animation: compatibility-map-orb-body 20s linear infinite;
+    animation-delay: calc(var(--phase) * -20s);
   }
 }

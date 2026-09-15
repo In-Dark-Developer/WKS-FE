@@ -51,7 +51,29 @@ function visibleArc(tier: CompatibilityTier): [number, number] {
   return best;
 }
 
-// 친구(순위 순서)를 자기 등급 색 궤도 위에 놓는다 — 같은 궤도의 친구는 보이는 호를 똑같이 나눠 벌려 둔다.
+// 같은 궤도 구슬 중심 사이 최소 거리(px) — 가장 큰 구슬 지름(귀인 30.6)에 닉네임 글자 여유를 더한 값.
+const MIN_GAP_PX = 44;
+
+// 닉네임으로 정하는 0~1 값(FNV-1a) — 같은 친구는 새로고침해도 같은 자리에 있다.
+function seedOf(nickname: string): number {
+  let hash = 0x811c9dc5;
+  for (const char of nickname) {
+    hash ^= char.codePointAt(0) ?? 0;
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash / 0x1_0000_0000;
+}
+
+// n 칸으로 나눈 i 번째 칸 가운데에서 친구마다 조금 비껴 난 자리(0~1). 비껴 나는 폭을 (칸 너비 - 최소 간격)
+// 안으로 묶어 이웃 칸과의 거리가 최소 간격 아래로 내려가지 않는다. 칸이 최소 간격보다 좁으면 가운데에 둔다.
+function jittered(index: number, slots: number, minGap: number, seed: number): number {
+  const width = 1 / slots;
+  const room = Math.max(0, width - minGap);
+  return (index + 0.5) * width + (seed - 0.5) * room;
+}
+
+// 친구(순위 순서)를 자기 등급 색 궤도 위에 놓는다 — 같은 궤도의 친구는 보이는 호를 나눈 칸 안에서 친구마다
+// 고정된 랜덤으로 비껴 난 자리에 둔다(최소 간격 보장).
 export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
   const counts = new Map<CompatibilityTier, number>();
   for (const friend of friends) counts.set(friend.tier, (counts.get(friend.tier) ?? 0) + 1);
@@ -64,8 +86,17 @@ export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
     seen.set(friend.tier, index + 1);
     const count = counts.get(friend.tier) ?? 1;
     const [start, end] = visibleArc(friend.tier);
-    const degree = start + ((end - start) * (index + 1)) / (count + 1);
+    const span = end - start;
     const orbit = tierOrbits[friend.tier];
+    const r = (orbit.rx + orbit.ry) / 2;
+    const seed = seedOf(friend.nickname);
+    const arcPx = (span * Math.PI * r) / 180;
+
+    // 멈춘 자리: 보이는 호를 count 칸으로 나눈다(양 끝에 반 칸씩 여유).
+    const degree = start + span * jittered(index, count, MIN_GAP_PX / arcPx, seed);
+    // 흐르는 출발: 한 주기에 보이는 호의 2배를 돌므로 그 둘레를 count 칸으로 나눈다.
+    const phase = jittered(index, count, MIN_GAP_PX / (2 * arcPx), seed) - 0.5 / count;
+
     return {
       friend,
       ...pointAt(friend.tier, degree),
@@ -73,10 +104,10 @@ export function placeOrbs(friends: readonly Friend[]): PlacedOrb[] {
       travel: {
         cx: orbit.cx,
         cy: orbit.cy,
-        r: (orbit.rx + orbit.ry) / 2,
+        r,
         from: start,
-        span: end - start,
-        phase: (index / count + tiers.indexOf(friend.tier) / tiers.length) % 1,
+        span,
+        phase: (phase + tiers.indexOf(friend.tier) / tiers.length + 1) % 1,
       },
     };
   });
