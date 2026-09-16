@@ -242,7 +242,7 @@ export function SajuForm({
         </Button>
       </form>
 
-      <TermsSheet onClose={() => setTermsOpen(false)} open={termsOpen} />
+      <TermsSheet onClose={() => setTermsOpen(false)} open={termsOpen} withConsentClause />
     </>
   );
 }
