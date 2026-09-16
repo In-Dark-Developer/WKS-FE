@@ -7,7 +7,7 @@
 - Branch: ws/chore-prettier-format-fix
 - Task: -/-
 - Issue: none
-- Touches: src/app/routes.tsx,src/app/routes.test.tsx,src/features/profile/formSchema.ts,src/features/saju/SajuForm.tsx,src/ui/TermsSheet.test.tsx,src/ui/tokens/theme.css
+- Touches: docs/phases/README.md,src/app/routes.tsx,src/app/routes.test.tsx,src/features/profile/formSchema.ts,src/features/saju/SajuForm.tsx,src/ui/TermsSheet.test.tsx,src/ui/tokens/theme.css
 - Supersedes: none
 - Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership
 
@@ -26,7 +26,8 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. prettier --write 로 6개 파일 포맷, lint·test·typecheck exit 0 확인 → PR ←
+- 1. prettier --write 로 6개 파일 포맷, lint·test·typecheck exit 0 확인
+- 2. `ai-stream.sh phases` 로 Phase 색인 표 재생성 (Phase 06 Status 변경분) → PR ←
 
 ## Last Checkpoint
 
