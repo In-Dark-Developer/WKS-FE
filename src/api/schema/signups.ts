@@ -5,7 +5,7 @@ import { genderSchema } from './result';
 export type Gender = z.infer<typeof genderSchema>;
 
 // docs/api/openapi.yaml `/signups` 경로의 스키마 — 백엔드 `CreateSignupRequest`(WKS-BE 981b487)와 대조했다.
-// 사진은 아직 받는 필드가 없어 요청에 없다(ADR-20260916-signup-contract-gap).
+// 사진은 받지 않기로 했다(2026-09-17, PRD FR-10).
 
 // 연락 수단은 택1 이다 — 전화번호 또는 인스타그램 아이디 하나를 `contactValue` 로 보낸다.
 export const contactMethodSchema = z.enum(['PHONE', 'INSTAGRAM']);

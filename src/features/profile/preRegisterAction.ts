@@ -41,7 +41,6 @@ function toPreRegisterInput(value: unknown): PreRegisterInput {
 }
 
 // SCR-09 `/reading/:id/pre-register` action — 검증·동의를 마친 입력만 여기로 온다(FR-17).
-// 사진은 받는 계약이 없어 보내지 않는다(ADR-20260916-signup-contract-gap).
 // 보관된 '내 결과'를 함께 보내 신청과 사주를 잇고, 그 결과를 백엔드가 모르면(404) 비운 뒤 한 번만 사주 없이 다시 보낸다 —
 // 죽은 resultId 때문에 신청 자체가 막히지 않게 한다.
 export async function preRegisterAction({

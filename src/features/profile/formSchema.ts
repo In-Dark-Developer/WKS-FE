@@ -4,8 +4,7 @@ import type { ContactMethod, Gender } from '@/api/signups';
 
 import type { Mbti } from './options';
 
-// 화면이 들고 있는 입력값. 사진은 받는 계약이 아직 없어 화면 안에만 둔다
-// (ADR-20260916-signup-contract-gap).
+// 화면이 들고 있는 입력값. 사진은 받지 않는다(2026-09-17 결정, PRD FR-10).
 export type PreRegisterValues = {
   name: string;
   email: string;
