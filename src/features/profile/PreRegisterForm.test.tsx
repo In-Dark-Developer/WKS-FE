@@ -45,6 +45,15 @@ test('모든 항목에 라벨이 있고 연락처는 수단 택1 이다', () => 
   expect(screen.getByText(/수집 항목/).nextElementSibling).not.toHaveTextContent('사진');
 });
 
+test('연락처 안내는 전화번호·인스타그램 모두 매칭 성립 상대에게만 보인다는 문구다', () => {
+  renderForm(filled);
+
+  expect(screen.getByText('매칭이 성립한 상대에게만 보여요.')).toBeInTheDocument();
+  expect(screen.queryByText('연락받을 수단 한 가지를 선택해 주세요.')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('radio', { name: '인스타그램' }));
+  expect(screen.getByText('매칭이 성립한 상대에게만 보여요.')).toBeInTheDocument();
+});
+
 test('연락 수단을 인스타그램으로 바꾸면 값 칸이 비고 아이디를 받는다', () => {
   renderForm(filled);
 
