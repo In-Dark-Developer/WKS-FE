@@ -1,0 +1,27 @@
+/* 결과 화면 맨 아래 사전신청 띠 — Figma 873:1868 (375×428). 위 64px 를 비우고 섹션(873:4155, 364px)이 놓인다.
+   띠에는 별자리 리본이 없다 — 리본을 이 높이만큼 일찍 끝내는 규칙은 src/app/layout.css 에 있다. */
+:root {
+  --pre-register-teaser-height: 428px;
+}
+
+[data-pre-register-teaser] {
+  height: var(--pre-register-teaser-height);
+  padding-top: 64px;
+}
+
+/* 'GRAND OPEN !!' (873:1871) — 글자 모양으로 칠한 청록(Primary 500) 위에 Primary 200→700 방사형을 20% 로 얹고,
+   청록 그림자 두 겹을 준다. 방사형 중심·반경은 Figma 276×48 글상자 기준이다. */
+[data-pre-register-teaser-title] {
+  background-image:
+    radial-gradient(
+      174px 30px at 29.5px 24px,
+      color-mix(in srgb, var(--color-primary-200) 20%, transparent),
+      color-mix(in srgb, var(--color-primary-700) 20%, transparent)
+    ),
+    linear-gradient(var(--color-primary-500), var(--color-primary-500));
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 4px 4px color-mix(in srgb, var(--color-primary-400) 30%, transparent),
+    0 4px 20px color-mix(in srgb, var(--color-primary-300) 20%, transparent);
+}
