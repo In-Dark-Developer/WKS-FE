@@ -3,7 +3,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 
 import { markShareJoined } from '@/api/joinedShares';
 import type { SharedResult } from '@/api/schema/share';
-import { writeSession } from '@/api/session';
+import { readSession, writeSession } from '@/api/session';
 
 const { getSharedResultMock, createCompatibilityMock } = vi.hoisted(() => ({
   getSharedResultMock: vi.fn(),
@@ -102,4 +102,23 @@ test('없는 링크는 404 를 던진다', async () => {
   });
 
   await expect(shareInputLoader(args())).rejects.toMatchObject({ status: 404 });
+});
+
+test('보관된 내 결과를 백엔드가 모르면 비우고, 같은 링크를 다시 불러 입력 폼을 보인다', async () => {
+  writeSession(MY_RESULT_ID);
+  createCompatibilityMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
+  });
+  getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
+
+  const redirect = await shareInputLoader(args()).catch((thrown: unknown) => thrown);
+
+  expect(redirect).toBeInstanceOf(Response);
+  expect((redirect as Response).headers.get('Location')).toBe(`/s/${SHARE_ID}`);
+  expect(readSession()).toBeNull();
+  // 다시 불리면 세션이 없어 궁합을 만들지 않고 입력 폼 뷰 모델을 돌려준다.
+  createCompatibilityMock.mockClear();
+  await expect(shareInputLoader(args())).resolves.toEqual({ ownerNickname: '달빛토끼' });
+  expect(createCompatibilityMock).not.toHaveBeenCalled();
 });

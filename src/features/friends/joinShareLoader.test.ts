@@ -2,12 +2,19 @@ import type { LoaderFunctionArgs } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import { hasJoinedShare } from '@/api/joinedShares';
-import { writeSession } from '@/api/session';
+import { readSession, writeSession } from '@/api/session';
 
-const { createCompatibilityMock } = vi.hoisted(() => ({ createCompatibilityMock: vi.fn() }));
+const { createCompatibilityMock, getSharedResultMock } = vi.hoisted(() => ({
+  createCompatibilityMock: vi.fn(),
+  getSharedResultMock: vi.fn(),
+}));
 vi.mock('@/api/shares', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/shares')>();
-  return { ...actual, createCompatibility: createCompatibilityMock };
+  return {
+    ...actual,
+    createCompatibility: createCompatibilityMock,
+    getSharedResult: getSharedResultMock,
+  };
 });
 
 import { joinShareLoader } from './joinShareLoader';
@@ -27,6 +34,7 @@ function args(): LoaderFunctionArgs {
 
 afterEach(() => {
   createCompatibilityMock.mockReset();
+  getSharedResultMock.mockReset();
   localStorage.clear();
   sessionStorage.clear();
   vi.restoreAllMocks();
@@ -66,14 +74,39 @@ test('자기 링크면 궁합 없이 내 결과로 보낸다', async () => {
   expect(hasJoinedShare(SHARE_ID)).toBe(false);
 });
 
-test('없는 링크면 404 를 던진다', async () => {
+const notFound = {
+  ok: false,
+  error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
+} as const;
+
+test('없는 링크면 404 를 던지고 내 결과는 그대로 둔다', async () => {
   writeSession(MY_RESULT_ID);
-  createCompatibilityMock.mockResolvedValue({
-    ok: false,
-    error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
-  });
+  createCompatibilityMock.mockResolvedValue(notFound);
+  getSharedResultMock.mockResolvedValue(notFound);
 
   await expect(joinShareLoader(args())).rejects.toMatchObject({ status: 404 });
+  expect(readSession()?.resultId).toBe(MY_RESULT_ID);
+});
+
+test('링크는 살아 있는데 내 결과가 없으면 보관된 결과를 비우고 사주 입력으로 보낸다', async () => {
+  writeSession(MY_RESULT_ID);
+  createCompatibilityMock.mockResolvedValue(notFound);
+  getSharedResultMock.mockResolvedValue({ ok: true, data: {} });
+
+  const response = await joinShareLoader(args());
+
+  expect(readSession()).toBeNull();
+  expect(response.headers.get('Location')).toBe(`/s/${SHARE_ID}`);
+});
+
+test('링크 확인이 연결 문제로 실패하면 내 결과를 두고 재시도 오류(503)로 간다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  writeSession(MY_RESULT_ID);
+  createCompatibilityMock.mockResolvedValue(notFound);
+  getSharedResultMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+
+  await expect(joinShareLoader(args())).rejects.toMatchObject({ status: 503 });
+  expect(readSession()?.resultId).toBe(MY_RESULT_ID);
 });
 
 test('연결 실패는 원인을 콘솔에 남기고 503 을 던진다', async () => {
