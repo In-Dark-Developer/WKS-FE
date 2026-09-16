@@ -241,10 +241,10 @@ function JoinShareError() {
 // (hydrate 중에는 부모 element 가 없다) 여기서 감싼다.
 // 이 브라우저에 내 결과가 있을 때만 궁합을 만드느라 기다린다 — 처음 온 방문자는 곧바로 사주 입력이라
 // '이전 정보로 …' 문구가 맞지 않아 공통 로딩만 보인다(보관값은 localStorage 라 이 시점에 바로 읽힌다).
-// 대기 화면을 보는 사람에게는 궁합이 금방 만들어져도 최소 1.5초는 보여 준다(소유자 요청 2026-09-17) —
+// 대기 화면을 보는 사람에게는 궁합이 금방 만들어져도 최소 3초는 보여 준다(소유자 요청 2026-09-17, 1.5초에서 늘림) —
 // 화면이 번쩍이고 지나가면 무슨 일이 일어났는지 알 수 없다. 결과가 없어 이 화면을 보지 않는 첫 방문자는
 // 기다리지 않는다(아래 ShareEntryFallback 과 같은 기준).
-const SHARE_LOADING_MIN_MS = 1500;
+const SHARE_LOADING_MIN_MS = 3000;
 
 function shareEntryLoader<TArgs extends LoaderFunctionArgs, TResult>(
   loader: (args: TArgs) => Promise<TResult>,
