@@ -43,7 +43,8 @@
   --font-display: 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, system-ui, sans-serif;
   --font-sungkok:
     'KMU80 Sungkok Serif', 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, serif;
-  --font-slim: 'Cafe24 PRO Slim Max', 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, sans-serif;
+  --font-slim:
+    'Cafe24 PRO Slim Max', 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, sans-serif;
 
   /* Color ramp — Figma Variables (bg-primary-500, text-neutral-900 …) */
   --color-primary-50: #f5f8f9;

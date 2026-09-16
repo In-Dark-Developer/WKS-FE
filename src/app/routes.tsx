@@ -33,7 +33,12 @@ import {
   type SharedMapView,
 } from '@/features/friends';
 import { IntroGate } from '@/features/intro';
-import { PreRegisterModal, PreRegisterTeaser, VerifyComplete, preRegisterAction } from '@/features/profile';
+import {
+  PreRegisterModal,
+  PreRegisterTeaser,
+  VerifyComplete,
+  preRegisterAction,
+} from '@/features/profile';
 import { ResultCard, ShareLinkButton } from '@/features/share';
 import { track } from '@/lib/analytics';
 import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
