@@ -8,7 +8,7 @@ import {
   type SignupRequestInput,
 } from './schema/signups';
 
-export type { ContactMethod, SignupRequestInput } from './schema/signups';
+export type { ContactMethod, Gender, SignupRequestInput } from './schema/signups';
 
 // POST /signups — 소개팅 사전등록 (FR-9, FR-10). 성공하면 백엔드가 학교 웹메일로 인증 링크를 보내고,
 // 그 링크는 `GET /signups/verify` 를 거쳐 프론트 `/verify`(SCR-14)로 돌아온다.

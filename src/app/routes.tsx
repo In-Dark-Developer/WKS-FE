@@ -33,6 +33,7 @@ import {
   type SharedMapView,
 } from '@/features/friends';
 import { IntroGate } from '@/features/intro';
+import { PreRegisterModal, PreRegisterTeaser, VerifyComplete, preRegisterAction } from '@/features/profile';
 import { ResultCard, ShareLinkButton } from '@/features/share';
 import { track } from '@/lib/analytics';
 import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
@@ -99,6 +100,14 @@ function ReadingResultRoute() {
   );
   return (
     <ReadingResult
+      teaser={
+        <PreRegisterTeaser
+          onApply={() => {
+            track('pre_register_opened', {});
+            void navigate('pre-register');
+          }}
+        />
+      }
       back={
         fromSharedMap ? (
           <button
@@ -116,6 +125,13 @@ function ReadingResultRoute() {
       view={view}
     />
   );
+}
+
+// SCR-09 사전신청 모달 — 결과 화면 하위 라우트라 결과 화면의 <Outlet /> 에 뜬다(FR-9).
+// 닫기(배경·ESC·완료의 '확인')는 부모 결과 화면으로 돌아간다.
+function PreRegisterModalRoute() {
+  const navigate = useNavigate();
+  return <PreRegisterModal onClose={() => void navigate('..', { relative: 'path' })} open />;
 }
 
 // SCR-08 궁합 지도 — 05/T2 CompatibilityMapScreen 에 결과 loader 의 친구 목록과 '친구에게 공유'(04/T3)를 잇는다.
@@ -240,7 +256,14 @@ export const routes: RouteObject[] = [
         loader: protectedReadingLoader,
         handle: { backdrop: 'result' },
         element: <ReadingResultRoute />,
-        // 예약: 'pre-register' SCR-09 사전신청 모달 (06/T3, ReadingResult 의 <Outlet /> 에 뜬다, handle backdrop 'mist')
+        children: [
+          {
+            path: 'pre-register',
+            action: preRegisterAction,
+            handle: { backdrop: 'mist' },
+            element: <PreRegisterModalRoute />,
+          },
+        ],
       },
       // SCR-06 공유 링크 입력 — 가드 없음(FR-18). 내 결과가 있으면 loader 가 join 으로 보낸다 (05/T10).
       {
@@ -269,6 +292,12 @@ export const routes: RouteObject[] = [
         loader: protectedMapLoader,
         handle: { backdrop: 'result' },
         element: <CompatibilityMapRoute />,
+      },
+      // SCR-14 인증 완료 — 백엔드 매직링크(`GET /signups/verify`)가 인증 뒤 302 로 보내는 자리다.
+      // 가드 없음: 메일을 연 기기에 '내 결과'가 없을 수 있다.
+      {
+        path: 'verify',
+        element: <VerifyComplete />,
       },
       // 예약: 'matching' SCR-10 소개팅 후보 (Phase 07, 세션 필요)
     ],

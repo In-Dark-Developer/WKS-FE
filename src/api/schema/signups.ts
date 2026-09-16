@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { genderSchema } from './result';
 
+export type Gender = z.infer<typeof genderSchema>;
+
 // docs/api/openapi.yaml `/signups` 경로의 스키마 — 백엔드 `CreateSignupRequest`(WKS-BE 981b487)와 대조했다.
 // 사진은 아직 받는 필드가 없어 요청에 없다(ADR-20260916-signup-contract-gap).
 

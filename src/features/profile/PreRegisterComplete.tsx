@@ -2,10 +2,11 @@ import { Button } from '@/ui/Button';
 
 import './PreRegisterComplete.css';
 
-type Props = { onDone?: () => void };
+// `mailSent` 가 false 면 신청은 됐지만 인증 메일이 안 갔다 — 백엔드가 그 사실을 응답으로 알려 준다.
+type Props = { onDone?: () => void; mailSent?: boolean };
 
 // SCR-09 완료 상태 — Figma 수정본 사전신청 모달 완료(695:2654).
-export function PreRegisterComplete({ onDone }: Props) {
+export function PreRegisterComplete({ onDone, mailSent = true }: Props) {
   return (
     <section
       aria-labelledby="pre-register-complete-title"
@@ -20,7 +21,11 @@ export function PreRegisterComplete({ onDone }: Props) {
         >
           신청이 완료되었습니다
         </h1>
-        <p className="font-display text-ui-12 text-muted">함께할 새로운 인연을 기다려 주세요.</p>
+        <p className="font-display text-ui-12 whitespace-pre-line text-muted">
+          {mailSent
+            ? '함께할 새로운 인연을 기다려 주세요.'
+            : '인증 메일을 보내지 못했어요.\n잠시 뒤 재발송을 요청해 주세요.'}
+        </p>
       </div>
       <Button onClick={onDone} size="l" variant="accent">
         확인

@@ -6,6 +6,7 @@ import { Button } from '@/ui/Button';
 import { Checkbox } from '@/ui/Checkbox';
 import { Field } from '@/ui/Field';
 import { SegmentedControl } from '@/ui/SegmentedControl';
+import { TermsSheet } from '@/ui/TermsSheet';
 import { Select } from '@/ui/Select';
 import { TextField } from '@/ui/TextField';
 
@@ -55,6 +56,7 @@ export function SajuForm({
 }: Props) {
   const [values, setValues] = useState<SajuFormValues>(initialSajuFormValues);
   const [attempted, setAttempted] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
   const submit = useSubmit();
   const navigation = useNavigation();
   const submitting = navigation.state === 'submitting';
@@ -223,8 +225,15 @@ export function SajuForm({
           ) : null}
 
           <div className="flex flex-col gap-8">
-            <p className="text-ui-14 font-medium text-apricot-500">
+            <p className="flex items-center gap-8 text-ui-14 font-medium text-apricot-500">
               입력 정보는 사주 확인에 사용됩니다
+              <button
+                className="underline"
+                onClick={() => setTermsOpen(true)}
+                type="button"
+              >
+                자세히
+              </button>
             </p>
             <p className="text-ui-12 text-secondary">
               서비스 목적과 정보 사용 안내를 확인해 주세요.
@@ -236,6 +245,8 @@ export function SajuForm({
           {submitLabel}
         </Button>
       </form>
+
+      <TermsSheet onClose={() => setTermsOpen(false)} open={termsOpen} />
     </>
   );
 }
