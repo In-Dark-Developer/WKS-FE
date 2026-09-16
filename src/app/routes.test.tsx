@@ -294,7 +294,7 @@ test('친구 궁합 순위가 비어 있으면 안내 아래에 친구에게 공
   expect(within(empty).getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
 });
 
-test('친구 궁합 순위가 있으면 결과 화면에 친구에게 공유가 없다', async () => {
+test('친구 궁합 순위가 있어도 목록 아래에 친구에게 공유가 있다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: true,
@@ -309,7 +309,9 @@ test('친구 궁합 순위가 있으면 결과 화면에 친구에게 공유가 
   renderAt(`/reading/${RESULT_ID}`);
 
   expect(await screen.findByText('친구1')).toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: '친구에게 공유' })).not.toBeInTheDocument();
+  const ranking = screen.getByRole('region', { name: '친구 궁합 순위' });
+  expect(within(ranking).getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
+  expect(within(ranking).queryByRole('status')).not.toBeInTheDocument();
 });
 
 test('없어진 인연카드 주소는 없는 경로 화면이다', async () => {

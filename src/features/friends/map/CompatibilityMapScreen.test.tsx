@@ -72,7 +72,7 @@ test('순위 목록은 받은 순서대로 순위·닉네임·등급·점수를 
 });
 
 test('인연이 없으면 안내와 버튼 자리를 보인다', () => {
-  render(<FriendRanking emptyAction={<button type="button">친구에게 공유</button>} friends={[]} />);
+  render(<FriendRanking friends={[]} shareAction={<button type="button">친구에게 공유</button>} />);
 
   expect(screen.getByRole('status')).toHaveTextContent('아직 인연이 없어요');
   expect(screen.getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
@@ -144,4 +144,18 @@ test('뒤로가기를 주지 않으면 그 줄이 없다', () => {
   render(<CompatibilityMapScreen friends={friends} nickname="달빛토끼" />);
 
   expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
+});
+
+test('인연이 있으면 공유 버튼을 목록 아래에 그린다', () => {
+  render(
+    <FriendRanking
+      friends={[{ nickname: '영채', score: 94, tier: 'GUIIN' }]}
+      shareAction={<button type="button">친구에게 공유</button>}
+    />,
+  );
+
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  const list = screen.getByRole('list');
+  const button = screen.getByRole('button', { name: '친구에게 공유' });
+  expect(list.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
