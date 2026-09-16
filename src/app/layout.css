@@ -68,6 +68,11 @@
   bottom: calc(var(--pre-register-teaser-height) + 24px + 16px + env(safe-area-inset-bottom));
 }
 
+/* 공유 링크 대기 화면(Figma 1044:4150)에는 리본이 없다 — 그라데이션만 남긴다. */
+[data-backdrop='result']:has([data-share-join-loading])::before {
+  content: none;
+}
+
 /* 사전신청 모달 — 좌우 반전한 리본 한 장이 682px 아래에 놓인다. */
 [data-backdrop='mist']::before {
   content: '';
