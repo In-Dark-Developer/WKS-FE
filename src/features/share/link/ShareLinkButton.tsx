@@ -43,10 +43,7 @@ export function ShareLinkButton({
   async function share() {
     setSharing(true);
     try {
-      const outcome = await shareLink(url, {
-        title: shareLinkMessages.shareTitle,
-        text: shareLinkMessages.shareText(nickname),
-      });
+      const outcome = await shareLink(url, shareLinkMessages.shareText(nickname));
       track('share_clicked', { surface, outcome });
       setShowLink(outcome === 'manual');
       setToast(outcome === 'copied' || outcome === 'manual' ? outcome : null);

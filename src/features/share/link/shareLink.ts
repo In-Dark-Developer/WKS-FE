@@ -10,11 +10,6 @@ export type ShareOutcome =
   // 복사도 막혀서 링크를 직접 고르게 보여줘야 한다
   | 'manual';
 
-type ShareMeta = {
-  title: string;
-  text: string;
-};
-
 function isAbortError(error: unknown): boolean {
   if (typeof error !== 'object' || error === null || !('name' in error)) return false;
   return error.name === 'AbortError';
@@ -31,12 +26,12 @@ async function copyToClipboard(url: string): Promise<boolean> {
   }
 }
 
-export async function shareLink(url: string, meta: ShareMeta): Promise<ShareOutcome> {
+export async function shareLink(url: string, text: string): Promise<ShareOutcome> {
   if (typeof navigator.share === 'function') {
     try {
       // title·url 을 따로 넘기면 받는 앱(카카오톡 등)이 title·text·url 을 구분자 없이 이어 붙인다
-      // ('운명도 꿰어야 사랑이다최선우님의…', 링크가 문구까지 먹는 것). 셋을 text 한 곳에 줄바꿈으로 넣는다.
-      await navigator.share({ text: `${meta.title}\n${meta.text}\n${url}` });
+      // (링크가 문구까지 먹는 것). 제목 없이 문구와 링크를 text 한 곳에 줄바꿈으로 넣는다.
+      await navigator.share({ text: `${text}\n${url}` });
       return 'shared';
     } catch (error) {
       if (isAbortError(error)) return 'cancelled';
