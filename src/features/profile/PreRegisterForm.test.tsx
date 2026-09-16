@@ -40,6 +40,9 @@ test('모든 항목에 라벨이 있고 연락처는 수단 택1 이다', () => 
     expect(screen.getByRole('radiogroup', { name })).toBeInTheDocument();
   }
   expect(screen.getByText('보관 기간')).toBeInTheDocument();
+  // 사진은 받지 않는다(2026-09-17 결정).
+  expect(screen.queryByLabelText('사진 추가')).not.toBeInTheDocument();
+  expect(screen.getByText(/수집 항목/).nextElementSibling).not.toHaveTextContent('사진');
 });
 
 test('연락 수단을 인스타그램으로 바꾸면 값 칸이 비고 아이디를 받는다', () => {

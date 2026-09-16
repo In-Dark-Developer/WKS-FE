@@ -12,11 +12,11 @@
 ## Motivation
 
 사전신청 완료가 곧 상대 정보 열람권이고(PRD G3), 소개팅 후보 화면(Phase 07)은 축제 당일에야 열리므로 그 전에 신청을 받아 두지 않으면 당일에 보여줄 후보가 없다. 결과 화면(03/T5)에 `teaser` 슬롯과 하위 라우트 `<Outlet />` 이 이미 있어 지금 채울 수 있다.
-이 Phase는 제품에서 처음으로 개인정보(이름·사진·연락처)를 다룬다 — 동의 게이트와 비노출 규칙(FR-17·NFR-4)을 여기서 한 번 고정해 두면 Phase 07의 연락처 공개가 그 위에 올라간다.
+이 Phase는 제품에서 처음으로 개인정보(이름·연락처)를 다룬다 — 동의 게이트와 비노출 규칙(FR-17·NFR-4)을 여기서 한 번 고정해 두면 Phase 07의 연락처 공개가 그 위에 올라간다.
 
 ## Scope
 
-- SCR-09 사전신청 모달 퍼블리싱 — 수정본(558-3526) 기본·오류·로딩·연결 실패·완료 5상태. 입력 항목은 이름 · 사진 · 이메일 · 전화번호(필수) · 인스타그램 아이디(선택) · 학과 · MBTI(16유형) · 자기소개 + 동의 체크 (FR-10)
+- SCR-09 사전신청 모달 퍼블리싱 — 수정본(558-3526) 기본·오류·로딩·연결 실패·완료 5상태. 입력 항목은 이름 · 이메일 · 전화번호(필수) · 인스타그램 아이디(선택) · 학과 · MBTI(16유형) · 자기소개 + 동의 체크 (FR-10)
 - SCR-04 사전신청 티저 — `ReadingResult` 의 `teaser` 슬롯에 넣는 표현 컴포넌트, 누르면 `/reading/:id/pre-register` 로 간다 (FR-9)
 - 동의 게이트 — 동의 전에는 제출 버튼이 잠기고 네트워크 요청이 나가지 않는다 (FR-17, NFR-4)
 - 고지 문구(수집 항목·이용 목적·보관 기간)를 `src/features/profile/` 한 파일에 모아 기획 확정 시 한 곳만 고친다 (CONVENTIONS 7장)
@@ -28,7 +28,7 @@
 - 소개팅 후보 목록·운명의 실·연락처 공개 — Phase 07
 - 쿠폰 지급 안내(FR-11) — MVP 제외 (PRD Non-goals)
 - 학교 웹메일 매직링크의 인증 완료 리다이렉트 페이지 — 백엔드가 돌려보낼 경로가 미정(Q14), Phase 08에서 배포 경로와 함께
-- 사진의 실제 업로드·저장 — 업로드 방식이 미정(Q14)이라 선택·미리보기까지만 하고 전송은 계약 확정 후
+- 사진 — 받지 않기로 했다(2026-09-17 결정)
 - `Modal`·`Toast` 컴포넌트 자체 — 02/T3 (이 Phase는 쓰기만 한다)
 - 결과 화면 본문·라우트 등록 — 03/T5·03/T7 소유
 
@@ -38,12 +38,12 @@
 
 - 03/T5 결과 화면 — `ReadingResult` 의 `teaser?: ReactNode` 슬롯과 하위 라우트 `<Outlet />` (병합됨, PR #57)
 - 03/T6 `/preview` 라우트 — `src/app/preview/screens/<화면>.tsx` 한 파일 추가로 확인 (병합됨, PR #56)
-- 02/T2·02/T6 입력 컴포넌트 — `Button`·`TextField`·`Checkbox`·`Field`·`Select`·`TextArea`·`PhotoUpload` (병합됨)
+- 02/T2·02/T6 입력 컴포넌트 — `Button`·`TextField`·`Checkbox`·`Field`·`Select`·`TextArea` (병합됨)
 
 **닫힘 (2026-09-16)**
 
 - 02/T3 `Modal` — 병합됨. `useOverlayBehavior`(포커스 트랩·ESC·스크롤 잠금)를 `Modal`·`ShareSheet` 가 함께 쓴다
-- `POST /signups` 계약 — `email`·`gender`·`preferGender` 필수 + `resultId` nullable. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처(택1)·학과·MBTI·자기소개도 받고 운영에 배포됐다. 사진은 받는 필드가 없어 전송하지 않는다
+- `POST /signups` 계약 — `email`·`gender`·`preferGender` 필수 + `resultId` nullable. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처(택1)·학과·MBTI·자기소개도 받고 운영에 배포됐다. 사진은 받지 않는다(2026-09-17)
 - 인증 완료 경로 — `GET /signups/verify` 가 `app.frontend.verify-redirect-url`(기본 `/verify`)로 302 한다. 프론트에 SCR-14 `/verify` 가 필요하다
 - 연락처·성별 — 연락처는 디자인·백엔드대로 **택1**(전화번호 | 인스타그램), 성별·선호 성별은 폼에 세그먼트 두 줄로 받는다(소유자 결정 2026-09-16, FR-10)
 - 동의 — 체크박스 명시 동의를 유지하고 이용약관 시트(695:2753)를 사주 입력·사전신청 양쪽에 단다(소유자 결정 2026-09-16, FR-17)
@@ -51,8 +51,7 @@
 
 **남은 제약**
 
-- PRD Q4 보관 기간 · Q10 사진 형식·용량·자기소개 글자 수 — 고지 문구와 검증 규칙은 확정 전 문구로 둔다
-- 사진 — 받는 계약이 없어 화면에서 고른 사진이 전송되지 않는다(Q14)
+- PRD Q4 보관 기간 · Q10 자기소개 글자 수 — 고지 문구와 검증 규칙은 확정 전 문구로 둔다
 - `src/app/routes.tsx` 는 publishing-first 공지상 03/T7 소유였으나 Phase 03 종료 후 chore 스트림들이 이어 고쳐 왔다 — T4 가 `/reading/:id/pre-register`·`/verify` 를 등록한다
 
 ## Tasks
@@ -61,7 +60,7 @@
 
 - [x] T2. 사전신청 모달·티저 퍼블리싱 — Done when: 수정본(558-3526) 사전신청 모달의 기본·오류(이메일 형식)·로딩·연결 실패(입력값 유지)·완료 5상태와 결과 화면 티저(`PreRegistrationTeaser`)가 feature 가 정한 뷰 모델 props 로만 렌더되고(`src/api/` 스키마를 import 하지 않는다), 동의 체크 전에는 제출 버튼이 잠기며, `/preview/pre-register` 에서 5상태를 가짜 데이터로 볼 수 있다 (테스트 포함). 연락처는 전화번호 필수 + 인스타그램 선택(디자인의 택1 세그먼트와 다름 — FR-10). 고지 문구는 `consent.ts` 한 곳에 모은다 · Touches: `src/features/profile/`, `src/app/preview/screens/pre-register.tsx` · After: 02/T3 · Owner: @jjjung0921 (commit 269da6b 본문·ea10053 모달 셸 — `PreRegisterModal` 을 결과 화면 하위 라우트에 붙이는 일은 조립 Task)
 
-- [x] T3. 사전신청 제출 연동 — Done when: `POST /signups` 요청·응답이 zod 로 검증되고(사진을 제외한 계약 항목을 싣는다), 동의하지 않은 제출은 네트워크 요청 0건으로 막히며, 성공 시 완료 상태·연결 실패 시 입력값 유지 안내로 전환되고, 중복 신청(409)·도메인 거부(400)가 사용자 문구로 구분돼 보이며, 사전신청 전에는 상대 정보가 화면·응답 어디에도 없다 (테스트 포함) · Touches: `src/api/signups.ts`, `src/api/schema/signups.ts`, `src/features/profile/` · After: T2 · Owner: @jjjung0921 (commit 2fa73e6)
+- [x] T3. 사전신청 제출 연동 — Done when: `POST /signups` 요청·응답이 zod 로 검증되고(계약 항목을 싣는다), 동의하지 않은 제출은 네트워크 요청 0건으로 막히며, 성공 시 완료 상태·연결 실패 시 입력값 유지 안내로 전환되고, 중복 신청(409)·도메인 거부(400)가 사용자 문구로 구분돼 보이며, 사전신청 전에는 상대 정보가 화면·응답 어디에도 없다 (테스트 포함) · Touches: `src/api/signups.ts`, `src/api/schema/signups.ts`, `src/features/profile/` · After: T2 · Owner: @jjjung0921 (commit 2fa73e6)
 
 - [x] T4. 결과 화면 연결·이용약관 시트·`/verify` — Done when: 결과 화면 맨 아래 사전신청 섹션(873:4155)이 보이고 누르면 `/reading/:id/pre-register` 모달이 열리며, 이용약관 시트(695:2753)가 사주 입력·사전신청 양쪽에서 열리고, 폼이 전화번호·인스타그램을 둘 다 필수로 받고 성별·선호 성별 세그먼트를 가지며, 백엔드 매직링크가 보내는 `/verify`(SCR-14)가 안내 화면을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/profile/`, `src/features/saju/SajuForm.tsx`, `src/ui/TermsSheet.tsx`, `src/app/preview/screens/pre-register.tsx` · After: T3 · Owner: @jjjung0921 (commit 2fa73e6 — T3 과 같은 커밋)
 
@@ -81,13 +80,13 @@
 ## Acceptance Criteria
 
 - [ ] AC1. 결과 화면의 티저를 누르면 사전신청 모달이 열리고, 기본·오류·로딩·연결 실패·완료 5상태가 디자인대로 보인다 (FR-9)
-- [ ] AC2. 이름·사진·이메일·연락처(전화번호 또는 인스타그램 택1)·학과·MBTI·자기소개·성별·선호 성별을 입력할 수 있다 (FR-10)
+- [ ] AC2. 이름·이메일·연락처(전화번호 또는 인스타그램 택1)·학과·MBTI·자기소개·성별·선호 성별을 입력할 수 있다 (FR-10)
 - [ ] AC3. 수집 항목·이용 목적·보관 기간이 화면에 고지되고, 동의하지 않은 채 제출하면 네트워크 요청이 0건이다 (FR-17, NFR-4)
 - [ ] AC4. 제출이 성공하면 완료 상태가 보이고, 연결에 실패하면 입력값이 남은 채 재시도 안내가 뜬다
 - [ ] AC5. `/preview/pre-register` 에서 5상태를 가짜 데이터로 볼 수 있고, 화면 컴포넌트가 `src/api/` 를 import 하지 않는다 (publishing-first)
 - [ ] AC6. 새 화면·로직에 테스트가 있고 Commands 4개가 경고 없이 통과한다
 - [ ] AC7. 이용약관 시트가 사주 입력·사전신청 양쪽에서 열리고 닫히며, 백엔드가 보내는 `/verify` 가 오류 화면이 아니라 인증 완료 안내를 그린다 (FR-17, SCR-14)
-- [ ] AC8. 계약이 받지 않는 항목(사진)은 네트워크 요청 본문에 없다
+- [ ] AC8. 사진 입력 칸이 없다(2026-09-17 결정)
 
 ## Validation Plan
 

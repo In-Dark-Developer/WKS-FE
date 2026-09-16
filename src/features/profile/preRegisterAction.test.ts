@@ -59,13 +59,13 @@ test('보관된 내 결과를 함께 보내고 완료를 돌려준다', async ()
   expect(data).toEqual({ status: 'done', mailSent: true });
 });
 
-test('사진은 계약에 없어 요청 본문에 실리지 않는다', async () => {
+test('계약에 없는 값은 요청 본문에 실리지 않는다', async () => {
   createSignupMock.mockResolvedValue({
     ok: true,
     data: { signupId: 1, couponIssued: true, mailSent: true, message: '접수' },
   });
 
-  await preRegisterAction(args({ ...input, photo: 'data:image/png;base64,AAAA' }));
+  await preRegisterAction(args({ ...input, unknownField: 'x' }));
 
   expect(createSignupMock).toHaveBeenCalledWith({ ...input, resultId: null });
 });
