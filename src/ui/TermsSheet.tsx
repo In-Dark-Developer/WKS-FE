@@ -3,7 +3,13 @@ import { createPortal } from 'react-dom';
 import { Button } from '@/ui/Button';
 import { OverlayBackdrop, useOverlayBehavior } from '@/ui/Modal';
 
-type Props = { open: boolean; onClose: () => void };
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  // 맨 끝 [동의] 절 — '점지 확인'을 누르면 동의로 본다는 문구라 사주 입력(SCR-02)만 켠다. 사전신청(SCR-09)은
+  // 체크박스로 명시 동의를 받으므로 끈다(FR-17).
+  withConsentClause?: boolean;
+};
 
 // Figma 이용약관 시트(695:2753) 본문 그대로다 — 법적 고지라 문구를 바꾸지 않는다. 기획이 고치면 여기만 고친다.
 const sections = [
@@ -21,9 +27,15 @@ const sections = [
   },
 ] as const;
 
+// 2026-09-17 소유자 전달 문구 그대로다.
+const consentClause = {
+  heading: '[동의]',
+  body: '‘점지 확인’을 누르시면 위 내용을 확인하였으며, 개인정보 수집·이용 및 사주 결과 제공에 동의한 것으로 간주됩니다.',
+} as const;
+
 // 사주 입력(SCR-02)·사전신청(SCR-09) 두 화면이 함께 여는 약관 시트 — Modal 과 같은 포커스 트랩·ESC·
 // 스크롤 잠금을 쓰고 화면 아래에서 올라온다(ShareSheet 와 같은 틀).
-export function TermsSheet({ open, onClose }: Props) {
+export function TermsSheet({ open, onClose, withConsentClause = false }: Props) {
   const { panelRef, titleId } = useOverlayBehavior(open, onClose);
 
   if (!open) return null;
@@ -45,12 +57,14 @@ export function TermsSheet({ open, onClose }: Props) {
           이용약관 / 개인정보 및 사주 결과 안내
         </h2>
         <div className="flex flex-col gap-16 text-ui-12 font-medium text-primary">
-          {sections.map(({ heading, body }) => (
-            <section className="flex flex-col" key={heading}>
-              <h3>{heading}</h3>
-              <p>{body}</p>
-            </section>
-          ))}
+          {(withConsentClause ? [...sections, consentClause] : sections).map(
+            ({ heading, body }) => (
+              <section className="flex flex-col" key={heading}>
+                <h3>{heading}</h3>
+                <p>{body}</p>
+              </section>
+            ),
+          )}
         </div>
         <Button onClick={onClose} size="l">
           확인
