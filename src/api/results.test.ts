@@ -7,7 +7,7 @@ vi.mock('./client', async (importOriginal) => {
 });
 
 import { createResult, getResult, type ResultRequestInput } from './results';
-import { clearSession, readSession } from './session';
+import { clearSession, readSession, writeSession } from './session';
 
 const input: ResultRequestInput = {
   nickname: '보살',
@@ -107,4 +107,28 @@ test('목 모드에서 모르는 resultId 는 RESULT_NOT_FOUND', async () => {
     ok: false,
     error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: expect.any(String) },
   });
+});
+
+test('백엔드가 모르는 결과면 보관된 내 결과를 비운다 — 죽은 resultId 로 계속 404 를 받지 않는다', async () => {
+  writeSession('11111111-1111-4111-8111-111111111111');
+  requestMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
+  });
+
+  await getResult('11111111-1111-4111-8111-111111111111');
+
+  expect(readSession()).toBeNull();
+});
+
+test('다른 사람의 결과가 없다는 응답은 내 결과를 건드리지 않는다', async () => {
+  writeSession('11111111-1111-4111-8111-111111111111');
+  requestMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
+  });
+
+  await getResult('22222222-2222-4222-8222-222222222222');
+
+  expect(readSession()?.resultId).toBe('11111111-1111-4111-8111-111111111111');
 });

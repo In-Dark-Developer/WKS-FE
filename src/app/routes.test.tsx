@@ -254,7 +254,7 @@ test('다른 결과를 만든 브라우저로 결과 화면에 들어오면 입�
   expect(getResultMock).not.toHaveBeenCalled();
 });
 
-test('결과 조회가 실패하면 오류 화면을 보인다', async () => {
+test('백엔드가 모르는 결과면 사주 입력으로 돌아간다 — 죽은 resultId 로 오류 화면에 갇히지 않는다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: false,
@@ -263,7 +263,16 @@ test('결과 조회가 실패하면 오류 화면을 보인다', async () => {
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  expect(await screen.findByRole('alert')).toHaveTextContent('찾는 점지가 없어요');
+  expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+});
+
+test('결과 조회가 연결 문제로 실패하면 오류 화면을 보인다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+
+  renderAt(`/reading/${RESULT_ID}`);
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('보살님이 잠시 길을 잃었어요');
 });
 
 test('없는 경로는 오류 화면과 처음으로 가는 링크를 보인다', async () => {

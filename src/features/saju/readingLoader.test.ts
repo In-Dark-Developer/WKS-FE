@@ -52,7 +52,7 @@ test('결과를 ReadingView 로 바꿔 돌려준다', async () => {
   expect(view.fortunes.love.grade).toBe('B');
 });
 
-test('RESULT_NOT_FOUND 는 404 Response 를 던진다', async () => {
+test('RESULT_NOT_FOUND 는 사주 입력으로 보낸다 — 보관된 내 결과는 getResult 가 이미 비웠다', async () => {
   getResultMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
@@ -63,7 +63,8 @@ test('RESULT_NOT_FOUND 는 404 Response 를 던진다', async () => {
     throw new Error('던져야 한다');
   } catch (error) {
     expect(error).toBeInstanceOf(Response);
-    expect(error instanceof Response ? error.status : undefined).toBe(404);
+    expect(error instanceof Response ? error.status : undefined).toBe(302);
+    expect(error instanceof Response ? error.headers.get('Location') : undefined).toBe('/');
   }
 });
 

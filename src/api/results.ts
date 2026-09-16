@@ -5,7 +5,7 @@ import {
   type Result,
   type ResultRequestInput,
 } from './schema/result';
-import { writeSession } from './session';
+import { forgetSession, writeSession } from './session';
 
 export type { ResultRequestInput } from './schema/result';
 
@@ -65,7 +65,13 @@ export async function createResult(input: ResultRequestInput): Promise<ApiOutcom
 }
 
 // GET /results/{resultId} — 본인 결과 재방문 조회(FR-3, FR-8). 트래픽이 가장 몰리는 경로다.
+// 백엔드가 모르는 결과라고 답하면 보관된 '내 결과'를 비운다 — 안 그러면 이 브라우저는 죽은 id 로
+// 계속 404 를 받는다(ADR-20260914-result-ownership-in-browser).
 export async function getResult(resultId: string): Promise<ApiOutcome<Result>> {
   if (isMockEnabled()) return mockGetResult(resultId);
-  return request({ method: 'GET', path: `/results/${resultId}` }, resultSchema);
+  const outcome = await request({ method: 'GET', path: `/results/${resultId}` }, resultSchema);
+  if (!outcome.ok && outcome.error.kind === 'api' && outcome.error.code === 'RESULT_NOT_FOUND') {
+    forgetSession(resultId);
+  }
+  return outcome;
 }

@@ -41,6 +41,12 @@ export function writeSession(resultId: string): void {
   }
 }
 
+// 백엔드가 이 resultId 를 모른다고 답했을 때(RESULT_NOT_FOUND) 부른다 — 보관된 '내 결과'가 그 id 일
+// 때만 비운다. 남겨 두면 결과·지도·사전신청이 죽은 id 로 계속 404 를 받는다.
+export function forgetSession(resultId: string): void {
+  if (readSession()?.resultId === resultId) clearSession();
+}
+
 export function clearSession(): void {
   try {
     localStorage.removeItem(KEY);
