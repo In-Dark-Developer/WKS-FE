@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 
-import instagramIcon from '@/ui/assets/icons/instagram.svg';
+import downloadIcon from '@/ui/assets/icons/download.svg';
 import { Button } from '@/ui/Button';
 import type { Grade } from '@/ui/DestinyCard';
 import { Icon } from '@/ui/Icon';
@@ -19,7 +19,7 @@ type Props = {
   grades: readonly { label: string; grade: Grade }[];
 };
 
-// 결과 화면(SCR-04)의 운명 카드와 그 아래 '인스타 스토리 공유하기'(FR-5). '카드 뒤집기'는 카드 자신이 갖고 있다.
+// 결과 화면(SCR-04)의 운명 카드와 그 아래 '카드 저장하기'(FR-5, Figma 796:3862). '카드 뒤집기'는 카드 자신이 갖고 있다.
 // 인연카드 전용 화면은 결과 화면에 합쳤다(2026-09-15, 04/T7).
 //
 // 치수는 Figma 「UI 최종 - 개발용」 결과 화면 Frame 93(713:4021):
@@ -63,14 +63,14 @@ export function ResultCard(card: Props) {
 
       <Button
         className="mx-8"
-        leadingIcon={<Icon src={instagramIcon} />}
+        leadingIcon={<Icon src={downloadIcon} />}
         loading={making}
         loadingLabel={cardMessages.making}
         onClick={handleShareStory}
         size="m"
         variant="accent"
       >
-        {cardMessages.story}
+        {cardMessages.save}
       </Button>
 
       {failed ? (

@@ -26,8 +26,9 @@ function saveFile(file: File): void {
   URL.revokeObjectURL(url);
 }
 
-// FR-5 '인스타 스토리 공유하기' · FR-16 폴백.
-// 파일 공유를 지원하면 공유 시트로, 아니면 같은 PNG 를 기기에 저장한다.
+// FR-5 '카드 저장하기' · FR-16 폴백.
+// 파일 공유를 지원하면 공유 시트로 넘긴다 — 모바일에서는 그 시트의 '이미지 저장'이 사진 앱에 담는 길이다.
+// 지원하지 않으면 같은 PNG 를 기기에 내려받는다.
 export async function shareCardImage(
   card: HTMLElement,
   nickname: string,
