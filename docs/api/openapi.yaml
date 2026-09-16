@@ -138,8 +138,8 @@ paths:
   /signups:
     post:
       operationId: createSignup
-      summary: 소개팅 사전등록 (FR-9, FR-10). 이메일·성별·선호 성별만 받는다
-      description: "배포돼 동작한다 — 백엔드 `SignupController` 가 `/api/signups` 에 매핑하고 운영 스펙(https://api.threadoffate.site/v3/api-docs)과 일치한다(2026-09-16 확인, WKS-BE 2553448). `mailSent: false` 여도 신청은 성공이다. 디자인의 추가 정보(이름·사진·연락처·학과·MBTI·자기소개)는 이 계약에 없다 — 프론트는 그 값을 전송하지 않고 브라우저 안에만 둔다(Q14 확장 요청 중)."
+      summary: 소개팅 사전등록 (FR-9, FR-10). 사진 외 디자인 항목을 받는다
+      description: "백엔드 `SignupController` 가 `/api/signups` 에 매핑한다. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처·학과·MBTI·자기소개가 추가됐고 전부 nullable 이다 — **운영 배포 전이라 그 필드는 `origin/dev` 에만 있다**(운영 스펙 https://api.threadoffate.site/v3/api-docs 은 아직 4필드). 배포 전 요청에 실어 보내도 Spring 이 모르는 필드를 무시하므로 400 이 되지는 않는다. `mailSent: false` 여도 신청은 성공이다. 사진은 아직 받는 필드가 없다 — 프론트가 전송하지 않는다(Q14)."
       tags: [signups]
       requestBody:
         required: true
@@ -365,6 +365,17 @@ components:
         resultId: { type: [string, "null"], format: uuid, description: "사주 없이 신청하는 경로는 null. 필수가 아니다" }
         gender: { $ref: "#/components/schemas/Gender" }
         preferGender: { $ref: "#/components/schemas/Gender" }
+        name: { type: [string, "null"], maxLength: 50, description: "이름. 화면에서는 필수로 받는다(FR-10)" }
+        contactMethod: { $ref: "#/components/schemas/ContactMethod" }
+        contactValue: { type: [string, "null"], maxLength: 100, description: "`contactMethod` 가 PHONE 이면 전화번호, INSTAGRAM 이면 계정 아이디 — 연락처는 택1 이다" }
+        department: { type: [string, "null"], maxLength: 100 }
+        mbti: { type: [string, "null"], pattern: "^$|^[EI][SN][TF][JP]$" }
+        bio: { type: [string, "null"], maxLength: 500 }
+    ContactMethod:
+      type: string
+      enum: [PHONE, INSTAGRAM]
+      nullable: true
+      description: "연락 수단 택1 — 백엔드 `ContactMethod` 와 1:1"
     ResendSignupResult:
       type: object
       required: [mailSent, message]

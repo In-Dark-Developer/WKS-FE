@@ -13,19 +13,22 @@ const SUBMIT_DELAY_MS = 1200;
 const filled = {
   name: '김운꿰',
   email: 'wks@dongguk.edu',
-  phone: '01012345678',
+  contactMethod: 'PHONE',
+  contactValue: '01012345678',
   department: '산업시스템공학과',
   mbti: 'ENFP',
   bio: '축제에서 같이 공연 볼 사람을 찾아요.',
+  gender: 'MALE',
+  preferGender: 'FEMALE',
   agreed: true,
 } as const;
 
-// 결과 화면 티저 → 사전신청 모달 흐름 — 실제 라우트(`/reading/:id/pre-register`) 연결은 조립 Task 가 한다.
+// 결과 화면 사전신청 섹션 → 모달 흐름 — 실제 라우트는 `/reading/:id/pre-register` 다(06/T4).
 function TeaserToModal() {
   const [open, setOpen] = useState(true);
   return (
     <>
-      <PreRegisterTeaser onApply={() => setOpen(true)} state="available" />
+      <PreRegisterTeaser onApply={() => setOpen(true)} />
       <PreRegisterModal onClose={() => setOpen(false)} open={open} />
     </>
   );
@@ -42,18 +45,15 @@ export const preview: PreviewScreen = {
     기본: () => <PreRegisterForm />,
     '오류(이메일)': () => <PreRegisterForm defaultValues={{ ...filled, email: 'wks@dongguk' }} />,
     '연결 실패': () => <PreRegisterForm defaultValues={filled} />,
+    '이미 신청함': () => <PreRegisterForm defaultValues={filled} />,
     완료: () => <PreRegisterComplete />,
-    티저: () => (
-      <div className="flex flex-col gap-16">
-        <PreRegisterTeaser state="beforeOpen" />
-        <PreRegisterTeaser state="available" />
-        <PreRegisterTeaser state="closed" />
-      </div>
-    ),
+    티저: () => <PreRegisterTeaser />,
   },
   action: async ({ request }) => {
     await new Promise((resolve) => setTimeout(resolve, SUBMIT_DELAY_MS));
     const state = new URL(request.url).searchParams.get('state');
-    return state === '연결 실패' ? { formError: 'connection' } : { status: 'done' };
+    if (state === '연결 실패') return { formError: 'connection' };
+    if (state === '이미 신청함') return { formError: 'duplicate' };
+    return { status: 'done', mailSent: true };
   },
 };

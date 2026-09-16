@@ -9,7 +9,7 @@ afterEach(() => {
   document.body.style.overflow = '';
 });
 
-function renderModal(onClose = vi.fn(), result: unknown = { status: 'done' }) {
+function renderModal(onClose = vi.fn(), result: unknown = { status: 'done', mailSent: true }) {
   const router = createMemoryRouter(
     [
       {
@@ -19,7 +19,10 @@ function renderModal(onClose = vi.fn(), result: unknown = { status: 'done' }) {
             defaultValues={{
               name: '김운꿰',
               email: 'wks@dongguk.edu',
-              phone: '01012345678',
+              contactMethod: 'PHONE',
+              contactValue: '01012345678',
+              gender: 'MALE',
+              preferGender: 'FEMALE',
               agreed: true,
             }}
             onClose={onClose}

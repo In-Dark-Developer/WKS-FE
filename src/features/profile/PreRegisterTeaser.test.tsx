@@ -5,19 +5,13 @@ import { PreRegisterTeaser } from './PreRegisterTeaser';
 
 afterEach(cleanup);
 
-test('신청 가능하면 신청하기를 눌러 모달을 연다', () => {
+test('오픈일과 안내를 보이고 누르면 사전신청으로 간다', () => {
   const onApply = vi.fn();
-  render(<PreRegisterTeaser onApply={onApply} state="available" />);
+  render(<PreRegisterTeaser onApply={onApply} />);
 
-  expect(
-    screen.getByRole('heading', { name: '당신의 축제 인연을 만나보세요' }),
-  ).toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: '신청하기' }));
+  expect(screen.getByRole('heading', { name: 'GRAND OPEN !!' })).toBeInTheDocument();
+  expect(screen.getByText('09월 29일')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '사전 신청하고 알림 받기' }));
+
   expect(onApply).toHaveBeenCalledOnce();
-});
-
-test('마감이면 버튼이 잠긴다', () => {
-  render(<PreRegisterTeaser state="closed" />);
-
-  expect(screen.getByRole('button', { name: '신청 마감' })).toBeDisabled();
 });

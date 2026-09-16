@@ -23,6 +23,10 @@ type EventProps = {
   share_clicked: { surface: 'reading' | 'map'; outcome: ShareOutcome };
   // 공유 링크로 들어온 사람의 궁합이 만들어졌다(FR-6).
   compatibility_created: Record<string, never>;
+  // 사전신청(FR-9·FR-10) — 모달을 열었다 · 접수됐다(`mailSent` 는 인증 메일 발송 여부) · 실패했다.
+  pre_register_opened: Record<string, never>;
+  pre_register_submitted: { mailSent: boolean };
+  pre_register_failed: { reason: 'duplicate' | 'domain' | 'connection' };
 };
 
 type Amplitude = typeof import('@amplitude/analytics-browser');
