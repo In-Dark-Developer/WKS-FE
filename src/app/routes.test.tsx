@@ -176,6 +176,19 @@ test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서
   ).toBeInTheDocument();
 });
 
+test('궁합 지도의 뒤로가기는 내 사주 결과로 돌아간다 — 직접 주소로 들어와도 된다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = renderAt('/me/map');
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
 test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 보낸다', async () => {
   const router = renderAt('/me/map');
 
