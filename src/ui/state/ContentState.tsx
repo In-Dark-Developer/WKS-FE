@@ -2,6 +2,8 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 
+import './ContentState.css';
+
 type State = 'loading' | 'error' | 'empty';
 
 type Props = Omit<ComponentPropsWithoutRef<'section'>, 'title'> & {
@@ -64,11 +66,14 @@ export function ContentState({ state, title, description, action, className, ...
         'flex flex-col items-center rounded-20 border border-default bg-surface-default p-24 text-center',
         className,
       )}
+      data-content-state=""
       role={role}
       {...props}
     >
       <StateVisual state={state} />
-      <h2 className="mt-16 font-display text-display-24 text-primary">{title ?? copy.title}</h2>
+      <h2 className="mt-16 font-display text-display-24 text-primary" data-content-state-title="">
+        {title ?? copy.title}
+      </h2>
       {(description ?? copy.description) ? (
         <p className="mt-8 text-ui-14 text-secondary">{description ?? copy.description}</p>
       ) : null}
