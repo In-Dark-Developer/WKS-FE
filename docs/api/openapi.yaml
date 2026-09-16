@@ -139,7 +139,7 @@ paths:
     post:
       operationId: createSignup
       summary: 소개팅 사전등록 (FR-9, FR-10). 사진 외 디자인 항목을 받는다
-      description: "백엔드 `SignupController` 가 `/api/signups` 에 매핑한다. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처·학과·MBTI·자기소개가 추가됐고 전부 nullable 이다 — **운영 배포 전이라 그 필드는 `origin/dev` 에만 있다**(운영 스펙 https://api.threadoffate.site/v3/api-docs 은 아직 4필드). 배포 전 요청에 실어 보내도 Spring 이 모르는 필드를 무시하므로 400 이 되지는 않는다. `mailSent: false` 여도 신청은 성공이다. 사진은 아직 받는 필드가 없다 — 프론트가 전송하지 않는다(Q14)."
+      description: "백엔드 `SignupController` 가 `/api/signups` 에 매핑한다. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처·학과·MBTI·자기소개가 추가됐고 전부 nullable 이며, 같은 날 운영에 배포돼 운영 스펙(https://api.threadoffate.site/v3/api-docs)과 일치한다. `mailSent: false` 여도 신청은 성공이다. 사진은 아직 받는 필드가 없다 — 프론트가 전송하지 않는다(Q14)."
       tags: [signups]
       requestBody:
         required: true

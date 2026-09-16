@@ -43,7 +43,7 @@
 **닫힘 (2026-09-16)**
 
 - 02/T3 `Modal` — 병합됨. `useOverlayBehavior`(포커스 트랩·ESC·스크롤 잠금)를 `Modal`·`ShareSheet` 가 함께 쓴다
-- `POST /signups` 계약 — `email`·`gender`·`preferGender` 필수 + `resultId` nullable. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처(택1)·학과·MBTI·자기소개도 받는다 — **운영 배포 전이라 `dev` 에만 있다**. 사진은 받는 필드가 없어 전송하지 않는다
+- `POST /signups` 계약 — `email`·`gender`·`preferGender` 필수 + `resultId` nullable. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처(택1)·학과·MBTI·자기소개도 받고 운영에 배포됐다. 사진은 받는 필드가 없어 전송하지 않는다
 - 인증 완료 경로 — `GET /signups/verify` 가 `app.frontend.verify-redirect-url`(기본 `/verify`)로 302 한다. 프론트에 SCR-14 `/verify` 가 필요하다
 - 연락처·성별 — 연락처는 디자인·백엔드대로 **택1**(전화번호 | 인스타그램), 성별·선호 성별은 폼에 세그먼트 두 줄로 받는다(소유자 결정 2026-09-16, FR-10)
 - 동의 — 체크박스 명시 동의를 유지하고 이용약관 시트(695:2753)를 사주 입력·사전신청 양쪽에 단다(소유자 결정 2026-09-16, FR-17)
@@ -52,7 +52,7 @@
 **남은 제약**
 
 - PRD Q4 보관 기간 · Q10 사진 형식·용량·자기소개 글자 수 — 고지 문구와 검증 규칙은 확정 전 문구로 둔다
-- 백엔드 확장분의 **운영 배포** — `dev` 에만 있어 배포 전 신청은 이름·연락처·학과·MBTI·자기소개가 저장되지 않는다. 사진은 계약 자체가 없다(Q14)
+- 사진 — 받는 계약이 없어 화면에서 고른 사진이 전송되지 않는다(Q14)
 - `src/app/routes.tsx` 는 publishing-first 공지상 03/T7 소유였으나 Phase 03 종료 후 chore 스트림들이 이어 고쳐 왔다 — T4 가 `/reading/:id/pre-register`·`/verify` 를 등록한다
 
 ## Tasks

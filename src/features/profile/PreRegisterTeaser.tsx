@@ -3,8 +3,6 @@ import { Button } from '@/ui/Button';
 type Props = { onApply?: () => void };
 
 // SCR-04 맨 아래 사전신청 섹션 — Figma 결과 화면(873:4155). 누르면 사전신청 모달이 열린다(FR-9).
-// 디자인의 'GRAND OPEN !!' 은 Cafe24 PRO Slim 40px 이지만 그 폰트가 저장소에 없어 성곡 서체 32px 로 쓴다
-// (토큰 밖 크기·폰트를 새로 들이지 않는다 — CONVENTIONS 4장).
 export function PreRegisterTeaser({ onApply }: Props) {
   return (
     <section
@@ -16,10 +14,8 @@ export function PreRegisterTeaser({ onApply }: Props) {
           <span>09월 29일</span>
           <span>사주 소개팅</span>
         </p>
-        <h2
-          className="font-sungkok text-display-32 text-on-brand"
-          id="pre-register-teaser-title"
-        >
+        {/* Figma 873:1871 — Cafe24 PRO Slim Max 40/1.2. */}
+        <h2 className="font-slim text-display-40 text-on-brand" id="pre-register-teaser-title">
           GRAND OPEN !!
         </h2>
       </div>

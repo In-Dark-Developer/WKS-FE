@@ -122,7 +122,7 @@
 | Q11 | 공유 방식(FR-4)·구슬 배치 규칙(FR-8)·운명의 실 화면과 API(FR-13)처럼 디자인·기획서에 없는 '미정' 항목을 누가 정하는가 | 해당 FR의 구현 착수 | 각 Phase 시작 전 |
 | Q10 | 사진 형식·용량 제한과 자기소개 최대 글자 수                                                     | FR-10 검증 규칙                                | Phase 06 시작 전 |
 | Q13 | 소개팅 화면의 축제 당일(2026-09-29) 오픈을 누가 판정하는가 — 백엔드 응답(오픈 전 403/빈 목록) vs 클라이언트 상수 | FR-12 오픈 전 상태 | Phase 07 시작 전 |
-| Q14 | 2026-09-16: 사전등록 3종(`POST /signups`·`/signups/resend`·`GET /signups/verify`)이 동작하고 인증 완료 경로(`/verify`)도 확정됐다. 같은 날 백엔드가 이름·연락처(택1)·학과·MBTI·자기소개를 받도록 확장했으나(WKS-BE 981b487) **`dev` 브랜치에만 있어 운영 배포가 남았다** — 배포 전에는 그 값이 저장되지 않는다. 남은 미정: 사진 업로드 방식(받는 필드 없음), 학교 도메인 화이트리스트 운영값(`app.signup.allowed-email-domains` 이 비면 아무 도메인이나 통과), `verify-redirect-url` 운영값 | FR-10·17 · Phase 06 | 축제 전(2026-09-29) |
+| Q14 | 2026-09-16: 사전등록 3종(`POST /signups`·`/signups/resend`·`GET /signups/verify`)이 동작하고 인증 완료 경로(`/verify`)도 확정됐다. 같은 날 백엔드가 이름·연락처(택1)·학과·MBTI·자기소개를 받도록 확장하고 운영에 배포했다(WKS-BE 981b487 — 운영 스펙 확인). 남은 미정: 사진 업로드 방식(받는 필드 없음), 학교 도메인 화이트리스트 운영값(`app.signup.allowed-email-domains` 이 비면 아무 도메인이나 통과), `verify-redirect-url` 운영값 | FR-10·17 · Phase 06 | 축제 전(2026-09-29) |
 ## Success Criteria
 
 각 항목은 실기기(iOS Safari · Android Chrome) 한 대씩에서 아래 절차대로 확인한다. 수치 목표의 측정 도구는 Phase 08에서 정한다.

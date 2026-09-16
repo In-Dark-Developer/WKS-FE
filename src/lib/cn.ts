@@ -21,6 +21,7 @@ const twMerge = extendTailwindMerge({
         'display-24',
         'display-28',
         'display-32',
+        'display-40',
       ],
     },
   },
