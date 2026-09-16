@@ -1,19 +1,19 @@
 # Handoff — 08-T4-preview-check-r2
 
-<!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
-
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-17
 - Phase / Task: 08/T4
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+`https://threadoffate.site/s/:shareId` 를 카카오·인스타·메신저에 붙였을 때 제목·설명·썸네일이 보이는 것을 실기기로 확인해 RESULT 에 남긴다 (SC-6, AC3).
 
 ## Work Completed
 
-- 없음
+- 2차 실기기 검증(iPhone 13 · iOS 26.3.1 · 운영) — **카카오톡·인스타그램 DM·iMessage·라인 4개 앱에서 제목·설명·썸네일 확인**
+- RESULT 에 AC3 통과 표 기록, `Not Completed` 에서 T4 제거하고 `Completed` 로 옮김
+- PLAN T4 를 `[x]` 로 바꾸고 확인 범위·날짜를 줄에 적음, `docs/phases/README.md` 색인 재생성(08 = 4/6)
 
 ## Work In Progress
 
@@ -21,19 +21,21 @@
 
 ## Files Changed
 
-- 없음
+- `docs/phases/08-launch-readiness/RESULT.md` · `PLAN.md` · `docs/phases/README.md`(파생, Touches 확장)
 
 ## Decisions Made
 
-- 없음
+- **미리보기 카드 탭이 `og:url`(루트)로 가는지에 대한 우려는 종결됐다** — 소유자 확인 결과 기획·기능 오해였다(2026-09-17). `index.html` 은 바꾸지 않았고 카카오 캐시 초기화도 필요 없다.
+- 동적 미리보기는 ADR-20260915-share-preview-static-meta 로 이미 기각돼 있어 이 Task 에서 다시 다루지 않았다.
 
 ## Tests Executed
 
-- 없음
+- `pnpm test` · `pnpm typecheck` · `pnpm lint` · `pnpm build` (문서만 바꿨으므로 회귀 확인용)
+- `scripts/ai-stream.sh phases --check` · `scripts/ai-end.sh --ci`
 
 ## Test Results
 
-- 없음
+- 통과 — 아래 LOG 의 수치 참고. 색인 일치, CI 검사 FAIL 0
 
 ## Known Problems
 
@@ -41,8 +43,8 @@
 
 ## Unverified Assumptions
 
-- 없음
+- 미리보기 문구·썸네일이 바뀌면 카카오는 URL 별로 캐시하므로 공유 디버거로 캐시를 지워야 한다(@jjjung0921 계정). 이번에는 메타를 바꾸지 않아 해당 없음.
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+08/T4 는 끝났다 — `ai-end.sh --ready` 로 PR 을 올린다. 다음은 08/T5(성능 예산 측정)이고, 08/T6(@nicerjs23 출시 점검)의 `After: T4` 가 이 병합으로 풀린다.

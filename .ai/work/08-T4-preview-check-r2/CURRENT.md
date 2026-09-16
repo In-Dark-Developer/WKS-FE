@@ -1,15 +1,13 @@
 # Current State — 08-T4-preview-check-r2
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 08-T4-preview-check-r2
 - Owner: gn00py48@gmail.com
 - Branch: ws/08-T4-preview-check-r2
 - Task: 08/T4
 - Issue: none
-- Touches: index.html, public/og/, docs/decisions/, docs/phases/08-launch-readiness/
+- Touches: index.html, public/og/, docs/decisions/, docs/phases/08-launch-readiness/, docs/phases/README.md
 - Supersedes: 08-T4-share-link-preview
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,17 +19,17 @@ T4. 공유 링크 미리보기
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 2차 실기기 검증 — 카카오톡·인스타 DM·iMessage·라인 4개 앱 미리보기 확인
+- [x] 카드 탭(og:url) 안건 종결 — 소유자 확인 결과 기획 오해, `index.html` 미변경
+- [x] RESULT 에 AC3 통과 기록 · PLAN T4 `[x]` · 색인 재생성
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`143a471`
+`e63002c`
 
 ## Relevant Documents
 
@@ -39,8 +37,8 @@ TODO
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `index.html` — OG·Twitter 메타 13개 (변경 없음)
+- `public/og/og-v2.jpg` — 1200×630 썸네일
 
 ## Next Action
 
