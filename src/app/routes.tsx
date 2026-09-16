@@ -27,6 +27,7 @@ import {
   FriendRanking,
   joinShare,
   joinShareLoader,
+  ShareJoinLoading,
   shareInputLoader,
   shareMapLoader,
   type ShareInputView,
@@ -40,6 +41,7 @@ import {
   preRegisterAction,
 } from '@/features/profile';
 import { ResultCard, ShareLinkButton } from '@/features/share';
+import { readSession } from '@/api/session';
 import { track } from '@/lib/analytics';
 import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
 import { Button } from '@/ui/Button';
@@ -235,6 +237,22 @@ function JoinShareError() {
   );
 }
 
+// 공유 링크 세 주소(입력·재시도·지도)의 첫 진입 대기 화면 — AppShell 은 RootLayout 이 그리지 못하므로
+// (hydrate 중에는 부모 element 가 없다) 여기서 감싼다.
+// 이 브라우저에 내 결과가 있을 때만 궁합을 만드느라 기다린다 — 처음 온 방문자는 곧바로 사주 입력이라
+// '이전 정보로 …' 문구가 맞지 않아 공통 로딩만 보인다(보관값은 localStorage 라 이 시점에 바로 읽힌다).
+function ShareEntryFallback() {
+  return readSession() ? (
+    <AppShell backdrop="result">
+      <ShareJoinLoading />
+    </AppShell>
+  ) : (
+    <AppShell>
+      <RouteLoading />
+    </AppShell>
+  );
+}
+
 // 이 파일은 Phase 03 T7 이 단독으로 소유한다(T3 이후 인계) — 각 화면은 컴포넌트·loader·action 만
 // export 하고 등록은 여기서 한다. 배경은 handle.backdrop 으로 정한다 — 'dawn'(기본) · 'result'(사주 결과) ·
 // 'mist'(사전신청 모달).
@@ -283,6 +301,9 @@ export const routes: RouteObject[] = [
         path: 's/:shareId',
         loader: shareInputLoader,
         action: shareSajuAction,
+        handle: { backdrop: 'result' },
+        // 링크를 누른 첫 진입은 loader 가 끝날 때까지 이 화면이다(내 결과가 있으면 그대로 궁합을 만든다).
+        hydrateFallbackElement: <ShareEntryFallback />,
         element: <ShareInputRoute />,
       },
       // 궁합 재시도 — 화면 없이 이동으로만 끝난다(지도·입력·내 결과). 실패만 '다시 시도하기' 오류를 그린다.
@@ -290,6 +311,7 @@ export const routes: RouteObject[] = [
         path: 's/:shareId/join',
         loader: joinShareLoader,
         handle: { backdrop: 'result' },
+        hydrateFallbackElement: <ShareEntryFallback />,
         errorElement: <JoinShareError />,
       },
       // SCR-13 친구의 궁합 지도 — 내 결과가 없으면 입력으로 (05/T10).
@@ -297,6 +319,7 @@ export const routes: RouteObject[] = [
         path: 's/:shareId/map',
         loader: trackedShareMapLoader,
         handle: { backdrop: 'result' },
+        hydrateFallbackElement: <ShareEntryFallback />,
         element: <SharedMapRoute />,
       },
       // SCR-08 궁합 지도 — 05/T2 CompatibilityMapScreen, 조립 05/T3. 결과 화면 순위의 '지도 보기'로 들어온다.

@@ -200,6 +200,43 @@ test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 
   expect(getResultMock).not.toHaveBeenCalled();
 });
 
+// 공유 링크 첫 진입 대기 화면(Figma 1044:4150) — loader 가 끝나기 전까지 보인다.
+
+test('공유 링크로 들어오면 궁합 지도를 만드는 중 안내가 먼저 보인다', async () => {
+  writeSession(RESULT_ID);
+  let release: (() => void) | undefined;
+  createCompatibilityMock.mockReturnValue(
+    new Promise((resolve) => {
+      release = () =>
+        resolve({
+          ok: true,
+          data: { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '달빛토끼' },
+        });
+    }),
+  );
+
+  renderAt('/s/11111111-1111-4111-8111-111111111111');
+
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    '이전 정보로 궁합지도를 만들고 있어요',
+  );
+  release?.();
+});
+
+test('사주를 처음 보는 방문자에게는 궁합 지도를 만드는 중 안내가 뜨지 않는다', () => {
+  let release: (() => void) | undefined;
+  getSharedResultMock.mockReturnValue(
+    new Promise((resolve) => {
+      release = () => resolve({ ok: true, data: { nickname: '서연', compatibilities: [] } });
+    }),
+  );
+
+  renderAt('/s/11111111-1111-4111-8111-111111111111');
+
+  expect(screen.queryByText(/이전 정보로 궁합지도를 만들고 있어요/)).not.toBeInTheDocument();
+  release?.();
+});
+
 // 04/T7 조립 — 인연카드 화면을 결과 화면에 합쳤다(카드 뒤집기·인스타 스토리 공유, 빈 순위의 친구에게 공유).
 
 test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·인스타 스토리 공유를 갖고 인연카드 입구는 없다', async () => {
