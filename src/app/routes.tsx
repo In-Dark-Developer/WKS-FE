@@ -241,6 +241,27 @@ function JoinShareError() {
 // (hydrate 중에는 부모 element 가 없다) 여기서 감싼다.
 // 이 브라우저에 내 결과가 있을 때만 궁합을 만드느라 기다린다 — 처음 온 방문자는 곧바로 사주 입력이라
 // '이전 정보로 …' 문구가 맞지 않아 공통 로딩만 보인다(보관값은 localStorage 라 이 시점에 바로 읽힌다).
+// 대기 화면을 보는 사람에게는 궁합이 금방 만들어져도 최소 1.5초는 보여 준다(소유자 요청 2026-09-17) —
+// 화면이 번쩍이고 지나가면 무슨 일이 일어났는지 알 수 없다. 결과가 없어 이 화면을 보지 않는 첫 방문자는
+// 기다리지 않는다(아래 ShareEntryFallback 과 같은 기준).
+const SHARE_LOADING_MIN_MS = 1500;
+
+function shareEntryLoader<TArgs extends LoaderFunctionArgs, TResult>(
+  loader: (args: TArgs) => Promise<TResult>,
+) {
+  return async (args: TArgs): Promise<TResult> => {
+    const startedAt = Date.now();
+    const showsLoading = readSession() !== null;
+    try {
+      return await loader(args);
+    } finally {
+      // loader 가 redirect 를 던져도(공유 링크의 정상 경로다) 이 기다림을 거친 뒤 던져진다.
+      const left = SHARE_LOADING_MIN_MS - (Date.now() - startedAt);
+      if (showsLoading && left > 0) await new Promise((resolve) => setTimeout(resolve, left));
+    }
+  };
+}
+
 function ShareEntryFallback() {
   return readSession() ? (
     <AppShell backdrop="result">
@@ -299,7 +320,7 @@ export const routes: RouteObject[] = [
       // SCR-06 공유 링크 입력 — 가드 없음(FR-18). 내 결과가 있으면 loader 가 join 으로 보낸다 (05/T10).
       {
         path: 's/:shareId',
-        loader: shareInputLoader,
+        loader: shareEntryLoader(shareInputLoader),
         action: shareSajuAction,
         handle: { backdrop: 'result' },
         // 링크를 누른 첫 진입은 loader 가 끝날 때까지 이 화면이다(내 결과가 있으면 그대로 궁합을 만든다).
@@ -309,7 +330,7 @@ export const routes: RouteObject[] = [
       // 궁합 재시도 — 화면 없이 이동으로만 끝난다(지도·입력·내 결과). 실패만 '다시 시도하기' 오류를 그린다.
       {
         path: 's/:shareId/join',
-        loader: joinShareLoader,
+        loader: shareEntryLoader(joinShareLoader),
         handle: { backdrop: 'result' },
         hydrateFallbackElement: <ShareEntryFallback />,
         errorElement: <JoinShareError />,

@@ -223,6 +223,34 @@ test('공유 링크로 들어오면 궁합 지도를 만드는 중 안내가 먼
   release?.();
 });
 
+test('궁합이 금방 만들어져도 대기 화면이 바로 사라지지 않는다', async () => {
+  writeSession(RESULT_ID);
+  createCompatibilityMock.mockResolvedValue({
+    ok: true,
+    data: { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '달빛토끼' },
+  });
+  getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+  const startedAt = Date.now();
+
+  renderAt('/s/11111111-1111-4111-8111-111111111111');
+
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    '이전 정보로 궁합지도를 만들고 있어요',
+  );
+  // 궁합은 이미 끝났지만 화면은 남아 있다.
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  expect(screen.getByRole('status')).toBeInTheDocument();
+
+  expect(
+    await screen.findByRole(
+      'heading',
+      { level: 1, name: '달빛토끼님의 궁합 지도' },
+      { timeout: 3000 },
+    ),
+  ).toBeInTheDocument();
+  expect(Date.now() - startedAt).toBeGreaterThanOrEqual(1400);
+});
+
 test('사주를 처음 보는 방문자에게는 궁합 지도를 만드는 중 안내가 뜨지 않는다', () => {
   let release: (() => void) | undefined;
   getSharedResultMock.mockReturnValue(
@@ -413,7 +441,10 @@ test('내 결과가 있으면 링크로 들어올 때 입력 없이 궁합을 �
 
   const router = renderAt(`/s/${SHARE_ID}`);
 
-  fireEvent.click(await screen.findByRole('button', { name: '내 사주 내용도 확인하기' }));
+  // 공유 링크 첫 진입은 대기 화면을 최소 1.5초 보여 준다 — RTL 기본 1초로는 모자라다.
+  fireEvent.click(
+    await screen.findByRole('button', { name: '내 사주 내용도 확인하기' }, { timeout: 3000 }),
+  );
 
   expect(await screen.findByRole('button', { name: '카드 뒤집기' })).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
@@ -443,7 +474,9 @@ test('궁합 생성이 연결 문제로 실패하면 다시 시도할 수 있는
 
   renderAt(`/s/${SHARE_ID}/join`);
 
-  expect(await screen.findByRole('alert')).toHaveTextContent('인연을 잇지 못했어요');
+  expect(await screen.findByRole('alert', {}, { timeout: 3000 })).toHaveTextContent(
+    '인연을 잇지 못했어요',
+  );
   expect(screen.getByRole('link', { name: '다시 시도하기' })).toHaveAttribute(
     'href',
     `/s/${SHARE_ID}/join`,
