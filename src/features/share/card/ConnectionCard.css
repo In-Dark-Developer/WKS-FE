@@ -26,8 +26,9 @@
   backface-visibility: hidden;
 }
 
-/* 뒷면 — Figma 731:4712. card-back.webp 는 그림자 여백까지 담은 351×469 라 앞면(349×461, 사주 카드 화면 658:5102)
-   칸 밖으로 4px 씩 넘친다(가로는 349 에 맞춰 조금 늘인다). */
+/* 뒷면 — 2026-09-17 교체본은 그림자 여백이 없어 칸을 그대로 채운다(예전 351×469 는 여백 4px 씩을 담고 있어
+   밖으로 밀어냈다). 칸 비율은 앞면(349×461, 사주 카드 화면 658:5102)과 같게 두어 뒤집어도 높이·폭이 그대로다.
+   교체본 비율(≈343:461)이 칸보다 1.2% 좁아 `cover` 로 채운다 — 늘이지 않고 좌우를 아주 조금만 덜어낸다. */
 [data-connection-card-back] {
   position: relative;
   aspect-ratio: 349 / 461;
@@ -36,11 +37,11 @@
 
 [data-connection-card-back] img {
   position: absolute;
-  top: -0.868%;
-  left: -1.146%;
-  width: 102.292%;
+  inset: 0;
+  width: 100%;
   max-width: none;
-  height: 101.735%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* 카드 뒤집기 — Figma 558:2788, 카드 아래에서 27px 위 (461px 기준). */
