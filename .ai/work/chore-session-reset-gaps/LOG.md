@@ -1,0 +1,23 @@
+# Work Log — chore-session-reset-gaps
+
+<!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
+
+## 2026-09-16 · claude-code · -/- · 죽은 resultId 정리 빈틈과 스토리지 예외 테스트
+
+- Commits: bf0cce8
+- Done: 신청 404 세션 정리, 궁합 404 는 링크 재조회로 판정 후 정리, 세션 스토리지 예외 테스트
+- Not done: 친구 지도에서의 즉시 판정(결과를 열 때 정리됨) · Developer changes: 없음 · Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 없음
+- Verification: pnpm test 351·lint·typecheck exit 0
+
+## 2026-09-16 · ai-stream · -/- · 스트림 열기
+
+- Commits: (open)
+- Done: 스트림 `chore-session-reset-gaps` 생성 (브랜치 `ws/chore-session-reset-gaps`)
+- Not done: 없음
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 없음
+- Verification: 없음

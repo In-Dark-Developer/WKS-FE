@@ -1,6 +1,6 @@
 import { afterEach, expect, test, vi } from 'vitest';
 
-import { clearSession, readSession, writeSession } from './session';
+import { clearSession, forgetSession, readSession, writeSession } from './session';
 
 const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
 
@@ -49,5 +49,42 @@ test('스토리지 접근이 막히면 세션 없음', () => {
     throw new DOMException('blocked', 'SecurityError');
   });
 
+  expect(readSession()).toBeNull();
+});
+
+test('저장이 막히면(용량 초과·사생활 보호 모드) 예외 없이 세션 없음으로 동작한다', () => {
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new DOMException('full', 'QuotaExceededError');
+  });
+
+  expect(() => writeSession(RESULT_ID)).not.toThrow();
+  expect(readSession()).toBeNull();
+});
+
+test('지우기가 막혀도 예외를 던지지 않는다', () => {
+  writeSession(RESULT_ID);
+  vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+    throw new DOMException('blocked', 'SecurityError');
+  });
+
+  expect(() => clearSession()).not.toThrow();
+});
+
+test('깨진 값을 지우지 못해도 세션 없음으로 보고 예외를 던지지 않는다', () => {
+  localStorage.setItem('wks:session', 'not-json');
+  vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+    throw new DOMException('blocked', 'SecurityError');
+  });
+
+  expect(readSession()).toBeNull();
+});
+
+test('forgetSession 은 보관된 결과와 같은 id 일 때만 비운다', () => {
+  writeSession(RESULT_ID);
+
+  forgetSession('7b91d26f-2222-4222-8222-222222222222');
+  expect(readSession()).toEqual({ resultId: RESULT_ID });
+
+  forgetSession(RESULT_ID);
   expect(readSession()).toBeNull();
 });

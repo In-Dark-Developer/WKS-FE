@@ -3,7 +3,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 const { createSignupMock } = vi.hoisted(() => ({ createSignupMock: vi.fn() }));
 vi.mock('@/api/signups', () => ({ createSignup: createSignupMock }));
 
-import { writeSession } from '@/api/session';
+import { readSession, writeSession } from '@/api/session';
 
 import type { ActionFunctionArgs } from 'react-router-dom';
 
@@ -70,7 +70,7 @@ test('사진은 계약에 없어 요청 본문에 실리지 않는다', async ()
   expect(createSignupMock).toHaveBeenCalledWith({ ...input, resultId: null });
 });
 
-test('백엔드가 모르는 결과면 사주 없이 한 번 더 보낸다', async () => {
+test('백엔드가 모르는 결과면 보관된 결과를 비우고 사주 없이 한 번 더 보낸다', async () => {
   writeSession('3f2a9c1e-1111-4111-8111-111111111111');
   createSignupMock
     .mockResolvedValueOnce({
@@ -86,6 +86,7 @@ test('백엔드가 모르는 결과면 사주 없이 한 번 더 보낸다', asy
 
   expect(createSignupMock).toHaveBeenLastCalledWith({ ...input, resultId: null });
   expect(data).toEqual({ status: 'done', mailSent: false });
+  expect(readSession()).toBeNull();
 });
 
 test('이미 신청한 이메일·학교 메일 아님·연결 실패를 구분해 돌려준다', async () => {

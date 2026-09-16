@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 
-import { readSession } from '@/api/session';
+import { forgetSession, readSession } from '@/api/session';
 import { createSignup } from '@/api/signups';
 import { track } from '@/lib/analytics';
 
@@ -42,7 +42,7 @@ function toPreRegisterInput(value: unknown): PreRegisterInput {
 
 // SCR-09 `/reading/:id/pre-register` action — 검증·동의를 마친 입력만 여기로 온다(FR-17).
 // 사진은 받는 계약이 없어 보내지 않는다(ADR-20260916-signup-contract-gap).
-// 보관된 '내 결과'를 함께 보내 신청과 사주를 잇고, 그 결과를 백엔드가 모르면(404) 한 번만 사주 없이 다시 보낸다 —
+// 보관된 '내 결과'를 함께 보내 신청과 사주를 잇고, 그 결과를 백엔드가 모르면(404) 비운 뒤 한 번만 사주 없이 다시 보낸다 —
 // 죽은 resultId 때문에 신청 자체가 막히지 않게 한다.
 export async function preRegisterAction({
   request,
@@ -51,7 +51,14 @@ export async function preRegisterAction({
   const resultId = readSession()?.resultId ?? null;
 
   let outcome = await createSignup({ ...input, resultId });
-  if (!outcome.ok && outcome.error.kind === 'api' && outcome.error.code === 'RESULT_NOT_FOUND') {
+  if (
+    resultId !== null &&
+    !outcome.ok &&
+    outcome.error.kind === 'api' &&
+    outcome.error.code === 'RESULT_NOT_FOUND'
+  ) {
+    // 신청 API 의 RESULT_NOT_FOUND 는 resultId 뿐이다 — 죽은 '내 결과'를 비워 다음 화면이 같은 404 를 받지 않게 한다.
+    forgetSession(resultId);
     outcome = await createSignup({ ...input, resultId: null });
   }
 
