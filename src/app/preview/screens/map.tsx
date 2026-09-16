@@ -37,6 +37,13 @@ export const preview: PreviewScreen = {
   backdrop: 'result',
   states: {
     '친구 6명': () => <CompatibilityMapScreen friends={friends} nickname="달빛토끼" />,
+    '뒤로가기 있음(내 지도)': () => (
+      <CompatibilityMapScreen
+        back={<button type="button">뒤로가기</button>}
+        friends={friends}
+        nickname="달빛토끼"
+      />
+    ),
     '친구 24명(붐비는 궤도)': () => (
       <CompatibilityMapScreen friends={crowdedFriends} nickname="달빛토끼" />
     ),
