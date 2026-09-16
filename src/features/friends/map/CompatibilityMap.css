@@ -74,12 +74,16 @@
   gap: calc(8 * var(--u));
 }
 
+/* 이미지는 그림자까지 담은 최종 크기(원 지름 × 1.9412)로 그리고, 늘어난 만큼 음수 여백으로 빼서 자리는 원 지름만 차지한다.
+   scale 로 키우면 WebKit(iOS Safari·카카오톡 인앱)이 움직이는 레이어 안에서 SVG 를 작은 크기로 구운 비트맵을 늘려
+   구슬 가장자리가 계단처럼 깨진다. */
 [data-compatibility-map-orbs] img {
-  width: calc(var(--d) * var(--u));
+  --orb-size: calc(var(--d) * 1.9412 * var(--u));
+
+  width: var(--orb-size);
   max-width: none;
-  height: calc(var(--d) * var(--u));
-  overflow: visible;
-  scale: 1.9412;
+  height: var(--orb-size);
+  margin: calc(var(--d) * 0.9412 / -2 * var(--u));
 }
 
 [data-compatibility-map-orbs] span {
