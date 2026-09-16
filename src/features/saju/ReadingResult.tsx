@@ -6,6 +6,7 @@ import type { Grade } from '@/ui/DestinyCard';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
 import { fortuneOrder, type ReadingView } from './readingView';
+import { ElementsSection } from './sections/ElementsSection';
 import { FortuneSection } from './sections/FortuneSection';
 import { LuckySection } from './sections/LuckySection';
 
@@ -47,6 +48,7 @@ export function ReadingResult({ view, renderCard, ranking, teaser, back }: Props
       {back ? <div className="mb-32">{back}</div> : null}
       <h1 className="sr-only">{view.nickname}님의 사주 결과</h1>
       {renderCard(face)}
+      <ElementsSection elements={view.elements} />
       <LuckySection item={view.luckyItem} place={view.luckyPlace} />
       <FortuneSection fortunes={view.fortunes} />
       {ranking ? <div className="mx-8">{ranking}</div> : null}

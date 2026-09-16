@@ -23,6 +23,7 @@ const stubResult: Result = {
     { category: 'LOVE', grade: 'B', content: '내용' },
   ],
   luckyPlace: '장소',
+  elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '아이템',
   compatibilities: [],
 };

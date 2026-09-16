@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useActionData, useNavigation, useSubmit } from 'react-router-dom';
 
 import { cn } from '@/lib/cn';
@@ -6,7 +6,6 @@ import { Button } from '@/ui/Button';
 import { Checkbox } from '@/ui/Checkbox';
 import { Field } from '@/ui/Field';
 import { Notice } from '@/ui/Notice';
-import { PhotoUpload } from '@/ui/PhotoUpload';
 import { SegmentedControl } from '@/ui/SegmentedControl';
 import { Select } from '@/ui/Select';
 import { TextArea } from '@/ui/TextArea';
@@ -43,27 +42,17 @@ function ErrorLabel({ children, invalid }: { children: string; invalid: boolean 
 
 // SCR-09 사전신청 모달 본문 — Figma 「UI 최종 - 개발용」 수정본 사전신청 모달 기본·오류·로딩·연결 실패·완료(695:2614~2654).
 // 검증을 통과하고 동의했을 때만 현재 라우트의 action 에 PreRegisterInput 을 JSON 으로 보낸다(FR-17).
-// 연락처는 디자인의 전화/인스타 택1 세그먼트가 아니라 전화번호 필수 + 인스타그램 선택이다(FR-10).
+// 연락처는 전화번호·인스타그램 택1 이고, 사진은 받지 않는다(FR-10, 2026-09-17 결정).
 export function PreRegisterForm({ defaultValues, onDone }: Props) {
   const [values, setValues] = useState<PreRegisterValues>({
     ...initialPreRegisterValues,
     ...defaultValues,
   });
-  const [photoUrl, setPhotoUrl] = useState<string>();
-  const photoUrlRef = useRef<string>(undefined);
   const [attempted, setAttempted] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const submit = useSubmit();
   const submitting = useNavigation().state === 'submitting';
   const actionData = preRegisterActionDataSchema.safeParse(useActionData());
-
-  // 미리보기 URL 은 브라우저 자원이라 사진을 바꾸거나 화면이 닫히면 돌려준다.
-  useEffect(
-    () => () => {
-      if (photoUrlRef.current) URL.revokeObjectURL(photoUrlRef.current);
-    },
-    [],
-  );
 
   if (actionData.success && 'status' in actionData.data)
     return <PreRegisterComplete mailSent={actionData.data.mailSent} onDone={onDone} />;
@@ -75,12 +64,6 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
     actionData.success && !submitting && 'formError' in actionData.data
       ? actionData.data.formError
       : null;
-
-  function handlePhoto(file: File) {
-    if (photoUrlRef.current) URL.revokeObjectURL(photoUrlRef.current);
-    photoUrlRef.current = URL.createObjectURL(file);
-    setPhotoUrl(photoUrlRef.current);
-  }
 
   function update(patch: Partial<PreRegisterValues>) {
     setValues((current) => ({ ...current, ...patch }));
@@ -119,19 +102,6 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
               onChange={(event) => update({ name: event.target.value })}
               placeholder="이름을 입력해 주세요"
               value={values.name}
-            />
-          )}
-        </Field>
-
-        <Field help="본인을 소개할 사진을 선택해 주세요." label="사진 추가">
-          {(control) => (
-            <PhotoUpload
-              {...control}
-              accept="image/*"
-              onSelect={handlePhoto}
-              previewAlt="선택한 사진"
-              previewUrl={photoUrl}
-              status={photoUrl ? 'uploaded' : 'empty'}
             />
           )}
         </Field>

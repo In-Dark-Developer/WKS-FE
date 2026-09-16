@@ -45,6 +45,7 @@ const stubResult: Result = {
     { category: 'LOVE', grade: 'B', content: '내용' },
   ],
   luckyPlace: '만해광장',
+  elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '작은 책 한 권',
   compatibilities: [],
 };
@@ -343,6 +344,7 @@ const sharedOwner: SharedResult = {
   zodiac: stubResult.zodiac,
   destiny: stubResult.destiny,
   fortunes: stubResult.fortunes,
+  elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: stubResult.luckyItem,
   luckyPlace: stubResult.luckyPlace,
   compatibilities: [

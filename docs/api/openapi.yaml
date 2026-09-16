@@ -138,8 +138,8 @@ paths:
   /signups:
     post:
       operationId: createSignup
-      summary: 소개팅 사전등록 (FR-9, FR-10). 사진 외 디자인 항목을 받는다
-      description: "백엔드 `SignupController` 가 `/api/signups` 에 매핑한다. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처·학과·MBTI·자기소개가 추가됐고 전부 nullable 이며, 같은 날 운영에 배포돼 운영 스펙(https://api.threadoffate.site/v3/api-docs)과 일치한다. `mailSent: false` 여도 신청은 성공이다. 사진은 아직 받는 필드가 없다 — 프론트가 전송하지 않는다(Q14)."
+      summary: 소개팅 사전등록 (FR-9, FR-10)
+      description: "백엔드 `SignupController` 가 `/api/signups` 에 매핑한다. 2026-09-16 확장(WKS-BE 981b487)으로 이름·연락처·학과·MBTI·자기소개가 추가됐고 전부 nullable 이며, 같은 날 운영에 배포돼 운영 스펙(https://api.threadoffate.site/v3/api-docs)과 일치한다. `mailSent: false` 여도 신청은 성공이다. 사진은 받지 않기로 했다(2026-09-17)."
       tags: [signups]
       requestBody:
         required: true
@@ -291,7 +291,7 @@ components:
     SharedResult:
       type: object
       description: "사주 팔자는 저장하되 응답에는 노출하지 않는다"
-      required: [nickname, zodiac, destiny, fortunes, luckyItem, luckyPlace, compatibilities]
+      required: [nickname, zodiac, destiny, fortunes, elements, luckyItem, luckyPlace, compatibilities]
       properties:
         nickname: { type: string }
         zodiac: { $ref: "#/components/schemas/Zodiac" }
@@ -302,12 +302,23 @@ components:
           maxItems: 3
           items: { $ref: "#/components/schemas/Fortune" }
           description: "순서 고정 MARRIAGE → CHILDREN → LOVE"
+        elements: { $ref: "#/components/schemas/Elements" }
         luckyItem: { type: string, description: "오늘의 행운 아이템 — 팔자 + 오늘 일진으로 계산, 매일 바뀐다" }
         luckyPlace: { type: string, description: "오늘의 행운 장소(동국대 캠퍼스 안) — 매일 바뀐다" }
         compatibilities:
           type: array
           items: { $ref: "#/components/schemas/CompatibilitySummary" }
           description: "생성 응답은 빈 배열, 조회는 궁합 생성 시각 내림차순(시각 필드는 내려오지 않는다). 상대의 생년월일·성별·resultId 는 내려오지 않는다 — 닉네임과 점수만"
+    Elements:
+      type: object
+      description: "사주 원국의 오행 개수 — 출생 시간 입력 시 합계 8, 미입력 시 합계 6 (운영 Swagger ElementResponse, 2026-09-17 확인)"
+      required: [wood, fire, earth, metal, water]
+      properties:
+        wood: { type: integer, minimum: 0, description: 목 }
+        fire: { type: integer, minimum: 0, description: 화 }
+        earth: { type: integer, minimum: 0, description: 토 }
+        metal: { type: integer, minimum: 0, description: 금 }
+        water: { type: integer, minimum: 0, description: 수 }
     Result:
       allOf:
         - type: object

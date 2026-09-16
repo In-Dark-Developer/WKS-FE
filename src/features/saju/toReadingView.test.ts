@@ -16,6 +16,7 @@ const result: Result = {
   destiny: { title: '꽃길만 걷는 인연', description: '설명' },
   fortunes: [marriage, children, love],
   luckyPlace: '만해광장',
+  elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '책',
   compatibilities: [],
 };
@@ -33,6 +34,7 @@ test('fortunes 배열을 카테고리별 key 로 바꾼다', () => {
       love: { grade: 'B', content: '연애운 내용' },
     },
     luckyPlace: '만해광장',
+    elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
     luckyItem: '책',
     shareId: 's1',
     friends: [],
