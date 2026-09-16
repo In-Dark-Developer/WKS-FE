@@ -1,0 +1,48 @@
+/* 음양오행 — Figma 결과 화면 1038:3774. 343px 줄에 카드 5장, 사이 7px. */
+[data-reading-elements] {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+
+/* 아이콘 44px — 좁은 화면(폭 360 이하)에서는 카드 안쪽 폭에 맞춰 줄인다. */
+[data-reading-element-icon] {
+  width: min(44px, 100%);
+  aspect-ratio: 1;
+}
+
+/* 막대 8칸 — 칸 3×12px, 사이 3px(합 45px). 카드 안쪽이 45px 보다 좁으면 칸과 사이가 같은 비율로 준다. */
+[data-reading-element-bars] {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: 6.667%;
+  width: min(45px, 100%);
+  height: 12px;
+}
+
+[data-reading-element-bars] > span {
+  border-radius: 4px;
+  /* 빈 칸 — Figma rgba(216, 216, 216, 0.5). 토큰에 없는 원본 값이다. */
+  background: rgb(216 216 216 / 0.5);
+}
+
+/* 채운 칸 — 오행별 Figma 원본 색(토큰에 없음). */
+[data-element='wood'] [data-filled] {
+  background: #6ce5b8;
+}
+
+[data-element='fire'] [data-filled] {
+  background: #f25b41;
+}
+
+[data-element='earth'] [data-filled] {
+  background: #c5a537;
+}
+
+[data-element='metal'] [data-filled] {
+  background: #b5bfbd;
+}
+
+[data-element='water'] [data-filled] {
+  background: #5ac4e8;
+}
