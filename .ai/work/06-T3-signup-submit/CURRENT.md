@@ -7,9 +7,9 @@
 - Branch: ws/06-T3-signup-submit
 - Task: 06/T3
 - Issue: none
-- Touches: src/api/signups.ts,src/api/schema/signups.ts,src/features/profile/,src/features/saju/SajuForm.tsx,src/ui/TermsSheet.tsx,src/app/routes.tsx,src/app/preview/screens/pre-register.tsx,src/lib/analytics.ts,docs/api/openapi.yaml,docs/PRD.md,docs/phases/06-dating-gate/PLAN.md
+- Touches: src/api/results.ts,src/api/session.ts,src/features/saju/readingLoader.ts,.claude/launch.json,src/api/signups.ts,src/api/schema/signups.ts,src/features/profile/,src/features/saju/SajuForm.tsx,src/ui/TermsSheet.tsx,src/app/routes.tsx,src/app/preview/screens/pre-register.tsx,src/lib/analytics.ts,docs/api/openapi.yaml,docs/PRD.md,docs/phases/06-dating-gate/PLAN.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,17 +21,19 @@ T3. 사전신청 제출 연동
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. 죽은 resultId 를 비운다 — getResult 404 → forgetSession (commit beb8669)
+- 2. signups API·폼(연락처 택1·성별 세그먼트·약관 시트)·라우트·티저 (commit 2fa73e6)
+- 3. spec 갱신 (commit 82be5ca) → PR → CI 통과 시 merge ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`91109b1`
+`82be5ca`
 
 ## Relevant Documents
 
@@ -40,8 +42,10 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/api/signups.ts:createSignup` · `src/api/session.ts:forgetSession`
+- `src/features/profile/preRegisterAction.ts:preRegisterAction` · `:PreRegisterForm` · `:PreRegisterTeaser` · `:VerifyComplete`
+- `src/ui/TermsSheet.tsx:TermsSheet` · `src/app/routes.tsx:PreRegisterModalRoute`
 
 ## Next Action
 
-`docs/phases/06-dating-gate/PLAN.md`에서 06/T3의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR CI 통과 → merge → 백엔드 확장분 운영 배포 확인 후 실제 신청 1건으로 점검
