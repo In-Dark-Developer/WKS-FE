@@ -21,6 +21,15 @@
   src: url('./fonts/kmu80-sungkok-serif.woff2') format('woff2');
 }
 
+/* 결과 화면 사전신청 섹션의 'GRAND OPEN !!' — 카페24 PRO Slim Max (상업 사용·웹 임베딩 가능 · fonts/README.md) */
+@font-face {
+  font-family: 'Cafe24 PRO Slim Max';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/cafe24-pro-slim-max.woff2') format('woff2');
+}
+
 @theme {
   --color-*: initial;
   --spacing-*: initial;
@@ -34,6 +43,7 @@
   --font-display: 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, system-ui, sans-serif;
   --font-sungkok:
     'KMU80 Sungkok Serif', 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, serif;
+  --font-slim: 'Cafe24 PRO Slim Max', 'DONGGUK UNIVERSITY', 'Pretendard Variable', Pretendard, sans-serif;
 
   /* Color ramp — Figma Variables (bg-primary-500, text-neutral-900 …) */
   --color-primary-50: #f5f8f9;
@@ -216,4 +226,7 @@
   --text-display-28--line-height: 2.375rem;
   --text-display-32: 2rem;
   --text-display-32--line-height: 2.75rem;
+  /* Figma 결과 화면 'GRAND OPEN !!'(873:1871) — 40/1.2. 디자인시스템 스타일이 아니라 그 화면의 크기다. */
+  --text-display-40: 2.5rem;
+  --text-display-40--line-height: 3rem;
 }
