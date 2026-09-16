@@ -79,7 +79,8 @@ export function validatePreRegister(values: PreRegisterValues): PreRegisterValid
   if (name.length === 0) fieldErrors.name = preRegisterErrorMessages.name;
   if (!z.email().safeParse(email).success) fieldErrors.email = preRegisterErrorMessages.email;
   if (values.contactMethod === 'PHONE') {
-    if (!/^01\d{8,9}$/.test(contactValue)) fieldErrors.contactValue = preRegisterErrorMessages.phone;
+    if (!/^01\d{8,9}$/.test(contactValue))
+      fieldErrors.contactValue = preRegisterErrorMessages.phone;
   } else if (!/^[A-Za-z0-9._]{1,30}$/.test(contactValue)) {
     fieldErrors.contactValue = preRegisterErrorMessages.instagram;
   }

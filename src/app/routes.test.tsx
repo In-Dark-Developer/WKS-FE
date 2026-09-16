@@ -425,5 +425,7 @@ test('결과 화면의 사전 신청 버튼이 사전신청 모달을 연다', a
 test('매직링크가 보내는 /verify 는 인증 완료를 알린다', async () => {
   renderAt('/verify');
 
-  expect(await screen.findByRole('heading', { name: '이메일 인증이 끝났어요' })).toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', { name: '이메일 인증이 끝났어요' }),
+  ).toBeInTheDocument();
 });

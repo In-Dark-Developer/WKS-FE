@@ -227,11 +227,7 @@ export function SajuForm({
           <div className="flex flex-col gap-8">
             <p className="flex items-center gap-8 text-ui-14 font-medium text-apricot-500">
               입력 정보는 사주 확인에 사용됩니다
-              <button
-                className="underline"
-                onClick={() => setTermsOpen(true)}
-                type="button"
-              >
+              <button className="underline" onClick={() => setTermsOpen(true)} type="button">
                 자세히
               </button>
             </p>
