@@ -62,6 +62,12 @@
   pointer-events: none;
 }
 
+/* 결과 화면 맨 아래 사전신청 띠(Figma 873:1868)에는 리본이 없다 — 띠 윗변에서 리본을 끝낸다.
+   띠 아래로는 ReadingResult 의 pb-24(24px)와 콘텐츠 아래 여백(16px + safe area)이 있다. */
+[data-backdrop='result']:has([data-pre-register-teaser])::before {
+  bottom: calc(var(--pre-register-teaser-height) + 24px + 16px + env(safe-area-inset-bottom));
+}
+
 /* 사전신청 모달 — 좌우 반전한 리본 한 장이 682px 아래에 놓인다. */
 [data-backdrop='mist']::before {
   content: '';
