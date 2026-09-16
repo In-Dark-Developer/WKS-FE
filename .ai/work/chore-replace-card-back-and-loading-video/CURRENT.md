@@ -1,7 +1,5 @@
 # Current State — chore-replace-card-back-and-loading-video
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: chore-replace-card-back-and-loading-video
 - Owner: gn00py48@gmail.com
 - Branch: ws/chore-replace-card-back-and-loading-video
@@ -9,7 +7,7 @@
 - Issue: none
 - Touches: src/ui/assets/cards/card-back.webp,src/ui/assets/video/fortune-loading.mp4,src/features/share/card/ConnectionCard.css
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,17 +19,18 @@ chore: replace-card-back-and-loading-video
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 교체본 실측 — 카드 1097×1466 RGBA 무손실 1160KB · 영상 971KB H.264+AAC
+- [x] `ConnectionCard.css` 그림자 여백 보정 제거 → `inset:0` + `object-fit: cover`
+- [x] 카드 손실 재인코딩 q90 — 1160KB → 160KB (PSNR 42.7dB, 크기·알파 그대로)
+- [x] 검증 test 354 · typecheck · lint · build
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`da29e86`
+`1e3eef8`
 
 ## Relevant Documents
 
@@ -39,8 +38,8 @@ TODO
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/share/card/ConnectionCard.css` — `[data-connection-card-back] img`
+- `src/ui/assets/cards/card-back.webp` · `src/ui/assets/video/fortune-loading.mp4`
 
 ## Next Action
 
