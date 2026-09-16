@@ -133,3 +133,11 @@ test('설명과 버튼 글자를 바꿀 수 있다', () => {
   expect(screen.getByText('나와 달빛토끼 님의 궁합')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
 });
+
+test("'자세히'로 연 약관 시트 맨 끝에 [동의] 절이 있다", () => {
+  renderForm(() => null);
+
+  fireEvent.click(screen.getByRole('button', { name: '자세히' }));
+
+  expect(screen.getByRole('heading', { name: '[동의]' })).toBeInTheDocument();
+});

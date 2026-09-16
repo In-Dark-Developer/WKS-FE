@@ -119,3 +119,12 @@ test('성별·찾는 인연을 고르지 않으면 필드 오류를 보이고 �
   expect(screen.getByText('어떤 인연을 찾는지 선택해 주세요')).toBeInTheDocument();
   expect(action).not.toHaveBeenCalled();
 });
+
+test('사전신청 약관 시트에는 [동의] 절이 없다 — 동의는 체크박스가 받는다', () => {
+  renderForm({});
+
+  fireEvent.click(screen.getByRole('button', { name: '이용약관 자세히 보기' }));
+
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: '[동의]' })).not.toBeInTheDocument();
+});

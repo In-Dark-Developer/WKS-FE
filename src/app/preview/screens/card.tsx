@@ -35,13 +35,13 @@ const zodiacs: readonly Zodiac[] = [
   'PIG',
 ];
 
-// 결과 화면 운명 카드 — 04/T2 뒤집기 · 04/T5 인스타 스토리 공유 · 04/T7 결과 화면에 합침.
+// 결과 화면 운명 카드 — 04/T2 뒤집기 · 04/T5 카드 저장(2026-09-17 인스타 공유에서 바뀜) · 04/T7 결과 화면에 합침.
 export const preview: PreviewScreen = {
   title: 'SCR-04 운명 카드 (뒤집기·공유)',
   order: 2,
   backdrop: 'result',
   states: {
-    '카드 + 인스타 공유': () => <ResultCard {...card} />,
+    '카드 + 카드 저장': () => <ResultCard {...card} />,
     앞면: () => <ConnectionCard {...card} />,
     뒷면: () => <ConnectionCard {...card} initialFace="back" />,
     // PRD FR-3 — 설명 140자·긴 제목. 말줄임 없이 전문이 보여야 한다.
