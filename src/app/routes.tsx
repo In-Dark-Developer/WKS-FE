@@ -57,11 +57,28 @@ async function protectedReadingLoader(args: LoaderFunctionArgs) {
 }
 
 // SCR-08 궁합 지도(05/T3) — 주소에 id 가 없어 보관된 '내 결과'로 결과 loader 를 다시 쓴다(친구 목록이 그 안에 있다).
-async function protectedMapLoader(args: LoaderFunctionArgs) {
+// 뒤로가기가 돌아갈 곳이 주소에 없으므로 그 resultId 를 화면에 함께 넘긴다.
+async function protectedMapLoader(args: LoaderFunctionArgs): Promise<MyMapView> {
   const resultId = requireMyResultId();
   const view = await readingLoader({ ...args, params: { ...args.params, id: resultId } });
   track('map_viewed', { variant: 'own', friendCount: view.friends?.length ?? 0 });
-  return view;
+  return { ...view, myResultId: resultId };
+}
+
+type MyMapView = ReadingView & { myResultId: string };
+
+// 화면 맨 위 '뒤로가기' 줄(Figma 720:3587) — 결과 화면과 궁합 지도가 같은 모양을 쓴다.
+function BackRow({ onBack }: { onBack: () => void }) {
+  return (
+    <button
+      className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
+      onClick={onBack}
+      type="button"
+    >
+      <Icon src={angleSmallLeft} />
+      뒤로가기
+    </button>
+  );
 }
 
 // SCR-13 친구의 궁합 지도 — 방문자 지도 도착.
@@ -113,18 +130,7 @@ function ReadingResultRoute() {
           }}
         />
       }
-      back={
-        fromSharedMap ? (
-          <button
-            className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
-            onClick={() => void navigate(-1)}
-            type="button"
-          >
-            <Icon src={angleSmallLeft} />
-            뒤로가기
-          </button>
-        ) : null
-      }
+      back={fromSharedMap ? <BackRow onBack={() => void navigate(-1)} /> : null}
       ranking={ranking}
       renderCard={(face) => <ResultCard {...face} />}
       view={view}
@@ -141,9 +147,11 @@ function PreRegisterModalRoute() {
 
 // SCR-08 궁합 지도 — 05/T2 CompatibilityMapScreen 에 결과 loader 의 친구 목록과 '친구에게 공유'(04/T3)를 잇는다.
 function CompatibilityMapRoute() {
-  const view = useLoaderData<ReadingView>();
+  const view = useLoaderData<MyMapView>();
+  const navigate = useNavigate();
   return (
     <CompatibilityMapScreen
+      back={<BackRow onBack={() => void navigate(`/reading/${view.myResultId}`)} />}
       friends={view.friends ?? []}
       nickname={view.nickname}
       share={

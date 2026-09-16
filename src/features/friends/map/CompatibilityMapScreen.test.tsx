@@ -125,3 +125,23 @@ test('제목 줄 오른쪽에 받은 링크를 둔다', () => {
 
   expect(screen.getByRole('link', { name: '지도 보기 >' })).toHaveAttribute('href', '/me/map');
 });
+
+test('뒤로가기 자리에 받은 버튼을 지도 위에 둔다', () => {
+  render(
+    <CompatibilityMapScreen
+      back={<button type="button">뒤로가기</button>}
+      friends={friends}
+      nickname="달빛토끼"
+    />,
+  );
+
+  const back = screen.getByRole('button', { name: '뒤로가기' });
+  const heading = screen.getByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' });
+  expect(back.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+test('뒤로가기를 주지 않으면 그 줄이 없다', () => {
+  render(<CompatibilityMapScreen friends={friends} nickname="달빛토끼" />);
+
+  expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
+});
