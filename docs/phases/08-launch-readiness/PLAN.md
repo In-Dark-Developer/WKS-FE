@@ -50,7 +50,7 @@
 
 - [x] T3. 운영 연결 확인 — Done when: `docs/deploy/netlify-fork.md` 2~3 이 끝나 `sync-fork` 실행 뒤 Netlify 에 새 배포가 생기고, `https://threadoffate.site`·`www` 가 HTTPS 로 열리며, `https://threadoffate.site/s/test` 새로고침이 앱을 열고, 운영 화면에서 `api.threadoffate.site` 호출이 CORS 오류 없이 간다 — 확인 결과를 RESULT 에 적는다 · Touches: `docs/phases/08-launch-readiness/` · After: T2 · Owner: @jjjung0921 (commit 311f0b1, de7666f — PR #77)
 
-- [ ] T4. 공유 링크 미리보기 — Done when: `index.html` 에 서비스 공통 OG·Twitter 메타(제목·설명·썸네일·`og:url`)와 썸네일 이미지가 있어 카카오톡·인스타·메신저에 `https://threadoffate.site/s/<id>` 를 붙이면 제목·설명·썸네일이 보이고(SC-6), `shareId` 별 동적 미리보기(Netlify Edge Functions vs 백엔드 렌더)는 ADR 로 채택·기각이 남는다 · Touches: `index.html`, `public/og/`, `docs/decisions/`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48 (메타·썸네일·ADR 은 @jjjung0921 commit d32d0e7·b19cf37·5ff0930, 남은 것은 앱별 미리보기 확인)
+- [x] T4. 공유 링크 미리보기 — Done when: `index.html` 에 서비스 공통 OG·Twitter 메타(제목·설명·썸네일·`og:url`)와 썸네일 이미지가 있어 카카오톡·인스타·메신저에 `https://threadoffate.site/s/<id>` 를 붙이면 제목·설명·썸네일이 보이고(SC-6), `shareId` 별 동적 미리보기(Netlify Edge Functions vs 백엔드 렌더)는 ADR 로 채택·기각이 남는다 · Touches: `index.html`, `public/og/`, `docs/decisions/`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48 (메타·썸네일·ADR 은 @jjjung0921 commit d32d0e7·b19cf37·5ff0930, 앱별 확인은 @gn00py48 — 카카오톡·인스타 DM·iMessage·라인 4개 앱에서 제목·설명·썸네일 확인, 2026-09-17, RESULT Validation Results)
 
 - [ ] T5. 성능 예산 측정 — Done when: 운영 주소를 Lighthouse 모바일(느린 4G) 3회 측정한 LCP 중앙값 < 2.5s 와 초기 JS < 250KB gzip 이 RESULT 에 기록되고, 넘으면 원인(폰트·이미지·번들)을 줄이는 변경이 병합되며, 빌드 산출물의 JS gzip 크기를 CI 가 검사해 250KB 를 넘으면 실패한다 (NFR-2) · Touches: `scripts/check-bundle-size.mjs`, `.github/workflows/ci.yml`, `package.json`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48
 
