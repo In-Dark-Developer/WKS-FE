@@ -1,6 +1,6 @@
 # Phase 06 — dating-gate
 
-- Status: PLANNED
+- Status: IN_PROGRESS
 - Lead: @gn00py48
 - Depends on: 03
 - Start: 2026-09-13 · End: 2026-09-17 (MVP 마감 — PRD Constraints)
@@ -40,15 +40,20 @@
 - 03/T6 `/preview` 라우트 — `src/app/preview/screens/<화면>.tsx` 한 파일 추가로 확인 (병합됨, PR #56)
 - 02/T2·02/T6 입력 컴포넌트 — `Button`·`TextField`·`Checkbox`·`Field`·`Select`·`TextArea`·`PhotoUpload` (병합됨)
 
-**차단 — 다른 담당자·기획·백엔드의 결정을 기다린다 (착수 전 닫혀야 한다)**
+**닫힘 (2026-09-16)**
 
-- 02/T3 `Modal` (@nicerjs23, 미착수) — T2 가 모달 셸(포커스 트랩·ESC·배경 스크롤 잠금)을 쓴다. 없으면 T2 를 시작할 수 없다
-- 03/T7 라우트 연동 (@nicerjs23) — publishing-first 공지로 `src/app/routes.tsx` 는 03/T7 단독 소유다. `/reading/:id/pre-register` 자식 라우트를 누가 등록하는지 확정해야 T3 의 Touches 가 정해진다
-- PRD Q14 `/signups` 계약 — 현 계약은 학교 웹메일·`gender`·`preferGender` 만 받고 이름·전화번호·사진·학과·MBTI·자기소개를 받지 않는다. 요청 스키마가 확정돼야 T3 을 시작할 수 있다
-- PRD Q4 보관 기간 — 동의 고지 문구에 들어간다. 법적 고지라 임의로 정하지 않는다
-- PRD Q10 사진 형식·용량 제한과 자기소개 최대 글자 수 — 검증 규칙
-- 디자인 — MBTI 입력 방식(수정본 Frame 83·85 에 "이게 최선일까" 메모), 연락처는 택1 세그먼트가 아니라 전화번호 필수 + 인스타그램 선택(FR-10, 디자인 갱신 대상)
-- '내 신청' 식별 — 백엔드 세션 토큰은 없다(ADR-20260914-result-ownership-in-browser). `POST /signups` 가 `resultId`(nullable)를 받으므로 브라우저에 보관된 `resultId` 를 실을지 T3 에서 정한다
+- 02/T3 `Modal` — 병합됨. `useOverlayBehavior`(포커스 트랩·ESC·스크롤 잠금)를 `Modal`·`ShareSheet` 가 함께 쓴다
+- `POST /signups` 계약 — 배포돼 동작한다(WKS-BE 2553448). `email`·`gender`·`preferGender` 필수 + `resultId` nullable. 나머지 디자인 항목은 받지 않으므로 **전송하지 않고 브라우저 안에만 둔다**(소유자 결정 2026-09-16, 계약 확장 시 실어 보낸다)
+- 인증 완료 경로 — `GET /signups/verify` 가 `app.frontend.verify-redirect-url`(기본 `/verify`)로 302 한다. 프론트에 SCR-14 `/verify` 가 필요하다
+- 연락처·성별 — 전화번호·인스타그램 **둘 다 필수**, 성별·선호 성별은 폼에 세그먼트 두 줄로 받는다(소유자 결정 2026-09-16, FR-10)
+- 동의 — 체크박스 명시 동의를 유지하고 이용약관 시트(695:2753)를 사주 입력·사전신청 양쪽에 단다(소유자 결정 2026-09-16, FR-17)
+- '내 신청' 식별 — 보관된 `resultId` 를 `POST /signups` 에 싣는다(없으면 null)
+
+**남은 제약**
+
+- PRD Q4 보관 기간 · Q10 사진 형식·용량·자기소개 글자 수 — 고지 문구와 검증 규칙은 확정 전 문구로 둔다
+- 백엔드 확장 — 이름·사진·전화번호·인스타그램·학과·MBTI·자기소개를 받는 계약이 없다(Q14). 확장되면 `src/api/signups.ts` 한 곳만 고친다
+- `src/app/routes.tsx` 는 publishing-first 공지상 03/T7 소유였으나 Phase 03 종료 후 chore 스트림들이 이어 고쳐 왔다 — T4 가 `/reading/:id/pre-register`·`/verify` 를 등록한다
 
 ## Tasks
 
@@ -56,7 +61,9 @@
 
 - [x] T2. 사전신청 모달·티저 퍼블리싱 — Done when: 수정본(558-3526) 사전신청 모달의 기본·오류(이메일 형식)·로딩·연결 실패(입력값 유지)·완료 5상태와 결과 화면 티저(`PreRegistrationTeaser`)가 feature 가 정한 뷰 모델 props 로만 렌더되고(`src/api/` 스키마를 import 하지 않는다), 동의 체크 전에는 제출 버튼이 잠기며, `/preview/pre-register` 에서 5상태를 가짜 데이터로 볼 수 있다 (테스트 포함). 연락처는 전화번호 필수 + 인스타그램 선택(디자인의 택1 세그먼트와 다름 — FR-10). 고지 문구는 `consent.ts` 한 곳에 모은다 · Touches: `src/features/profile/`, `src/app/preview/screens/pre-register.tsx` · After: 02/T3 · Owner: @jjjung0921 (commit 269da6b 본문·ea10053 모달 셸 — `PreRegisterModal` 을 결과 화면 하위 라우트에 붙이는 일은 조립 Task)
 
-- [ ] T3. 사전신청 제출 연동 — Done when: `POST /signups` 요청·응답이 zod 로 검증되고, 동의하지 않은 제출은 네트워크 요청 0건으로 막히며, 성공 시 완료 상태·연결 실패 시 입력값 유지 안내로 전환되고, 사전신청 전에는 상대 정보가 화면·응답 어디에도 없다 (테스트 포함) · Touches: `src/api/signups.ts`, `src/api/schema/signups.ts`, `src/features/profile/preRegisterAction.ts`, `docs/api/openapi.yaml#/paths/~1signups` · After: T2 · Owner: 미정
+- [ ] T3. 사전신청 제출 연동 — Done when: `POST /signups` 요청·응답이 zod 로 검증되고(전송 항목은 `email`·`gender`·`preferGender`·`resultId` 뿐이다), 동의하지 않은 제출은 네트워크 요청 0건으로 막히며, 성공 시 완료 상태·연결 실패 시 입력값 유지 안내로 전환되고, 중복 신청(409)·도메인 거부(400)가 사용자 문구로 구분돼 보이며, 사전신청 전에는 상대 정보가 화면·응답 어디에도 없다 (테스트 포함) · Touches: `src/api/signups.ts`, `src/api/schema/signups.ts`, `src/features/profile/` · After: T2 · Owner: @jjjung0921
+
+- [ ] T4. 결과 화면 연결·이용약관 시트·`/verify` — Done when: 결과 화면 맨 아래 사전신청 섹션(873:4155)이 보이고 누르면 `/reading/:id/pre-register` 모달이 열리며, 이용약관 시트(695:2753)가 사주 입력·사전신청 양쪽에서 열리고, 폼이 전화번호·인스타그램을 둘 다 필수로 받고 성별·선호 성별 세그먼트를 가지며, 백엔드 매직링크가 보내는 `/verify`(SCR-14)가 안내 화면을 그린다 (테스트 포함) · Touches: `src/app/routes.tsx`, `src/features/profile/`, `src/features/saju/SajuForm.tsx`, `src/ui/TermsSheet.tsx`, `src/app/preview/screens/pre-register.tsx` · After: T3 · Owner: @jjjung0921
 
 <!-- 퍼블리싱 먼저(2026-09-13 공지): 기존 T2 한 덩어리를 T2(props 만 — 화면)와 T3(연동 — api·action)으로 나눴다. T2 의 담당·파일 경계는 그대로 두고 범위만 퍼블리싱으로 좁혔다.
      T3 의 Touches 에 `src/app/routes.tsx` 를 넣지 않았다 — publishing-first 로 그 파일은 03/T7 단독 소유다. `/reading/:id/pre-register` 등록 주체가 정해지면 이 줄을 계획 PR 로 고친다.
@@ -67,17 +74,20 @@
 - `docs/PRD.md` — Screens(SCR-09·SCR-04), FR-9, FR-10, FR-17, NFR-4, Q4·Q10·Q14
 - Figma 「UI 최종 - 개발용」 수정본 558-3526 — 사전신청 모달 5종 · MBTI 드롭다운(Frame 83·85)
 - `docs/ARCHITECTURE.md` — Data Flow 3, Module Boundaries(features·api), Cross-cutting Concerns(인증·에러)
-- `docs/api/openapi.yaml` — `/signups`, `/signups/resend`, `/signups/verify`
+- `docs/api/openapi.yaml` — `/signups`, `/signups/resend`, `/signups/verify` (2026-09-16 실제 백엔드로 갱신)
+- Figma 사전신청 5상태 695:2614·2624·2634·2644·2654 · MBTI 695:2682·2716 · 이용약관 695:2753 · 결과 화면 사전신청 섹션 873:4155
 - `.ai/team/announcements/2026-09-13-publishing-first.md` · `2026-09-13-session-token-and-contact.md`
 
 ## Acceptance Criteria
 
 - [ ] AC1. 결과 화면의 티저를 누르면 사전신청 모달이 열리고, 기본·오류·로딩·연결 실패·완료 5상태가 디자인대로 보인다 (FR-9)
-- [ ] AC2. 이름·사진·이메일·전화번호·인스타그램 아이디·학과·MBTI·자기소개를 입력할 수 있고, 전화번호는 필수·인스타그램 아이디는 선택이다 (FR-10)
+- [ ] AC2. 이름·사진·이메일·전화번호·인스타그램 아이디·학과·MBTI·자기소개·성별·선호 성별을 입력할 수 있고, 전화번호와 인스타그램 아이디는 둘 다 필수다 (FR-10)
 - [ ] AC3. 수집 항목·이용 목적·보관 기간이 화면에 고지되고, 동의하지 않은 채 제출하면 네트워크 요청이 0건이다 (FR-17, NFR-4)
 - [ ] AC4. 제출이 성공하면 완료 상태가 보이고, 연결에 실패하면 입력값이 남은 채 재시도 안내가 뜬다
 - [ ] AC5. `/preview/pre-register` 에서 5상태를 가짜 데이터로 볼 수 있고, 화면 컴포넌트가 `src/api/` 를 import 하지 않는다 (publishing-first)
 - [ ] AC6. 새 화면·로직에 테스트가 있고 Commands 4개가 경고 없이 통과한다
+- [ ] AC7. 이용약관 시트가 사주 입력·사전신청 양쪽에서 열리고 닫히며, 백엔드가 보내는 `/verify` 가 오류 화면이 아니라 인증 완료 안내를 그린다 (FR-17, SCR-14)
+- [ ] AC8. 계약이 받지 않는 항목(이름·사진·전화번호·인스타그램·학과·MBTI·자기소개)은 네트워크 요청 본문에 없다
 
 ## Validation Plan
 

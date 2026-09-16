@@ -138,8 +138,8 @@ paths:
   /signups:
     post:
       operationId: createSignup
-      summary: 소개팅 사전등록 (FR-9, FR-10). 이름·전화번호는 받지 않는다
-      description: "[미확인] 백엔드 코드는 컨트롤러 경로가 `/api/signup` 이고 엔드포인트가 아직 없다(b61f849) — 문서 경로 `/signups` 를 따른다. `mailSent: false` 여도 신청은 성공이다. 디자인의 추가 정보(이름·사진·연락처·학과·MBTI·자기소개)는 이 계약에 없다 — Q14."
+      summary: 소개팅 사전등록 (FR-9, FR-10). 이메일·성별·선호 성별만 받는다
+      description: "배포돼 동작한다 — 백엔드 `SignupController` 가 `/api/signups` 에 매핑하고 운영 스펙(https://api.threadoffate.site/v3/api-docs)과 일치한다(2026-09-16 확인, WKS-BE 2553448). `mailSent: false` 여도 신청은 성공이다. 디자인의 추가 정보(이름·사진·연락처·학과·MBTI·자기소개)는 이 계약에 없다 — 프론트는 그 값을 전송하지 않고 브라우저 안에만 둔다(Q14 확장 요청 중)."
       tags: [signups]
       requestBody:
         required: true
@@ -159,6 +159,11 @@ paths:
                   data: { $ref: "#/components/schemas/SignupResult" }
         "400":
           description: INVALID_EMAIL_DOMAIN (학교 웹메일 아님) · INVALID_INPUT
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: RESULT_NOT_FOUND — `resultId` 로 조회되는 사주 결과 없음
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -183,15 +188,15 @@ paths:
                 email: { type: string, format: email }
       responses:
         "200":
-          description: "재발송됨. data 형태는 [미확인]"
+          description: 재발송 처리
           content:
             application/json:
               schema:
                 type: object
-                required: [success]
+                required: [success, data]
                 properties:
                   success: { type: boolean, const: true }
-                  data: { description: "[미확인]" }
+                  data: { $ref: "#/components/schemas/ResendSignupResult" }
         "400":
           description: 이미 인증 완료 · INVALID_INPUT
           content:
@@ -201,7 +206,7 @@ paths:
     get:
       operationId: verifySignup
       summary: 매직링크 클릭 — 성공 시 프론트 완료 페이지로 302. 브라우저가 직접 여는 링크이며 프론트가 호출하지 않는다
-      description: "리다이렉트 대상은 백엔드 설정값 `app.frontend.verify-redirect-url` — 프론트 완료 페이지 경로는 [미확인] (Q14). 토큰 유효기간 30분, 사용 후 재사용 불가."
+      description: "리다이렉트 대상은 백엔드 설정값 `app.frontend.verify-redirect-url` 이고 기본값이 `http://localhost:3000/verify` 다(WKS-BE application.yml) — 프론트는 `/verify`(SCR-14)로 받는다. 토큰 유효기간 30분, 사용 후 재사용 불가."
       tags: [signups]
       parameters:
         - { name: token, in: query, required: true, schema: { type: string } }
@@ -354,12 +359,18 @@ components:
         data: { $ref: "#/components/schemas/CompatibilityResult" }
     SignupRequest:
       type: object
-      required: [email, resultId, gender, preferGender]
+      required: [email, gender, preferGender]
       properties:
-        email: { type: string, format: email, description: "학교 웹메일. 도메인 화이트리스트는 백엔드 설정 [미확인 — 목록 요청 중, Q14]" }
-        resultId: { type: [string, "null"], format: uuid, description: "사주 없이 신청하는 경로는 null" }
+        email: { type: string, format: email, description: "학교 웹메일. 도메인 화이트리스트는 백엔드 설정 `app.signup.allowed-email-domains` 이고, 비어 있으면 검증을 건너뛴다 — 운영 설정값은 [미확인] (Q14)" }
+        resultId: { type: [string, "null"], format: uuid, description: "사주 없이 신청하는 경로는 null. 필수가 아니다" }
         gender: { $ref: "#/components/schemas/Gender" }
         preferGender: { $ref: "#/components/schemas/Gender" }
+    ResendSignupResult:
+      type: object
+      required: [mailSent, message]
+      properties:
+        mailSent: { type: boolean }
+        message: { type: string }
     SignupResult:
       type: object
       required: [signupId, couponIssued, mailSent, message]
