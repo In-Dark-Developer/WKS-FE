@@ -17,6 +17,7 @@ const view: ReadingView = {
     love: { grade: 'B+', content: '연애 풀이' },
   },
   luckyPlace: '만해광장',
+  elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '작은 책 한 권',
   shareId: '9f0d3f1e-0000-4000-8000-000000000001',
 };
@@ -54,7 +55,13 @@ test('카드 자리에 뷰 모델의 앞면 값을 넘기고 행운·운세 세 
     screen.getByText('카드 자리 달빛토끼 꽃길만 걷는 인연 결혼운S 자녀운A 연애운B+'),
   ).toBeInTheDocument();
   // Figma 사주 카드 화면(658:5087·658:5088) 순서: 아이템 → 장소, 운세는 연애 → 결혼 → 자녀.
+  // 카드 아래 오행 다섯 장(982:3446) → 행운 두 장 순서다.
   expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
+    '목',
+    '화',
+    '토',
+    '금',
+    '수',
     '행운의 아이템',
     '행운의 장소',
   ]);

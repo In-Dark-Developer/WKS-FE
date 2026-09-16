@@ -23,6 +23,7 @@ export function toReadingView(result: Result): ReadingView {
       children: findFortune(result, 'CHILDREN'),
       love: findFortune(result, 'LOVE'),
     },
+    elements: result.elements,
     luckyPlace: result.luckyPlace,
     luckyItem: result.luckyItem,
     shareId: result.shareId,

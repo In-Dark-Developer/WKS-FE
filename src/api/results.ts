@@ -28,6 +28,7 @@ function buildMockResult(input: ResultRequestInput): Result {
       { category: 'CHILDREN', grade: 'B+', content: '자녀와의 인연이 따뜻해요.' },
       { category: 'LOVE', grade: 'SS', content: '올해 인연운이 아주 좋아요.' },
     ],
+    elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
     luckyItem: '파란색 팔찌',
     luckyPlace: '동국대 팔정도',
     compatibilities: [],

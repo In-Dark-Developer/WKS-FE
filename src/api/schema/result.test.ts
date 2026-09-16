@@ -54,6 +54,7 @@ const validResult = {
     { category: 'CHILDREN', grade: 'B+', content: '내용' },
     { category: 'LOVE', grade: 'SS', content: '내용' },
   ],
+  elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '팔찌',
   luckyPlace: '동국대',
   compatibilities: [],
@@ -99,4 +100,12 @@ test('compatibilities 가 없으면 실패한다', () => {
   const withoutCompatibilities: Partial<typeof validResult> = { ...validResult };
   delete withoutCompatibilities.compatibilities;
   expect(resultSchema.safeParse(withoutCompatibilities).success).toBe(false);
+});
+
+test('elements 가 없거나 음수면 실패한다', () => {
+  expect(resultSchema.safeParse({ ...validResult, elements: undefined }).success).toBe(false);
+  expect(
+    resultSchema.safeParse({ ...validResult, elements: { ...validResult.elements, fire: -1 } })
+      .success,
+  ).toBe(false);
 });
