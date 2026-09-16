@@ -127,11 +127,8 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
 
         <Field
           error={errors.contactValue}
-          help={
-            values.contactMethod === 'PHONE'
-              ? '연락받을 수단 한 가지를 선택해 주세요.'
-              : '매칭이 성립한 상대에게만 보여요.'
-          }
+          // 전화번호·인스타그램 어느 쪽이든 같은 안내다(2026-09-17 소유자 결정, NFR-4).
+          help="매칭이 성립한 상대에게만 보여요."
           label={<ErrorLabel invalid={Boolean(errors.contactValue)}>연락처</ErrorLabel>}
         >
           {(control) => (
