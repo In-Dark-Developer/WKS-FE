@@ -52,6 +52,7 @@ test('다음 경로를 받아 만든 action 은 결과를 만든 뒤 그리로 �
   createResultMock.mockResolvedValue({ ok: true, data: { resultId: 'r1' } });
   const action = createSajuAction(
     (resultId, { params }) => `/s/${params.shareId}/join?r=${resultId}`,
+    'share',
   );
 
   const response = await action({ ...actionArgs(validInput), params: { shareId: 's1' } });

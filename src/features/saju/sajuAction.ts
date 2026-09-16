@@ -1,6 +1,7 @@
 import { redirect, type ActionFunctionArgs } from 'react-router-dom';
 
 import { createResult, type ResultRequestInput } from '@/api/results';
+import { track, type SajuEntry } from '@/lib/analytics';
 
 function isGender(value: unknown): value is ResultRequestInput['gender'] {
   return value === 'MALE' || value === 'FEMALE';
@@ -38,19 +39,25 @@ function toResultRequestInput(value: unknown): ResultRequestInput {
 // 궁합을 만든 뒤 친구의 궁합 지도(05/T10). 실패는(연결·스키마·백엔드 에러 모두) SajuForm 이 아는 유일한 모양
 // `{ formError: 'connection' }`으로 돌려줘 입력값을 유지한 채 안내한다(ARCHITECTURE Cross-cutting — 스키마 위반·
 // 네트워크 실패도 사용자에게는 같은 안내).
+// `entry` 는 제출이 어느 입구에서 왔는지다 — 깔때기를 입구별로 본다(analytics).
 export function createSajuAction(
   nextPath: (resultId: string, args: ActionFunctionArgs) => string | Promise<string>,
+  entry: SajuEntry,
 ) {
   return async function action(args: ActionFunctionArgs) {
     const input = toResultRequestInput(await args.request.json());
     const outcome = await createResult(input);
 
-    if (outcome.ok) return redirect(await nextPath(outcome.data.resultId, args));
+    if (outcome.ok) {
+      track('saju_submitted', { entry });
+      return redirect(await nextPath(outcome.data.resultId, args));
+    }
 
+    track('saju_failed', { entry });
     console.error('POST /results 실패', outcome.error);
     return { formError: 'connection' as const };
   };
 }
 
 // SCR-02 `/` action — 성공하면 `/reading/:resultId`로 간다.
-export const sajuAction = createSajuAction((resultId) => `/reading/${resultId}`);
+export const sajuAction = createSajuAction((resultId) => `/reading/${resultId}`, 'direct');

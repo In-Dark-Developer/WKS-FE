@@ -49,7 +49,11 @@ function Demo({ capability, hint }: { capability: Capability; hint: string }) {
   return (
     <div className="flex flex-col gap-16">
       <p className="text-ui-14 text-secondary">{hint}</p>
-      <ShareLinkButton nickname="달빛토끼" shareId="9f0d3f1e-0000-4000-8000-000000000001" />
+      <ShareLinkButton
+        nickname="달빛토끼"
+        shareId="9f0d3f1e-0000-4000-8000-000000000001"
+        surface="reading"
+      />
       {shared ? (
         <dl className="flex flex-col gap-4 rounded-12 bg-surface-subtle p-16 text-ui-12 text-secondary">
           <dt className="font-medium text-primary">공유 시트로 넘어간 값</dt>
