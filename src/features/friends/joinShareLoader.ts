@@ -3,6 +3,7 @@ import { replace, type LoaderFunctionArgs } from 'react-router-dom';
 import { markShareJoined } from '@/api/joinedShares';
 import { readSession } from '@/api/session';
 import { createCompatibility } from '@/api/shares';
+import { track } from '@/lib/analytics';
 
 // 공유 링크 궁합 생성 — POST /shares/{shareId}/compatibility 뒤 갈 곳을 돌려준다(FR-6). 궁합을 만들면 이 탭의 기록에
 // 남기고 친구의 궁합 지도로, 자기 링크면 내 결과로 간다. 없는 링크는 404 를 던지고, 연결·서버 실패는 null 이다 —
@@ -11,6 +12,7 @@ export async function joinShare(shareId: string, resultId: string): Promise<stri
   const outcome = await createCompatibility(shareId, resultId);
   if (outcome.ok) {
     markShareJoined(shareId);
+    track('compatibility_created', {});
     return `/s/${encodeURIComponent(shareId)}/map`;
   }
 

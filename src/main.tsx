@@ -4,8 +4,12 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { App } from '@/app/App';
+import { initAnalytics } from '@/lib/analytics';
 
 import './index.css';
+
+// 제품 분석 — 화면이 뜨기 전에 켜야 첫 페이지뷰·유입 경로를 놓치지 않는다.
+initAnalytics();
 
 // index.html 이 항상 #root 를 갖는다 — 없으면 앱이 뜰 수 없으므로 여기서 단언한다.
 const container = document.getElementById('root')!;

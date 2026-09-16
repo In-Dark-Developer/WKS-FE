@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { track } from '@/lib/analytics';
 import { cn } from '@/lib/cn';
 import { Button } from '@/ui/Button';
 import { Toast } from '@/ui/Toast';
@@ -17,6 +18,8 @@ type Props = {
   size?: 'm' | 'l';
   // 버튼 글자 — 궁합 지도(Figma 558:2625)는 '친구에게 공유하고 궁합 지도 넓히기'다. 기본은 '친구에게 공유'.
   label?: string;
+  // 어느 화면의 공유인지 — 이벤트 속성으로만 쓴다(analytics).
+  surface: 'reading' | 'map';
   className?: string;
 };
 
@@ -25,6 +28,7 @@ type Props = {
 export function ShareLinkButton({
   shareId,
   nickname,
+  surface,
   variant = 'secondary',
   size = 'l',
   label = shareLinkMessages.button,
@@ -43,6 +47,7 @@ export function ShareLinkButton({
         title: shareLinkMessages.shareTitle,
         text: shareLinkMessages.shareText(nickname),
       });
+      track('share_clicked', { surface, outcome });
       setShowLink(outcome === 'manual');
       setToast(outcome === 'copied' || outcome === 'manual' ? outcome : null);
     } finally {

@@ -34,21 +34,35 @@ import {
 } from '@/features/friends';
 import { IntroGate } from '@/features/intro';
 import { ResultCard, ShareLinkButton } from '@/features/share';
+import { track } from '@/lib/analytics';
 import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { ContentState } from '@/ui/state/ContentState';
 
+// 화면 도착 이벤트는 loader 에서 보낸다 — 이동마다 한 번이라 StrictMode 의 이중 마운트에 겹치지 않는다(analytics).
+
 // 세션 가드(T3·T8) 뒤에 결과 loader(T7)를 잇는다 — 이 브라우저가 만든 결과가 아니면 redirect('/')로 끝난다.
-function protectedReadingLoader(args: LoaderFunctionArgs) {
+async function protectedReadingLoader(args: LoaderFunctionArgs) {
   requireSession(args.params.id);
-  return readingLoader(args);
+  const view = await readingLoader(args);
+  track('reading_viewed', { friendCount: view.friends?.length ?? 0 });
+  return view;
 }
 
 // SCR-08 궁합 지도(05/T3) — 주소에 id 가 없어 보관된 '내 결과'로 결과 loader 를 다시 쓴다(친구 목록이 그 안에 있다).
-function protectedMapLoader(args: LoaderFunctionArgs) {
+async function protectedMapLoader(args: LoaderFunctionArgs) {
   const resultId = requireMyResultId();
-  return readingLoader({ ...args, params: { ...args.params, id: resultId } });
+  const view = await readingLoader({ ...args, params: { ...args.params, id: resultId } });
+  track('map_viewed', { variant: 'own', friendCount: view.friends?.length ?? 0 });
+  return view;
+}
+
+// SCR-13 친구의 궁합 지도 — 방문자 지도 도착.
+async function trackedShareMapLoader(args: LoaderFunctionArgs) {
+  const view = await shareMapLoader(args);
+  track('map_viewed', { variant: 'visitor', friendCount: view.friends.length });
+  return view;
 }
 
 // 지도 → 내 사주 이동 기록의 표시 — 이동 기록(history state)은 런타임 경계 입력이라 파싱해서 읽는다.
@@ -65,7 +79,14 @@ function ReadingResultRoute() {
   const fromSharedMap = fromSharedMapState.safeParse(useLocation().state).success;
   const ranking = (
     <FriendRanking
-      emptyAction={<ShareLinkButton nickname={view.nickname} shareId={view.shareId} size="m" />}
+      emptyAction={
+        <ShareLinkButton
+          nickname={view.nickname}
+          shareId={view.shareId}
+          size="m"
+          surface="reading"
+        />
+      }
       friends={view.friends ?? []}
       headerAction={
         // Figma 798:3138 '지도 보기 >' — UI/14/600 Action/Teal/Default.
@@ -110,6 +131,7 @@ function CompatibilityMapRoute() {
           label="친구에게 공유하고 궁합 지도 넓히기"
           nickname={view.nickname}
           shareId={view.shareId}
+          surface="map"
           variant="accent"
         />
       }
@@ -136,7 +158,7 @@ function ShareInputRoute() {
 const shareSajuAction = createSajuAction(async (resultId, { params }) => {
   const shareId = params.shareId ?? '';
   return (await joinShare(shareId, resultId)) ?? `/s/${encodeURIComponent(shareId)}/join`;
-});
+}, 'share');
 
 // SCR-13 친구의 궁합 지도(Figma 720:3668) — 방문자 궁합 지도(05/T5) + '내 사주 내용도 확인하기'(뒤로가기 없음).
 // 내 사주로는 push 로 가서 내 사주의 '뒤로가기'가 이 지도로 돌아온다 (FR-6).
@@ -237,7 +259,7 @@ export const routes: RouteObject[] = [
       // SCR-13 친구의 궁합 지도 — 내 결과가 없으면 입력으로 (05/T10).
       {
         path: 's/:shareId/map',
-        loader: shareMapLoader,
+        loader: trackedShareMapLoader,
         handle: { backdrop: 'result' },
         element: <SharedMapRoute />,
       },
