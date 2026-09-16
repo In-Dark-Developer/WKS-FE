@@ -31,7 +31,7 @@ afterEach(() => {
 });
 
 function storyButton() {
-  return screen.getByRole('button', { name: '인스타 스토리 공유하기' });
+  return screen.getByRole('button', { name: '카드 저장하기' });
 }
 
 test('뒷면부터 보이고 카드 뒤집기로 운명 카드 앞면을 연다', () => {
@@ -51,7 +51,7 @@ test('뒷면이 보이는 중에도 스토리 공유는 앞면을 넘긴다', as
   render(<ResultCard {...card} />);
   fireEvent.click(storyButton());
 
-  await screen.findByRole('button', { name: '인스타 스토리 공유하기' });
+  await screen.findByRole('button', { name: '카드 저장하기' });
   const [node] = shareCardImage.mock.calls[0] ?? [];
   expect(node instanceof HTMLElement ? node.dataset.destinyCard : null).toBe('');
 });
@@ -60,7 +60,7 @@ test('스토리 공유는 카드 앞면만 넘긴다', async () => {
   render(<ResultCard {...card} />);
   fireEvent.click(storyButton());
 
-  await screen.findByRole('button', { name: '인스타 스토리 공유하기' });
+  await screen.findByRole('button', { name: '카드 저장하기' });
   const [node, nickname] = shareCardImage.mock.calls[0] ?? [];
   expect(node).toBeInstanceOf(HTMLElement);
   expect(node instanceof HTMLElement ? node.dataset.destinyCard : null).toBe('');
@@ -83,7 +83,7 @@ test('만드는 동안 버튼이 잠긴다', async () => {
   expect(busy).toBeDisabled();
 
   release?.('shared');
-  await screen.findByRole('button', { name: '인스타 스토리 공유하기' });
+  await screen.findByRole('button', { name: '카드 저장하기' });
 });
 
 test('저장으로 물러나면 담았다고 알린다', async () => {
@@ -99,7 +99,7 @@ test('공유 시트로 넘어가면 안내를 띄우지 않는다', async () => 
   render(<ResultCard {...card} />);
   fireEvent.click(storyButton());
 
-  await screen.findByRole('button', { name: '인스타 스토리 공유하기' });
+  await screen.findByRole('button', { name: '카드 저장하기' });
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 

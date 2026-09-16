@@ -12,7 +12,7 @@ import { LuckySection } from './sections/LuckySection';
 
 import './ReadingResult.css';
 
-// 운명 카드 앞면에 들어가는 값 — 뷰 모델에서 saju 가 만들고, 카드(뒤집기·인스타 공유)는 조립하는 쪽이 그린다.
+// 운명 카드 앞면에 들어가는 값 — 뷰 모델에서 saju 가 만들고, 카드(뒤집기·저장)는 조립하는 쪽이 그린다.
 export type ReadingCardFace = {
   nickname: string;
   zodiac: Zodiac;
@@ -24,13 +24,13 @@ export type ReadingCardFace = {
 type Props = {
   view: ReadingView;
   // 다른 feature 가 채우는 자리 — saju 는 share·friends·profile 을 import 하지 않고 app 이 조립한다.
-  renderCard: (face: ReadingCardFace) => ReactNode; // 04 운명 카드(카드 뒤집기) + 인스타 스토리 공유하기
+  renderCard: (face: ReadingCardFace) => ReactNode; // 04 운명 카드(카드 뒤집기) + 카드 저장하기
   ranking?: ReactNode; // 05 친구 궁합 순위
   teaser?: ReactNode; // 06 사전신청 티저
   back?: ReactNode; // 맨 위 '뒤로가기' — 친구의 궁합 지도에서 들어온 내 사주(Figma 720:3587)만 쓴다. 이동은 app 이 정한다
 };
 
-// SCR-04 사주 결과 — Figma 사주 카드 화면(658:5075): 카드·인스타 공유 → 16 → 행운 → 16 → 운세 → 16 → 친구 궁합 순위.
+// SCR-04 사주 결과 — Figma 사주 카드 화면(658:5075): 카드·카드 저장 → 16 → 행운 → 16 → 운세 → 16 → 친구 궁합 순위.
 // 순위는 좌우 8 안쪽(333)에 둔다.
 // 하위 라우트(사전신청 모달)는 맨 아래 <Outlet /> 에 뜬다.
 export function ReadingResult({ view, renderCard, ranking, teaser, back }: Props) {

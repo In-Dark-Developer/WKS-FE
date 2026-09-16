@@ -265,9 +265,9 @@ test('사주를 처음 보는 방문자에게는 궁합 지도를 만드는 중 
   release?.();
 });
 
-// 04/T7 조립 — 인연카드 화면을 결과 화면에 합쳤다(카드 뒤집기·인스타 스토리 공유, 빈 순위의 친구에게 공유).
+// 04/T7 조립 — 인연카드 화면을 결과 화면에 합쳤다(카드 뒤집기·카드 저장, 빈 순위의 친구에게 공유).
 
-test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·인스타 스토리 공유를 갖고 인연카드 입구는 없다', async () => {
+test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·카드 저장을 갖고 인연카드 입구는 없다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
 
@@ -275,7 +275,7 @@ test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·인스�
 
   // 들어오면 카드 뒷면부터 보인다 (PRD FR-5).
   expect(await screen.findByRole('img', { name: '운명도 꿰어야 사랑이다' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '인스타 스토리 공유하기' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '카드 저장하기' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: '인연카드 보기' })).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
