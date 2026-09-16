@@ -75,9 +75,17 @@ export const preview: PreviewScreen = {
     ),
     '결과 화면 순위 요약': () => (
       <div className="flex flex-col gap-16">
-        <FriendRanking friends={friends} limit={3} />
         <FriendRanking
-          emptyAction={
+          friends={friends}
+          limit={3}
+          shareAction={
+            <Button className="w-full" size="m" variant="secondary">
+              친구에게 공유
+            </Button>
+          }
+        />
+        <FriendRanking
+          shareAction={
             <Button className="w-full" variant="secondary">
               친구에게 공유
             </Button>

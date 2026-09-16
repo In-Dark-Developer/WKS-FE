@@ -6,8 +6,8 @@ type Props = {
   friends: readonly Friend[];
   // 결과 화면 하단 요약처럼 앞의 몇 줄만 보일 때.
   limit?: number;
-  // 인연이 없을 때 안내 아래 둘 버튼 — 예: '친구에게 공유'.
-  emptyAction?: ReactNode;
+  // '친구에게 공유' 같은 버튼 — 인연이 없으면 안내 아래, 있으면 목록 아래(Figma 796:3885)에 둔다.
+  shareAction?: ReactNode;
   // 제목 줄 오른쪽 — 결과 화면의 '지도 보기 >'(Figma 798:3138).
   headerAction?: ReactNode;
 };
@@ -21,7 +21,7 @@ const badgeText: Record<CompatibilityTier, string> = {
 
 // Figma RankingList(80:614) — 사주 카드 화면 인스턴스(796:3828) 모양: 제목 줄 패딩 16, 목록은 좌우 8 안쪽.
 // friends 는 순위 순서다.
-export function FriendRanking({ friends, limit, emptyAction, headerAction }: Props) {
+export function FriendRanking({ friends, limit, shareAction, headerAction }: Props) {
   const rows = limit === undefined ? friends : friends.slice(0, limit);
   const titleId = useId();
 
@@ -45,7 +45,7 @@ export function FriendRanking({ friends, limit, emptyAction, headerAction }: Pro
           >
             <p className="text-ui-16 font-semibold text-primary">아직 인연이 없어요</p>
             <p className="text-ui-14 text-secondary">친구에게 공유하고 첫 인연을 이어보세요.</p>
-            {emptyAction}
+            {shareAction}
           </div>
         ) : (
           <ol className="flex flex-col gap-8">
@@ -79,6 +79,8 @@ export function FriendRanking({ friends, limit, emptyAction, headerAction }: Pro
           </ol>
         )}
       </div>
+      {/* 목록이 있을 때 — Figma 796:3885 목록 아래 8, 좌우가 목록보다 조금 안쪽(285/343). */}
+      {rows.length > 0 && shareAction ? <div className="px-20">{shareAction}</div> : null}
     </section>
   );
 }
