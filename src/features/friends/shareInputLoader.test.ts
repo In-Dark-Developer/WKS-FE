@@ -32,6 +32,7 @@ const owner: SharedResult = {
     { category: 'CHILDREN', grade: 'A', content: '자녀운' },
     { category: 'LOVE', grade: 'A+', content: '연애운' },
   ],
+  elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '파란색 팔찌',
   luckyPlace: '팔정도',
   compatibilities: [],

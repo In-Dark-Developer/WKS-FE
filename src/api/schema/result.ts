@@ -72,6 +72,17 @@ export const compatibilitySummarySchema = z.object({
 
 export type CompatibilitySummary = z.infer<typeof compatibilitySummarySchema>;
 
+// 사주 원국의 오행 개수(openapi Elements) — 출생 시간을 넣었으면 합계 8, 몰라요면 시주가 빠져 합계 6.
+export const elementsSchema = z.object({
+  wood: z.number().int().min(0),
+  fire: z.number().int().min(0),
+  earth: z.number().int().min(0),
+  metal: z.number().int().min(0),
+  water: z.number().int().min(0),
+});
+
+export type Elements = z.infer<typeof elementsSchema>;
+
 // POST /results · GET /results/{resultId} 가 공통으로 쓰는 응답 모양(openapi Result).
 // 생성 직후엔 compatibilities 가 빈 배열이고, 조회 시엔 누적된다(createdAt 내림차순).
 export const resultSchema = z.object({
@@ -81,6 +92,7 @@ export const resultSchema = z.object({
   zodiac: zodiacSchema,
   destiny: destinySchema,
   fortunes: z.array(fortuneSchema).length(3),
+  elements: elementsSchema,
   luckyItem: z.string(),
   luckyPlace: z.string(),
   compatibilities: z.array(compatibilitySummarySchema),

@@ -4,12 +4,16 @@ import type { Zodiac } from '@/ui/ZodiacCharacter';
 
 export type FortuneKey = 'marriage' | 'children' | 'love';
 
+export type ElementKey = 'wood' | 'fire' | 'earth' | 'metal' | 'water';
+
 // 결과 화면이 그리는 값 — 백엔드 응답(SharedResult)을 이 모양으로 바꾸는 일은 03/T7 toReadingView 가 한다.
 export type ReadingView = {
   nickname: string;
   zodiac: Zodiac;
   destiny: { title: string; description: string };
   fortunes: Record<FortuneKey, { grade: Grade; content: string }>;
+  // 사주 원국의 오행 개수 — 합계 8(출생 시간 입력) 또는 6(몰라요).
+  elements: Record<ElementKey, number>;
   luckyPlace: string;
   luckyItem: string;
   // 공유 링크·인연카드 진입에 쓰는 공개 UUID(FR-4·FR-5) — 조립(04/T6)이 share feature 에 넘긴다.
@@ -24,4 +28,13 @@ export const fortuneOrder: readonly { key: FortuneKey; label: string }[] = [
   { key: 'marriage', label: '결혼운' },
   { key: 'children', label: '자녀운' },
   { key: 'love', label: '연애운' },
+];
+
+// 오행 카드 순서·이름 — Figma 결과 화면(982:3446)의 목 → 화 → 토 → 금 → 수.
+export const elementOrder: readonly { key: ElementKey; label: string }[] = [
+  { key: 'wood', label: '목' },
+  { key: 'fire', label: '화' },
+  { key: 'earth', label: '토' },
+  { key: 'metal', label: '금' },
+  { key: 'water', label: '수' },
 ];
