@@ -1,0 +1,10 @@
+/* 상태 화면 제목은 한 줄로 둔다 — 가장 긴 기본 제목('보살님이 잠시 길을 잃었어요', 동국체 24px 에서 297px)이 칸보다
+   넓어지는 좁은 화면(폭 360 이하 — 안드로이드 카카오톡 인앱 등)에서만 칸 폭에 비례해 글자를 줄인다. */
+[data-content-state] {
+  container-type: inline-size;
+}
+
+[data-content-state-title] {
+  font-size: min(var(--text-display-24), 100cqw * 24 / 300);
+  white-space: nowrap;
+}

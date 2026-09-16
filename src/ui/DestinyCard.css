@@ -3,8 +3,9 @@
   /* cqw 는 카드의 content box(= 패널 323px) 기준이다. */
   --u: calc(100cqw / 323);
   container-type: inline-size;
-  aspect-ratio: 349 / 461;
-  /* 카드 자신에게는 cqw 가 자기 폭이 아니므로 padding 은 폭 기준 % 로 준다 (11px·13px / 349px). */
+  /* 카드 자신에게는 cqw 가 자기 폭이 아니므로 padding 은 폭 기준 % 로 준다 (11px·13px / 349px).
+     비율(349×461)은 카드가 아니라 패널(323×439)에 건다 — container-type·aspect-ratio·% padding 이 한 상자에 겹치면
+     WebKit(iOS Safari·카카오톡 인앱)이 세로 padding 을 비율 높이에 더해 카드가 세로로 늘어난다. */
   padding: 3.152% 3.725%;
   border-radius: 12px;
   background: var(--color-neutral-0);
@@ -13,7 +14,7 @@
 
 [data-destiny-card-panel] {
   position: relative;
-  height: 100%;
+  aspect-ratio: 323 / 439;
   overflow: hidden;
   border-radius: 12px;
   background:
