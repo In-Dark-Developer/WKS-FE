@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: src/features/share/card/ConnectionCard.css,src/ui/DestinyCard.css,src/ui/state/ContentState.tsx,src/app/layout.css,src/features/friends/map/,src/features/saju/ReadingResult.css,src/features/profile/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,12 +21,13 @@ chore: webkit-layout-fixes
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. iOS 시뮬레이터로 카드 넘침·세로 늘어남 원인 확인, 그리드 칸·비율 수정
+- 2. 상태 화면 제목 한 줄 (commit e360d7d) → PR ←
 
 ## Last Checkpoint
 
@@ -40,8 +41,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/share/card/ConnectionCard.css` · `src/ui/DestinyCard.css` · `src/ui/state/ContentState.tsx`·`.css`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR CI 통과 → merge → 카카오톡 실기기 스크린샷으로 남은 차이 확인
