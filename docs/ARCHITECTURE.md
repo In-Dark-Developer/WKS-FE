@@ -64,7 +64,7 @@
 
 ## Persistence
 
-브라우저에 저장하는 것은 localStorage 두 키와 sessionStorage 한 키다: localStorage `wks:session` 이 브라우저가 만든 내 결과의 `resultId`(`src/api/session.ts`)과 `wks:intro-seen` 인트로를 봤는지 여부(`src/features/intro/introSeen.ts`, FR-1), sessionStorage 에 이 탭에서 궁합을 만든 공유 링크의 `shareId`(탭을 닫으면 사라진다 — 뒤로가기로 돌아온 입력 화면이 입력을 건너뛰지 않게 한다, FR-6). 인앱 브라우저의 저장소는 기본 브라우저와 따로이므로, 카카오톡 인앱으로 들어오면 `src/main.tsx`가 렌더 전에 `kakaotalk://web/openExternal`로 기본 브라우저에 넘긴다(`src/lib/inAppBrowser.ts`, 인스타그램 인앱은 넘기지 않는다). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
+브라우저에 저장하는 것은 localStorage 두 키와 sessionStorage 한 키다: localStorage `wks:session` 이 브라우저가 만든 내 결과의 `resultId`(`src/api/session.ts`)과 `wks:intro-seen` 인트로를 봤는지 여부(`src/features/intro/introSeen.ts`, FR-1), sessionStorage 에 이 탭에서 궁합을 만든 공유 링크의 `shareId`(탭을 닫으면 사라진다 — 뒤로가기로 돌아온 입력 화면이 입력을 건너뛰지 않게 한다, FR-6). 인앱 브라우저의 저장소는 기본 브라우저와 따로이므로, 카카오톡·인스타그램 인앱으로 들어오면 `src/main.tsx`가 렌더 전에 기본 브라우저로 넘긴다(`src/lib/inAppBrowser.ts` — 카카오톡은 `kakaotalk://web/openExternal`, 인스타그램은 iOS `x-safari-https://`(iOS 17 이상)·Android Chrome intent). 사용자 데이터·사주 결과·매칭 상태는 모두 백엔드가 저장하며 이 저장소에는 스키마·마이그레이션이 없다.
 
 ## External Systems
 
