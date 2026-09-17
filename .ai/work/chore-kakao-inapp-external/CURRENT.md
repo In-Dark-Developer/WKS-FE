@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: src/lib/inAppBrowser.ts,src/lib/inAppBrowser.test.ts,src/main.tsx,docs/ARCHITECTURE.md#Persistence
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract-r2, 2026-09-13-backend-contract, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,27 +21,12 @@ chore: kakao-inapp-external
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
-
-## Last Checkpoint
-
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`8de9efa`
-
-## Relevant Documents
-
-- `AGENTS.md`
-
-## Relevant Source Files
-
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
-
-## Next Action
-
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+- 1. src/lib/inAppBrowser.ts + 테스트 — 완료 (48171b0)
+- 2. src/main.tsx 렌더 전 이동 — 완료 (48171b0)
+- 3. ARCHITECTURE Persistence 한 줄 — 완료 (48171b0)
+- 4. test·typecheck·lint 통과 → PR
