@@ -13,7 +13,7 @@
 
 ## Work Completed
 
-- 카카오톡 UA 감지 → `kakaotalk://web/openExternal?url=<현재 주소>` 이동 (48171b0)
+- 카카오톡 UA 감지 → `kakaotalk://web/openExternal?url=현재 주소` 이동 (48171b0)
 
 ## Work In Progress
 
