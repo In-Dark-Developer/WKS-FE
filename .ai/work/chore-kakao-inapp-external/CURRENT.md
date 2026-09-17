@@ -38,14 +38,11 @@ REVIEW
 
 ## Relevant Documents
 
-- `AGENTS.md`
-- `docs/decisions/ADR-20260914-result-ownership-in-browser.md` — 인앱·기본 브라우저 저장소 분리를 감수한 결정
+- `AGENTS.md` · `docs/decisions/ADR-20260914-result-ownership-in-browser.md` — 인앱·기본 브라우저 저장소 분리를 감수한 결정
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- `src/main.tsx`
-- `src/lib/inAppBrowser.ts:kakaoTalkExternalUrl`
+- `src/main.tsx` · `src/lib/inAppBrowser.ts:kakaoTalkExternalUrl`
 
 ## Next Action
 
