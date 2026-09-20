@@ -14,8 +14,11 @@ import { requireMyResultId, requireSession } from '@/app/requireSession';
 import { RootLayout } from '@/app/RootLayout';
 import { RouteError } from '@/app/RouteError';
 import { RouteLoading } from '@/app/RouteLoading';
+import { MyMapScreen } from '@/app/screens/MyMapScreen';
+import { ReadingScreen } from '@/app/screens/ReadingScreen';
+import { ShareInputScreen } from '@/app/screens/ShareInputScreen';
+import { SharedMapScreen } from '@/app/screens/SharedMapScreen';
 import {
-  ReadingResult,
   SajuForm,
   createSajuAction,
   readingLoader,
@@ -23,8 +26,6 @@ import {
   type ReadingView,
 } from '@/features/saju';
 import {
-  CompatibilityMapScreen,
-  FriendRanking,
   joinShare,
   joinShareLoader,
   ShareJoinLoading,
@@ -34,18 +35,9 @@ import {
   type SharedMapView,
 } from '@/features/friends';
 import { IntroGate } from '@/features/intro';
-import {
-  PreRegisterModal,
-  PreRegisterTeaser,
-  VerifyComplete,
-  preRegisterAction,
-} from '@/features/profile';
-import { ResultCard, ShareLinkButton } from '@/features/share';
+import { PreRegisterModal, VerifyComplete, preRegisterAction } from '@/features/profile';
 import { readSession } from '@/api/session';
 import { track } from '@/lib/analytics';
-import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
-import { Button } from '@/ui/Button';
-import { Icon } from '@/ui/Icon';
 import { ContentState } from '@/ui/state/ContentState';
 
 // 화면 도착 이벤트는 loader 에서 보낸다 — 이동마다 한 번이라 StrictMode 의 이중 마운트에 겹치지 않는다(analytics).
@@ -69,20 +61,6 @@ async function protectedMapLoader(args: LoaderFunctionArgs): Promise<MyMapView> 
 
 type MyMapView = ReadingView & { myResultId: string };
 
-// 화면 맨 위 '뒤로가기' 줄(Figma 720:3587) — 결과 화면과 궁합 지도가 같은 모양을 쓴다.
-function BackRow({ onBack }: { onBack: () => void }) {
-  return (
-    <button
-      className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
-      onClick={onBack}
-      type="button"
-    >
-      <Icon src={angleSmallLeft} />
-      뒤로가기
-    </button>
-  );
-}
-
 // SCR-13 친구의 궁합 지도 — 방문자 지도 도착.
 async function trackedShareMapLoader(args: LoaderFunctionArgs) {
   const view = await shareMapLoader(args);
@@ -93,48 +71,22 @@ async function trackedShareMapLoader(args: LoaderFunctionArgs) {
 // 지도 → 내 사주 이동 기록의 표시 — 이동 기록(history state)은 런타임 경계 입력이라 파싱해서 읽는다.
 const fromSharedMapState = z.object({ from: z.literal('shared-map') });
 
-// renderCard(04/T7)·ranking(05)은 여기서 채우고, teaser(06) 슬롯은 그 Phase가 끝나기 전까지 비워 둔다 —
-// saju 는 share·friends 를 import 하지 않으므로 조립은 app 이 한다(ARCHITECTURE Module Boundaries).
-// '친구에게 공유'(04/T3)는 친구 궁합 순위가 비어 있으면 안내 아래(713:4078), 있으면 목록 아래(796:3885)에 둔다(PRD FR-4).
+// 화면 조립은 `src/app/screens/` 가 갖는다 — 여기 라우트 컴포넌트는 loader 데이터와 이동만 잇는다.
+// 같은 조립을 `/preview` 가 가짜 데이터로 그대로 쓴다(퍼블리싱 확인과 실제 화면이 갈라지지 않게).
+
 // 친구의 궁합 지도에서 '내 사주 내용도 확인하기'로 들어왔을 때만(Figma 720:3587) 맨 위 '뒤로가기'가 그 지도로 돌아간다 —
 // 지도가 이동 기록에 표시를 남기고 앞 페이지가 그 지도라 브라우저 이전 페이지로 간다(FR-6). 표시는 새로고침에도 남는다.
 function ReadingResultRoute() {
   const view = useLoaderData<ReadingView>();
   const navigate = useNavigate();
   const fromSharedMap = fromSharedMapState.safeParse(useLocation().state).success;
-  const ranking = (
-    <FriendRanking
-      shareAction={
-        <ShareLinkButton
-          nickname={view.nickname}
-          shareId={view.shareId}
-          size="m"
-          surface="reading"
-        />
-      }
-      friends={view.friends ?? []}
-      headerAction={
-        // Figma 798:3138 '지도 보기 >' — UI/14/600 Action/Teal/Default.
-        <Link className="text-ui-14 font-semibold whitespace-nowrap text-primary-500" to="/me/map">
-          지도 보기 &gt;
-        </Link>
-      }
-      limit={3}
-    />
-  );
   return (
-    <ReadingResult
-      teaser={
-        <PreRegisterTeaser
-          onApply={() => {
-            track('pre_register_opened', {});
-            void navigate('pre-register');
-          }}
-        />
-      }
-      back={fromSharedMap ? <BackRow onBack={() => void navigate(-1)} /> : null}
-      ranking={ranking}
-      renderCard={(face) => <ResultCard {...face} />}
+    <ReadingScreen
+      onBack={fromSharedMap ? () => void navigate(-1) : undefined}
+      onPreRegister={() => {
+        track('pre_register_opened', {});
+        void navigate('pre-register');
+      }}
       view={view}
     />
   );
@@ -147,39 +99,25 @@ function PreRegisterModalRoute() {
   return <PreRegisterModal onClose={() => void navigate('..', { relative: 'path' })} open />;
 }
 
-// SCR-08 궁합 지도 — 05/T2 CompatibilityMapScreen 에 결과 loader 의 친구 목록과 '친구에게 공유'(04/T3)를 잇는다.
 function CompatibilityMapRoute() {
   const view = useLoaderData<MyMapView>();
   const navigate = useNavigate();
   return (
-    <CompatibilityMapScreen
-      back={<BackRow onBack={() => void navigate(`/reading/${view.myResultId}`)} />}
+    <MyMapScreen
       friends={view.friends ?? []}
       nickname={view.nickname}
-      share={
-        <ShareLinkButton
-          className="w-full"
-          label="친구에게 공유하고 궁합 지도 넓히기"
-          nickname={view.nickname}
-          shareId={view.shareId}
-          surface="map"
-          variant="accent"
-        />
-      }
+      onBack={() => void navigate(`/reading/${view.myResultId}`)}
+      shareId={view.shareId}
     />
   );
 }
 
-// SCR-06 공유 링크 입력(Figma 720:3653) — 사주 입력 폼에 링크 주인 닉네임이 든 설명과 '운명 지도 확인하기'.
 // 첫 방문이면 인트로가 먼저 뜬다(FR-1). 제출하면 결과·궁합을 만들고 친구의 궁합 지도로 간다 (05/T10, FR-6).
 function ShareInputRoute() {
   const view = useLoaderData<ShareInputView>();
   return (
     <IntroGate>
-      <SajuForm
-        description={`아래 정보를 입력하고 나와 ${view.ownerNickname} 님의 귀인 궁합을 관계로 확인해보아요.`}
-        submitLabel="운명 지도 확인하기"
-      />
+      <ShareInputScreen ownerNickname={view.ownerNickname} />
     </IntroGate>
   );
 }
@@ -191,29 +129,19 @@ const shareSajuAction = createSajuAction(async (resultId, { params }) => {
   return (await joinShare(shareId, resultId)) ?? `/s/${encodeURIComponent(shareId)}/join`;
 }, 'share');
 
-// SCR-13 친구의 궁합 지도(Figma 720:3668) — 방문자 궁합 지도(05/T5) + '내 사주 내용도 확인하기'(뒤로가기 없음).
 // 내 사주로는 push 로 가서 내 사주의 '뒤로가기'가 이 지도로 돌아온다 (FR-6).
 function SharedMapRoute() {
   const view = useLoaderData<SharedMapView>();
   const navigate = useNavigate();
   return (
-    <CompatibilityMapScreen
+    <SharedMapScreen
       friends={view.friends}
       nickname={view.nickname}
-      share={
-        <Button
-          className="w-full"
-          onClick={() =>
-            void navigate(`/reading/${view.myResultId}`, {
-              state: { from: 'shared-map' } satisfies z.infer<typeof fromSharedMapState>,
-            })
-          }
-          variant="apricot"
-        >
-          내 사주 내용도 확인하기
-        </Button>
+      onViewMyReading={() =>
+        void navigate(`/reading/${view.myResultId}`, {
+          state: { from: 'shared-map' } satisfies z.infer<typeof fromSharedMapState>,
+        })
       }
-      variant="visitor"
     />
   );
 }
