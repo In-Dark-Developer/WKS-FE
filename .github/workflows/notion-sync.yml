@@ -1,11 +1,13 @@
 name: notion-sync
 
 # 스트림 상태(.ai/work/<id>/CURRENT.md)를 Notion Task 보드에 복사한다. 단방향 — 보드를 고쳐도 저장소는 바뀌지 않는다.
+# push 와 PR synchronize 는 같은 커밋에 두 번 발화한다 — synchronize 를 뺀다.
+# push 는 PR 을 열기 전의 스트림도 보드에 올리므로 남긴다.
 on:
   push:
     branches: ['ws/**']
   pull_request:
-    types: [opened, reopened, synchronize, closed]
+    types: [opened, reopened, closed]
 
 concurrency:
   group: notion-sync-${{ github.head_ref || github.ref }}
