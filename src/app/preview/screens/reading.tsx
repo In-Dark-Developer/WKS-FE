@@ -1,9 +1,7 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
-import { FortuneLoading, ReadingResult, type ReadingView } from '@/features/saju';
-import { ResultCard } from '@/features/share';
-import angleSmallLeft from '@/ui/assets/icons/angle-small-left.svg';
+import { ReadingScreen } from '@/app/screens/ReadingScreen';
+import { FortuneLoading, type ReadingView } from '@/features/saju';
 import { DestinyCard } from '@/ui/DestinyCard';
-import { Icon } from '@/ui/Icon';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
 
 const view: ReadingView = {
@@ -33,6 +31,11 @@ const view: ReadingView = {
   elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '작은 책 한 권',
   shareId: '9f0d3f1e-0000-4000-8000-000000000001',
+  friends: [
+    { nickname: '영채', score: 94, tier: 'GUIIN' },
+    { nickname: '진희', score: 83, tier: 'CHALTTEOK' },
+    { nickname: '선우', score: 68, tier: 'BEOT' },
+  ],
 };
 
 const zodiacs: readonly Zodiac[] = [
@@ -50,31 +53,22 @@ const zodiacs: readonly Zodiac[] = [
   'PIG',
 ];
 
-// SCR-03·04 사주 결과 — 03/T5.
+const noop = () => undefined;
+
+// SCR-03·04 사주 결과 — 03/T5. 조립은 라우트와 같은 `@/app/screens/ReadingScreen` 을 쓴다.
 export const preview: PreviewScreen = {
   title: 'SCR-04 사주 결과',
   order: 1,
   backdrop: 'result',
   states: {
-    결과: () => <ReadingResult renderCard={(face) => <ResultCard {...face} />} view={view} />,
+    결과: () => <ReadingScreen onPreRegister={noop} view={view} />,
+    '인연 없음': () => <ReadingScreen onPreRegister={noop} view={{ ...view, friends: [] }} />,
     '친구의 궁합 지도에서 옴(뒤로가기)': () => (
-      <ReadingResult
-        back={
-          <button
-            className="flex items-center gap-16 text-ui-16 font-medium text-on-brand"
-            type="button"
-          >
-            <Icon src={angleSmallLeft} />
-            뒤로가기
-          </button>
-        }
-        renderCard={(face) => <ResultCard {...face} />}
-        view={view}
-      />
+      <ReadingScreen onBack={noop} onPreRegister={noop} view={view} />
     ),
     '긴 제목': () => (
-      <ReadingResult
-        renderCard={(face) => <ResultCard {...face} />}
+      <ReadingScreen
+        onPreRegister={noop}
         view={{
           ...view,
           nickname: '여덟글자닉네임',
