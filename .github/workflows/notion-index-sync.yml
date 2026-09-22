@@ -16,6 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: probe what the integration can reach
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: |
+          for v in 2022-06-28 2025-09-03; do
+            echo "=== Notion-Version: $v"
+            curl -sS -X POST https://api.notion.com/v1/search \
+              -H "Authorization: Bearer $NOTION_TOKEN" \
+              -H "Notion-Version: $v" -H "Content-Type: application/json" \
+              -d '{"page_size":50}' \
+            | jq -r 'if .object=="error" then "ERROR \(.status) \(.code) \(.message)" else (.results[] | "\(.object)\t\(.id)\t\((.title // .name // [])[0].plain_text // "")") end' | head -60
+          done
       - name: notion-index-sync.sh
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
