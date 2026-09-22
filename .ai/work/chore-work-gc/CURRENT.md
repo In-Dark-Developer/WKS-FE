@@ -21,12 +21,13 @@ chore: work-gc
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 1. `ai-stream.sh gc --dry-run` 으로 대상 확인 (17개)
+- [x] 2. `ai-stream.sh gc` 실행 후 커밋
 
 ## Last Checkpoint
 
@@ -44,4 +45,4 @@ TODO
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰.
