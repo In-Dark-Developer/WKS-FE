@@ -1,6 +1,6 @@
 # ADR-20260912: Notion Task 보드는 스트림 상태의 사본이다
 
-- Status: Accepted
+- Status: Superseded by ADR-20260923-retire-task-board-sync
 - Date: 2026-09-12
 - Deciders: @jjjung0921 (제안) / 리뷰어는 PR 승인자
 
