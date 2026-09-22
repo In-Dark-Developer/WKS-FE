@@ -21,17 +21,18 @@ chore: screen-assembly-ssot
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 조립을 `src/app/screens/` 로 추출 — routes 는 loader·이동만, preview 3개가 같은 조립을 쓴다
+- [x] CI: 취소·job 합치기·코드 없는 PR 건너뛰기·notion-sync 중복 제거. test·typecheck·lint·`/preview` 확인
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`703f18d`
+`3ae89e9`
 
 ## Relevant Documents
 
@@ -40,8 +41,10 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/app/screens/`: `ReadingScreen` · `MyMapScreen` · `SharedMapScreen` · `ShareInputScreen` · `BackRow`
+- `src/app/routes.tsx:routes` 라우트 표·이동 래퍼만 · `.github/workflows/ci.yml:commands`
+- `src/app/preview/screens/`: `reading.tsx` · `map.tsx` · `saju.tsx` — 같은 조립을 쓴다
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰를 기다린다. `chore-reading-back-always` 가 `src/app/routes.tsx`·`routes.test.tsx`·`preview/screens/reading.tsx` 를 함께 만지므로 병합 전 `git merge main` 이 필요하다.
