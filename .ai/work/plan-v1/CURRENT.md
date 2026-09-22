@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/phases/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-split
 
 ## Current Phase
 
@@ -21,12 +21,14 @@ Phase v1 계획
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- V1 요구 13건을 결과 단위 세 덩어리로 갈라 Phase 09·10·11 을 세움
+- 선행 사슬과 모듈 경계로 Task 10개를 나누고 Touches·After·Owner 를 박음
+- `ai-stream.sh phases` 로 README 표 갱신
 
 ## Last Checkpoint
 
@@ -40,8 +42,10 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/phases/09-auth-and-shell/PLAN.md`
+- `docs/phases/10-dating-onboarding/PLAN.md`
+- `docs/phases/11-dating-thread/PLAN.md`
 
 ## Next Action
 
-`AGENTS.md`에서 v1/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+리뷰 후 dev 에 병합하고, 09/T1·09/T2 스트림을 연다.
