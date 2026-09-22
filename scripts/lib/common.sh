@@ -10,7 +10,7 @@ SEP=$'\x1f'
 WORK=".ai/work"
 TEAM=".ai/team"
 LOCAL=".ai/local"
-SPEC_PATHS="docs/PRD.md docs/ARCHITECTURE.md docs/api AGENTS.md"
+SPEC_PATHS="docs/prd docs/ARCHITECTURE.md docs/api AGENTS.md"
 STALE_DAYS=${AI_STALE_DAYS:-3}
 LOG_FMT='%h %as %s | %(trailers:key=Task,valueonly,separator=%x2C) %(trailers:key=Stream,valueonly,separator=%x2C) %(trailers:key=Wip,valueonly,separator=%x2C)'
 today=$(date +%F)

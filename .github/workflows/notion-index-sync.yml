@@ -1,10 +1,10 @@
 name: notion-index-sync
 
-# docs/PRD.md 의 FR·NFR, docs/decisions/ADR-*.md, docs/phases/README.md 표를 Notion 색인 DB 에 복사한다. 단방향 — 색인을 고쳐도 저장소는 바뀌지 않는다.
+# docs/prd/*.md 의 FR·NFR, docs/decisions/ADR-*.md, docs/phases/README.md 표를 Notion 색인 DB 에 복사한다. 단방향 — 색인을 고쳐도 저장소는 바뀌지 않는다.
 on:
   push:
     branches: [main]
-    paths: ['docs/PRD.md', 'docs/decisions/**', 'docs/phases/**']
+    paths: ['docs/prd/**', 'docs/decisions/**', 'docs/phases/**']
   workflow_dispatch:
 
 concurrency:
