@@ -1,5 +1,5 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
-import { ReadingScreen } from '@/app/screens/ReadingScreen';
+import { HomeScreen } from '@/app/screens/HomeScreen';
 import { FortuneLoading, type ReadingView } from '@/features/saju';
 import { DestinyCard } from '@/ui/DestinyCard';
 import type { Zodiac } from '@/ui/ZodiacCharacter';
@@ -55,19 +55,19 @@ const zodiacs: readonly Zodiac[] = [
 
 const noop = () => undefined;
 
-// SCR-03·04 사주 결과 — 03/T5. 조립은 라우트와 같은 `@/app/screens/ReadingScreen` 을 쓴다.
+// SCR-03·04 사주 결과 — 03/T5. 조립은 라우트와 같은 `@/app/screens/HomeScreen` 을 쓴다.
 export const preview: PreviewScreen = {
   title: 'SCR-04 사주 결과',
   order: 1,
   backdrop: 'result',
   states: {
-    결과: () => <ReadingScreen onPreRegister={noop} view={view} />,
-    '인연 없음': () => <ReadingScreen onPreRegister={noop} view={{ ...view, friends: [] }} />,
+    결과: () => <HomeScreen onPreRegister={noop} view={view} />,
+    '인연 없음': () => <HomeScreen onPreRegister={noop} view={{ ...view, friends: [] }} />,
     '친구의 궁합 지도에서 옴(뒤로가기)': () => (
-      <ReadingScreen onBack={noop} onPreRegister={noop} view={view} />
+      <HomeScreen onBack={noop} onPreRegister={noop} view={view} />
     ),
     '긴 제목': () => (
-      <ReadingScreen
+      <HomeScreen
         onPreRegister={noop}
         view={{
           ...view,

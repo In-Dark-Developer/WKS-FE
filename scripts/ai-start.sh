@@ -101,7 +101,7 @@ if [ "$up_total" -gt 0 ]; then
     hits=""
     while read -r f; do
       [ -z "$f" ] && continue
-      case "$f" in docs/PRD.md|docs/ARCHITECTURE.md|docs/api/*|AGENTS.md) hits="$hits $f"; echo "$f" >> "$tmp.specfiles";; *)
+      case "$f" in docs/prd/*|docs/ARCHITECTURE.md|docs/api/*|AGENTS.md) hits="$hits $f"; echo "$f" >> "$tmp.specfiles";; *)
         if path_in_touches "$f" "$touches"; then hits="$hits $f"; fi;; esac
     done <<EOF
 $files

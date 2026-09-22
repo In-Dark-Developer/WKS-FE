@@ -160,7 +160,7 @@ chk_caps() {
 chk_sync() { git merge-base --is-ancestor "$base" HEAD 2>/dev/null && ok "main 동기화됨 ($base 가 HEAD 의 조상)" || fail "main 이 병합되지 않았다 → git merge main"; }
 chk_spec() {
   local files f bad=0 logspec
-  files=$(git diff --name-only "$base...HEAD" -- docs/PRD.md docs/ARCHITECTURE.md docs/api 2>/dev/null || true)
+  files=$(git diff --name-only "$base...HEAD" -- docs/prd docs/ARCHITECTURE.md docs/api 2>/dev/null || true)
   if [ -z "$files" ]; then ok "spec 변경 없음"; return; fi
   logspec=$(awk '/^## /{ n++ } n == 1' "$LOG" | sed -n 's/^- Spec changes: *//p' | head -n1)
   while read -r f; do
@@ -209,7 +209,7 @@ chk_derived() {
 # ---------------------------------------------------------------- PR 초안 (--ready 와 CI 의 pr-body 잡이 같은 초안을 쓴다)
 pr_draft_vars() {
   goal=$(section "$HANDOFF" Goal | head -n1 | sed 's/^<//; s/>$//')
-  spec_files=$(git diff --name-only "$base...HEAD" -- docs/PRD.md docs/ARCHITECTURE.md docs/api 2>/dev/null | tr '\n' ' ')
+  spec_files=$(git diff --name-only "$base...HEAD" -- docs/prd docs/ARCHITECTURE.md docs/api 2>/dev/null | tr '\n' ' ')
   spec_flag=no; [ -n "$spec_files" ] && spec_flag=yes
   logspec=$(awk '/^## /{ n++ } n == 1' "$LOG" | sed -n 's/^- Spec changes: *//p' | head -n1)
   ann=$(git diff --name-only --diff-filter=A "$base...HEAD" -- "$TEAM/announcements/" 2>/dev/null | grep -v _template | sed 's#.*/##; s/\.md$//' | tr '\n' ',' | sed 's/,$//' || true)
