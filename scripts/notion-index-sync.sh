@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, main push 마다 CI 가 돌린다).
+# notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, dev push 마다 CI 가 돌린다).
 #
 #   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--dry-run]
-#     --prd      docs/PRD.md 의 FR·NFR 표 → 🙋 요구사항 색인 (PRD)   (ID 로 upsert)
+#     --prd      docs/prd/*.md 의 FR·NFR 표 → 🙋 요구사항 색인 (PRD)   (ID 로 upsert)
 #     --adr      docs/decisions/ADR-*.md → 🏛️ ADR 색인               (번호 로 upsert)
 #     --phases   docs/phases/README.md 표 → 📅 Phase 색인             (번호 로 upsert)
 #     전부 생략하면 셋 다. --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
@@ -80,7 +80,7 @@ sync_prd() {
     ph=$(phases_of "$id"); st=$(status_of "$ph")
     send "${NOTION_PRD_DB:-}" ID "$id" "$(prd_props "$id" "$kind" "$req" "$pri" "${ph// /·}" "$st")" && n=$((n + 1))
   done <<EOF
-$(grep -E '^\| N?FR-[0-9]+ ' docs/PRD.md)
+$(grep -hE '^\| N?FR-[0-9]+ ' docs/prd/*.md)
 EOF
   say "PRD: ${n}행"
 }

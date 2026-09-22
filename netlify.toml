@@ -1,4 +1,6 @@
 # Netlify 배포 설정 — ADR-20260922-netlify-org-repo-direct, Phase 08 T2. Netlify 는 이 저장소(In-Dark-Developer/WKS-FE)의 main 을 빌드한다.
+# 통합 브랜치는 dev 다 — 스트림은 dev 로 병합되고, 운영 배포는 dev → main 릴리스 PR 이 일으킨다 (ADR-20260923-dev-as-default-branch).
+# dev 브랜치 배포(branch deploy)는 검색엔진에서 빠진다.
 # Node 버전은 .nvmrc, pnpm 버전은 package.json packageManager 를 Netlify 가 읽는다.
 
 [build]

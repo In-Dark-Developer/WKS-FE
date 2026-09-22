@@ -30,7 +30,7 @@ dir="$WORK/$id"; CURRENT="$dir/CURRENT.md"; HANDOFF="$dir/HANDOFF.md"; INBOX="$d
 [ -f "$CURRENT" ] || { say "브랜치 ws/$id 에 $dir/CURRENT.md 가 없다 — scripts/ai-stream.sh open 으로 만든 스트림이 아니다."; exit 1; }
 
 fetch_quiet
-main=$(main_ref)
+main=$(integ_ref)
 owner=$(field "$CURRENT" Owner)
 if have_origin && git show-ref --verify -q "refs/remotes/origin/ws/$id"; then
   rowner=$(field_from_ref "origin/ws/$id" "$CURRENT" Owner); [ -n "$rowner" ] && owner=$rowner
@@ -101,7 +101,7 @@ if [ "$up_total" -gt 0 ]; then
     hits=""
     while read -r f; do
       [ -z "$f" ] && continue
-      case "$f" in docs/PRD.md|docs/ARCHITECTURE.md|docs/api/*|AGENTS.md) hits="$hits $f"; echo "$f" >> "$tmp.specfiles";; *)
+      case "$f" in docs/prd/*|docs/ARCHITECTURE.md|docs/api/*|AGENTS.md) hits="$hits $f"; echo "$f" >> "$tmp.specfiles";; *)
         if path_in_touches "$f" "$touches"; then hits="$hits $f"; fi;; esac
     done <<EOF
 $files

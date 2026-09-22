@@ -10,7 +10,7 @@ SEP=$'\x1f'
 WORK=".ai/work"
 TEAM=".ai/team"
 LOCAL=".ai/local"
-SPEC_PATHS="docs/PRD.md docs/ARCHITECTURE.md docs/api AGENTS.md"
+SPEC_PATHS="docs/prd docs/ARCHITECTURE.md docs/api AGENTS.md"
 STALE_DAYS=${AI_STALE_DAYS:-3}
 LOG_FMT='%h %as %s | %(trailers:key=Task,valueonly,separator=%x2C) %(trailers:key=Stream,valueonly,separator=%x2C) %(trailers:key=Wip,valueonly,separator=%x2C)'
 today=$(date +%F)
@@ -23,7 +23,10 @@ fail() { printf '  [FAIL] %s\n' "$*"; FAILED=1; }
 die()  { printf 'error: %s\n' "$*" >&2; exit 1; }
 
 have_origin()    { git remote get-url origin >/dev/null 2>&1; }
-main_ref()       { if have_origin && git rev-parse -q --verify refs/remotes/origin/main >/dev/null 2>&1; then echo origin/main; else echo main; fi; }
+# 스트림이 갈라져 나오고 돌아가는 통합 브랜치. 기본은 dev 이고(ADR-20260923-dev-as-default-branch),
+# 운영 배포 브랜치 main 은 dev → main 릴리스 PR 로만 바뀐다. AI_INTEG_BRANCH 로 덮어쓸 수 있다.
+INTEG_BRANCH=${AI_INTEG_BRANCH:-dev}
+integ_ref()      { if have_origin && git rev-parse -q --verify "refs/remotes/origin/$INTEG_BRANCH" >/dev/null 2>&1; then echo "origin/$INTEG_BRANCH"; else echo "$INTEG_BRANCH"; fi; }
 fetch_quiet()    { if have_origin; then git fetch --quiet --prune origin >/dev/null 2>&1 || true; fi; }
 current_branch() { git symbolic-ref -q --short HEAD 2>/dev/null || echo ""; }
 stream_from_branch() { case "$1" in ws/*) echo "${1#ws/}";; *) echo "";; esac; }
@@ -54,7 +57,7 @@ ws_ref_exists() {
   if have_origin; then git show-ref --verify -q "refs/remotes/origin/ws/$1" 2>/dev/null
   else git show-ref --verify -q "refs/heads/ws/$1" 2>/dev/null; fi
 }
-is_merged()     { git merge-base --is-ancestor "$1" "$(main_ref)" 2>/dev/null; }
+is_merged()     { git merge-base --is-ancestor "$1" "$(integ_ref)" 2>/dev/null; }
 age_days()      { local ts; ts=$(git log -1 --format=%ct "$1" 2>/dev/null || echo 0); echo $(( ( $(date +%s) - ts ) / 86400 )); }
 
 # Touches 목록 정규화: 쉼표 구분 → 한 줄에 하나 (백틱·공백 제거)

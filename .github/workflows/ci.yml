@@ -4,10 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
   push:
-    branches: [main]
+    branches: [dev, main]
 
 # 같은 PR 에 새 push 가 오면 돌던 run 을 버린다 — WIP push 를 밀 때마다 완주하는 run 이 쌓이던 것을 막는다.
-# main 은 취소하지 않는다(병합마다 한 번은 끝까지 돈다).
+# dev·main push 는 취소하지 않는다(병합마다 한 번은 끝까지 돈다).
 # edited(제목·본문 수정)는 따로 묶는다 — 한 묶음이면 본문을 다듬는 순간 돌고 있던 commands 를 죽이는데,
 # edited run 은 commands 를 돌리지 않으므로(아래 if) 필수 검사가 끝내 채워지지 않아 병합이 막힌다.
 concurrency:
@@ -86,8 +86,10 @@ jobs:
     # AGENTS.md 의 Commands 를 한 job 에서 차례로 돌린다 — job 을 나누면 러너마다 checkout·pnpm install 이
     # 따로 돌아 벽시계는 줄지만 과금되는 러너-분은 3배가 된다. 싼 것부터(typecheck → lint → test) 돌려
     # 실패를 빨리 본다. 경고는 스크립트 자체가 실패로 만든다(tsc --noEmit · eslint --max-warnings=0 · prettier --check).
-    # 이름은 그대로 둔다 — 팀이 아는 집계 검사 이름이다. (main 의 ruleset 이 실제로 요구하는 검사는
-    # `ai-check` 뿐이고 `commands` 는 아니다 — 2026-09-22 확인. 그래서 지금은 test 가 빨개도 병합이 막히지 않는다.)
+    # 이름은 그대로 둔다 — 팀이 아는 집계 검사 이름이자 main ruleset 의 required status check 다
+    # (`ai-check` 와 `commands` 둘 다 요구된다 — 2026-09-23 확인). test 가 빨가면 병합이 막힌다.
+    # 아래 scope 단계가 job 안에서 끝내는 것이 그래서 중요하다 — 워크플로 수준 paths-ignore 로 걸렀다면
+    # 검사가 보고되지 않아 pending 으로 남고 docs 전용 PR 이 영영 병합되지 않는다.
     # 제목·본문만 고친 edited 이벤트에서는 돌리지 않는다.
     if: ${{ github.event.action != 'edited' }}
     runs-on: ubuntu-latest

@@ -44,7 +44,7 @@ Touches 는 ai-stream.sh open 이 CURRENT.md 로 복사하고 겹침 경고에 �
 
 ## Relevant Specifications
 
-- `docs/PRD.md` — <FR-x, NFR-y>
+- `docs/prd/` — <FR-x, NFR-y>
 - `docs/ARCHITECTURE.md` — <해당 섹션>
 - `docs/api/openapi.yaml` — <해당 경로>
 - `docs/decisions/ADR-YYYYMMDD-*.md`

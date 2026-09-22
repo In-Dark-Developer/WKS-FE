@@ -23,7 +23,7 @@ set -eo pipefail
 
 usage() { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 
-stream_exists() { ws_ref_exists "$1" || git cat-file -e "$(main_ref):$WORK/$1/CURRENT.md" 2>/dev/null; }
+stream_exists() { ws_ref_exists "$1" || git cat-file -e "$(integ_ref):$WORK/$1/CURRENT.md" 2>/dev/null; }
 
 bookkeep_commit() { # bookkeep_commit <subject> <task> <stream>
   git commit -q -m "$1" --trailer "Agent: ${AI_AGENT:-ai-stream}" --trailer "Task: $2" --trailer "Stream: $3"
@@ -58,7 +58,7 @@ cmd_open() {
   [ -n "$kind" ] && [ -n "$slug" ] || usage 1
   git diff --quiet && git diff --cached --quiet || die "커밋되지 않은 변경이 있다 — 먼저 커밋하거나 stash 한다"
   fetch_quiet
-  local base; base=$(main_ref)
+  local base; base=$(integ_ref)
   case "$kind" in
     [0-9][0-9]/T[0-9]*)
       phase=${kind%%/*}; task=$kind; id="${phase}-${kind#*/}-${slug}"
@@ -70,8 +70,8 @@ cmd_open() {
       [ -z "$touches" ] && touches=$(printf '%s' "$tline" | sed -n 's/.*Touches: *//p' | sed 's/ · After:.*//; s/ · Owner:.*//; s/`//g')
       [ -n "$touches" ] || die "PLAN 의 Task 줄에 Touches: 가 없다 — 적거나 --touches 로 지정한다"
       local after dep; after=$(printf '%s' "$tline" | sed -n 's/.*After: *//p' | sed 's/ · Owner:.*//; s/,/ /g')
-      for dep in $after; do # 선행 Task 가 main 에 [x] 가 아니면 경고 (막지 않는다 — 병합 전 git merge main 으로 받는다)
-        git show "$base:$plan" 2>/dev/null | grep -qE "^- \[x\] ${dep}\. " || say "  선행 경고: ${kind%%/*}/$dep 가 아직 main 에 완료되지 않았다 (After: $after) — 시작은 되지만 병합 전 git merge main"
+      for dep in $after; do # 선행 Task 가 통합 브랜치에 [x] 가 아니면 경고 (막지 않는다 — 병합 전 git merge dev 로 받는다)
+        git show "$base:$plan" 2>/dev/null | grep -qE "^- \[x\] ${dep}\. " || say "  선행 경고: ${kind%%/*}/$dep 가 아직 $INTEG_BRANCH 에 완료되지 않았다 (After: $after) — 시작은 되지만 병합 전 git merge $INTEG_BRANCH"
       done
       local other
       for other in $(ws_refs | awk '{print $1}') $(git ls-tree --name-only "$base" "$WORK/" 2>/dev/null | sed "s#.*/##"); do
@@ -91,7 +91,7 @@ cmd_open() {
     *) usage 1;;
   esac
   if stream_exists "$id"; then
-    [ "$reopen" -eq 1 ] || die "스트림 $id 가 이미 있다 (브랜치 또는 main). 재개하려면 --reopen"
+    [ "$reopen" -eq 1 ] || die "스트림 $id 가 이미 있다 (브랜치 또는 $INTEG_BRANCH). 재개하려면 --reopen"
     [ "$supersedes" = "none" ] && supersedes=$id
     local n=2
     while stream_exists "${id}-r${n}"; do n=$((n + 1)); done
@@ -178,7 +178,7 @@ cmd_status() {
 $(ws_refs)
 EOF
   if [ ! -s "$tmp" ]; then say "active streams: (없음)"; rm -f "$tmp"; return 0; fi
-  say "active streams ($(main_ref) 기준, 미병합 ws/* — $(wc -l < "$tmp" | tr -d ' ')개):"
+  say "active streams ($(integ_ref) 기준, 미병합 ws/* — $(wc -l < "$tmp" | tr -d ' ')개):"
   sort -t "$SEP" -k1,1 -k2,2 "$tmp" | awk -F "$SEP" -v me="$me" '
     { if ($1 != last) { printf "  phase %s\n", $1; last = $1 }
       you = ($3 == me) ? " (you)" : ""
@@ -199,11 +199,11 @@ EOF
 cmd_gc() {
   local dry=0; [ "${1:-}" = "--dry-run" ] && dry=1
   fetch_quiet
-  local d id base n=0; base=$(main_ref)
+  local d id base n=0; base=$(integ_ref)
   for d in "$WORK"/*/; do
     id=$(basename "$d"); [ "$id" = "_template" ] && continue
     if ws_ref_exists "$id"; then continue; fi
-    if ! git cat-file -e "$base:$WORK/$id/CURRENT.md" 2>/dev/null; then say "  skip $id — main 에 없다 (병합되지 않은 스트림?)"; continue; fi
+    if ! git cat-file -e "$base:$WORK/$id/CURRENT.md" 2>/dev/null; then say "  skip $id — $INTEG_BRANCH 에 없다 (병합되지 않은 스트림?)"; continue; fi
     n=$((n + 1))
     if [ "$dry" -eq 1 ]; then say "  would remove $WORK/$id/"; else git rm -rq "$WORK/$id" && say "  removed $WORK/$id/"; fi
   done
@@ -218,21 +218,21 @@ cmd_merge() {
   [ -n "$id" ] || die "스트림 id 를 주거나 ws/* 브랜치에서 실행한다"
   git diff --quiet && git diff --cached --quiet || die "커밋되지 않은 변경이 있다"
   git checkout -q "ws/$id"
-  say "== ai-end.sh --ci (ws/$id)"; CI_BASE=main bash scripts/ai-end.sh --ci || die "--ci 실패 — 고친 뒤 다시"
+  say "== ai-end.sh --ci (ws/$id)"; CI_BASE=$INTEG_BRANCH bash scripts/ai-end.sh --ci || die "--ci 실패 — 고친 뒤 다시"
   local task goal; task=$(field "$WORK/$id/CURRENT.md" Task); goal=$(section "$WORK/$id/HANDOFF.md" Goal | head -n1)
   [ -n "$title" ] || title="chore($id): ${goal:-merge stream} [$task]"
-  git checkout -q main
+  git checkout -q "$INTEG_BRANCH"
   git merge -q --no-ff -m "$title" -m "$(printf 'Stream: %s\nTask: %s' "$id" "$task")" "ws/$id"
   git branch -q -d "ws/$id"
-  say "merged ws/$id into main: $title"
+  say "merged ws/$id into $INTEG_BRANCH: $title"
 }
 
 # ---------------------------------------------------------------- tag
 cmd_tag() {
   local nn=${1:-}; [ -n "$nn" ] || usage 1
-  git tag -a "phase/$nn" -m "Phase $nn done" "$(main_ref)"
+  git tag -a "phase/$nn" -m "Phase $nn done" "$(integ_ref)"
   if have_origin; then git push -q origin "phase/$nn"; fi
-  say "tagged phase/$nn at $(short "$(main_ref)")"
+  say "tagged phase/$nn at $(short "$(integ_ref)")"
 }
 
 # ---------------------------------------------------------------- phases
@@ -274,7 +274,7 @@ cmd_phase() {
   [ "${1:-}" = "new" ] && [ -n "${2:-}" ] || usage 1
   local name=$2 max=0 d nn cand
   fetch_quiet
-  for d in $(ls -d docs/phases/[0-9][0-9]-*/ 2>/dev/null; git ls-tree --name-only "$(main_ref)" docs/phases/ 2>/dev/null); do
+  for d in $(ls -d docs/phases/[0-9][0-9]-*/ 2>/dev/null; git ls-tree --name-only "$(integ_ref)" docs/phases/ 2>/dev/null); do
     cand=$(basename "$d" | cut -c1-2); case "$cand" in [0-9][0-9]) [ "${cand#0}" -gt "$max" ] && max=${cand#0};; esac
   done
   nn=$(printf '%02d' $((max + 1)))
@@ -291,7 +291,7 @@ cmd_phase() {
 # ---------------------------------------------------------------- history
 cmd_history() {
   local n=20 fp=1 noai=0 withpr=0 path="" greps=() ref
-  ref=$(main_ref)
+  ref=$(integ_ref)
   while [ $# -gt 0 ]; do
     case "$1" in
       --type)   greps+=("--grep=^$2\\(");                   shift;;
@@ -321,9 +321,9 @@ cmd_history() {
 
 # ---------------------------------------------------------------- digest
 cmd_digest() {
-  local since="" base h sha date subj stream; base=$(main_ref)
+  local since="" base h sha date subj stream; base=$(integ_ref)
   while [ $# -gt 0 ]; do case "$1" in --since) since=${2:-}; shift;; esac; shift; done
-  # main 의 first-parent 로그에서 Stream: trailer 가 있는 병합 커밋마다, 그 커밋 시점의 LOG.md 맨 위 항목을 뽑는다 (gc 로 지워진 스트림도 보인다)
+  # 통합 브랜치의 first-parent 로그에서 Stream: trailer 가 있는 병합 커밋마다, 그 커밋 시점의 LOG.md 맨 위 항목을 뽑는다 (gc 로 지워진 스트림도 보인다)
   git log --first-parent --format="%H${SEP}%h${SEP}%as${SEP}%s${SEP}%(trailers:key=Stream,valueonly,separator=%x2C)" ${since:+--since="$since"} "$base" -- \
   | while IFS="$SEP" read -r h sha date subj stream; do
     [ -z "$stream" ] && continue
@@ -395,7 +395,7 @@ cmd_setup() {
   if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1 && have_origin; then
     if [ "$check" -eq 1 ]; then
       gh api 'repos/{owner}/{repo}' --jq '"merge_commit=\(.allow_merge_commit) squash=\(.allow_squash_merge) rebase=\(.allow_rebase_merge) delete_branch_on_merge=\(.delete_branch_on_merge) merge_title=\(.merge_commit_title) merge_message=\(.merge_commit_message)"' || true
-      gh api 'repos/{owner}/{repo}/branches/main/protection' --jq '"protection: reviews=\(.required_pull_request_reviews.required_approving_review_count) checks=\(.required_status_checks.contexts)"' 2>/dev/null || say "  main 보호 규칙 없음"
+      gh api "repos/{owner}/{repo}/branches/$INTEG_BRANCH/protection" --jq '"protection: reviews=\(.required_pull_request_reviews.required_approving_review_count) checks=\(.required_status_checks.contexts)"' 2>/dev/null || say "  $INTEG_BRANCH 보호 규칙 없음"
       return 0
     fi
     gh repo edit --enable-merge-commit=true --enable-squash-merge=false --enable-rebase-merge=false --delete-branch-on-merge=true >/dev/null && ok "병합 방식: merge commit 만, 브랜치 자동 삭제"
@@ -425,7 +425,7 @@ cmd_flow() {
     review)
       br=$(current_branch); id=$(stream_from_branch "${GITHUB_HEAD_REF:-$br}")
       say "PR title: ${PR_TITLE:-(없음)}"; say "PR body:"; printf '%s\n' "${PR_BODY:-(없음)}"; say
-      say "--- diff --stat ($(main_ref)...HEAD)"; git diff --stat "$(main_ref)...HEAD" || true; say
+      say "--- diff --stat ($(integ_ref)...HEAD)"; git diff --stat "$(integ_ref)...HEAD" || true; say
       if [ -n "$id" ] && [ -d "$WORK/$id" ]; then
         say "--- $WORK/$id/CURRENT.md"; strip_comments "$WORK/$id/CURRENT.md"; say
         say "--- $WORK/$id/HANDOFF.md"; strip_comments "$WORK/$id/HANDOFF.md"; say

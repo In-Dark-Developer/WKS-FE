@@ -5,7 +5,7 @@
 대학 축제 참가자가 생년월일로 자기 운세를 보고, 점지 카드를 인스타에 공유하고, 공유 링크로 들어온 친구와의 궁합 점수를 쌓다가, 소개팅 상대에게 '운명의 실'을 보내 연락처를 주고받는 모바일 웹앱이다.
 이 저장소는 그중 **프론트엔드(화면)** 만 담는다. 사주(만세력) 계산·문구 생성·매칭·저장은 별도 백엔드 저장소가 담당한다.
 
-- 요구사항: [`docs/PRD.md`](docs/PRD.md)
+- 요구사항: [`docs/prd/`](docs/prd/README.md)
 - 구조: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · 코딩 컨벤션: [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) · 스택 결정: [`docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md`](docs/decisions/ADR-20260911-frontend-stack-and-repo-scope.md)
 - 소비하는 API 계약(참조본): [`docs/api/openapi.yaml`](docs/api/openapi.yaml)
 - 개발 계획: [`docs/phases/README.md`](docs/phases/README.md)
@@ -55,7 +55,7 @@ scripts/ai-start.sh                         # 세션 시작 점검
 scripts/ai-end.sh --ready                   # Task 완료 → PR 초안
 ```
 
-규칙 전문은 [`AGENTS.md`](AGENTS.md), 협업 장치의 상세는 [`.ai/README.md`](.ai/README.md)에 있다. main은 PR로만 바뀌고 병합은 merge commit이다.
+규칙 전문은 [`AGENTS.md`](AGENTS.md), 협업 장치의 상세는 [`.ai/README.md`](.ai/README.md)에 있다. 스트림 PR의 base는 통합 브랜치 `dev`이고, 운영 배포는 `dev` → `main` 릴리스 PR이 일으킨다. 두 브랜치 모두 PR로만 바뀌고 병합은 merge commit이다.
 
 ## Design
 
