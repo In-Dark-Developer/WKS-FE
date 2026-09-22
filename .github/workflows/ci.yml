@@ -8,8 +8,10 @@ on:
 
 # 같은 PR 에 새 push 가 오면 돌던 run 을 버린다 — WIP push 를 밀 때마다 완주하는 run 이 쌓이던 것을 막는다.
 # main 은 취소하지 않는다(병합마다 한 번은 끝까지 돈다).
+# edited(제목·본문 수정)는 따로 묶는다 — 한 묶음이면 본문을 다듬는 순간 돌고 있던 commands 를 죽이는데,
+# edited run 은 commands 를 돌리지 않으므로(아래 if) 필수 검사가 끝내 채워지지 않아 병합이 막힌다.
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}-${{ github.event.action == 'edited' && 'meta' || 'code' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
