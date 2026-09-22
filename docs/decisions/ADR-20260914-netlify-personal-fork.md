@@ -1,6 +1,6 @@
 # ADR-20260914: 운영 배포는 개인 fork 를 Netlify 무료 플랜으로 빌드한다
 
-- Status: Accepted
+- Status: Superseded by ADR-20260922-netlify-org-repo-direct
 - Date: 2026-09-14
 - Deciders: @jjjung0921 (Phase 08 Lead)
 

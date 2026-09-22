@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: .github/workflows/,netlify.toml,docs/ARCHITECTURE.md,docs/decisions/,docs/deploy/,.ai/team/announcements/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership
 
 ## Current Phase
 
@@ -21,12 +21,13 @@ chore: netlify-org-repo
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] ADR 작성(이전 ADR Superseded), `sync-fork.yml` 삭제, `netlify.toml`·ARCHITECTURE·배포 문서·공지 갱신
+- [ ] 소유자가 Netlify 재연결 완료(2026-09-22) — PR 의 deploy preview 로 검증 후 병합 ←
 
 ## Last Checkpoint
 
@@ -40,8 +41,10 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/decisions/ADR-20260922-netlify-org-repo-direct.md` · `docs/deploy/netlify.md`(옛 `netlify-fork.md`)
+- `netlify.toml` 머리 주석 · `docs/ARCHITECTURE.md:75` External Systems 정적 호스팅 행
+- 삭제: `.github/workflows/sync-fork.yml`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 의 Netlify deploy preview 로 org 레포 연결을 확인한 뒤 병합한다. 병합 후 소유자가 Secret·Variable·PAT 폐기, fork 삭제.
