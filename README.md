@@ -55,7 +55,7 @@ scripts/ai-start.sh                         # 세션 시작 점검
 scripts/ai-end.sh --ready                   # Task 완료 → PR 초안
 ```
 
-규칙 전문은 [`AGENTS.md`](AGENTS.md), 협업 장치의 상세는 [`.ai/README.md`](.ai/README.md)에 있다. main은 PR로만 바뀌고 병합은 merge commit이다.
+규칙 전문은 [`AGENTS.md`](AGENTS.md), 협업 장치의 상세는 [`.ai/README.md`](.ai/README.md)에 있다. 스트림 PR의 base는 통합 브랜치 `dev`이고, 운영 배포는 `dev` → `main` 릴리스 PR이 일으킨다. 두 브랜치 모두 PR로만 바뀌고 병합은 merge commit이다.
 
 ## Design
 

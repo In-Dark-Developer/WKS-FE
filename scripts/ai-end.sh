@@ -9,7 +9,7 @@
 #         scripts/ai-end.sh --pr-title         PR 제목 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
 #         scripts/ai-end.sh --pr-body          PR 본문 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
 #         scripts/ai-end.sh --quick            pre-push 훅용 (브랜치·남의 스트림·비밀값만, 수 초)
-#         scripts/ai-end.sh --ci               PR 검사 (CI). env: PR_TITLE, PR_BODY, PR_AUTHOR, GITHUB_HEAD_REF, CI_BASE(기본 origin/main)
+#         scripts/ai-end.sh --ci               PR 검사 (CI). env: PR_TITLE, PR_BODY, PR_AUTHOR, GITHUB_HEAD_REF, CI_BASE(기본 origin/dev)
 # 종료 코드: 0 = 통과, 1 = FAIL 항목 있음 (warn 은 통과). 요구: git 2.23+, bash 3.2+.
 
 set -eo pipefail
@@ -28,7 +28,7 @@ done
 
 branch=$(current_branch); [ -z "$branch" ] && branch=${GITHUB_HEAD_REF:-}
 id=$(stream_from_branch "$branch")
-base=${CI_BASE:-$(main_ref)}
+base=${CI_BASE:-$(integ_ref)}
 head_short=$(git rev-parse --short HEAD)
 bootstrap=0; [ -f .ai/BOOTSTRAP.md ] && bootstrap=1
 
