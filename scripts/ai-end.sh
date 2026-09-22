@@ -305,9 +305,9 @@ if [ "$make_pr" -eq 1 ] || [ "$open_web" -eq 1 ]; then
     if [ "$open_web" -eq 1 ]; then gh pr view "ws/$id" --web; fi
   elif [ "$open_web" -eq 1 ]; then
     short=$(mktemp -t ai-pr-short.XXXXXX); pr_draft_body 0 > "$short"
-    gh pr create --web --base main --head "ws/$id" --title "$title" --body-file "$short" && say "브라우저가 제목·본문이 채워진 채 열렸다 — 확인하고 Create 를 누른다"
+    gh pr create --web --base "$INTEG_BRANCH" --head "ws/$id" --title "$title" --body-file "$short" && say "브라우저가 제목·본문이 채워진 채 열렸다 — 확인하고 Create 를 누른다"
   else
-    gh pr create --base main --head "ws/$id" --title "$title" --body-file "$body" && say "PR 생성됨"
+    gh pr create --base "$INTEG_BRANCH" --head "ws/$id" --title "$title" --body-file "$body" && say "PR 생성됨"
   fi
 fi
 say "소유자가 본문을 다듬어 올린다 — 리뷰어가 읽을 글이다."
