@@ -2,18 +2,19 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-23
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+`ci.yml` 의 required status check 설명이 실제 룰셋과 일치한다.
 
 ## Work Completed
 
-- 없음
+- `main protection` 룰셋 확인: required status checks = `ai-check`, `commands` (둘 다)
+- `ci.yml` commands job 주석 교정 — "ai-check 뿐" 은 사실이 아니다. skip 결론이 통과로 처리되는 이유(job 안에서 scope 판정)도 함께 적었다
 
 ## Work In Progress
 
@@ -21,19 +22,19 @@
 
 ## Files Changed
 
-- 없음
+- `.github/workflows/ci.yml` (주석만)
 
 ## Decisions Made
 
-- 없음
+- 룰셋은 건드리지 않았다 — 이미 `commands` 가 들어 있어 바꿀 것이 없었다. 틀린 것은 주석뿐이다.
 
 ## Tests Executed
 
-- 없음
+- `gh api repos/In-Dark-Developer/WKS-FE/rulesets/22916197` · YAML 파싱
 
 ## Test Results
 
-- 없음
+- required_status_checks: ai-check, commands / `ci.yml` YAML 파싱 통과
 
 ## Known Problems
 
@@ -45,4 +46,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 리뷰 후 병합.
