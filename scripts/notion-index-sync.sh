@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, main push 마다 CI 가 돌린다).
+# notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, dev push 마다 CI 가 돌린다).
 #
 #   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--dry-run]
 #     --prd      docs/PRD.md 의 FR·NFR 표 → 🙋 요구사항 색인 (PRD)   (ID 로 upsert)

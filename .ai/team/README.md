@@ -5,6 +5,7 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-23-dev-default-branch](announcements/2026-09-23-dev-default-branch.md) | yes | all | Phase 08 종료 |
 | [2026-09-22-netlify-org-repo](announcements/2026-09-22-netlify-org-repo.md) | yes | all | Phase 08 종료 |
 | [2026-09-14-result-ownership](announcements/2026-09-14-result-ownership.md) | yes | all | Phase 08 종료 |
 | [2026-09-14-netlify-personal-fork](announcements/2026-09-14-netlify-personal-fork.md) | no | all | Phase 08 종료 |
