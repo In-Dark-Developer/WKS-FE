@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/PRD.md,docs/prd/,scripts/,.github/workflows/notion-index-sync.yml,AGENTS.md,README.md,docs/decisions/,.ai/team/announcements/,docs/product-brief.md,docs/phases/_template/PLAN.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo
 
 ## Current Phase
 
@@ -21,17 +21,19 @@ spec: prd-split
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 1. `docs/PRD.md` → `docs/prd/` 절별 5파일 + README 지도
+- [x] 2. 경로를 읽는 도구 6곳 갱신 (common.sh · ai-start · ai-end ×2 · notion-index-sync.sh · workflow)
+- [x] 3. 살아 있는 문서 참조 갱신 (AGENTS.md · README.md · product-brief · phases/_template)
+- [x] 4. ADR-20260923-prd-split + 공지 작성, 공지 색인 갱신
+- [x] 5. 검증 — FR/NFR grep 24행 · bash -n · typecheck · lint
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`54b1bde`
+`7d1f492`
 
 ## Relevant Documents
 
@@ -39,9 +41,9 @@ TODO
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/prd/30-functional-requirements.md` (FR-1~18)
+- `scripts/lib/common.sh:SPEC_PATHS` · `scripts/notion-index-sync.sh:prd 절`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰. 병합 뒤 Notion 색인 동기화 워크플로가 실제로 24행을 올리는지 확인한다.
