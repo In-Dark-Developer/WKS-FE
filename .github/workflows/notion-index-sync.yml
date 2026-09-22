@@ -1,10 +1,12 @@
 name: notion-index-sync
 
-# docs/prd/*.md 의 FR·NFR, docs/decisions/ADR-*.md, docs/phases/README.md 표를 Notion 색인 DB 에 복사한다. 단방향 — 색인을 고쳐도 저장소는 바뀌지 않는다.
+# docs/prd/*.md 의 FR·NFR 표를 ⚔️ PRD DB 에 복사한다. 단방향 — 보드를 고쳐도 저장소는 바뀌지 않는다.
+# ADR·Phase 색인은 옛 워크스페이스에 있었고 지금 통합은 거기 접근 권한이 없다 — ⚔️ PRD 한 곳만 쓴다
+# (ADR-20260923-prd-single-notion-db).
 on:
   push:
     branches: [dev]
-    paths: ['docs/prd/**', 'docs/decisions/**', 'docs/phases/**']
+    paths: ['docs/prd/**']
   workflow_dispatch:
 
 concurrency:
@@ -19,8 +21,7 @@ jobs:
       - name: notion-index-sync.sh
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_PRD_DB: 3dffb10f-6501-80c9-90c3-000b0186adcf
-          NOTION_ADR_DB: 96bba6ec-55a7-4a1a-9474-298648f637a9
-          NOTION_PHASE_DB: 6585b534-8238-4856-bf1e-e121dc272c7f
-          NOTION_TASK_DB: 10aa90e7-c6d1-4051-a227-8acec2d4fa44
-        run: bash scripts/notion-index-sync.sh
+          # ⚔️ PRD 의 database id 다 — 보드 URL 에 보이는 id(…80c9…)는 data source id 라
+          # Notion-Version 2022-06-28 의 /v1/databases/{id} 가 404 를 낸다.
+          NOTION_PRD_DB: 3dffb10f-6501-8042-8dd9-c7a0d162aceb
+        run: bash scripts/notion-index-sync.sh --prd
