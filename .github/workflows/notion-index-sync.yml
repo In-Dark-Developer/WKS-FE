@@ -18,6 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: one-off — 구현 현황과 Figma 프레임 채우기
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PRD_DB: 3dffb10f-6501-8042-8dd9-c7a0d162aceb
+        run: bash scripts/tmp-prd-progress.sh
       - name: notion-index-sync.sh
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
