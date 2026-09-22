@@ -1,6 +1,7 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
-import { CompatibilityMapScreen, FriendRanking, type Friend } from '@/features/friends';
-import { Button } from '@/ui/Button';
+import { MyMapScreen } from '@/app/screens/MyMapScreen';
+import { SharedMapScreen } from '@/app/screens/SharedMapScreen';
+import type { Friend } from '@/features/friends';
 
 const friends: Friend[] = [
   { nickname: '영채', score: 94, tier: 'GUIIN' },
@@ -30,69 +31,29 @@ const crowdedFriends: Friend[] = [
   })),
 ];
 
+const SHARE_ID = '9f0d3f1e-0000-4000-8000-000000000001';
+const noop = () => undefined;
+
+function MyMap({ friends: list }: { friends: readonly Friend[] }) {
+  return <MyMapScreen friends={list} nickname="달빛토끼" onBack={noop} shareId={SHARE_ID} />;
+}
+
 // SCR-08 궁합 지도 — 05/T2. SCR-13 친구의 궁합 지도(링크 주인의 지도) — 05/T5·T10.
+// 조립은 라우트와 같은 `@/app/screens/` 의 두 화면을 쓴다.
 export const preview: PreviewScreen = {
   title: 'SCR-08 궁합 지도',
   order: 3,
   backdrop: 'result',
   states: {
-    '친구 6명': () => <CompatibilityMapScreen friends={friends} nickname="달빛토끼" />,
-    '뒤로가기 있음(내 지도)': () => (
-      <CompatibilityMapScreen
-        back={<button type="button">뒤로가기</button>}
-        friends={friends}
-        nickname="달빛토끼"
-      />
-    ),
-    '친구 24명(붐비는 궤도)': () => (
-      <CompatibilityMapScreen friends={crowdedFriends} nickname="달빛토끼" />
-    ),
-    '친구 2명': () => <CompatibilityMapScreen friends={friends.slice(0, 2)} nickname="달빛토끼" />,
-    '빈 상태': () => <CompatibilityMapScreen friends={[]} nickname="달빛토끼" />,
+    '친구 6명': () => <MyMap friends={friends} />,
+    '친구 24명(붐비는 궤도)': () => <MyMap friends={crowdedFriends} />,
+    '친구 2명': () => <MyMap friends={friends.slice(0, 2)} />,
+    '빈 상태': () => <MyMap friends={[]} />,
     'SCR-13 친구의 궁합 지도': () => (
-      <CompatibilityMapScreen
-        friends={friends.slice(0, 5)}
-        nickname="달빛토끼"
-        share={
-          <Button className="w-full" variant="apricot">
-            내 사주 내용도 확인하기
-          </Button>
-        }
-        variant="visitor"
-      />
+      <SharedMapScreen friends={friends.slice(0, 5)} nickname="달빛토끼" onViewMyReading={noop} />
     ),
     'SCR-13 친구의 궁합 지도 · 친구 없음': () => (
-      <CompatibilityMapScreen
-        friends={[]}
-        nickname="달빛토끼"
-        share={
-          <Button className="w-full" variant="apricot">
-            내 사주 내용도 확인하기
-          </Button>
-        }
-        variant="visitor"
-      />
-    ),
-    '결과 화면 순위 요약': () => (
-      <div className="flex flex-col gap-16">
-        <FriendRanking
-          friends={friends}
-          limit={3}
-          shareAction={
-            <Button className="w-full" size="m" variant="secondary">
-              친구에게 공유
-            </Button>
-          }
-        />
-        <FriendRanking
-          shareAction={
-            <Button className="w-full" variant="secondary">
-              친구에게 공유
-            </Button>
-          }
-          friends={[]}
-        />
-      </div>
+      <SharedMapScreen friends={[]} nickname="달빛토끼" onViewMyReading={noop} />
     ),
   },
 };

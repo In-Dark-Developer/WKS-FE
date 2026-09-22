@@ -6,6 +6,14 @@ on:
   push:
     branches: [main]
 
+# 같은 PR 에 새 push 가 오면 돌던 run 을 버린다 — WIP push 를 밀 때마다 완주하는 run 이 쌓이던 것을 막는다.
+# main 은 취소하지 않는다(병합마다 한 번은 끝까지 돈다).
+# edited(제목·본문 수정)는 따로 묶는다 — 한 묶음이면 본문을 다듬는 순간 돌고 있던 commands 를 죽이는데,
+# edited run 은 commands 를 돌리지 않으므로(아래 if) 필수 검사가 끝내 채워지지 않아 병합이 막힌다.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}-${{ github.event.action == 'edited' && 'meta' || 'code' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   pr-body:
     # PR 을 열 때 본문이 템플릿 플레이스홀더 그대로면(웹에서 열었을 때) HANDOFF·LOG 초안으로 채우고
@@ -49,6 +57,7 @@ jobs:
   ai-check:
     # 스트림 규칙 검사 — hotfix/* 브랜치는 Commands 만 검사한다.
     # pr-body 가 제목·본문을 고칠 수 있으니 그 뒤에 돌고(skip 돼도 돈다), 페이로드가 아니라 현재 값을 읽는다.
+    # edited 에도 돈다 — 제목·본문을 규격대로 고치면 이 검사가 다시 돌아 초록이 되어야 한다.
     needs: [pr-body]
     if: ${{ !cancelled() && github.event_name == 'pull_request' && !startsWith(github.head_ref, 'hotfix/') }}
     runs-on: ubuntu-latest
@@ -73,40 +82,54 @@ jobs:
           PR_BODY=$(gh pr view "$PR_NUMBER" --json body -q .body) \
             bash scripts/ai-end.sh --ci
 
-  check:
-    # AGENTS.md 의 Commands(test·typecheck·lint)를 병렬 job 으로 돌린다 — 한 job 에서 차례로 돌리던 때보다
-    # 대기 시간이 가장 긴 test job 하나로 줄고, lint·typecheck 실패는 먼저 보인다.
-    # 경고는 스크립트 자체가 실패로 만든다(eslint --max-warnings=0 · prettier --check · tsc --noEmit).
+  commands:
+    # AGENTS.md 의 Commands 를 한 job 에서 차례로 돌린다 — job 을 나누면 러너마다 checkout·pnpm install 이
+    # 따로 돌아 벽시계는 줄지만 과금되는 러너-분은 3배가 된다. 싼 것부터(typecheck → lint → test) 돌려
+    # 실패를 빨리 본다. 경고는 스크립트 자체가 실패로 만든다(tsc --noEmit · eslint --max-warnings=0 · prettier --check).
+    # 이름은 그대로 둔다 — 팀이 아는 집계 검사 이름이다. (main 의 ruleset 이 실제로 요구하는 검사는
+    # `ai-check` 뿐이고 `commands` 는 아니다 — 2026-09-22 확인. 그래서 지금은 test 가 빨개도 병합이 막히지 않는다.)
     # 제목·본문만 고친 edited 이벤트에서는 돌리지 않는다.
     if: ${{ github.event.action != 'edited' }}
-    name: ${{ matrix.command }}
-    strategy:
-      fail-fast: false
-      matrix:
-        command: [test, typecheck, lint]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v7
+      # spec·plan·phase-close 처럼 docs/·.ai/ 만 바꾼 PR 은 pnpm 을 아예 받지 않는다(전체 PR 의 40%).
+      # 워크플로 수준 paths-ignore 로 거르지 않고 job 안에서 끝낸다 — paths-ignore 로 걸러진 검사는
+      # 아예 보고되지 않아 pending 으로 남고, 이 검사를 ruleset 에 넣는 순간 병합이 영영 막힌다.
+      - name: does this touch code?
+        id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "$EVENT_NAME" != "pull_request" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          files=$(gh pr diff "$PR_NUMBER" --name-only)
+          if printf '%s\n' "$files" | grep -qE '^(src/|tests/|public/|index\.html|package\.json|pnpm-lock\.yaml|tsconfig|vite|vitest|eslint\.config\.js|\.prettierrc|\.nvmrc)'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "코드 변경 없음 — typecheck·lint·test 를 건너뛴다"
+          fi
       - uses: pnpm/action-setup@v6
+        if: ${{ steps.scope.outputs.code == 'true' }}
       - uses: actions/setup-node@v7
+        if: ${{ steps.scope.outputs.code == 'true' }}
         with:
           node-version-file: .nvmrc
           cache: pnpm
       - name: install
+        if: ${{ steps.scope.outputs.code == 'true' }}
         run: pnpm install --frozen-lockfile
-      - name: ${{ matrix.command }}
-        run: pnpm ${{ matrix.command }}
-
-  commands:
-    # 필수 검사 이름(ai-stream.sh setup 의 required_status_checks: ai-check, commands)을 지키는 집계 job.
-    # check 세 job 이 모두 성공해야 성공이다.
-    needs: [check]
-    if: ${{ !cancelled() && github.event.action != 'edited' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: all commands passed
-        run: |
-          if [ "${{ needs.check.result }}" != "success" ]; then
-            echo "test·typecheck·lint 중 실패가 있다: ${{ needs.check.result }}"
-            exit 1
-          fi
+      - name: typecheck
+        if: ${{ steps.scope.outputs.code == 'true' }}
+        run: pnpm typecheck
+      - name: lint
+        if: ${{ steps.scope.outputs.code == 'true' }}
+        run: pnpm lint
+      - name: test
+        if: ${{ steps.scope.outputs.code == 'true' }}
+        run: pnpm test
