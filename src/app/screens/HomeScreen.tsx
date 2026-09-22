@@ -15,10 +15,10 @@ type Props = {
   onBack?: () => void;
 };
 
-// SCR-04 사주 결과 — saju 의 결과 화면에 share(카드·공유)·friends(순위)·profile(사전신청 티저)을 잇는다.
+// SCR-04 사주 결과 = 홈 — saju 의 결과 화면에 share(카드·공유)·friends(순위)·profile(사전신청 티저)을 잇는다.
 // features 는 서로를 import 하지 않으므로 조립은 app 이 한다(ARCHITECTURE Module Boundaries).
 // '친구에게 공유'(04/T3)는 친구 궁합 순위가 비어 있으면 안내 아래(713:4078), 있으면 목록 아래(796:3885)에 둔다(PRD FR-4).
-export function ReadingScreen({ view, onPreRegister, onBack }: Props) {
+export function HomeScreen({ view, onPreRegister, onBack }: Props) {
   return (
     <ReadingResult
       back={onBack ? <BackRow onBack={onBack} /> : null}
