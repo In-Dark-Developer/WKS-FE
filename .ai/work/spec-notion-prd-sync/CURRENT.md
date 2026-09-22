@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: scripts/notion-index-sync.sh,.github/workflows/notion-index-sync.yml,docs/prd/,docs/decisions/,.ai/team/announcements/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-prd-split, 2026-09-23-dev-default-branch
 
 ## Current Phase
 
@@ -21,17 +21,19 @@ spec: notion-prd-sync
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 1. 동기화 대상 DB 를 ⚔️ PRD 로 바꾸고 속성 매핑 교체
+- [x] 2. Phase 에서 상태를 계산해 덮어쓰던 동작 제거 + 쓰이지 않게 된 헬퍼 3개 삭제
+- [x] 3. FR 표에 `Area` 열 추가(31행) — 보드의 `구분` 이 된다
+- [x] 4. ADR-20260923-prd-single-notion-db + Required 공지
+- [x] 5. 검증 — `--prd --dry-run` 41행, 속성·우선순위 매핑 확인
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`166e448`
+`8471334`
 
 ## Relevant Documents
 
@@ -39,9 +41,9 @@ TODO
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `scripts/notion-index-sync.sh:prd_props`, `:sync_prd`
+- `docs/prd/30-functional-requirements.md` (Area 열)
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합 후 CI 로그에서 "PRD: 41행" 을 확인하고, 보드의 옛 수기 행을 지운다.
