@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: src/app/routes.tsx,src/app/routes.test.tsx,src/app/requireSession.ts,src/app/screens/,src/app/preview/screens/reading.tsx,docs/ARCHITECTURE.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo
 
 ## Current Phase
 
@@ -21,12 +21,17 @@ chore: app-structure-v1
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [ ] 1. `requireSession.ts` → `routes/guards.ts` (`requireSession` → `requireSaju`) ←
+- [ ] 2. `routes.tsx` → `routes/{index,saju.routes,map.routes,share.routes}.tsx`
+- [ ] 3. `screens/ReadingScreen.tsx` → `screens/HomeScreen.tsx` (preview 참조 갱신)
+- [ ] 4. `routes.test.tsx` → `routes/index.test.tsx` 이동·import 갱신
+- [ ] 5. `docs/ARCHITECTURE.md` 의 `src/app/routes.tsx` 언급 갱신
+- [ ] 6. test · typecheck · lint
 
 ## Last Checkpoint
 
@@ -36,12 +41,17 @@ TODO
 ## Relevant Documents
 
 - `AGENTS.md`
+- `docs/CONVENTIONS.md`
+- `docs/ARCHITECTURE.md` (Module Boundaries · Dependency Direction)
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/app/routes.tsx:routes`
+- `src/app/requireSession.ts:requireSession`, `:requireMyResultId`
+- `src/app/screens/ReadingScreen.tsx:ReadingScreen`
+- `src/app/preview/screens/reading.tsx`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+step 1 — `src/app/routes/guards.ts` 를 만들고 `requireSession.ts` 를 지운다.

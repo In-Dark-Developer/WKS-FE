@@ -58,7 +58,7 @@
 
 ## State Management
 
-- 서버 상태(사주 결과, 친구 점수, 후보, 실 상태)는 백엔드가 소유한다. 화면은 React Router 데이터 API로 읽고 쓴다 — 읽기는 route `loader`, 쓰기는 `action`·`useFetcher`가 `src/api/` 함수를 부르고, loader·action은 feature가 export 해 `src/app/routes.tsx`가 등록한다. 요청/캐시 라이브러리는 두지 않는다. `/reading/:id` 하위 화면은 부모 loader 데이터(`useRouteLoaderData`)를 공유하고 결과 본문은 다시 부르지 않으며, `compatibilities`를 보여 주는 화면은 진입마다 다시 부른다(ADR-20260913-server-state-and-session-storage).
+- 서버 상태(사주 결과, 친구 점수, 후보, 실 상태)는 백엔드가 소유한다. 화면은 React Router 데이터 API로 읽고 쓴다 — 읽기는 route `loader`, 쓰기는 `action`·`useFetcher`가 `src/api/` 함수를 부르고, loader·action은 feature가 export 해 `src/app/routes/`의 영역별 파일(`saju.routes.tsx`·`share.routes.tsx`·`map.routes.tsx`)이 등록하고 `src/app/routes/index.tsx`가 합친다. 라우트 가드는 `src/app/routes/guards.ts`만 갖는다. 요청/캐시 라이브러리는 두지 않는다. `/reading/:id` 하위 화면은 부모 loader 데이터(`useRouteLoaderData`)를 공유하고 결과 본문은 다시 부르지 않으며, `compatibilities`를 보여 주는 화면은 진입마다 다시 부른다(ADR-20260913-server-state-and-session-storage).
 - 폼·모달·블러 해제 여부 같은 화면 상태는 해당 feature 안의 지역 상태로 둔다. 전역 스토어는 도입하지 않는다.
 - 로그인도 백엔드 세션 토큰도 없다 — 백엔드는 사주·궁합에 인증을 두지 않는다. '내 결과'는 이 브라우저가 `POST /results`로 만든 `resultId` 하나다. `src/api/session.ts`만 읽고 쓴다: localStorage 키 `wks:session`에 `{ v: 2, resultId }`를 두고 읽을 때 zod로 파싱한다(실패·스토리지 예외는 세션 없음, 파싱 실패면 키를 지운다). `src/api/results.ts`의 `createResult`가 성공 응답(목·실제 공통)에서 쓰고, 새 결과가 이전 값을 덮어쓴다. 공유 링크 재료는 `shareId`이고 `resultId`는 본인 결과 조회와 `guestResultId`에만 쓴다. 요청에 싣는 인증 헤더는 없다(ADR-20260914-result-ownership-in-browser).
 
