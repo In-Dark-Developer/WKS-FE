@@ -7,7 +7,7 @@
 - Branch: ws/spec-prd-split
 - Task: -/-
 - Issue: none
-- Touches: docs/PRD.md,docs/prd/,scripts/,.github/workflows/notion-index-sync.yml,AGENTS.md,README.md,docs/decisions/,.ai/team/announcements/
+- Touches: docs/PRD.md,docs/prd/,scripts/,.github/workflows/notion-index-sync.yml,AGENTS.md,README.md,docs/decisions/,.ai/team/announcements/,docs/product-brief.md,docs/phases/_template/PLAN.md
 - Supersedes: none
 - Acked: none
 

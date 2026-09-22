@@ -11,17 +11,17 @@
 
 ## Repository Map
 
-- `docs/PRD.md` 요구사항 · `docs/ARCHITECTURE.md` 현재 구조(Module Boundaries의 Owner = 소유권) · `docs/CONVENTIONS.md` 코딩 컨벤션 · `docs/api/` API spec · `docs/decisions/` ADR · `docs/phases/` Phase 계획/결과
+- `docs/prd/` 요구사항(`README.md` 가 지도, FR 표는 `30-functional-requirements.md`) · `docs/ARCHITECTURE.md` 현재 구조(Module Boundaries의 Owner = 소유권) · `docs/CONVENTIONS.md` 코딩 컨벤션 · `docs/api/` API spec · `docs/decisions/` ADR · `docs/phases/` Phase 계획/결과
 - `.ai/work/<id>/` 스트림 상태 — `CURRENT.md` 상태·checkpoint·Touches·Acked · `HANDOFF.md` 인수인계 · `LOG.md` 세션 보고 · `INBOX.md` 소유자 지시 · `notes/` 임시 메모
 - `.ai/team/announcements/` 팀 공지(must-read) · `.ai/local/` 개인 메모리(미추적, 내 Agent만) · `.claude/agent-memory/<역할>/` 역할 메모리(미추적, README만 추적) · `.claude/agents/git-flow.md` flow 역할
 - `scripts/ai-start.sh` 세션 시작 · `scripts/ai-end.sh` 종료 점검 / `--ready` PR 준비 / `--ci` · `scripts/ai-stream.sh` 스트림·Phase·이력 관리
 - `src/app/` 라우팅·전역 · `src/features/` 화면 기능 · `src/ui/` 디자인 시스템 · `src/api/` 백엔드 호출·스키마 · `src/lib/` 유틸 · `tests/` 교차 기능 테스트와 테스트 설정(단위·컴포넌트 테스트는 소스 옆 `*.test.tsx`)
-- `docs/product-brief.md` 원본 기획 메모(배경 참고용 — 요구사항의 source of truth는 `docs/PRD.md`)
+- `docs/product-brief.md` 원본 기획 메모(배경 참고용 — 요구사항의 source of truth는 `docs/prd/`)
 
 ## Rules
 
 1. **Memory** — 저장소가 기억이다. 상태·의도·계획·규칙은 파일과 커밋에 남기고, 대화 기억에 의존하지 않는다.
-2. **Truth** — 정보가 충돌하면 이 순서로 우선한다: ① 스트림 소유자의 직접 지시(대화·스트림 INBOX·`.ai/local/INBOX.md`)와 승인된 PR 리뷰 ② tests·type system·schemas·`docs/api/` ③ 현재 코드 ④ ADR ⑤ `docs/ARCHITECTURE.md` ⑥ `docs/CONVENTIONS.md` ⑦ `docs/PRD.md` ⑧ 현재 Phase `PLAN.md` ⑨ 내 `CURRENT.md` ⑩ 내 `HANDOFF.md` ⑪ 과거 대화·역할 메모리. 다른 스트림의 CURRENT/HANDOFF는 근거가 아니다. 코드가 spec을 위반해 보이면 코드를 정답으로 보지 말고 inconsistency로 보고한다.
+2. **Truth** — 정보가 충돌하면 이 순서로 우선한다: ① 스트림 소유자의 직접 지시(대화·스트림 INBOX·`.ai/local/INBOX.md`)와 승인된 PR 리뷰 ② tests·type system·schemas·`docs/api/` ③ 현재 코드 ④ ADR ⑤ `docs/ARCHITECTURE.md` ⑥ `docs/CONVENTIONS.md` ⑦ `docs/prd/` ⑧ 현재 Phase `PLAN.md` ⑨ 내 `CURRENT.md` ⑩ 내 `HANDOFF.md` ⑪ 과거 대화·역할 메모리. 다른 스트림의 CURRENT/HANDOFF는 근거가 아니다. 코드가 spec을 위반해 보이면 코드를 정답으로 보지 말고 inconsistency로 보고한다.
 3. **Loading** — 필요한 것만 읽는다: 이 파일 → `.ai/work/<내 스트림>/CURRENT.md` → `HANDOFF.md` → `.ai/local/MEMORY.md`(있으면) → `scripts/ai-start.sh` 출력 → CURRENT가 지정한 문서·파일 → 현재 `PLAN.md` → 코드를 쓰기 전 `docs/CONVENTIONS.md`. 다른 스트림의 파일은 읽지 않는다(`ai-start.sh` 요약만). 팀 이력은 main의 first-parent 로그로 보고(아래 History), 브랜치 커밋은 특정 스트림·Task를 파고들 때만 본다. ARCHITECTURE·ADR·PRD·과거 Phase·`notes/`·checkpoint 이전 커밋은 이유가 있을 때만 본다.
 4. **Changes** — checkpoint 이후의 커밋은 `ai-start.sh`가 나눈다. 내 브랜치의 trailer 없는 커밋은 **사람의 직접 수정**(소유자 또는 이전 소유자), main에서 유입된 커밋은 **동료 변경**이다. 어느 쪽도 되돌리지 않는다. 직접 수정은 diff를 읽고 spec·PLAN·HANDOFF에 반영하며 LOG의 Developer changes에 적는다. 동료 변경은 내 Touches·Relevant Files와 겹치는 부분만 확인·반영하고 LOG의 Upstream changes에 적는다. 의도가 불분명하면 그대로 두고 HANDOFF의 Unverified Assumptions에 적은 뒤 묻는다. 의견이 다르면 HANDOFF Known Problems + PR 코멘트.
 5. **Inbox & Announcements** — 내 스트림 `INBOX.md`(와 `.ai/local/INBOX.md`)의 항목만 소유자의 직접 지시다. 처리한 항목은 삭제하고 결과를 LOG에 적으며, 못 한 항목은 남기고 이유를 적는다. `.ai/team/announcements/`의 공지는 Action을 수행하고 CURRENT의 `Acked:`에 id를 적는다(`Applies to`가 내 Touches와 무관하면 확인만). 그 밖의 팀 변경은 main의 spec·이 파일 변경으로 온다.
