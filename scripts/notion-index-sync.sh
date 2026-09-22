@@ -2,7 +2,7 @@
 # notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, dev push 마다 CI 가 돌린다).
 #
 #   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--dry-run]
-#     --prd      docs/prd/*.md 의 FR·NFR 표 → 🙋 요구사항 색인 (PRD)   (ID 로 upsert)
+#     --prd      docs/prd/*.md 의 FR·NFR 표 → ⚔️ PRD DB   (ID 로 upsert, 추적 열은 건드리지 않는다)
 #     --adr      docs/decisions/ADR-*.md → 🏛️ ADR 색인               (번호 로 upsert)
 #     --phases   docs/phases/README.md 표 → 📅 Phase 색인             (번호 로 upsert)
 #     전부 생략하면 셋 다. --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
@@ -41,44 +41,29 @@ send() { # send <db> <find_prop> <find_value> <props_json>
 }
 
 # ---------------------------------------------------------------- PRD
-phase_status() { # phase_status <NN> → PLANNED|IN_PROGRESS|DONE|…
-  sed -n "s/^| $1 | [^|]* | [^|]* | [^|]* | \([A-Z_]*\) |.*/\1/p" docs/phases/README.md | head -n1
-}
-phases_of() { # phases_of <FR-n> → "03 05" (PLAN.md 본문에서 그 ID 를 언급하는 Phase, 공백 구분 — 멀티바이트 구분자는 sed/tr 이 로케일을 탄다)
-  local f nn out=""
-  for f in docs/phases/[0-9][0-9]-*/PLAN.md; do
-    grep -qE "(^|[^A-Za-z0-9-])$1([^0-9]|$)" "$f" || continue
-    nn=${f#docs/phases/}; nn=${nn%%-*}; out="${out:+$out }$nn"
-  done
-  printf '%s' "$out"
-}
-status_of() { # status_of "03 05" → 계획|구현중|완료
-  [ -n "$1" ] || { echo 계획; return; }
-  local nn st all_done=1 any_active=0
-  for nn in $1; do
-    st=$(phase_status "$nn")
-    case "$st" in DONE|CLOSED) ;; IN_PROGRESS|REVIEW) any_active=1; all_done=0;; *) all_done=0;; esac
-  done
-  if [ "$all_done" -eq 1 ]; then echo 완료; elif [ "$any_active" -eq 1 ]; then echo 구현중; else echo 계획; fi
-}
-prd_props() { # prd_props <ID> <구분> <요구사항> <우선순위|""> <Phase> <상태>
-  jq -n --arg id "$1" --arg kind "$2" --arg req "$3" --arg pri "$4" --arg ph "$5" --arg st "$6" '
+# ⚔️ PRD DB 로 보내는 속성. 저장소가 원천인 열만 쓴다 — 추적 열(상태·담당자·FE·BE·비고·수용 기준)은
+# 사람이 Notion 에서 관리하므로 여기서 보내지 않는다 (ADR-20260923-prd-single-notion-db).
+# 우선순위는 저장소 표기(Must/Should/Could)를 보드 표기(P0/P1/P2)로 옮긴다.
+prd_props() { # prd_props <ID> <구분> <요구사항> <우선순위|"">
+  jq -n --arg id "$1" --arg kind "$2" --arg req "$3" --arg pri "$4" '
     def text($v): { rich_text: [ { text: { content: $v } } ] };
-      { "요구사항": { title: [ { text: { content: $req } } ] }, "ID": text($id), "구분": { select: { name: $kind } }, "Phase": text($ph), "상태": { select: { name: $st } } }
-    + (if $pri == "" then {} else { "우선순위": { select: { name: $pri } } } end)'
+    def board($p): if $p == "Must" then "P0" elif $p == "Should" then "P1" elif $p == "Could" then "P2" else "" end;
+      { "이름": { title: [ { text: { content: $req } } ] }, "ID": text($id), "구분": { select: { name: $kind } } }
+    + (if board($pri) == "" then {} else { "우선순위": { select: { name: board($pri) } } } end)'
 }
+# FR 표: | ID | Requirement | Area | Priority | Related |   NFR 표: | ID | Requirement | Target | 확인 방법 |
+# 구분(Area)은 FR 표가 갖고, NFR 은 모두 '비기능' 이다.
 sync_prd() {
-  local n=0 line id req pri target kind ph st
+  local n=0 line id req pri target kind
   while IFS= read -r line; do
     id=$(trim "$(printf '%s' "$line" | cut -d'|' -f2)")
     req=$(trim "$(printf '%s' "$line" | cut -d'|' -f3)")
     case "$id" in
-      FR-*)  kind=FR;  pri=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)");;
-      NFR-*) kind=NFR; pri=""; target=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); [ -n "$target" ] && req="$req — $target";;
+      FR-*)  kind=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); pri=$(trim "$(printf '%s' "$line" | cut -d'|' -f5)");;
+      NFR-*) kind=비기능; pri=""; target=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); [ -n "$target" ] && req="$req — $target";;
       *) continue;;
     esac
-    ph=$(phases_of "$id"); st=$(status_of "$ph")
-    send "${NOTION_PRD_DB:-}" ID "$id" "$(prd_props "$id" "$kind" "$req" "$pri" "${ph// /·}" "$st")" && n=$((n + 1))
+    send "${NOTION_PRD_DB:-}" ID "$id" "$(prd_props "$id" "$kind" "$req" "$pri")" && n=$((n + 1))
   done <<EOF
 $(grep -hE '^\| N?FR-[0-9]+ ' docs/prd/*.md)
 EOF
