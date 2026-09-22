@@ -13,30 +13,39 @@ V1 폴더 구조 제안 중 **기존 코드만 옮기는 부분**을 적용한�
 
 ## Work Completed
 
-- 없음
+- `src/app/routes.tsx`(290줄) → `routes/index.tsx`(합치기만) + `saju.routes.tsx` + `share.routes.tsx` + `map.routes.tsx`
+- `src/app/requireSession.ts` → `routes/guards.ts`, `requireSession` → `requireSaju` (`requireMyResultId` 는 그대로)
+- `screens/ReadingScreen.tsx` → `screens/HomeScreen.tsx` (V1 에서 이 화면이 홈이다)
+- 두 라우트 파일이 함께 쓰는 history state 스키마를 `routes/fromSharedMap.ts` 로 분리
+- `docs/ARCHITECTURE.md` State Management 의 등록 지점 문장 갱신
 
 ## Work In Progress
 
-- step 1 진행 중: `requireSession.ts` → `routes/guards.ts`
+- 없음
 
 ## Files Changed
 
-- 없음
+- `src/app/routes/` (index·guards·fromSharedMap·saju.routes·share.routes·map.routes, index.test)
+- `src/app/screens/HomeScreen.tsx`, `src/app/preview/screens/reading.tsx`, `src/app/RootLayout.tsx`
+- `docs/ARCHITECTURE.md`
 
 ## Decisions Made
 
-- 없음
+- 옮기기만 하고 동작은 바꾸지 않았다 — 라우트 경로·loader·action·가드 조건 모두 그대로다.
+- V1 신규 영역(`features/auth`·`features/dating`, `api/` 신규 파일, `ui/` 신규 컴포넌트)은 만들지 않았다. 구현이 없는 빈 파일은 두지 않는다(CONVENTIONS 9장).
+- `/verify`(사전신청 인증 완료)는 결과 화면에 붙은 흐름이라 `saju.routes.tsx` 에 뒀다.
 
 ## Tests Executed
 
-- 없음
+- `pnpm test` · `pnpm typecheck` · `pnpm lint`
 
 ## Test Results
 
-- 없음
+- 69 파일 371 테스트 통과, typecheck·lint 경고 없음 (테스트는 옮기기 전과 같은 파일이다 — 동작이 그대로임을 이 통과가 보인다)
 
 ## Known Problems
 
+- `docs/PRD.md` 34줄과 ADR·Phase 문서에 `src/app/routes.tsx` 가 남아 있다. 과거 기록이거나 내 Touches 밖이라 고치지 않았다.
 - `chore-reading-back-always` 스트림이 `routes.tsx`·`routes.test.tsx`·`preview/screens/reading.tsx` 를 함께 만진다 — 파일이 쪼개지므로 병합 충돌이 난다. 먼저 병합되는 쪽 기준으로 나중 스트림이 `git merge main` 으로 받는다.
 
 ## Unverified Assumptions
@@ -45,4 +54,4 @@ V1 폴더 구조 제안 중 **기존 코드만 옮기는 부분**을 적용한�
 
 ## Exact Next Action
 
-`pnpm test`·`pnpm typecheck`·`pnpm lint` 를 돌려 분할 결과를 확인한다.
+PR 을 올리고 리뷰를 받는다 (`scripts/ai-end.sh --ready` 출력 사용).
