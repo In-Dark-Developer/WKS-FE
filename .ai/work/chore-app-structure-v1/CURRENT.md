@@ -41,10 +41,8 @@ REVIEW
 
 ## Relevant Source Files
 
-- `src/app/routes/index.tsx:routes`
-- `src/app/routes/guards.ts:requireSaju`, `:requireMyResultId`
-- `src/app/screens/HomeScreen.tsx:HomeScreen`
-- `src/app/preview/screens/reading.tsx`
+- `src/app/routes/index.tsx:routes` · `src/app/routes/guards.ts:requireSaju`, `:requireMyResultId`
+- `src/app/screens/HomeScreen.tsx:HomeScreen` · `src/app/preview/screens/reading.tsx`
 
 ## Next Action
 
