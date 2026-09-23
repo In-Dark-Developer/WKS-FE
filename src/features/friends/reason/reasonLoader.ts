@@ -15,5 +15,8 @@ export function compatibilityReasonLoader({ params }: LoaderFunctionArgs): Reaso
     if (!outcome.ok) throw new Error('궁합 이유를 불러오지 못했다');
     return outcome.data;
   });
+  // 실패는 시트의 Await 가 그린다. 다만 시트를 그리지 않는 길(목록에 없는 ID → 지도로)에서는 아무도 이 promise 를
+  // 받지 않아 '처리되지 않은 거부'가 된다 — 빈 catch 로 처리됨 표시만 하고, Await 에는 원래 promise 를 그대로 넘긴다.
+  reason.catch(() => undefined);
   return { compatibilityId, reason };
 }
