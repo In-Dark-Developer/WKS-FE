@@ -45,6 +45,14 @@ export function HomeScreen({ view, onPreRegister, onBack }: Props) {
           }
         />
       }
+      elementMatchAction={
+        view.elementMatch ? (
+          // Figma 39:2477 'OO 기운의 사람 만나보기 →' — Display/15 Text/Brand. 소개팅으로 간다(기능명세서 3.6).
+          <Link className="font-display text-ui-14 text-brand" to="/dating">
+            {view.elementMatch.korean} 기운의 사람 만나보기 →
+          </Link>
+        ) : undefined
+      }
       renderCard={(face) => <ResultCard {...face} />}
       teaser={<PreRegisterTeaser onApply={onPreRegister} />}
       view={view}

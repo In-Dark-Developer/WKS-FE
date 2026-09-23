@@ -31,6 +31,12 @@ const view: ReadingView = {
   elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '작은 책 한 권',
   shareId: '9f0d3f1e-0000-4000-8000-000000000001',
+  elementMatch: {
+    element: 'earth',
+    korean: '토',
+    reason:
+      '흙의 기운은 당신을 살려 주는 기운이에요. 안정적인 기운을 가진 사람과 함께 있으면 마음이 편해지고 좋은 흐름을 만들 수 있어요.',
+  },
   friends: [
     { nickname: '영채', score: 94, tier: 'GUIIN' },
     { nickname: '진희', score: 83, tier: 'CHALTTEOK' },
@@ -63,6 +69,10 @@ export const preview: PreviewScreen = {
   states: {
     결과: () => <HomeScreen onPreRegister={noop} view={view} />,
     '인연 없음': () => <HomeScreen onPreRegister={noop} view={{ ...view, friends: [] }} />,
+    // 이유가 없는 옛 결과(V14 이전 약 905건) — 잘 맞는 오행 영역만 없다(FR-3 V1).
+    '옛 결과(잘 맞는 오행 없음)': () => (
+      <HomeScreen onPreRegister={noop} view={{ ...view, elementMatch: null }} />
+    ),
     '친구의 궁합 지도에서 옴(뒤로가기)': () => (
       <HomeScreen onBack={noop} onPreRegister={noop} view={view} />
     ),

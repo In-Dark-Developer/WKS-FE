@@ -37,8 +37,24 @@ test('fortunes 배열을 카테고리별 key 로 바꾼다', () => {
     elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
     luckyItem: '책',
     shareId: 's1',
+    elementMatch: null,
     friends: [],
   });
+});
+
+test('잘 맞는 오행을 오행 key 로 바꾸고, 옛 결과(null·키 없음)는 null 로 둔다', () => {
+  const withMatch: Result = {
+    ...result,
+    elementMatch: { element: 'EARTH', korean: '토', reason: '흙의 기운이 당신을 살려요.' },
+  };
+
+  expect(toReadingView(withMatch).elementMatch).toEqual({
+    element: 'earth',
+    korean: '토',
+    reason: '흙의 기운이 당신을 살려요.',
+  });
+  expect(toReadingView({ ...result, elementMatch: null }).elementMatch).toBeNull();
+  expect(toReadingView(result).elementMatch).toBeNull();
 });
 
 test('궁합을 상대 닉네임의 친구 목록으로 바꾸고 점수 높은 순으로 둔다', () => {
