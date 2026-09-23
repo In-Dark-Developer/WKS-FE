@@ -7,14 +7,31 @@ on:
   push:
     branches: [dev]
     paths: ['docs/prd/**']
+  pull_request:
+    paths: ['docs/prd/**']
   workflow_dispatch:
 
 concurrency:
-  group: notion-index-sync
+  # PR 의 대조와 dev 의 동기화가 서로를 취소하지 않게 이벤트별로 나눈다.
+  group: notion-index-sync-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  owner-drift:
+    # 보드의 `담당자` 가 원본이고 저장소 `담당` 열은 사본이다 — 사본만 고치고 보드를 잊는 일을 잡는다.
+    # 읽기만 한다. fork PR 에는 secrets 가 없어 스크립트가 경고만 내고 통과한다.
+    if: ${{ github.event_name != 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: notion-index-sync.sh --check-owners
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PRD_DB: 3dffb10f-6501-8042-8dd9-c7a0d162aceb
+        run: bash scripts/notion-index-sync.sh --check-owners
+
   sync:
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
