@@ -5,6 +5,7 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-23-v1-architecture](announcements/2026-09-23-v1-architecture.md) | yes | all | Phase 11 종료 |
 | [2026-09-23-prd-split](announcements/2026-09-23-prd-split.md) | yes | all | Phase 08 종료 |
 | [2026-09-23-prd-notion-db](announcements/2026-09-23-prd-notion-db.md) | yes | all | Phase 08 종료 |
 | [2026-09-23-dev-default-branch](announcements/2026-09-23-dev-default-branch.md) | yes | all | Phase 08 종료 |
