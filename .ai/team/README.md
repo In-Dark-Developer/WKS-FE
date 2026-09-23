@@ -5,6 +5,7 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-24-dating-publishing-split](announcements/2026-09-24-dating-publishing-split.md) | yes | touches:src/features/dating/ | Phase 11 종료 |
 | [2026-09-23-v1-architecture](announcements/2026-09-23-v1-architecture.md) | yes | all | Phase 11 종료 |
 | [2026-09-23-prd-split](announcements/2026-09-23-prd-split.md) | yes | all | Phase 08 종료 |
 | [2026-09-23-prd-owner-drift](announcements/2026-09-23-prd-owner-drift.md) | yes | all | V1 종료 |

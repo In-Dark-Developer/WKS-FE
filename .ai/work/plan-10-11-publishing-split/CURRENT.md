@@ -7,7 +7,7 @@
 - Branch: ws/plan-10-11-publishing-split
 - Task: 10/-
 - Issue: none
-- Touches: docs/phases/10-dating-onboarding/PLAN.md,docs/phases/11-dating-thread/PLAN.md,.ai/team
+- Touches: docs/phases/10-dating-onboarding/PLAN.md,docs/phases/11-dating-thread/PLAN.md,docs/phases/README.md,.ai/team
 - Supersedes: none
 - Acked: none
 
@@ -21,12 +21,14 @@ Phase 10-11-publishing-split 계획
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- Phase 10 T4 · Phase 11 T3 퍼블리싱 Task 추가 (Owner 이정진)
+- 기존 연동 Task 에 After 추가, Phase 10 Dependencies 의 '확정 디자인 대기' 갱신
+- 공지 2026-09-24-dating-publishing-split, phases 표 재생성
 
 ## Last Checkpoint
 
@@ -40,7 +42,7 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/phases/10-dating-onboarding/PLAN.md` · `docs/phases/11-dating-thread/PLAN.md`
 
 ## Next Action
 
