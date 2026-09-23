@@ -50,7 +50,7 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 - `docs/prd/` — FR-24, FR-25, FR-26, FR-27, FR-31 (FR-12 를 대체)
 - `docs/prd/20-screens.md` — SCR-15, SCR-16, SCR-17
 - `docs/api/openapi.yaml` — 프로필 · 추천 · 리롤 · 실 원장
-- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — `소개팅 wf`(확정 디자인 대기)
+- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — 인트로·프로필 `76-3402`, 메인/카드 `76-3401`(main flow · reroll 바텀시트 · 운명의실 보내기). 와이어프레임 `65-3123` 은 참고용이며 어긋나면 디자인이 우선한다 — 와이어프레임의 '운명의 실 구매하기' 모달은 최종 디자인에 없다(현금 결제는 V1 범위 밖)
 
 ## Acceptance Criteria
 
