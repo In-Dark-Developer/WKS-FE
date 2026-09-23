@@ -78,6 +78,8 @@ EOF
 # (ADR-20260923-prd-single-notion-db). 사본만 고치고 보드를 잊는 일을 이 검사가 잡는다.
 # 읽기 전용이다 — 어긋나도 고치지 않고 어디가 다른지만 말한다.
 # 보드에 없는 SC-* 는 대조하지 않는다.
+# 보드가 비어 보이는 행은 판정하지 않는다 — Notion 은 통합이 못 보는 사용자를 `people` 에서
+# 통째로 빼고 내려주므로 '미배정' 과 구분할 수 없다. 이름이 읽히는 행만 판정한다.
 repo_owners() { # → "<ID>\t<담당>" (미배정은 빈 값)
   local line id owner
   while IFS= read -r line; do
@@ -124,7 +126,7 @@ EOF
 }
 
 check_owners() {
-  local tmp_board tmp_repo id board repo count mapped n=0 bad=0 nameless=0
+  local tmp_board tmp_repo id board repo count mapped n=0 bad=0 nameless=0 blind=0
   tmp_board=$(mktemp); tmp_repo=$(mktemp)
   trap 'rm -f "$tmp_board" "$tmp_repo"' RETURN
   board_owners > "$tmp_board" || { rm -f "$tmp_board" "$tmp_repo"; return 1; }
@@ -146,13 +148,17 @@ check_owners() {
       bad=$((bad + 1)); continue
     fi
     [ "$mapped" = "$repo" ] && continue
+    if [ "$count" = "0" ]; then
+      blind=$((blind + 1)); continue
+    fi
     fail "$id — 보드 '${mapped:-—}' ≠ 저장소 '${repo:-—}'"; bad=$((bad + 1))
   done < "$tmp_repo"
   if [ "$nameless" -gt 0 ]; then
     die "담당자 이름을 읽지 못했다 (${nameless}행) — Notion 통합에 '사용자 정보 읽기' 권한을 켜야 대조할 수 있다"
   fi
+  [ "$blind" -eq 0 ] || warn "보드가 비어 보이는 ${blind}행은 판정하지 않았다 — 미배정인지 통합이 못 보는 사람인지 구분할 수 없다"
   [ "$bad" -eq 0 ] || die "담당 ${bad}건이 어긋난다 (${n}행 대조) — 보드에서 고친 뒤 저장소 표를 맞춘다"
-  ok "담당 대조: ${n}행 일치"
+  ok "담당 대조: ${n}행 일치 (판정 보류 ${blind}행)"
 }
 
 # ---------------------------------------------------------------- ADR
