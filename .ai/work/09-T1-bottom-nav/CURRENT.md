@@ -7,9 +7,9 @@
 - Branch: ws/09-T1-bottom-nav
 - Task: 09/T1
 - Issue: none
-- Touches: src/app/, src/ui/, docs/prd/30-functional-requirements.md
+- Touches: src/app/, src/ui/, index.html, docs/prd/30-functional-requirements.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract-r2, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture
 
 ## Current Phase
 
@@ -21,17 +21,20 @@ T1. 하단 네비게이션과 홈 분기
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- ui/BottomNav + 아이콘 3개 + 네비 색 토큰
+- app/screens/BottomNavBar, route handle `nav`, RootLayout·AppShell 연결, /dating 자리
+- 레이아웃: 하단 여백·Safe Area(viewport-fit=cover)·토스트 위치 (Figma nav 30:5661 기준)
+- 테스트: BottomNav 단위 + 라우트 노출·분기 — test·typecheck·lint·브라우저 375×812 확인
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`c4d0fa8`
+`4860704`
 
 ## Relevant Documents
 
@@ -40,7 +43,7 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/ui/BottomNav.tsx` · `src/app/screens/BottomNavBar.tsx` · `src/app/RootLayout.tsx` · `src/app/AppShell.tsx` · `src/app/layout.css` · `src/app/routes/*.routes.tsx`
 
 ## Next Action
 
