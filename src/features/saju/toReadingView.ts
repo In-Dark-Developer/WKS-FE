@@ -50,6 +50,8 @@ const elementKeyOf = {
 // 순위는 점수 높은 순(FR-8)이고 같은 점수는 응답 순서(최근 순)를 지킨다.
 function toFriends(result: Result): NonNullable<ReadingView['friends']> {
   return result.compatibilities
-    .map(({ nickname, score, tier }) => ({ nickname, score, tier }))
+    .map(({ id, nickname, score, tier }) =>
+      id === undefined ? { nickname, score, tier } : { nickname, score, tier, compatibilityId: id },
+    )
     .sort((a, b) => b.score - a.score);
 }

@@ -18,6 +18,8 @@ type Props = {
   // 맨 아래 버튼 자리 — mine 은 '친구에게 공유하고 궁합 지도 넓히기', visitor 는 '내 사주 내용도 확인하기'.
   // friends 는 share feature·라우팅을 모르므로 app 이 채운다.
   share?: ReactNode;
+  // 친구 줄을 눌렀을 때 — 궁합 이유 시트(FR-22)를 여는 이동은 app 이 정한다. 없으면 줄을 누를 수 없다.
+  onSelectFriend?: (friend: Friend) => void;
   // visitor 는 주인의 사주 요약 없이 지도·등급별 인원·순위만 보인다(FR-15) — 이 화면은 요약을 받지도 않는다.
   variant?: MapVariant;
 };
@@ -29,7 +31,10 @@ export function CompatibilityMapScreen({
   back,
   share,
   variant = 'mine',
+  onSelectFriend,
 }: Props) {
+  const selectable =
+    onSelectFriend !== undefined && friends.some((f) => f.compatibilityId !== undefined);
   return (
     <div className={cn('flex flex-col gap-12 pb-24', !back && 'pt-4')}>
       {/* 뒤로가기 줄은 맨 위, 지도와 사이 24px(mb-12 + gap-12) — 결과 화면(720:3587, 48px)보다 좁다.
@@ -38,7 +43,11 @@ export function CompatibilityMapScreen({
       <h1 className="sr-only">{nickname}님의 궁합 지도</h1>
       <CompatibilityMap friends={friends} nickname={nickname} variant={variant} />
       <RelationStats friends={friends} />
-      <FriendRanking friends={friends} />
+      {/* Figma 30:5789 — 누를 수 있는 줄이 있을 때만 안내한다. */}
+      {selectable ? (
+        <p className="text-ui-12 text-secondary">친구 이름을 눌러 자세한 정보를 확인해보세요.</p>
+      ) : null}
+      <FriendRanking friends={friends} onSelect={onSelectFriend} />
       {/* 내용과 버튼 사이 — mine 36px(558:2571) · visitor 16px(713:3956). gap-12 에 더한다. */}
       {share ? <div className={variant === 'visitor' ? 'mt-4' : 'mt-24'}>{share}</div> : null}
     </div>

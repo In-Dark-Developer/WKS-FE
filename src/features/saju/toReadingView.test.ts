@@ -86,3 +86,18 @@ test('카테고리가 계약과 다르면(누락) 던진다', () => {
 
   expect(() => toReadingView(broken)).toThrow();
 });
+
+test('궁합 ID 가 오면 친구의 compatibilityId 로 옮기고, 없으면(V1 이전 백엔드) 비워 둔다', () => {
+  const view = toReadingView({
+    ...result,
+    compatibilities: [
+      { id: 12, nickname: '서연', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T02:00:00Z' },
+      { nickname: '민수', score: 61, tier: 'BEOT', createdAt: '2026-09-15T01:00:00Z' },
+    ],
+  });
+
+  expect(view.friends).toEqual([
+    { nickname: '서연', score: 92, tier: 'GUIIN', compatibilityId: 12 },
+    { nickname: '민수', score: 61, tier: 'BEOT' },
+  ]);
+});

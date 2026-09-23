@@ -1,5 +1,5 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, expect, test } from 'vitest';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, expect, test, vi } from 'vitest';
 
 import { CompatibilityMap } from './CompatibilityMap';
 import { CompatibilityMapScreen } from './CompatibilityMapScreen';
@@ -158,4 +158,34 @@ test('인연이 있으면 공유 버튼을 목록 아래에 그린다', () => {
   const list = screen.getByRole('list');
   const button = screen.getByRole('button', { name: '친구에게 공유' });
   expect(list.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+test('궁합 ID 가 있는 친구 줄만 눌러 궁합 이유를 열 수 있고, 그때 안내 문구가 보인다', () => {
+  const onSelectFriend = vi.fn();
+  render(
+    <CompatibilityMapScreen
+      friends={[
+        { nickname: '영채', score: 94, tier: 'GUIIN', compatibilityId: 7 },
+        { nickname: '진희', score: 83, tier: 'CHALTTEOK' },
+      ]}
+      nickname="달빛토끼"
+      onSelectFriend={onSelectFriend}
+    />,
+  );
+
+  expect(screen.getByText('친구 이름을 눌러 자세한 정보를 확인해보세요.')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '영채님과의 궁합 이유 보기' }));
+  expect(onSelectFriend).toHaveBeenCalledWith(expect.objectContaining({ compatibilityId: 7 }));
+  // ID 가 없는 줄(V1 이전 백엔드)은 버튼이 아니다.
+  expect(
+    screen.queryByRole('button', { name: '진희님과의 궁합 이유 보기' }),
+  ).not.toBeInTheDocument();
+});
+
+test('줄을 고를 수 없으면 안내 문구가 없다', () => {
+  render(<CompatibilityMapScreen friends={friends} nickname="달빛토끼" />);
+
+  expect(
+    screen.queryByText('친구 이름을 눌러 자세한 정보를 확인해보세요.'),
+  ).not.toBeInTheDocument();
 });

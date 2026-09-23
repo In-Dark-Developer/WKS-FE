@@ -63,7 +63,10 @@ export const compatibilityTierSchema = z.enum(['GUIIN', 'CHALTTEOK', 'BEOT', 'SE
 // 결과·공유 조회의 궁합 한 건(openapi CompatibilitySummary). `nickname` 은 조회한 결과 기준의 상대 닉네임이다.
 // 운영 Swagger 는 CompatibilityResponse(두 닉네임)라고 적지만 실제 응답은 이 모양이다(2026-09-15 운영 호출 대조).
 // 궁합 생성 응답은 모양이 달라 share.ts 의 compatibilitySchema 가 따로 갖는다.
+// `id` 는 궁합 이유(GET /compatibilities/{id}/reason)를 여는 열쇠다 — V1 이전 백엔드(운영 V0.5)는 보내지 않아
+// optional 로 받고, 없으면 화면이 그 줄을 누를 수 없게 둔다.
 export const compatibilitySummarySchema = z.object({
+  id: z.number().int().optional(),
   nickname: z.string(),
   score: z.number().int().min(0).max(100),
   tier: compatibilityTierSchema,
