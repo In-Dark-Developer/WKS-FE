@@ -39,7 +39,7 @@
 
 - [ ] T2. 운명의 실과 요청함 — Done when: 보내기 전 '보낸 뒤에는 열지 않은 정보를 더 볼 수 없다'를 확인받고 전송되며, 요청함이 '보낸 신청'과 '받은 신청'으로 나뉘고, 받은 신청의 상대 정보는 해금 없이 전부 보이며, 수락하면 양쪽에 전화번호와 (등록했다면) 인스타그램 아이디가 공개되고 거절하면 공개되지 않는다 · Touches: `src/features/dating/`, `src/app/routes/` · After: T1, T3 · Owner: 강근우
 
-- [ ] T3. 해금·운명의 실·요청함 퍼블리싱 — Done when: 메인/카드(`76-3401`)의 해금 모달(기본·hover·selected·구매 완료)·전체 해금 카드(앞면·뒷면)·운명의 실 보냈을 때 모달 1·2, 요청 리스트(`76-3400`)의 보관함 내가보낸사람·나에게보낸사람과 각 상세 모달이 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, `LockedValue`·`Tabs` 가 도메인 규칙 없이 `src/ui/` 에 있다. Phase 10 T4 의 `ProfileCard`·`BottomSheet` 를 재사용하고, API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · Owner: 이정진
+- [x] T3. 해금·운명의 실·요청함 퍼블리싱 — Done when: 메인/카드(`76-3401`)의 해금 모달(기본·hover·selected·구매 완료)·전체 해금 카드(앞면·뒷면)·운명의 실 보냈을 때 모달 1·2, 요청 리스트(`76-3400`)의 보관함 내가보낸사람·나에게보낸사람과 각 상세 모달이 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, `LockedValue`·`Tabs` 가 도메인 규칙 없이 `src/ui/` 에 있다. Phase 10 T4 의 `ProfileCard`·`BottomSheet` 를 재사용하고, API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · Owner: 이정진 (commit 2c7a29d)
 
 퍼블리싱 먼저(2026-09-24): 화면은 T3 가 props 뷰 모델로만 그리고, 데이터 연결은 T1·T2 가 한다. T3 는 Phase 10 T4 의 공용 컴포넌트 위에 선다.
 

@@ -75,3 +75,14 @@
   background: #fee500;
   color: rgb(0 0 0 / 85%);
 }
+
+/* 요청함 궁합 점수 알약 — Figma Card/순위(109:1869) 의 원본 그라데이션·글자색. Figma 에 변수가 없다. */
+[data-score-pill] {
+  background: linear-gradient(110.76deg, #fcaaa7 9.74%, #fff 90.76%, #91bdc8 171.79%);
+  color: #3c1c1e;
+}
+
+/* 받은 신청 '인연이 되고 싶어요' — Figma cardbutton 상태=활성화(118:2860) 의 원본 분홍(ui/Tabs 의 고른 탭과 같은 값). */
+[data-accept-button] {
+  background: #f6868f;
+}

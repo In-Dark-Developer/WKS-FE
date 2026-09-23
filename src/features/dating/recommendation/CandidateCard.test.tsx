@@ -63,3 +63,16 @@ test('모두 해금된 뒷면은 값을 보이고 열람하기가 없다', () =>
   expect(screen.queryByRole('button', { name: '열람하기' })).not.toBeInTheDocument();
   expect(screen.getByRole('img', { name: '인연 사진' })).toHaveAttribute('src', '/photo-c1.webp');
 });
+
+test('일부만 연 뒷면은 잠긴 항목마다 자물쇠 알약을 두고, 알약은 해금을 연다', () => {
+  const onOpenUnlock = vi.fn();
+  const nameOnly: MatchCandidateView = { ...locked, name: { isLocked: false, value: '차은호' } };
+  render(<CandidateCard candidate={nameOnly} initialFace="back" onOpenUnlock={onOpenUnlock} />);
+
+  expect(screen.queryByRole('button', { name: '열람하기' })).toBeNull();
+  expect(screen.getByRole('button', { name: '사진 10개로 열기' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '궁합 이유 3개로 열기' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '학과 5개로 열기' }));
+
+  expect(onOpenUnlock).toHaveBeenCalledWith('c1');
+});
