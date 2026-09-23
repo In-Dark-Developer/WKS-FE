@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: src/features/friends/, src/features/saju/toReadingView.ts, src/api/, src/app/screens/, src/app/routes/map.routes.tsx, src/app/routes/index.test.tsx, src/app/preview/screens/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture
 
 ## Current Phase
 
@@ -21,17 +21,20 @@ T4. 친구 궁합 이유 상세
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- API: getCompatibilityReason · 궁합 id(optional) · ErrorCode 1:1
+- 친구 줄 선택(id 있는 줄만) · 안내 문구 · RankingRow 추출
+- 시트(10/T4 BottomSheet) · 답 영역만 로딩→답/오류로 바뀜
+- 라우트 /me/map/:friendId(부모 데이터 재사용, 이유는 promise) · preview · test(428)·typecheck·lint·브라우저 확인
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`db479fe`
+`d40bab0`
 
 ## Relevant Documents
 
@@ -40,7 +43,7 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/app/routes/map.routes.tsx:CompatibilityReasonRoute` · `src/features/friends/reason/*` · `src/api/compatibilities.ts`
 
 ## Next Action
 

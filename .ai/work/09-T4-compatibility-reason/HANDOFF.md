@@ -11,34 +11,44 @@
 
 궁합 지도의 친구 줄을 누르면 궁합 이유 세 문단이 바텀시트로 뜨고, 첫 생성 동안 로딩을 보인다(FR-22).
 
-## Work Completed
+## Work Completed (d40bab0)
 
-- 없음
+- `api/compatibilities.ts` getCompatibilityReason(목 모드는 1.5초 지연), `schema/compatibility.ts`, ErrorCode 에 COMPATIBILITY_NOT_FOUND·UNAUTHENTICATED·KAKAO_UNAVAILABLE
+- 궁합 요약·생성 응답의 `id` 를 optional 로 — V0.5 운영 BE 는 안 준다. 없는 줄은 누를 수 없다
+- `FriendRanking` onSelect + `RankingRow` 추출(선택 줄은 등급 색), 지도에 안내 문구(Figma 30:5789)
+- `CompatibilityReasonSheet` + `ReasonAnswers` — 시트는 한 번만 뜨고 답 자리만 로딩 → 답/오류
+- `/me/map/:friendId` — 부모 `my-map` 데이터로 친구·순위, 이유는 기다리지 않고 promise(React Router Await). 목록에 없는 id 는 지도로
 
 ## Work In Progress
 
-- 착수 보류 — Figma 3.2(30:5749)는 별도 페이지가 아니라 궁합 지도 위 바텀시트다(overlay 80%, 시트 neutral-100·위 모서리 24, 선택한 줄은 등급 색, Card/Fortune 세 장). 공용 `ui/BottomSheet` 를 10/T4 가 만드는 중이라 그 병합 뒤에 올린다
-- 계획: `/me/map/:friendId` 를 `me/map` 의 하위 라우트로(사전신청 모달과 같은 방식), loader 가 결과에서 친구를 찾고 이유는 promise 로 넘겨 `<Await>` 로 로딩 → 본문. 궁합 요약 `id` 는 optional 로 받는다(V0.5 운영 BE 는 안 보낸다)
+- 없음
 
 ## Files Changed
 
-- 없음
+- `src/api/{compatibilities,schema/compatibility,schema/envelope,schema/result,schema/share}.ts`
+- `src/features/friends/{map/FriendRanking,map/CompatibilityMapScreen,map/tiers,reason/*,index}`
+- `src/features/saju/{readingView,toReadingView}.ts` · `src/app/routes/map.routes.tsx` · `src/app/screens/MyMapScreen.tsx` · preview
 
 ## Decisions Made
 
-- 없음
+- 별도 페이지가 아니라 지도 위 시트(Figma 3.2)
+- 선택 줄 색은 등급 카드 테두리 색(Primary·Rose·Apricot·Neutral/300) — Figma 는 귀인(#91bdc8)만 있다
+- 재시도는 revalidate — 부모 지도도 다시 부른다
 
 ## Tests Executed
 
-- 없음
+- `pnpm test`(428) · typecheck · lint
+- 라우트: 줄 누름 → 시트 먼저·로딩 → 답, 실패 → 오류·다시 시도, 모르는 id → 지도
+- 브라우저 375×812 `/preview/compatibility-reason` 답·생성 중
 
 ## Test Results
 
-- 없음
+- 전부 통과
 
 ## Known Problems
 
-- 없음
+- 시트 모서리는 BottomSheet 의 20px(Figma 24px, radius 스케일에 24 없음)
+- 친구의 궁합 지도(공유 Flow, 4.1.2·4.2.2 자세히 보기)는 이 Task 밖이라 줄을 누를 수 없다
 
 ## Unverified Assumptions
 
@@ -46,4 +56,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 병합.
