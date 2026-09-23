@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, dev push 마다 CI 가 돌린다).
 #
-#   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--dry-run]
+#   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--check-owners] [--dry-run]
 #     --prd      docs/prd/*.md 의 FR·NFR 표 → ⚔️ PRD DB   (ID 로 upsert, 추적 열은 건드리지 않는다)
 #     --adr      docs/decisions/ADR-*.md → 🏛️ ADR 색인               (번호 로 upsert)
 #     --phases   docs/phases/README.md 표 → 📅 Phase 색인             (번호 로 upsert)
-#     전부 생략하면 셋 다. --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
+#     --check-owners  ⚔️ PRD DB 의 `담당자`(원본)와 저장소 `담당` 열(사본)을 대조한다 — 읽기만 하고
+#                아무것도 쓰지 않는다. 어긋나면 실패하고 사람이 보드에서 고친 뒤 저장소를 맞춘다.
+#     --check-owners 만 주면 대조만 하고, 넷을 전부 생략하면 동기화 셋을 돈다.
+#     --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
 #
 # env: NOTION_TOKEN(필수, Actions secret) · NOTION_PRD_DB · NOTION_ADR_DB · NOTION_PHASE_DB · NOTION_TASK_DB(Task 보드 — Phase 행의 `Task 보드` 관계용, 없으면 관계 생략) (database id) · REPO_URL(GitHub 링크, 기본 origin)
 # 색인은 사본이다 — 원본은 docs/ 이고 여기서 고친 값은 다음 push 에 덮어써진다. 사람이 채우는 열(ADR 색인의 `영역`)만 건드리지 않는다.
@@ -16,19 +19,19 @@ set -eo pipefail
 . "$(cd "$(dirname "$0")" && pwd)/lib/common.sh"
 . "$(cd "$(dirname "$0")" && pwd)/lib/notion.sh"
 
-do_prd=0; do_adr=0; do_ph=0; dry=0
+do_prd=0; do_adr=0; do_ph=0; do_owners=0; dry=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --prd) do_prd=1;; --adr) do_adr=1;; --phases) do_ph=1;; --dry-run) dry=1;;
-    -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+    --prd) do_prd=1;; --adr) do_adr=1;; --phases) do_ph=1;; --check-owners) do_owners=1;; --dry-run) dry=1;;
+    -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     *) die "알 수 없는 옵션 $1";;
   esac; shift
 done
-[ "$do_prd" -eq 0 ] && [ "$do_adr" -eq 0 ] && [ "$do_ph" -eq 0 ] && do_prd=1 && do_adr=1 && do_ph=1
+[ "$do_prd" -eq 0 ] && [ "$do_adr" -eq 0 ] && [ "$do_ph" -eq 0 ] && [ "$do_owners" -eq 0 ] && do_prd=1 && do_adr=1 && do_ph=1
 command -v jq >/dev/null || die "jq 가 필요하다"
 if [ "$dry" -eq 0 ]; then
   [ -n "${NOTION_TOKEN:-}" ] || { warn "NOTION_TOKEN 이 없다 — 동기화 생략"; exit 0; }
-  [ "$do_prd" -eq 0 ] || [ -n "${NOTION_PRD_DB:-}" ] || die "NOTION_PRD_DB 를 지정한다"
+  { [ "$do_prd" -eq 0 ] && [ "$do_owners" -eq 0 ]; } || [ -n "${NOTION_PRD_DB:-}" ] || die "NOTION_PRD_DB 를 지정한다"
   [ "$do_adr" -eq 0 ] || [ -n "${NOTION_ADR_DB:-}" ] || die "NOTION_ADR_DB 를 지정한다"
   [ "$do_ph" -eq 0 ] || [ -n "${NOTION_PHASE_DB:-}" ] || die "NOTION_PHASE_DB 를 지정한다"
 fi
@@ -68,6 +71,88 @@ sync_prd() {
 $(grep -hE '^\| N?FR-[0-9]+ ' docs/prd/*.md)
 EOF
   say "PRD: ${n}행"
+}
+
+# ---------------------------------------------------------------- 담당 대조
+# ⚔️ PRD DB 의 `담당자` 가 원본이고 저장소 FR·NFR 표의 `담당` 열은 사본이다
+# (ADR-20260923-prd-single-notion-db). 사본만 고치고 보드를 잊는 일을 이 검사가 잡는다.
+# 읽기 전용이다 — 어긋나도 고치지 않고 어디가 다른지만 말한다.
+# 보드에 없는 SC-* 는 대조하지 않는다.
+repo_owners() { # → "<ID>\t<담당>" (미배정은 빈 값)
+  local line id owner
+  while IFS= read -r line; do
+    id=$(trim "$(printf '%s' "$line" | cut -d'|' -f2)")
+    owner=$(trim "$(printf '%s' "$line" | sed 's/|[[:space:]]*$//' | awk -F'|' '{ print $NF }')")
+    [ "$owner" = "—" ] && owner=""
+    printf '%s\t%s\n' "$id" "$owner"
+  done <<EOF
+$(grep -hE '^\| N?FR-[0-9]+ ' docs/prd/*.md)
+EOF
+}
+
+board_owners() { # → "<ID>\t<담당자 이름들>\t<사람 수>"
+  local cursor=""
+  while :; do
+    notion_query_page "${NOTION_PRD_DB:-}" "$cursor" || return 1
+    printf '%s' "$body" | jq -r '
+      .results[]
+      | [ (.properties.ID.rich_text[0].plain_text // ""),
+          ((.properties."담당자".people // []) | map(.name // empty) | join(", ")),
+          ((.properties."담당자".people // []) | length | tostring) ]
+      | @tsv'
+    cursor=$(printf '%s' "$body" | jq -r '.next_cursor // empty')
+    [ -n "$cursor" ] || break
+  done
+}
+
+# 보드 표시 이름 → 저장소 표기. 표에 없으면 빈 값을 돌려주고 호출부가 실패시킨다.
+alias_file() { printf '%s' "$(cd "$(dirname "$0")" && pwd)/lib/notion-owners.tsv"; }
+alias_of() { awk -F'\t' -v k="$1" '$0 !~ /^#/ && $1 == k { print $2; exit }' "$(alias_file)"; }
+map_owners() { # "표시 이름, 표시 이름" → "저장소 표기, 저장소 표기" (모르면 비우고 $unknown 에 남긴다)
+  local raw out="" one mapped
+  raw=$1; unknown=""
+  [ -n "$raw" ] || { printf ''; return 0; }
+  while IFS= read -r one; do
+    one=$(trim "$one"); [ -n "$one" ] || continue
+    mapped=$(alias_of "$one")
+    [ -n "$mapped" ] || { unknown="$one"; printf ''; return 0; }
+    out="${out:+$out, }$mapped"
+  done <<EOF
+$(printf '%s' "$raw" | tr ',' '\n')
+EOF
+  printf '%s' "$out"
+}
+
+check_owners() {
+  local tmp_board tmp_repo id board repo count mapped n=0 bad=0 nameless=0
+  tmp_board=$(mktemp); tmp_repo=$(mktemp)
+  trap 'rm -f "$tmp_board" "$tmp_repo"' RETURN
+  board_owners > "$tmp_board" || { rm -f "$tmp_board" "$tmp_repo"; return 1; }
+  repo_owners > "$tmp_repo"
+  while IFS="$(printf '\t')" read -r id repo; do
+    [ -n "$id" ] || continue
+    n=$((n + 1))
+    board=$(awk -F'\t' -v k="$id" '$1 == k { print $2 }' "$tmp_board")
+    count=$(awk -F'\t' -v k="$id" '$1 == k { print $3 }' "$tmp_board")
+    if [ -z "$count" ]; then
+      fail "$id — 보드에 행이 없다 (동기화가 아직 안 돌았나)"; bad=$((bad + 1)); continue
+    fi
+    if [ "$count" != "0" ] && [ -z "$board" ]; then
+      nameless=$((nameless + 1)); continue
+    fi
+    mapped=$(map_owners "$board")
+    if [ -n "$unknown" ]; then
+      fail "$id — 보드 표시 이름 '$unknown' 의 저장소 표기를 모른다 (scripts/lib/notion-owners.tsv 에 한 줄 추가한다)"
+      bad=$((bad + 1)); continue
+    fi
+    [ "$mapped" = "$repo" ] && continue
+    fail "$id — 보드 '${mapped:-—}' ≠ 저장소 '${repo:-—}'"; bad=$((bad + 1))
+  done < "$tmp_repo"
+  if [ "$nameless" -gt 0 ]; then
+    die "담당자 이름을 읽지 못했다 (${nameless}행) — Notion 통합에 '사용자 정보 읽기' 권한을 켜야 대조할 수 있다"
+  fi
+  [ "$bad" -eq 0 ] || die "담당 ${bad}건이 어긋난다 (${n}행 대조) — 보드에서 고친 뒤 저장소 표를 맞춘다"
+  ok "담당 대조: ${n}행 일치"
 }
 
 # ---------------------------------------------------------------- ADR
@@ -146,6 +231,7 @@ EOF
   say "Phases: ${n}행"
 }
 
+[ "$do_owners" -eq 1 ] && check_owners
 [ "$do_prd" -eq 1 ] && sync_prd
 [ "$do_adr" -eq 1 ] && sync_adr
 [ "$do_ph" -eq 1 ] && sync_phases
