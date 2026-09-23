@@ -21,17 +21,22 @@ T3. 해금·운명의 실·요청함 퍼블리싱
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- Figma 76-3401·76-3400 읽기, 에셋 6개(webp) 반입
+- ui: LockedValue(자물쇠 알약) · Tabs(요청함 탭)
+- 해금 모달(다중 선택·합계·이미 연 항목·잔액 부족) · 구매 완료(1~4개)
+- 운명의 실 확인·보낸 뒤 모달 · DatingDialog(닫기 없는 가운데 모달)
+- 카드 앞·뒷면 CandidateFaces 로 분리 — 일부 해금 시 항목별 알약
+- 요청함 목록·탭·상세 카드(대기 취소·실패·수락/거절) · preview 3화면 · test 442
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`89d3cdb`
+`2c7a29d`
 
 ## Relevant Documents
 
@@ -40,8 +45,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/dating/card/CandidateFaces.tsx:CandidateBack` · `unlock/UnlockDialog.tsx` · `thread/ThreadDialogs.tsx` · `requests/RequestInbox.tsx` · `src/ui/LockedValue.tsx` · `src/ui/Tabs.tsx`
 
 ## Next Action
 
-`docs/phases/11-dating-thread/PLAN.md`에서 11/T3의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰 대응. 병합 뒤 11/T1(강근우)·T2 가 이 컴포넌트에 데이터를 잇는다.
