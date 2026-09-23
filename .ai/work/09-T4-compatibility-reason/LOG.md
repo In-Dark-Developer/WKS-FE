@@ -10,7 +10,7 @@
 - Developer changes: 없음
 - Upstream changes: 10/T4 의 BottomSheet 를 썼다
 - Spec changes: 없음
-- Verification: test(428)·typecheck·lint, 브라우저 preview
+- Verification: test(428, 종료 코드 0·미처리 오류 0)·typecheck·lint, 브라우저 preview — 첫 CI 는 미처리 거부로 실패해 빈 catch 로 고쳤다
 
 ## 2026-09-24 · ai-stream · 09/T4 · 스트림 열기
 
