@@ -21,12 +21,12 @@ chore: v1-figma-nodes
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- Phase 10·11 PLAN 의 Figma 참조를 확정 디자인 노드로 교체
 
 ## Last Checkpoint
 
@@ -40,8 +40,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/phases/10-dating-onboarding/PLAN.md` · `docs/phases/11-dating-thread/PLAN.md`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 열고 CI 통과 후 dev 에 병합한다.
