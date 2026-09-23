@@ -108,16 +108,15 @@ board_owners() { # → "<ID>\t<담당자 이름들>\t<사람 수>"
 # 보드 표시 이름 → 저장소 표기. 표에 없으면 빈 값을 돌려주고 호출부가 실패시킨다.
 alias_file() { printf '%s' "$(cd "$(dirname "$0")" && pwd)/lib/notion-owners.tsv"; }
 alias_of() { awk -F'\t' -v k="$1" '$0 !~ /^#/ && $1 == k { print $2; exit }' "$(alias_file)"; }
-# "표시 이름, 표시 이름" → "저장소 표기, 저장소 표기". 대응표에 없는 이름을 만나면 `!<그 이름>` 을
-# 돌려준다 — 명령 치환은 서브셸이라 전역 변수로는 알릴 수 없다.
+# "표시 이름, 표시 이름" → "저장소 표기, 저장소 표기". 대응표는 두 표기가 다를 때만 쓰고
+# (`정진 이` → `이정진`), 표에 없는 이름은 그대로 쓴다 — 같은 이름까지 적게 하면 표가 늘기만 한다.
 map_owners() {
   local raw out="" one mapped
   raw=$1
   [ -n "$raw" ] || { printf ''; return 0; }
   while IFS= read -r one; do
     one=$(trim "$one"); [ -n "$one" ] || continue
-    mapped=$(alias_of "$one")
-    [ -n "$mapped" ] || { printf '!%s' "$one"; return 0; }
+    mapped=$(alias_of "$one"); [ -n "$mapped" ] || mapped=$one
     out="${out:+$out, }$mapped"
   done <<EOF
 $(printf '%s' "$raw" | tr ',' '\n')
@@ -143,11 +142,6 @@ check_owners() {
       nameless=$((nameless + 1)); continue
     fi
     mapped=$(map_owners "$board")
-    case "$mapped" in
-      '!'*)
-        fail "$id — 보드 표시 이름 '${mapped#!}' 의 저장소 표기를 모른다 (scripts/lib/notion-owners.tsv 에 한 줄 추가한다)"
-        bad=$((bad + 1)); continue;;
-    esac
     [ "$mapped" = "$repo" ] && continue
     fail "$id — 보드 '${mapped:-—}' ≠ 저장소 '${repo:-—}'"; bad=$((bad + 1))
   done < "$tmp_repo"
