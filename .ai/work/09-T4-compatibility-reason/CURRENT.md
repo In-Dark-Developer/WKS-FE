@@ -7,7 +7,7 @@
 - Branch: ws/09-T4-compatibility-reason
 - Task: 09/T4
 - Issue: none
-- Touches: src/features/friends/map/, src/app/routes/map.routes.tsx
+- Touches: src/features/friends/, src/features/saju/toReadingView.ts, src/api/, src/app/screens/, src/app/routes/map.routes.tsx, src/app/routes/index.test.tsx, src/app/preview/screens/
 - Supersedes: none
 - Acked: none
 
