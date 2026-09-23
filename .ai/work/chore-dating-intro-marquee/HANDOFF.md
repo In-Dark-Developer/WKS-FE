@@ -17,6 +17,7 @@
 - 간격은 gap 대신 카드마다 pr-12 — 두 벌 사이 간격도 12px
 - 시작 지점은 Figma 에서 줄이 밀려 있던 거리(227·212·547px)를 음수 animation-delay 로 환산
 - 한 바퀴 40s(`--card-wall-duration`), '동작 줄이기' 설정이면 멈춘다
+- 줄 간격도 12px 로 통일(전엔 21·11px), 카드는 `WallCard` 하나로 세 줄 공통 171×216 (33dae92)
 
 ## Work In Progress
 

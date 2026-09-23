@@ -5,7 +5,7 @@
 ## 2026-09-24 · claude · -/- · 인트로 카드 벽 무한 흐름
 
 - Commits: 455596f
-- Done: 세 줄 왼쪽·오른쪽·왼쪽 무한 흐름, 간격 12px 유지, 동작 줄이기면 정지
+- Done: 세 줄 왼쪽·오른쪽·왼쪽 무한 흐름, 가로·세로 간격 12px, 카드 규격 하나, 동작 줄이기면 정지
 - Not done: 없음
 - Developer changes: 없음
 - Upstream changes: 없음

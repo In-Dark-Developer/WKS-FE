@@ -27,11 +27,12 @@ REVIEW
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 인트로 카드 벽 세 줄을 끝없이 흐르게 함 (왼쪽·오른쪽·왼쪽, 간격 12px 유지)
+- 줄 간격 12px 통일, 카드 규격 하나로
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`455596f`
+`33dae92`
 
 ## Relevant Documents
 
