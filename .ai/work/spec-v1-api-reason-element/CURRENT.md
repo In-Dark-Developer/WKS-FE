@@ -21,17 +21,18 @@ spec: v1-api-reason-element
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- openapi 참조본을 WKS-BE dev 2e615ca 에 맞춤 — 궁합 이유 경로, elementMatch, 궁합 id, 궁합 요약 모양, ErrorCode
+- Phase 09 T6(잘 맞는 오행과 소개팅 입구, 이정진) 추가 · Scope · Relevant Specifications · phases 표
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`a30449d`
+`f1e327f`
 
 ## Relevant Documents
 
@@ -40,8 +41,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/api/openapi.yaml` · `docs/phases/09-auth-and-shell/PLAN.md`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합 후 09/T4·T6 을 연다.
