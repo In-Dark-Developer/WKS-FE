@@ -5,7 +5,7 @@
 ## 2026-09-23 · claude · -/- · 기능명세서 대조로 FR 5건 보강
 
 - Commits: (이 커밋)
-- Done: 기능명세서 55행과 PRD 대조로 누락 6건 반영, owner-drift 가 지목한 낡은 `담당` 6행을 보드에 맞춤
+- Done: 기능명세서 55행과 PRD 대조로 누락 6건 반영, `담당` 열 전체를 보드 값에 맞춤(20행)
 - Not done: 약한 항목 2건(티저 폴백·궁합지도 Empty), 문구 불일치 1건은 디자인 확인 대기
 - Developer changes: 없음
 - Upstream changes: 없음

@@ -28,7 +28,7 @@ REVIEW
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - Notion 기능명세서 55행과 PRD FR 대조
 - 누락 6건을 FR-2·3·15·19·20 에 **V1** 절로 반영
-- CI owner-drift 가 지목한 낡은 `담당` 6행을 보드에 맞춤
+- `담당` 열 전체를 ⚔️ PRD 보드 값에 맞춤 (FR-1~31 · NFR-1~8)
 
 ## Last Checkpoint
 
