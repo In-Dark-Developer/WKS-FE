@@ -21,34 +21,28 @@ T4. 소개팅 화면 퍼블리싱
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. ui 표현 컴포넌트 BottomSheet·ProfileCard·ThreadCount·Avatar·BlurredPhoto + 테스트 (done)
-- 2. dating/intro — 인트로(비로그인·로그인)·카카오 로그인 시트 (done)
-- 3. dating/profile — 2단계 폼(zod 검증, onSubmit) (done)
-- 4. dating/recommendation — 헤더(실 잔액)·Top 3 카드 앞/뒷면·인연x·리롤 시트 ←
-- 5. preview 화면 3개(dating-intro·dating-profile·dating-cards)
-- 6. test·typecheck·lint, PLAN [x], 종료 절차
+- 1. ui 5종 + rose 세그먼트 · 2. intro · 3. profile 폼 · 4. 카드·리롤 시트 · 5. preview 3개 · 6. 검증·PLAN [x] (모두 done)
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`fb3e1e0`
+`eae83ad`
 
 ## Relevant Documents
 
-- `docs/phases/10-dating-onboarding/PLAN.md`
-- `docs/prd/30-functional-requirements.md` FR-24~27·31 · `docs/prd/20-screens.md` SCR-15~17
-- Figma `imSnlOGTqwtPhGyzhA8yc9` 76:3402 · 76:3401
+- PLAN 10 T4 · PRD FR-24~27·31, SCR-15~17 · Figma `imSnlOGTqwtPhGyzhA8yc9` 76:3402·76:3401
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/dating/index.ts` · `recommendation/cardsView.ts:DatingCardsView` · `profile/profileSchema.ts:validateDetailsStep`
+- `src/ui/ProfileCard.tsx` · `src/ui/BottomSheet.tsx` · `src/ui/ThreadCount.tsx`
 
 ## Next Action
 
-Progress 의 ← step 을 이어 구현한다.
+PR 리뷰 대응. 연동은 10/T1·T2·T3 가 `@/features/dating` 뷰 모델에 맞춰 붙인다.
