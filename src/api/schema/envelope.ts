@@ -13,6 +13,9 @@ export const errorCodeSchema = z.enum([
   'LLM_UNAVAILABLE',
   'INTERNAL_ERROR',
   'NOT_FOUND',
+  // 카카오 로그인(스파이크) — 백엔드 api-spec.md §9. 구현 전이라 `ErrorCode.java` §1 표엔 아직 없다.
+  'UNAUTHENTICATED',
+  'KAKAO_UNAVAILABLE',
 ]);
 
 export type ErrorCode = z.infer<typeof errorCodeSchema>;

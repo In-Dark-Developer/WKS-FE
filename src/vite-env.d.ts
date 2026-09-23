@@ -4,4 +4,6 @@
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL?: string;
   readonly VITE_API_MOCK?: string;
+  // 카카오 로그인(스파이크, ADR-20260922-kakao-login-and-jwt-session) — `features/auth/kakaoAuthorizeUrl.ts`.
+  readonly VITE_KAKAO_CLIENT_ID?: string;
 }

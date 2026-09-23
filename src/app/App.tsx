@@ -22,7 +22,39 @@ const previewRoutes: RouteObject[] = import.meta.env.DEV
     ]
   : [];
 
-const router = createBrowserRouter([...previewRoutes, ...routes]);
+// 카카오 로그인 스파이크(더미 페이지) — /preview 와 같은 이유로 개발 서버에서만 붙는다. 실제 소개팅
+// 로그인 화면은 06-dating-gate Phase 에서 만든다(ADR-20260922-kakao-login-and-jwt-session).
+const devAuthRoutes: RouteObject[] = import.meta.env.DEV
+  ? [
+      {
+        path: '/dev/kakao',
+        hydrateFallbackElement: (
+          <AppShell>
+            <RouteLoading />
+          </AppShell>
+        ),
+        lazy: async () => {
+          const { KakaoLoginTestPage } = await import('@/app/dev/KakaoLoginTestPage');
+          return { Component: KakaoLoginTestPage };
+        },
+      },
+      {
+        path: '/dev/kakao-callback',
+        hydrateFallbackElement: (
+          <AppShell>
+            <RouteLoading />
+          </AppShell>
+        ),
+        lazy: async () => {
+          const { KakaoCallbackPage, kakaoCallbackLoader } =
+            await import('@/app/dev/KakaoCallbackPage');
+          return { Component: KakaoCallbackPage, loader: kakaoCallbackLoader };
+        },
+      },
+    ]
+  : [];
+
+const router = createBrowserRouter([...previewRoutes, ...devAuthRoutes, ...routes]);
 
 export function App() {
   return <RouterProvider router={router} />;

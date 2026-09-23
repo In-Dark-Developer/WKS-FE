@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { afterEach, expect, test, vi } from 'vitest';
 
+import { writeAuthToken } from './authToken';
 import { request } from './client';
 import { readSession, writeSession } from './session';
 
@@ -28,7 +29,7 @@ test('성공 응답을 데이터로 돌려준다', async () => {
   expect(result).toEqual({ ok: true, data: { id: 'r1' } });
 });
 
-test('세션이 있어도 Authorization 헤더를 싣지 않는다 — 백엔드에 인증이 없다', async () => {
+test('세션(resultId)이 있어도 auth 를 안 넘기면 Authorization 헤더를 싣지 않는다 — 사주·궁합 등은 여전히 인증이 없다', async () => {
   writeSession(RESULT_ID);
   const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, data: { id: 'r1' } }));
   vi.stubGlobal('fetch', fetchMock);
@@ -37,6 +38,27 @@ test('세션이 있어도 Authorization 헤더를 싣지 않는다 — 백엔드
 
   const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
   expect(init.headers as Record<string, string>).not.toHaveProperty('Authorization');
+});
+
+test('auth: true 인데 로그인 토큰이 없으면 Authorization 헤더를 싣지 않는다', async () => {
+  const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, data: { id: 'r1' } }));
+  vi.stubGlobal('fetch', fetchMock);
+
+  await request({ method: 'GET', path: '/me', auth: true }, dataSchema);
+
+  const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+  expect(init.headers as Record<string, string>).not.toHaveProperty('Authorization');
+});
+
+test('auth: true 이고 로그인 토큰이 있으면 Bearer 헤더를 싣는다', async () => {
+  writeAuthToken('jwt-token-1');
+  const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, data: { id: 'r1' } }));
+  vi.stubGlobal('fetch', fetchMock);
+
+  await request({ method: 'GET', path: '/me', auth: true }, dataSchema);
+
+  const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+  expect((init.headers as Record<string, string>)['Authorization']).toBe('Bearer jwt-token-1');
 });
 
 test('fetch 가 실패하면 네트워크 실패로 본다', async () => {
