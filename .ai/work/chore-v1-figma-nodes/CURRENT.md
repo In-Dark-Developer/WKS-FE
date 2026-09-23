@@ -31,7 +31,7 @@ REVIEW
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`1a9c550`
+`4b0e6fd`
 
 ## Relevant Documents
 
