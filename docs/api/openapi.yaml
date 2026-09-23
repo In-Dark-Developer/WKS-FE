@@ -3,13 +3,16 @@
 # - 2026-09-13: 백엔드가 공개한 api-spec.md(Base URL /api · 공통 봉투 {success,data|error})로 통째로 교체했다 (Phase 01 T6 · Q3).
 # - 2026-09-13 r2: WKS-BE dev b61f849(api-spec.md 20:49) 대조로 다시 맞췄다 — 사주 입력(calendarType·isLeapMonth, birthRegion 제거, 시진 가운데 시각·자시 두 칸),
 #   결과 응답(shareId·zodiac·등급 6단계·compatibilities), 공유 경로(/shares/{shareId} 조회·궁합), traceId 미구현.
+# - 2026-09-24: WKS-BE dev 2e615ca 대조 — 궁합 상세 이유 GET /compatibilities/{id}/reason(#79·#80), 결과의 잘 맞는 오행 elementMatch(#82),
+#   궁합 항목에 id 추가, 결과 목록의 궁합 요약을 코드 모양({ id, nickname, score, tier, createdAt })으로 바로잡음, ErrorCode 1:1 맞춤.
+#   로그인(/auth/kakao·/me)은 쿠키 방식으로 다시 바뀌는 중이라 아직 넣지 않았다.
 # - 디자인·PRD 에는 있으나 이 계약에 없는 것(인연카드 등급 cardGrades · 사전신청 추가 정보 Q14 · 후보 · 운명의 실)은 넣지 않았다 — PRD Open Questions.
 # - 백엔드 문서가 값을 확정하지 않은 곳은 description 에 [미확인] 을 붙였다.
 # - 검증 예: npx @redocly/cli lint docs/api/openapi.yaml
 openapi: 3.1.0
 info:
   title: 운꿰사 API (frontend reference copy)
-  version: 0.2.0
+  version: 0.3.0
   description: |
     사주 결과·친구 궁합·소개팅 사전등록을 제공하는 백엔드 API. 이 사본은 프론트엔드가 소비하는 계약의 참조본이다.
     - 모든 응답은 `{ success: true, data }` 또는 `{ success: false, error }` 봉투로 온다. HTTP 상태코드도 함께 맞춘다.
@@ -27,6 +30,8 @@ tags:
     description: 사주 생성·본인 결과 조회 (운명 카드)
   - name: shares
     description: 공유 링크 — 링크 주인의 공개 결과 조회와 친구 궁합
+  - name: compatibilities
+    description: 친구 궁합 상세 — 궁합 ID 로 이유를 연다
   - name: signups
     description: 소개팅 사전등록 (학교 웹메일 매직링크 인증)
   - name: health
@@ -132,6 +137,30 @@ paths:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
         "404":
           description: RESULT_NOT_FOUND
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /compatibilities/{id}/reason:
+    get:
+      operationId: getCompatibilityReason
+      summary: 궁합 상세 이유 — 세 질문의 답 (FR-22)
+      description: "처음 열어볼 때 생성해 캐싱하므로 첫 호출만 느리다(최대 30초). 두 사람이 같은 내용을 본다. `id` 는 궁합 요약·궁합 생성 응답의 `id`."
+      tags: [compatibilities]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer, format: int64 }, description: "궁합 ID (순번)" }
+      responses:
+        "200":
+          description: 조회됨 (첫 호출이면 생성 후)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompatibilityReasonResponse" }
+        "404":
+          description: COMPATIBILITY_NOT_FOUND
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "503":
+          description: "LLM_UNAVAILABLE — 생성 실패. 해당 영역만 미노출하고 다시 시도할 수 있다"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -319,13 +348,25 @@ components:
         earth: { type: integer, minimum: 0, description: 토 }
         metal: { type: integer, minimum: 0, description: 금 }
         water: { type: integer, minimum: 0, description: 수 }
+    ElementMatch:
+      type: object
+      required: [element, korean, reason]
+      properties:
+        element: { type: string, enum: [WOOD, FIRE, EARTH, METAL, WATER] }
+        korean: { type: string, description: "목 화 토 금 수", examples: ["토"] }
+        reason: { type: string, description: "그 오행이 잘 맞는 이유 (LLM 해설)" }
     Result:
       allOf:
         - type: object
-          required: [resultId, shareId]
+          required: [resultId, shareId, elementMatch]
           properties:
             resultId: { type: string, format: uuid, description: "본인 결과 조회용 UUID v4" }
             shareId: { type: string, format: uuid, description: "친구 공유 URL(`/s/:shareId`)용 공개 UUID v4" }
+            elementMatch:
+              description: "나와 잘 맞는 오행 + 이유 (FR-3 V1, 기능명세서 3.5). 행운의 장소와 같은 보완 오행. 이유가 없는 옛 결과(V14 이전)는 null — 화면은 영역을 그리지 않는다. 공유 응답에는 없다"
+              oneOf:
+                - { $ref: "#/components/schemas/ElementMatch" }
+                - { type: "null" }
         - { $ref: "#/components/schemas/SharedResult" }
     ResultResponse:
       type: object
@@ -344,20 +385,22 @@ components:
       enum: [GUIIN, CHALTTEOK, BEOT, SEUCHIM]
       description: "궁합 등급 — 귀인 90~100 · 찰떡 75~89 · 벗 61~74 · 스침 0~60 (2026-09-13 기획 확정). 화면은 tier 값만 쓰고 구간을 계산하지 않는다"
     CompatibilitySummary:
-      # 2026-09-15 WKS-BE dev 대조: 백엔드 코드(ResultResponse.compatibilities = CompatibilityResponse)와 운영 Swagger 는
-      # 이 모양이다. 백엔드 api-spec.md 의 { nickname, score, tier, createdAt } 는 코드와 다르다 — 백엔드에 알린다.
-      # 조회한 결과가 링크 주인(origin)인지 방문자(guest)인지는 응답에 없다 — 상대 닉네임은 내 닉네임이 아닌 쪽이다.
+      # 2026-09-24 WKS-BE dev 2e615ca 대조: 결과·공유 응답의 궁합 목록은 ResultResponse.CompatibilityResponse
+      # { id, nickname, score, tier, createdAt } 다 — nickname 은 조회한 결과가 아닌 쪽(상대)이다. 2026-09-15 판의
+      # { originNickname, guestNickname } 는 궁합 생성 응답(CompatibilityResult)의 모양이었다. src/api/schema 는 이미 이 모양을 받는다.
       type: object
-      required: [score, tier, originNickname, guestNickname]
+      required: [id, nickname, score, tier, createdAt]
       properties:
+        id: { type: integer, format: int64, description: "궁합 ID — GET /compatibilities/{id}/reason 에 쓴다" }
+        nickname: { type: string, description: "상대 닉네임" }
         score: { type: integer, minimum: 0, maximum: 100 }
         tier: { $ref: "#/components/schemas/CompatibilityTier" }
-        originNickname: { type: string, description: 링크 주인 }
-        guestNickname: { type: string, description: 방문자 }
+        createdAt: { type: string, format: date-time }
     CompatibilityResult:
       type: object
-      required: [score, tier, originNickname, guestNickname]
+      required: [id, score, tier, originNickname, guestNickname]
       properties:
+        id: { type: integer, format: int64, description: "궁합 ID — GET /compatibilities/{id}/reason 에 쓴다" }
         score: { type: integer, minimum: 0, maximum: 100 }
         tier: { $ref: "#/components/schemas/CompatibilityTier" }
         originNickname: { type: string, description: 링크 주인 }
@@ -368,6 +411,20 @@ components:
       properties:
         success: { type: boolean, const: true }
         data: { $ref: "#/components/schemas/CompatibilityResult" }
+    CompatibilityReason:
+      type: object
+      description: "궁합 상세 이유. 두 사람이 같은 내용을 본다"
+      required: [why, together, conflict]
+      properties:
+        why: { type: string, description: "왜 이런 인연일까요?" }
+        together: { type: string, description: "둘이 만나게 된다면?" }
+        conflict: { type: string, description: "둘이 싸우게 된다면?" }
+    CompatibilityReasonResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success: { type: boolean, const: true }
+        data: { $ref: "#/components/schemas/CompatibilityReason" }
     SignupRequest:
       type: object
       required: [email, gender, preferGender]
@@ -403,8 +460,8 @@ components:
         message: { type: string }
     ErrorCode:
       type: string
-      enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, INTERNAL_ERROR, NOT_FOUND]
-      description: "백엔드 ErrorCode.java 와 1:1. HTTP — INVALID_INPUT 400 · RESULT_NOT_FOUND 404 · SELF_COMPATIBILITY 400 · DUPLICATE_SIGNUP 409 · INVALID_EMAIL_DOMAIN 400 · INVALID_TOKEN 400 · LLM_UNAVAILABLE 503 · INTERNAL_ERROR 500 · NOT_FOUND 404(없는 경로)"
+      enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, INTERNAL_ERROR, NOT_FOUND]
+      description: "백엔드 ErrorCode.java 와 1:1 (2026-09-24 2e615ca). HTTP — INVALID_INPUT 400 · RESULT_NOT_FOUND 404 · SELF_COMPATIBILITY 400 · COMPATIBILITY_NOT_FOUND 404 · DUPLICATE_SIGNUP 409 · INVALID_EMAIL_DOMAIN 400 · INVALID_TOKEN 400 · LLM_UNAVAILABLE 503 · UNAUTHENTICATED 401 · KAKAO_UNAVAILABLE 503 · INTERNAL_ERROR 500 · NOT_FOUND 404(없는 경로). UNAUTHENTICATED·KAKAO_UNAVAILABLE 은 로그인 API 용이고 그 경로는 이 사본에 아직 없다"
     ErrorResponse:
       type: object
       required: [success, error]
