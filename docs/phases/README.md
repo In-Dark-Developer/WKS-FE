@@ -18,7 +18,7 @@
 | 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | PLANNED | 0/1 | — |
 | 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 4/6 | [RESULT](08-launch-readiness/RESULT.md) |
 | 09 | [auth-and-shell](09-auth-and-shell/PLAN.md) | @jjjung0921 | 03 | PLANNED | 2/6 | — |
-| 10 | [dating-onboarding](10-dating-onboarding/PLAN.md) | @jjjung0921 | 09 | PLANNED | 0/4 | — |
+| 10 | [dating-onboarding](10-dating-onboarding/PLAN.md) | @jjjung0921 | 09 | PLANNED | 1/4 | — |
 | 11 | [dating-thread](11-dating-thread/PLAN.md) | @jjjung0921 | 10 | PLANNED | 0/3 | — |
 <!-- phases:end -->
 
