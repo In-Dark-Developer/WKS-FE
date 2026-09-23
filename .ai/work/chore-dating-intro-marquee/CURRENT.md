@@ -21,17 +21,17 @@ chore: dating-intro-marquee
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 인트로 카드 벽 세 줄을 끝없이 흐르게 함 (왼쪽·오른쪽·왼쪽, 간격 12px 유지)
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`2628a10`
+`455596f`
 
 ## Relevant Documents
 
@@ -40,8 +40,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/dating/intro/DatingIntro.tsx:CardWall` · `src/features/dating/dating.css`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 열고 CI 통과 후 병합한다.
