@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { cn } from '@/lib/cn';
 import { Button } from '@/ui/Button';
 
 import { DatingBackdrop } from '../DatingBackdrop';
@@ -78,30 +77,53 @@ export function DatingIntro({
 }
 
 // 배경의 흐린 인연 카드 벽 — 장식이라 값이 없고 읽히지 않는다(Figma 132:2982 등 세 줄).
-const wallRows = [
-  { id: 'top', offset: '-left-[227px] top-[30px]' },
-  { id: 'middle', offset: '-left-[212px] top-[267px]' },
-  { id: 'bottom', offset: '-left-[547px] top-[494px]' },
-] as const;
+// 줄마다 끝없이 흐른다: 1·3번 줄은 왼쪽, 2번 줄은 오른쪽(dating.css [data-card-wall-row]).
+// 카드 한 벌을 두 번 이어 붙이고 한 벌 길이만큼 옮긴 뒤 처음으로 돌아가므로 이음매가 보이지 않는다 —
+// 간격을 gap 이 아니라 카드마다 오른쪽 여백(pr-12)으로 줘야 두 벌 사이 간격도 카드 사이 간격과 같다.
+// 카드는 세 줄 모두 같은 규격(171×216)이고, 줄 사이 간격도 카드 사이 간격과 같은 12px 이다.
+// phase 는 Figma 에서 그 줄이 왼쪽으로 밀려 있던 거리(px)이고, 한 벌 길이(183px × 4) 중 그만큼 진행한 데서 시작한다.
 const wallCards = ['a', 'b', 'c', 'd'] as const;
+const setWidth = (171 + 12) * wallCards.length;
+const wallRows = [
+  { id: 'top', direction: 'left', phase: 227 },
+  { id: 'middle', direction: 'right', phase: 212 },
+  { id: 'bottom', direction: 'left', phase: 547 },
+] as const;
+
+// 왼쪽으로 흐르는 줄은 0 → -한 벌, 오른쪽은 -한 벌 → 0 으로 움직인다. 음수 지연으로 그 진행 지점에서 시작한다.
+function startDelay(direction: 'left' | 'right', phase: number): string {
+  const progress = direction === 'left' ? phase / setWidth : 1 - phase / setWidth;
+  return `calc(var(--card-wall-duration) * ${-progress.toFixed(4)})`;
+}
 
 function CardWall() {
   return (
-    <>
+    <div className="absolute top-[30px] left-0 flex flex-col gap-12">
       {wallRows.map((row) => (
-        <div className={cn('absolute flex gap-12', row.offset)} key={row.id}>
-          {wallCards.map((card) => (
-            <div
-              className="flex h-[216px] w-[171px] flex-col justify-end gap-4 rounded-8 border border-neutral-0 bg-linear-to-b from-neutral-500 to-neutral-900 p-12 text-neutral-0 blur-[1px]"
-              key={card}
-            >
-              <span className="font-sungkok text-ui-12">천생연분</span>
-              <span className="h-4 w-3/4 rounded-999 bg-neutral-400" />
-              <span className="h-4 w-full rounded-999 bg-neutral-400" />
+        <div
+          className="flex"
+          data-card-wall-row={row.direction}
+          key={row.id}
+          style={{ animationDelay: startDelay(row.direction, row.phase) }}
+        >
+          {[...wallCards, ...wallCards].map((card, index) => (
+            <div className="shrink-0 pr-12" key={`${card}-${index}`}>
+              <WallCard />
             </div>
           ))}
         </div>
       ))}
-    </>
+    </div>
+  );
+}
+
+// 카드 한 장 — 모든 줄이 이 하나를 쓴다.
+function WallCard() {
+  return (
+    <div className="flex h-[216px] w-[171px] flex-col justify-end gap-4 rounded-8 border border-neutral-0 bg-linear-to-b from-neutral-500 to-neutral-900 p-12 text-neutral-0 blur-[1px]">
+      <span className="font-sungkok text-ui-12">천생연분</span>
+      <span className="h-4 w-3/4 rounded-999 bg-neutral-400" />
+      <span className="h-4 w-full rounded-999 bg-neutral-400" />
+    </div>
   );
 }
