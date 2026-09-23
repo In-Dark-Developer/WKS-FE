@@ -10,15 +10,18 @@ type Props = {
   friends: readonly Friend[];
   // 내 사주 결과로 돌아간다 — 주소에 결과 id 가 없어 라우트가 보관된 id 로 정한다.
   onBack: () => void;
+  // 친구 줄을 눌렀을 때 — 궁합 이유 시트(FR-22)로 가는 이동은 라우트가 정한다.
+  onSelectFriend?: (friend: Friend) => void;
 };
 
 // SCR-08 내 궁합 지도(`/me/map`) — 05/T2 지도에 '뒤로가기'와 '친구에게 공유'(04/T3)를 잇는다.
-export function MyMapScreen({ nickname, shareId, friends, onBack }: Props) {
+export function MyMapScreen({ nickname, shareId, friends, onBack, onSelectFriend }: Props) {
   return (
     <CompatibilityMapScreen
       back={<BackRow onBack={onBack} />}
       friends={friends}
       nickname={nickname}
+      onSelectFriend={onSelectFriend}
       share={
         <ShareLinkButton
           className="w-full"

@@ -25,6 +25,7 @@ export const compatibilityRequestSchema = z.object({
 // 같은 요청의 응답(openapi CompatibilityResult · Swagger CompatibilityResponse) — 두 닉네임이 온다.
 // 조회의 `compatibilities[]` 항목(`nickname`·`createdAt`)과는 모양이 다르다(2026-09-15 운영 호출 대조).
 export const compatibilitySchema = z.object({
+  id: z.number().int().optional(),
   score: z.number().int().min(0).max(100),
   tier: compatibilityTierSchema,
   originNickname: z.string(),

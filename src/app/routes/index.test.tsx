@@ -16,6 +16,10 @@ vi.mock('@/api/results', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/results')>();
   return { ...actual, getResult: getResultMock, createResult: createResultMock };
 });
+const { getCompatibilityReasonMock } = vi.hoisted(() => ({
+  getCompatibilityReasonMock: vi.fn(),
+}));
+vi.mock('@/api/compatibilities', () => ({ getCompatibilityReason: getCompatibilityReasonMock }));
 const { getSharedResultMock, createCompatibilityMock } = vi.hoisted(() => ({
   getSharedResultMock: vi.fn(),
   createCompatibilityMock: vi.fn(),
@@ -63,6 +67,7 @@ afterEach(() => {
   createResultMock.mockReset();
   getSharedResultMock.mockReset();
   createCompatibilityMock.mockReset();
+  getCompatibilityReasonMock.mockReset();
 });
 
 function renderAt(path: string) {
@@ -592,4 +597,83 @@ test('사주 입력과 공유 Flow 에는 하단 네비가 없다', async () => 
   renderAt(`/s/${SHARE_ID}`);
   await screen.findByRole('button', { name: '운명 지도 확인하기' });
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
+});
+
+// 궁합 이유 상세(09/T4, FR-22) — 궁합 지도의 친구 줄을 누르면 지도 위에 시트가 뜨고, 이유는 시트 안에서 기다린다.
+
+test('궁합 지도의 친구 줄을 누르면 시트가 먼저 뜨고, 이유가 오면 세 문단을 보인다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({
+    ok: true,
+    data: {
+      ...stubResult,
+      compatibilities: [
+        {
+          id: 12,
+          nickname: '연꽃친구',
+          score: 90,
+          tier: 'GUIIN',
+          createdAt: '2026-09-24T01:00:00Z',
+        },
+      ],
+    },
+  });
+  let resolveReason: (value: unknown) => void = () => {};
+  getCompatibilityReasonMock.mockReturnValue(new Promise((resolve) => (resolveReason = resolve)));
+
+  const router = renderAt('/me/map');
+  fireEvent.click(await screen.findByRole('button', { name: '연꽃친구님과의 궁합 이유 보기' }));
+
+  const sheet = await screen.findByRole('dialog', { name: '연꽃친구님과의 궁합 이유' });
+  expect(router.state.location.pathname).toBe('/me/map/12');
+  expect(within(sheet).getByRole('status')).toHaveTextContent('인연을 풀어보는 중');
+  expect(getCompatibilityReasonMock).toHaveBeenCalledWith(12);
+
+  resolveReason({ ok: true, data: { why: '왜 답', together: '함께 답', conflict: '다툼 답' } });
+
+  expect(await within(sheet).findByText('왜 답')).toBeInTheDocument();
+  expect(within(sheet).getByRole('heading', { name: '왜 나에게 귀인일까요?' })).toBeInTheDocument();
+  expect(within(sheet).getByText('다툼 답')).toBeInTheDocument();
+});
+
+test('궁합 이유를 못 받으면 시트 안에서 오류와 다시 시도를 보인다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({
+    ok: true,
+    data: {
+      ...stubResult,
+      compatibilities: [
+        {
+          id: 12,
+          nickname: '연꽃친구',
+          score: 90,
+          tier: 'GUIIN',
+          createdAt: '2026-09-24T01:00:00Z',
+        },
+      ],
+    },
+  });
+  getCompatibilityReasonMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'LLM_UNAVAILABLE', message: '실패' },
+  });
+
+  renderAt('/me/map/12');
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('궁합 이유를 풀어내지 못했어요');
+  expect(screen.getByRole('button', { name: '다시 시도하기' })).toBeInTheDocument();
+});
+
+test('목록에 없는 궁합 ID 로 들어오면 시트 없이 궁합 지도로 돌아간다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+  getCompatibilityReasonMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'COMPATIBILITY_NOT_FOUND', message: '없음' },
+  });
+
+  const router = renderAt('/me/map/999');
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/me/map'));
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

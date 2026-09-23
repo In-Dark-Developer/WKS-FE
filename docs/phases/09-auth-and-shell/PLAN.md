@@ -47,7 +47,7 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 - [ ] T3. 궁합지도 계정 저장·복원 — Done when: 로그인 시 계정 기록이 우선 복원되고, 계정이 비어 있을 때만 현재 브라우저 결과를 계정에 연결하며, 로그인을 시작한 화면으로 복귀하고, 취소·실패해도 현재 지도와 비로그인 기록이 남는다 · Touches: `src/features/auth/`, `src/features/friends/`, `src/app/routes/` · After: T2 · Owner: 이정진
 
-- [ ] T4. 친구 궁합 이유 상세 — Done when: 친구 궁합 Row 를 누르면 세 문단('왜 나에게 귀인일까요?' · '둘이 만나게 된다면?' · '둘이 싸우게 된다면?')이 보이고, 최초 열람에만 생성이 일어나며 그 동안 로딩 상태를 보여주고, 두 번째 열람은 저장값을 즉시 그린다 · Touches: `src/features/friends/map/`, `src/app/routes/map.routes.tsx` · Owner: 이정진
+- [x] T4. 친구 궁합 이유 상세 — Done when: 친구 궁합 Row 를 누르면 세 문단('왜 나에게 귀인일까요?' · '둘이 만나게 된다면?' · '둘이 싸우게 된다면?')이 보이고, 최초 열람에만 생성이 일어나며 그 동안 로딩 상태를 보여주고, 두 번째 열람은 저장값을 즉시 그린다 · Touches: `src/features/friends/map/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 (commit d40bab0)
 
 - [ ] T5. 공유 진입 분기 — Done when: 공유 링크로 들어온 사용자에게 브라우저에 쓸 수 있는 사주가 있으면 '이전 정보 불러오기'와 '새로 작성하기'를 고르게 하고, 이전 정보를 고르면 재입력 없이 궁합이 만들어지며, 새로 작성해도 기존 데이터가 지워지지 않는다 · Touches: `src/features/share/`, `src/features/friends/`, `src/app/routes/share.routes.tsx` · Owner: 강근우
 
