@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: src/features/dating/, src/ui/, src/app/preview/screens/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-dating-publishing-split
 
 ## Current Phase
 
@@ -26,11 +26,9 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- Figma 76-3401·76-3400 읽기, 에셋 6개(webp) 반입
-- ui: LockedValue(자물쇠 알약) · Tabs(요청함 탭)
+- Figma 76-3401·76-3400 읽기, 에셋 6개 · ui LockedValue·Tabs
 - 해금 모달(다중 선택·합계·이미 연 항목·잔액 부족) · 구매 완료(1~4개)
-- 운명의 실 확인·보낸 뒤 모달 · DatingDialog(닫기 없는 가운데 모달)
-- 카드 앞·뒷면 CandidateFaces 로 분리 — 일부 해금 시 항목별 알약
+- 운명의 실 모달 · DatingDialog · 카드 면 CandidateFaces 분리(항목별 알약)
 - 요청함 목록·탭·상세 카드(대기 취소·실패·수락/거절) · preview 3화면 · test 442
 
 ## Last Checkpoint
