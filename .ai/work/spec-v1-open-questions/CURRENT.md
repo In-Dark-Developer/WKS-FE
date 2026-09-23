@@ -21,12 +21,13 @@ spec: v1-open-questions
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- SC-8 담당을 강근우 한 명으로 확정
+- Open Question Q19 추가 — 제휴 배너 실 지급 개수·진입자 식별 근거·디자인 부재
 
 ## Last Checkpoint
 
@@ -40,8 +41,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `docs/prd/40-quality.md` Success Criteria · `docs/prd/50-scope.md` Open Questions
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 열고 CI 통과 후 dev 에 병합한다.
