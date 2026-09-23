@@ -78,8 +78,6 @@ EOF
 # (ADR-20260923-prd-single-notion-db). 사본만 고치고 보드를 잊는 일을 이 검사가 잡는다.
 # 읽기 전용이다 — 어긋나도 고치지 않고 어디가 다른지만 말한다.
 # 보드에 없는 SC-* 는 대조하지 않는다.
-# 보드가 비어 보이는 행은 판정하지 않는다 — Notion 은 통합이 못 보는 사용자를 `people` 에서
-# 통째로 빼고 내려주므로 '미배정' 과 구분할 수 없다. 이름이 읽히는 행만 판정한다.
 repo_owners() { # → "<ID>\t<담당>" (미배정은 빈 값)
   local line id owner
   while IFS= read -r line; do
@@ -110,14 +108,16 @@ board_owners() { # → "<ID>\t<담당자 이름들>\t<사람 수>"
 # 보드 표시 이름 → 저장소 표기. 표에 없으면 빈 값을 돌려주고 호출부가 실패시킨다.
 alias_file() { printf '%s' "$(cd "$(dirname "$0")" && pwd)/lib/notion-owners.tsv"; }
 alias_of() { awk -F'\t' -v k="$1" '$0 !~ /^#/ && $1 == k { print $2; exit }' "$(alias_file)"; }
-map_owners() { # "표시 이름, 표시 이름" → "저장소 표기, 저장소 표기" (모르면 비우고 $unknown 에 남긴다)
+# "표시 이름, 표시 이름" → "저장소 표기, 저장소 표기". 대응표에 없는 이름을 만나면 `!<그 이름>` 을
+# 돌려준다 — 명령 치환은 서브셸이라 전역 변수로는 알릴 수 없다.
+map_owners() {
   local raw out="" one mapped
-  raw=$1; unknown=""
+  raw=$1
   [ -n "$raw" ] || { printf ''; return 0; }
   while IFS= read -r one; do
     one=$(trim "$one"); [ -n "$one" ] || continue
     mapped=$(alias_of "$one")
-    [ -n "$mapped" ] || { unknown="$one"; printf ''; return 0; }
+    [ -n "$mapped" ] || { printf '!%s' "$one"; return 0; }
     out="${out:+$out, }$mapped"
   done <<EOF
 $(printf '%s' "$raw" | tr ',' '\n')
@@ -126,7 +126,7 @@ EOF
 }
 
 check_owners() {
-  local tmp_board tmp_repo id board repo count mapped n=0 bad=0 nameless=0 blind=0
+  local tmp_board tmp_repo id board repo count mapped n=0 bad=0 nameless=0
   tmp_board=$(mktemp); tmp_repo=$(mktemp)
   trap 'rm -f "$tmp_board" "$tmp_repo"' RETURN
   board_owners > "$tmp_board" || { rm -f "$tmp_board" "$tmp_repo"; return 1; }
@@ -143,22 +143,19 @@ check_owners() {
       nameless=$((nameless + 1)); continue
     fi
     mapped=$(map_owners "$board")
-    if [ -n "$unknown" ]; then
-      fail "$id — 보드 표시 이름 '$unknown' 의 저장소 표기를 모른다 (scripts/lib/notion-owners.tsv 에 한 줄 추가한다)"
-      bad=$((bad + 1)); continue
-    fi
+    case "$mapped" in
+      '!'*)
+        fail "$id — 보드 표시 이름 '${mapped#!}' 의 저장소 표기를 모른다 (scripts/lib/notion-owners.tsv 에 한 줄 추가한다)"
+        bad=$((bad + 1)); continue;;
+    esac
     [ "$mapped" = "$repo" ] && continue
-    if [ "$count" = "0" ]; then
-      blind=$((blind + 1)); continue
-    fi
     fail "$id — 보드 '${mapped:-—}' ≠ 저장소 '${repo:-—}'"; bad=$((bad + 1))
   done < "$tmp_repo"
   if [ "$nameless" -gt 0 ]; then
     die "담당자 이름을 읽지 못했다 (${nameless}행) — Notion 통합에 '사용자 정보 읽기' 권한을 켜야 대조할 수 있다"
   fi
-  [ "$blind" -eq 0 ] || warn "보드가 비어 보이는 ${blind}행은 판정하지 않았다 — 미배정인지 통합이 못 보는 사람인지 구분할 수 없다"
   [ "$bad" -eq 0 ] || die "담당 ${bad}건이 어긋난다 (${n}행 대조) — 보드에서 고친 뒤 저장소 표를 맞춘다"
-  ok "담당 대조: ${n}행 일치 (판정 보류 ${blind}행)"
+  ok "담당 대조: ${n}행 일치"
 }
 
 # ---------------------------------------------------------------- ADR

@@ -21,17 +21,18 @@ chore: owner-drift-check-r3
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- `map_owners` 의 '모르는 이름' 을 서브셸 밖으로 전달되게 고침
+- r2 의 '판정 보류' 제거 — 근거로 삼은 가정이 틀렸다
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`b9b1c7f`
+`c023cba`
 
 ## Relevant Documents
 
@@ -40,8 +41,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `scripts/notion-index-sync.sh:map_owners` · `:check_owners`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 열고 CI 가 알려주는 표시 이름을 대응표에 채운다.
