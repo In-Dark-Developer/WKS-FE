@@ -60,7 +60,8 @@ export const sajuRoutes: RouteObject[] = [
   {
     path: 'reading/:id',
     loader: protectedReadingLoader,
-    handle: { backdrop: 'result' },
+    // 공유 Flow 에서 '내 사주 내용도 확인하기'로 들어와도 여기서부터 네비가 보인다(FR-19, Figma 4.1.3).
+    handle: { backdrop: 'result', nav: 'home' },
     element: <HomeRoute />,
     children: [
       {
