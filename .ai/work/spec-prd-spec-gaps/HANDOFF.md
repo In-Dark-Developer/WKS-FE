@@ -18,6 +18,7 @@
 - FR-15 — 초대 티저 'OO님의 궁합지도에 초대됐어요' + 만료 링크의 복구 경로 (명세서 5.1·5.16)
 - FR-19 — viewport 하단 고정에 Safe Area 고려 명시 (명세서 3.9)
 - FR-20 — 비로그인 궁합지도 하단 '로그인하고 저장하기' CTA, 로그인 시 미노출 (명세서 4.9)
+- `담당` 열 6행(FR-1·7·8 · NFR-2·5·6)을 보드 값 '이정진' 으로 맞췄다 — 새 owner-drift 검사가 지목한 행이다
 
 ## Work In Progress
 
@@ -25,10 +26,11 @@
 
 ## Files Changed
 
-- `docs/prd/30-functional-requirements.md`
+- `docs/prd/30-functional-requirements.md` · `docs/prd/40-quality.md`
 
 ## Decisions Made
 
+- 낡은 `담당` 을 같은 PR 에서 고쳤다 — 그대로 두면 dev 에서 owner-drift 가 계속 빨갛게 남는다. 값의 원본은 보드다
 - FR 번호를 새로 매기지 않고 기존 행에 **V1** 절로 붙였다 — 번호는 Phase PLAN·ADR 이 참조한다(문서 머리 규칙)
 
 ## Tests Executed

@@ -7,7 +7,7 @@
 - Branch: ws/spec-prd-spec-gaps
 - Task: -/-
 - Issue: none
-- Touches: docs/prd/30-functional-requirements.md
+- Touches: docs/prd/30-functional-requirements.md,docs/prd/40-quality.md
 - Supersedes: none
 - Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-split, 2026-09-23-v1-architecture
 
@@ -28,6 +28,7 @@ REVIEW
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - Notion 기능명세서 55행과 PRD FR 대조
 - 누락 6건을 FR-2·3·15·19·20 에 **V1** 절로 반영
+- CI owner-drift 가 지목한 낡은 `담당` 6행을 보드에 맞춤
 
 ## Last Checkpoint
 
