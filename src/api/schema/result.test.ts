@@ -64,6 +64,16 @@ test('계약대로의 Result 는 통과한다', () => {
   expect(resultSchema.safeParse(validResult).success).toBe(true);
 });
 
+test('잘 맞는 오행은 값·null·키 없음(V1 이전 백엔드)을 모두 받고, 모르는 오행은 실패한다', () => {
+  const match = { element: 'EARTH', korean: '토', reason: '이유' };
+  expect(resultSchema.safeParse({ ...validResult, elementMatch: match }).success).toBe(true);
+  expect(resultSchema.safeParse({ ...validResult, elementMatch: null }).success).toBe(true);
+  expect(resultSchema.safeParse(validResult).success).toBe(true);
+  expect(
+    resultSchema.safeParse({ ...validResult, elementMatch: { ...match, element: 'MOON' } }).success,
+  ).toBe(false);
+});
+
 test('fortunes 가 3개가 아니면 실패한다', () => {
   expect(
     resultSchema.safeParse({ ...validResult, fortunes: [validResult.fortunes[0]] }).success,

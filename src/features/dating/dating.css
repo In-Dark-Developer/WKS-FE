@@ -1,0 +1,77 @@
+/* 소개팅 화면 배경 — Figma 인트로·프로필(76:3402)·메인/카드(76:3401) 공통.
+   AppShell 배경 위에 고정으로 깔아 스크롤해도 움직이지 않는다. 세 색은 Figma 에 토큰이 없는 원본 값이다. */
+[data-dating-backdrop] {
+  position: fixed;
+  z-index: -1;
+  inset-block: 0;
+  inset-inline: max(0px, calc((100vw - 430px) / 2));
+  overflow: hidden;
+  background: linear-gradient(160.5deg, #f8cdc2 1.67%, #fff5e7 45.82%, #c5e5f3 98.33%);
+  pointer-events: none;
+}
+
+/* 별자리 선(Figma '벡터' 504×896, 50%) — 375px 프레임에서 왼쪽 -80px · 위 -26px 에 놓인다. */
+[data-dating-backdrop]::before {
+  content: '';
+  position: absolute;
+  top: -26px;
+  left: -21.33%;
+  width: 134.4%;
+  aspect-ratio: 504 / 896;
+  background: url('../../ui/assets/dating/backdrop-vector.webp') center / cover no-repeat;
+  opacity: 0.5;
+}
+
+/* 인트로(126:2097) — 흐린 인연 카드 벽 위에 80% 어둠을 덮는다. */
+[data-dating-backdrop='intro']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-opacity-overlay-neutral-900-80);
+}
+
+/* 인트로 카드 벽 — 줄마다 한 벌 길이(트랙의 절반)만큼 옮기고 처음으로 돌아가 끝없이 흐른다.
+   1·3번 줄은 왼쪽, 2번 줄은 오른쪽. 시작 지점은 줄마다 음수 animation-delay 로 준다(DatingIntro). */
+[data-dating-backdrop] {
+  --card-wall-duration: 40s;
+}
+
+[data-card-wall-row] {
+  animation: card-wall-left var(--card-wall-duration) linear infinite;
+  will-change: translate;
+}
+
+[data-card-wall-row='right'] {
+  animation-name: card-wall-right;
+}
+
+@keyframes card-wall-left {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: -50% 0;
+  }
+}
+
+@keyframes card-wall-right {
+  from {
+    translate: -50% 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* 기기의 '동작 줄이기' 설정이면 멈춘다 — 궁합 지도 구슬(FR-8)과 같다. */
+@media (prefers-reduced-motion: reduce) {
+  [data-card-wall-row] {
+    animation: none;
+  }
+}
+
+/* 카카오 로그인 버튼 — 카카오 브랜드 가이드 색(Figma kakao/bg · kakao/text). 디자인 토큰이 아니다. */
+[data-kakao-login] {
+  background: #fee500;
+  color: rgb(0 0 0 / 85%);
+}

@@ -1,6 +1,6 @@
 import type { Result } from '@/api/schema/result';
 
-import type { ReadingView } from './readingView';
+import type { ElementKey, ReadingView } from './readingView';
 
 type FortuneCategory = Result['fortunes'][number]['category'];
 
@@ -27,9 +27,24 @@ export function toReadingView(result: Result): ReadingView {
     luckyPlace: result.luckyPlace,
     luckyItem: result.luckyItem,
     shareId: result.shareId,
+    elementMatch: result.elementMatch
+      ? {
+          element: elementKeyOf[result.elementMatch.element],
+          korean: result.elementMatch.korean,
+          reason: result.elementMatch.reason,
+        }
+      : null,
     friends: toFriends(result),
   };
 }
+
+const elementKeyOf = {
+  WOOD: 'wood',
+  FIRE: 'fire',
+  EARTH: 'earth',
+  METAL: 'metal',
+  WATER: 'water',
+} as const satisfies Record<NonNullable<Result['elementMatch']>['element'], ElementKey>;
 
 // 궁합 한 건의 `nickname` 은 백엔드가 이미 고른 상대 닉네임이다(내가 링크 주인이든 방문자든).
 // 순위는 점수 높은 순(FR-8)이고 같은 점수는 응답 순서(최근 순)를 지킨다.

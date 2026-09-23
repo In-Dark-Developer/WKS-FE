@@ -83,6 +83,16 @@ export const elementsSchema = z.object({
 
 export type Elements = z.infer<typeof elementsSchema>;
 
+// 나와 잘 맞는 오행 + 이유(openapi ElementMatch, FR-3 V1). 이유가 없는 옛 결과는 null 이고,
+// V1 이전 백엔드(운영 V0.5)는 키 자체가 없어 둘 다 '없음'으로 받는다 — 화면은 영역을 그리지 않는다.
+export const elementMatchSchema = z.object({
+  element: z.enum(['WOOD', 'FIRE', 'EARTH', 'METAL', 'WATER']),
+  korean: z.string(),
+  reason: z.string(),
+});
+
+export type ElementMatch = z.infer<typeof elementMatchSchema>;
+
 // POST /results · GET /results/{resultId} 가 공통으로 쓰는 응답 모양(openapi Result).
 // 생성 직후엔 compatibilities 가 빈 배열이고, 조회 시엔 누적된다(createdAt 내림차순).
 export const resultSchema = z.object({
@@ -96,6 +106,7 @@ export const resultSchema = z.object({
   luckyItem: z.string(),
   luckyPlace: z.string(),
   compatibilities: z.array(compatibilitySummarySchema),
+  elementMatch: elementMatchSchema.nullish(),
 });
 
 export type Result = z.infer<typeof resultSchema>;
