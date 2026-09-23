@@ -18,6 +18,8 @@ export type ReadingView = {
   luckyItem: string;
   // 공유 링크·인연카드 진입에 쓰는 공개 UUID(FR-4·FR-5) — 조립(04/T6)이 share feature 에 넘긴다.
   shareId: string;
+  // 나와 잘 맞는 오행 + 이유(FR-3 V1) — 옛 결과는 null 이고 화면은 그 영역을 그리지 않는다.
+  elementMatch: { element: ElementKey; korean: string; reason: string } | null;
   // 친구 궁합 순위(FR-8) — 상대 닉네임·점수·등급, 점수 높은 순. 결과 화면 순위 요약과 궁합 지도(05/T3)가 쓴다.
   // saju 는 friends feature 를 import 하지 않으므로 모양만 같게 둔다(friends 의 Friend).
   friends?: readonly { nickname: string; score: number; tier: CompatibilitySummary['tier'] }[];
