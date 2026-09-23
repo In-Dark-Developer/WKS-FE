@@ -45,3 +45,23 @@ test('로그인했으면 시작 버튼과 로그아웃이 보인다', () => {
   expect(onLogout).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
+
+test('배경 카드 벽은 세 줄이 왼쪽·오른쪽·왼쪽으로 흐르고, 줄마다 카드 한 벌을 두 번 이어 붙인다', () => {
+  const { container } = render(
+    <DatingIntro
+      onKakaoLogin={() => {}}
+      onLogout={() => {}}
+      onStart={() => {}}
+      view={{ viewer: 'guest' }}
+    />,
+  );
+
+  const rows = [...container.ownerDocument.querySelectorAll('[data-card-wall-row]')];
+  expect(rows.map((row) => row.getAttribute('data-card-wall-row'))).toEqual([
+    'left',
+    'right',
+    'left',
+  ]);
+  // 두 벌이어야 한 벌만큼 옮긴 뒤 처음으로 돌아가도 이음매가 보이지 않는다.
+  for (const row of rows) expect(row.children).toHaveLength(8);
+});
