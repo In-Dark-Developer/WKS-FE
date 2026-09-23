@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-23 · claude · -/- · dev 동기화 후 선후 관계만 남김
+
+- Commits: (merge dev)
+- Done: dev 병합, 충돌 3블록을 dev 쪽으로 해결 — 이 브랜치가 dev 에 더하는 것은 `## 선후 관계` 절 하나다
+- Not done: 없음
+- Developer changes: 없음
+- Upstream changes: PR #172 가 `담당` 39건을 먼저 넣었다. 값은 이 브랜치와 동일해 실질 충돌은 없다
+- Spec changes: `docs/prd/30-functional-requirements.md` — Touches 안
+- Needs your attention: 없음
+- Verification: 표 구조 검사, 선후 관계 절과 V1 절 양쪽 보존 확인
+
 ## 2026-09-23 · ai-stream · -/- · 스트림 열기
 
 - Commits: (open)

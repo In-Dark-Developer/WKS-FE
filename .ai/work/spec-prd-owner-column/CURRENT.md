@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/prd/30-functional-requirements.md,docs/prd/40-quality.md
 - Supersedes: none
-- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-split
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-23-prd-owner-drift
 
 ## Current Phase
 
@@ -26,15 +26,13 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- FR·NFR 표 맨 끝에 `담당` 열을 붙이고 2026-09-23 V1 배정 19건을 적음
-- 보드가 원본이라는 것과 `—` 의 뜻을 두 표 머리에 적음
-- `notion-index-sync.sh --prd --dry-run` 으로 파싱이 그대로인지 확인
-- 배정 39건으로 갱신하고 `## 선후 관계` 절을 더함
+- FR·NFR 표에 `담당` 열 추가, 보드가 원본이라는 규칙을 표 머리에 적음 (PR #164 로 병합됨)
+- `## 선후 관계` 절을 더함 (담당 39건 갱신은 dev 에 먼저 들어가 이 브랜치에서 빠졌다)
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`3178c00`
+`e45cc1d`
 
 ## Relevant Documents
 
