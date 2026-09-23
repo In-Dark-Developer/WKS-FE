@@ -27,9 +27,9 @@ IN_PROGRESS
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 1. ui 표현 컴포넌트 BottomSheet·ProfileCard·ThreadCount·Avatar·BlurredPhoto + 테스트 (done)
-- 2. dating/intro — 인트로(비로그인·로그인)·카카오 로그인 시트 ←
-- 3. dating/profile — 2단계 폼(zod 검증, onSubmit)
-- 4. dating/recommendation — 헤더(실 잔액)·Top 3 카드 앞/뒷면·인연x·리롤 시트
+- 2. dating/intro — 인트로(비로그인·로그인)·카카오 로그인 시트 (done)
+- 3. dating/profile — 2단계 폼(zod 검증, onSubmit) (done)
+- 4. dating/recommendation — 헤더(실 잔액)·Top 3 카드 앞/뒷면·인연x·리롤 시트 ←
 - 5. preview 화면 3개(dating-intro·dating-profile·dating-cards)
 - 6. test·typecheck·lint, PLAN [x], 종료 절차
 

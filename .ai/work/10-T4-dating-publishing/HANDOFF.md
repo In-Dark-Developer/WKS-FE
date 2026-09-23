@@ -17,7 +17,7 @@
 
 ## Work In Progress
 
-- step 1: src/ui 표현 컴포넌트 작성 중
+- step 4: dating/recommendation 화면 작성 중 (ui·intro·profile 은 WIP 커밋됨)
 
 ## Files Changed
 
