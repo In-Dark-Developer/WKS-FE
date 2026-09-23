@@ -44,7 +44,7 @@
 - `docs/prd/` — FR-28, FR-29, FR-30, NFR-4 (FR-13 을 대체)
 - `docs/prd/20-screens.md` — SCR-17, SCR-18, SCR-19, SCR-20
 - `docs/api/openapi.yaml` — 해금 · 요청 생성 · 수락/거절
-- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — `소개팅 wf`(확정 디자인 대기)
+- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — 요청 리스트 `76-3400`, 해금·실 보내기 모달은 메인/카드 `76-3401`. 와이어프레임 `65-3123` 은 참고용이며 어긋나면 디자인이 우선한다 — 탭 이름은 '받은 신청'·'보낸 신청' 이고, 실패 상태는 행 배지 + 상세 카드다
 
 ## Acceptance Criteria
 
