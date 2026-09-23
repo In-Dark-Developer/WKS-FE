@@ -177,6 +177,10 @@
     var(--color-neutral-900) 80%,
     transparent
   );
+  /* 하단 네비(Figma nav 30:5661) — Figma 변수가 아니라 그 컴포넌트의 원본 paint 값이다.
+     배경 Rose/50 20% · 선택한 탭 Primary/500 80%. */
+  --color-opacity-nav-rose-50-20: color-mix(in srgb, var(--color-rose-50) 20%, transparent);
+  --color-opacity-nav-primary-500-80: color-mix(in srgb, var(--color-primary-500) 80%, transparent);
   /* 포커스 링은 outline 으로 그린다 — outline-focus, outline-secondary-focus */
   --outline-color-focus: var(--border-color-focus);
   --outline-color-secondary-focus: var(--border-color-secondary-focus);

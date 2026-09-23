@@ -20,6 +20,7 @@ const view: ReadingView = {
   elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
   luckyItem: '작은 책 한 권',
   shareId: '9f0d3f1e-0000-4000-8000-000000000001',
+  elementMatch: null,
 };
 
 function renderAt(path: string) {
@@ -93,4 +94,34 @@ test('뒤로가기 자리에 받은 버튼을 카드 위에 둔다', () => {
   const back = screen.getByRole('button', { name: '뒤로가기' });
   const card = screen.getByText('카드 자리');
   expect(back.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+test('잘 맞는 오행이 있으면 오행 분포와 행운 사이에 이유와 소개팅 입구를 그린다', () => {
+  render(
+    <ReadingResult
+      elementMatchAction={<a href="/dating">토 기운의 사람 만나보기 →</a>}
+      renderCard={() => <p>카드 자리</p>}
+      view={{
+        ...view,
+        elementMatch: { element: 'earth', korean: '토', reason: '흙의 기운이 당신을 살려요.' },
+      }}
+    />,
+  );
+
+  const section = screen.getByRole('region', { name: '나와 잘 맞는 오행' });
+  expect(section).toHaveTextContent('토 (土)');
+  expect(section).toHaveTextContent('흙의 기운이 당신을 살려요.');
+  expect(screen.getByRole('link', { name: '토 기운의 사람 만나보기 →' })).toHaveAttribute(
+    'href',
+    '/dating',
+  );
+  const lucky = screen.getByText('행운의 아이템');
+  expect(section.compareDocumentPosition(lucky) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+test('옛 결과처럼 잘 맞는 오행이 없으면 그 영역만 그리지 않는다', () => {
+  render(<ReadingResult renderCard={() => <p>카드 자리</p>} view={view} />);
+
+  expect(screen.queryByRole('region', { name: '나와 잘 맞는 오행' })).not.toBeInTheDocument();
+  expect(screen.getByText('행운의 아이템')).toBeInTheDocument();
 });

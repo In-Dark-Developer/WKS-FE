@@ -524,3 +524,72 @@ test('매직링크가 보내는 /verify 는 인증 완료를 알린다', async (
     await screen.findByRole('heading', { name: '이메일 인증이 끝났어요' }),
   ).toBeInTheDocument();
 });
+
+// 하단 네비(09/T1, FR-19) — 라우트 handle.nav 가 켠 화면에만 뜨고 그 탭이 선택된다.
+
+function navTab(name: string) {
+  return within(screen.getByRole('navigation', { name: '주요 메뉴' })).getByRole('button', {
+    name,
+  });
+}
+
+test('결과 화면(= 홈)에는 하단 네비가 뜨고 홈 탭이 선택돼 있다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  renderAt(`/reading/${RESULT_ID}`);
+
+  await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' });
+  expect(navTab('홈')).toHaveAttribute('aria-current', 'page');
+  expect(navTab('궁합지도')).not.toHaveAttribute('aria-current');
+});
+
+test('궁합지도 탭은 내 궁합 지도로 가고 그 탭이 선택된다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+  await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' });
+  fireEvent.click(navTab('궁합지도'));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/me/map'));
+  await vi.waitFor(() => expect(navTab('궁합지도')).toHaveAttribute('aria-current', 'page'));
+});
+
+test('홈 탭은 이 브라우저의 사주가 있으면 결과로 간다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = renderAt('/dating');
+  fireEvent.click(navTab('홈'));
+
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
+test('홈 탭은 사주가 없으면 티저가 아니라 사주 입력으로 간다', async () => {
+  const router = renderAt('/dating');
+  expect(navTab('소개팅')).toHaveAttribute('aria-current', 'page');
+
+  fireEvent.click(navTab('홈'));
+
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+  expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
+});
+
+test('사주 입력과 공유 Flow 에는 하단 네비가 없다', async () => {
+  renderAt('/');
+  await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' });
+  expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
+  cleanup();
+
+  getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+  renderAt(`/s/${SHARE_ID}`);
+  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
+});

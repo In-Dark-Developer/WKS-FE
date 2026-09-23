@@ -35,7 +35,7 @@ export const mapRoutes: RouteObject[] = [
   {
     path: 'me/map',
     loader: protectedMapLoader,
-    handle: { backdrop: 'result' },
+    handle: { backdrop: 'result', nav: 'map' },
     element: <CompatibilityMapRoute />,
   },
 ];
