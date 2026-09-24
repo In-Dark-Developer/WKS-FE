@@ -1,7 +1,5 @@
 # Current State — chore-signup-resend-mail
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: chore-signup-resend-mail
 - Owner: 98745092+jjjung0921@users.noreply.github.com
 - Branch: ws/chore-signup-resend-mail
@@ -9,7 +7,7 @@
 - Issue: none
 - Touches: src/features/profile/PreRegisterForm.tsx,src/features/profile/PreRegisterComplete.tsx,src/features/profile/ResendMail.tsx,src/features/profile/ResendMail.test.tsx,src/features/profile/PreRegisterForm.test.tsx
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-prd-completion-fields
 
 ## Current Phase
 
@@ -25,7 +23,6 @@ REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 1. ResendMail 컴포넌트 + 테스트 (668ee69)
 - 2. 완료(mailSent=false)·중복 신청 화면에 연결 + 폼 테스트 (668ee69)
 - 3. test·typecheck·lint 통과
