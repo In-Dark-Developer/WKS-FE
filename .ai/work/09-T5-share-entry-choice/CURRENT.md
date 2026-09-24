@@ -1,15 +1,13 @@
 # Current State — 09-T5-share-entry-choice
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 09-T5-share-entry-choice
 - Owner: gn00py48@gmail.com
 - Branch: ws/09-T5-share-entry-choice
 - Task: 09/T5
 - Issue: none
-- Touches: src/features/share/, src/features/friends/, src/app/routes/share.routes.tsx
+- Touches: src/features/share/, src/features/friends/, src/app/routes/share.routes.tsx, src/app/routes/index.test.tsx
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract-r2, 2026-09-13-backend-contract, 2026-09-13-cloudflare-pages, 2026-09-13-design-tokens, 2026-09-13-drop-birth-region, 2026-09-13-form-owner-change, 2026-09-13-hosting-domains, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-13-workers-static-assets, 2026-09-14-aws-cloudfront-hosting, 2026-09-14-domain-threadoffate, 2026-09-14-netlify-personal-fork, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-dating-publishing-split
 
 ## Current Phase
 
@@ -21,17 +19,20 @@ T5. 공유 진입 분기
 
 ## Status
 
-TODO
+BLOCKED
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- shareInputLoader — 자동 궁합 대신 canReusePrevious 를 돌려준다 ✓
+- ShareEntryChoice 화면 — '이전 정보 불러오기'·'새로 작성하기' ✓
+- share.routes.tsx — 선택/폼 전환, 이전 정보는 /s/:shareId/join, 입력 주소 대기 화면 조정 ✓
+- 테스트(loader·화면·라우트) → test·typecheck·lint 통과 ✓
+- Figma 대조 후 배치·문구 보정 → `--ready` ← (BLOCKED: 디자인 대조 대기)
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`58afee2`
+`b6033c6`
 
 ## Relevant Documents
 
@@ -40,8 +41,10 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/friends/shareInputLoader.ts:shareInputLoader`
+- `src/features/friends/joinShareLoader.ts:joinShareLoader`
+- `src/app/routes/share.routes.tsx:ShareInputRoute` · `shareEntryLoader` · `ShareEntryFallback`
 
 ## Next Action
 
-`docs/phases/09-auth-and-shell/PLAN.md`에서 09/T5의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+소유자가 Figma `4.2 기존 티저`·`4.2 새로 작성하기 버튼 누를 시` 를 공유하면 `ShareEntryChoice` 배치·문구를 맞추고 `git merge dev` → `scripts/ai-end.sh --ready`.
