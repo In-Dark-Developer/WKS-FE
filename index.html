@@ -21,14 +21,23 @@
     <meta name="twitter:title" content="운명도 꿰어야 사랑이다" />
     <meta name="twitter:description" content="생년월일로 점지받는 나의 인연" />
     <meta name="twitter:image" content="https://threadoffate.site/og/og-v2.jpg" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K458Q00SJ3"></script>
+    <!-- 첫 방문 인트로 영상의 포스터(IntroVideo) — JS 보다 먼저 받아 두어 첫 화면 LCP 를 앞당긴다 (08/T5, NFR-2). -->
+    <link rel="preload" as="image" href="/intro-poster.webp" fetchpriority="high" />
+    <!-- Google tag (gtag.js) — 호출은 dataLayer 에 먼저 쌓고, 176KB 스크립트는 페이지 load 뒤에 받는다.
+         첫 화면 JS·인트로 영상과 대역폭을 나누면 LCP 가 늦는다 (08/T5, NFR-2). -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'G-K458Q00SJ3');
+
+      window.addEventListener('load', function () {
+        var tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=G-K458Q00SJ3';
+        document.head.appendChild(tag);
+      });
     </script>
   </head>
   <body>
