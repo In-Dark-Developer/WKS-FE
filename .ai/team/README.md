@@ -7,6 +7,7 @@
 |------|----------|------------|-------|
 | [2026-09-24-prd-completion-fields](announcements/2026-09-24-prd-completion-fields.md) | yes | all | Phase 11 종료 |
 | [2026-09-24-dating-publishing-split](announcements/2026-09-24-dating-publishing-split.md) | yes | touches:src/features/dating/ | Phase 11 종료 |
+| [2026-09-24-ci-sync-warn](announcements/2026-09-24-ci-sync-warn.md) | no | all | Phase 10 종료 |
 | [2026-09-23-v1-architecture](announcements/2026-09-23-v1-architecture.md) | yes | all | Phase 11 종료 |
 | [2026-09-23-prd-split](announcements/2026-09-23-prd-split.md) | yes | all | Phase 08 종료 |
 | [2026-09-23-prd-owner-drift](announcements/2026-09-23-prd-owner-drift.md) | yes | all | V1 종료 |

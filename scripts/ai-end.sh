@@ -4,7 +4,7 @@
 # 사용법: scripts/ai-end.sh                    종료 점검 (close commit 전)
 #         scripts/ai-end.sh --set-checkpoint   내 CURRENT.md 의 Last Checkpoint 를 HEAD 로 기록한 뒤 점검
 #         scripts/ai-end.sh --ready [--pr|--web]
-#                                              Task 완료: main 동기화·spec·공지 검사 → Status=REVIEW 커밋·push → PR 제목·본문 초안 출력
+#                                              Task 완료: dev 동기화·spec·공지 검사 → Status=REVIEW 커밋·push → PR 제목·본문 초안 출력
 #                                              (--pr: gh 로 생성/갱신 · --web: 제목·본문이 채워진 브라우저 compare 페이지를 연다)
 #         scripts/ai-end.sh --pr-title         PR 제목 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
 #         scripts/ai-end.sh --pr-body          PR 본문 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
@@ -157,7 +157,13 @@ chk_caps() {
   [ -f "$LOCAL/MEMORY.md" ] && cap "local MEMORY.md 줄 수" "$(lines "$LOCAL/MEMORY.md")" 50
   return 0
 }
-chk_sync() { git merge-base --is-ancestor "$base" HEAD 2>/dev/null && ok "main 동기화됨 ($base 가 HEAD 의 조상)" || fail "main 이 병합되지 않았다 → git merge main"; }
+# PR 이 열린 뒤 dev 가 앞서가는 일은 흔하다 — CI 는 경고만 하고, 병합 직전 동기화는 로컬 --ready 와 GitHub Update branch 가 맡는다.
+chk_sync() {
+  local b=${base#origin/}
+  if git merge-base --is-ancestor "$base" HEAD 2>/dev/null; then ok "$b 동기화됨 ($base 가 HEAD 의 조상)"
+  elif [ "$mode" = ci ]; then warn "$b 브랜치가 앞서 있다 → git merge $b 또는 PR 의 Update branch"
+  else fail "$b 브랜치가 병합되지 않았다 → git merge $b"; fi
+}
 chk_spec() {
   local files f bad=0 logspec
   files=$(git diff --name-only "$base...HEAD" -- docs/prd docs/ARCHITECTURE.md docs/api 2>/dev/null || true)
