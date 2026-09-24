@@ -21,17 +21,19 @@ chore: signup-resend-mail
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. ResendMail 컴포넌트 + 테스트 (668ee69)
+- 2. 완료(mailSent=false)·중복 신청 화면에 연결 + 폼 테스트 (668ee69)
+- 3. test·typecheck·lint 통과
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`0492837`
+`668ee69`
 
 ## Relevant Documents
 
@@ -40,8 +42,11 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/profile/ResendMail.tsx:ResendMail`
+- `src/api/signups.ts:resendSignupMail`
+- `src/features/profile/PreRegisterForm.tsx:PreRegisterForm`
+- `src/features/profile/PreRegisterComplete.tsx:PreRegisterComplete`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰·병합.
