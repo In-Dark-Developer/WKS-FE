@@ -5,7 +5,8 @@ ADR-20260922-netlify-org-repo-direct 의 설정·운영 절차. (개인 fork 중
 ```text
 In-Dark-Developer/WKS-FE (main 병합)
   └─ Netlify 자동 빌드·배포 (netlify.toml)
-브라우저 ─ threadoffate.site ─ Route53 A 75.2.60.5 ─ Netlify
+브라우저 ─ threadoffate.site ─ Route53 A 75.2.60.5 ─ Netlify (main)
+       ├ dev.threadoffate.site ─ Netlify 브랜치 배포 (dev)
        └ api.threadoffate.site ─ Route53 ─ 백엔드 서버
 ```
 
@@ -27,6 +28,15 @@ Netlify → Domain management → `threadoffate.site` (`www` 포함) 후, Route5
 
 HTTPS 인증서는 DNS 반영 뒤 Netlify 가 자동 발급한다(최대 하루).
 
+`dev.threadoffate.site` 는 `dev` 브랜치 배포(`dev--<사이트>.netlify.app`)를 보여야 한다. Netlify 가 이 이름을 사이트의
+도메인 별칭으로 받으면 운영(main) 빌드를 내준다 — 2026-09-24 에 그렇게 운영 번들이 나가던 것을 Netlify 의 브랜치 배포 도메인
+설정으로 바로잡았다. 확인은 두 주소의 번들 이름이 같은지로 한다:
+
+```bash
+curl -sL https://dev.threadoffate.site/ | grep -o 'assets/index-[A-Za-z0-9_-]*\.js'
+curl -sL https://dev--wks-fe.netlify.app/ | grep -o 'assets/index-[A-Za-z0-9_-]*\.js'
+```
+
 사이트를 새로 만들지 않고 연결 저장소만 바꾸면 이 레코드는 건드릴 필요가 없다 — CNAME 대상도 그대로다. 새 사이트를 만들면 `www` CNAME 의 대상이 바뀌고 도메인을 떼었다 붙이는 사이 접속이 끊긴다.
 
 (Phase 08 RESULT Known Issues 가 지적한 대로, 이전 문서는 Netlify 가 처음 붙여 준 이름을 적고 있었다. 사이트 이름은 대시보드가 기준이므로 여기에 박아 두지 않는다.)
@@ -40,7 +50,9 @@ HTTPS 인증서는 DNS 반영 뒤 Netlify 가 자동 발급한다(최대 하루)
 ## 백엔드 팀에 요청
 
 - `api.threadoffate.site` 에 **HTTPS(443) 와 TLS 인증서** — 프론트가 HTTPS 라 HTTP API 는 브라우저가 막는다
-- CORS 허용 origin: `https://threadoffate.site`, `https://www.threadoffate.site`, 그리고 사이트의 `*.netlify.app` 주소
+- CORS 허용 origin: `https://threadoffate.site`, `https://www.threadoffate.site`, `https://dev.threadoffate.site`, 그리고 사이트의 `*.netlify.app` 주소
+- dev 배포는 아직 운영 API(`api.threadoffate.site`)를 부른다(`netlify.toml` 의 `[context.dev]` 에 API 주소가 없다). 백엔드 dev 서버
+  `api-dev.threadoffate.site` 가 열리면 `[context.dev.environment]` 로 옮긴다 — 2026-09-24 기준 응답하지 않는다
 - Route53 레코드 2 의 두 줄, 운영 `/api` 접두 확인
 
 ## 주의
