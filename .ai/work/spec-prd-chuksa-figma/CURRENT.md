@@ -21,12 +21,12 @@ spec: prd-chuksa-figma
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] SCR-23 Figma 출처 연결 (1f56714)
 
 ## Last Checkpoint
 
