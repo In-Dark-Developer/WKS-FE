@@ -6,7 +6,8 @@ vi.mock('./client', async (importOriginal) => {
   return { ...actual, request: requestMock };
 });
 
-import { createResult, getResult, type ResultRequestInput } from './results';
+import { createResult, getResult, getResultInput, type ResultRequestInput } from './results';
+import { resultInputSchema } from './schema/result';
 import { clearSession, readSession, writeSession } from './session';
 
 const input: ResultRequestInput = {
@@ -131,4 +132,31 @@ test('다른 사람의 결과가 없다는 응답은 내 결과를 건드리지 
   await getResult('22222222-2222-4222-8222-222222222222');
 
   expect(readSession()?.resultId).toBe('11111111-1111-4111-8111-111111111111');
+});
+
+test('getResultInput 은 GET /results/{id}/input 을 입력값 스키마로 부른다', async () => {
+  const stored = { ...input, isLeapMonth: false };
+  requestMock.mockResolvedValue({ ok: true, data: stored });
+
+  await expect(getResultInput(RESULT_ID)).resolves.toEqual({ ok: true, data: stored });
+  expect(requestMock).toHaveBeenCalledWith(
+    { method: 'GET', path: `/results/${RESULT_ID}/input` },
+    resultInputSchema,
+  );
+});
+
+test('목 모드의 getResultInput 은 목으로 만든 결과의 입력값을 돌려준다', async () => {
+  vi.stubEnv('VITE_API_MOCK', 'true');
+
+  const created = await createResult(input);
+  if (!created.ok) throw new Error('목 생성은 성공해야 한다');
+
+  await expect(getResultInput(created.data.resultId)).resolves.toEqual({
+    ok: true,
+    data: { ...input, isLeapMonth: false },
+  });
+  await expect(getResultInput(RESULT_ID)).resolves.toMatchObject({
+    ok: false,
+    error: { code: 'RESULT_NOT_FOUND' },
+  });
 });

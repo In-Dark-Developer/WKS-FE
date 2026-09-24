@@ -27,6 +27,12 @@ export const resultRequestSchema = z.object({
 
 export type ResultRequestInput = z.infer<typeof resultRequestSchema>;
 
+// GET /results/{resultId}/input 응답 — 결과를 만들 때 넣은 값 그대로(음력이면 음력 날짜). 백엔드 api.md §2
+// (2026-09-24). 재입력 폼 자동 채움용이며 생년월일·성별이 들어 있어 resultId 를 화면·주소에 내지 않는다.
+export const resultInputSchema = resultRequestSchema.extend({ isLeapMonth: z.boolean() });
+
+export type ResultInput = z.infer<typeof resultInputSchema>;
+
 export const zodiacSchema = z.enum([
   'RAT',
   'OX',
