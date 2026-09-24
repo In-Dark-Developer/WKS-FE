@@ -27,3 +27,22 @@ REVIEW
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - [x] 티저 화면·게이트·라우트·테스트 (588ddea)
+
+## Last Checkpoint
+
+<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
+`1d4ac3b`
+
+## Relevant Documents
+
+- `docs/phases/09-auth-and-shell/PLAN.md`
+- `docs/prd/30-functional-requirements.md` FR-1
+
+## Relevant Source Files
+
+<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
+- `src/features/intro/IntroGate.tsx` · `src/features/intro/MainTeaser.tsx` · `src/features/intro/introSeen.ts` · `src/app/routes/saju.routes.tsx:MainTeaserRoute`
+
+## Next Action
+
+PR 병합 확인. T2 가 붙으면 티저 로그인 시트의 카카오 로그인을 실제 로그인으로 바꾼다.
