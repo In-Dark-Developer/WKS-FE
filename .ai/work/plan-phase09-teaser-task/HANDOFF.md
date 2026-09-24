@@ -2,14 +2,14 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-24
 - Phase / Task: phase09/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+Phase 09 가 메인 티저 Task 를 갖고 FR-32 담당이 이동건이다.
 
 ## Work Completed
 
@@ -45,4 +45,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 병합 확인 — FR-32 Task 는 Phase 10 에 따로 넣는다.
