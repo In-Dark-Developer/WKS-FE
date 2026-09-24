@@ -14,7 +14,7 @@
 ## Work Completed
 
 - `ResendMail` 컴포넌트: `resendSignupMail` 호출, 성공·재실패·이미 인증(400 INVALID_INPUT) 안내
-- 완료 화면(`mailSent: false`)과 중복 신청(409) 안내 아래에 연결 (668ee69)
+- 완료 화면(`mailSent: false`)과 중복 신청(409) 안내 아래에 연결 (668ee69, 33fbf18)
 
 ## Work In Progress
 
@@ -27,7 +27,8 @@
 
 ## Decisions Made
 
-- 재발송은 route action 이 아닌 컴포넌트 이벤트에서 `src/api` 함수를 직접 부른다 — 신청 action 과 섞지 않으려고
+- 재발송은 `preRegisterAction` 에 `intent: 'resend'` 로 보낸다(`useFetcher`) — 공지 server-state-session
+- 완료 카드는 실패 문구 없이 버튼만(main 핫픽스 #191·#192 와 같은 문구, 그 브랜치를 병합해 둠)
 - analytics 이벤트는 추가하지 않았다(범위 밖, `src/lib/analytics.ts` 수정 필요)
 
 ## Tests Executed
@@ -37,7 +38,7 @@
 
 ## Test Results
 
-- 88 files / 451 tests 통과, typecheck·lint 경고 없음
+- 88 files / 452 tests 통과, typecheck·lint 경고 없음
 
 ## Known Problems
 

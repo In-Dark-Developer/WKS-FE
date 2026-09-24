@@ -4,14 +4,14 @@
 
 ## 2026-09-24 · claude-code · -/- · 인증 메일 재발송 버튼
 
-- Commits: 668ee69
-- Done: `mailSent: false` 완료 화면·중복 신청(409) 안내에 '인증 메일 다시 받기' 버튼(`POST /signups/resend`)
+- Commits: 668ee69, ec8ee52(hotfix 병합), 33fbf18
+- Done: 완료 화면(`mailSent: false`, 실패 문구 없음)·중복 신청(409)에 재발송 버튼 — action `intent: 'resend'`
 - Not done: 없음
 - Developer changes: 없음
 - Upstream changes: 없음
 - Spec changes: 없음
 - Needs your attention: 운영 SMTP 발송 실패 원인은 백엔드 확인 필요
-- Verification: pnpm test(451)·typecheck·lint 통과, preview 화면 확인
+- Verification: pnpm test(452)·typecheck·lint 통과, preview 화면 확인
 
 ## 2026-09-24 · ai-stream · -/- · 스트림 열기
 
