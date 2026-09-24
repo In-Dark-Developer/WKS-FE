@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/prd/20-screens.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-prd-completion-fields
 
 ## Current Phase
 
