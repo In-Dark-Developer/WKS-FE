@@ -22,6 +22,7 @@ import {
 } from './formSchema';
 import { contactMethodOptions, genderOptions, mbtiOptions, preferGenderOptions } from './options';
 import { PreRegisterComplete } from './PreRegisterComplete';
+import { ResendMail } from './ResendMail';
 
 type Props = {
   defaultValues?: Partial<PreRegisterValues>;
@@ -32,7 +33,7 @@ type Props = {
 // 제출 실패 안내 — 연결 실패만 디자인(695:2644)에 있고, 나머지는 백엔드가 구분해 주는 경우다.
 const submitFailureMessages = {
   connection: '신청을 완료하지 못했어요.\n입력 내용을 유지한 채 다시 시도해 주세요.',
-  duplicate: '이미 신청한 이메일이에요.\n인증 메일을 확인해 주세요.',
+  duplicate: '이미 신청한 이메일이에요.\n인증 메일을 못 받았다면 다시 받아 주세요.',
   domain: '학교 웹메일로만 신청할 수 있어요.\n학교 계정으로 다시 입력해 주세요.',
 } as const;
 
@@ -55,7 +56,13 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
   const actionData = preRegisterActionDataSchema.safeParse(useActionData());
 
   if (actionData.success && 'status' in actionData.data)
-    return <PreRegisterComplete mailSent={actionData.data.mailSent} onDone={onDone} />;
+    return (
+      <PreRegisterComplete
+        email={values.email.trim()}
+        mailSent={actionData.data.mailSent}
+        onDone={onDone}
+      />
+    );
 
   const validation = validatePreRegister(values);
   const errors = attempted && !validation.success ? validation.fieldErrors : {};
@@ -274,6 +281,7 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
           {submitFailureMessages[failure]}
         </p>
       ) : null}
+      {failure === 'duplicate' ? <ResendMail email={values.email.trim()} /> : null}
 
       <TermsSheet onClose={() => setTermsOpen(false)} open={termsOpen} />
 
