@@ -18,7 +18,7 @@ T1. 소개팅 진입과 프로필 등록
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
