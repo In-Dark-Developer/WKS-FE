@@ -56,70 +56,46 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-test('내 결과가 없으면 링크 주인 닉네임만 돌려준다', async () => {
+test('내 결과가 없으면 고르지 않고 링크 주인 닉네임으로 입력 폼을 보인다', async () => {
   getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
 
-  expect(await shareInputLoader(args())).toEqual({ ownerNickname: '달빛토끼' });
-});
-
-test('내 결과가 있고 이 탭에서 이 링크로 궁합을 만든 적이 없으면 입력 없이 궁합을 만들어 지도로 보낸다(replace)', async () => {
-  writeSession(MY_RESULT_ID);
-  createCompatibilityMock.mockResolvedValue({
-    ok: true,
-    data: { score: 93, tier: 'GUIIN', originNickname: '달빛토끼', guestNickname: '나' },
+  expect(await shareInputLoader(args())).toEqual({
+    ownerNickname: '달빛토끼',
+    canReusePrevious: false,
   });
-
-  await expect(shareInputLoader(args())).rejects.toSatisfy(
-    (response: Response) =>
-      response.headers.get('Location') === `/s/${SHARE_ID}/map` &&
-      response.headers.has('X-Remix-Replace'),
-  );
-  expect(createCompatibilityMock).toHaveBeenCalledWith(SHARE_ID, MY_RESULT_ID);
-  expect(getSharedResultMock).not.toHaveBeenCalled();
 });
 
-test('입력을 건너뛴 궁합 생성이 연결 문제로 실패하면 재시도 주소로 보낸다', async () => {
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+test('내 결과가 있고 이 탭에서 이 링크로 궁합을 만든 적이 없으면 궁합을 만들지 않고 고르게 한다', async () => {
   writeSession(MY_RESULT_ID);
-  createCompatibilityMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
 
-  await expect(shareInputLoader(args())).rejects.toSatisfy(
-    (response: Response) => response.headers.get('Location') === `/s/${SHARE_ID}/join`,
-  );
+  expect(await shareInputLoader(args())).toEqual({
+    ownerNickname: '달빛토끼',
+    canReusePrevious: true,
+  });
+  expect(createCompatibilityMock).not.toHaveBeenCalled();
+  // 새로 작성하기로 가도 보관된 내 결과는 그대로다(FR-23).
+  expect(readSession()).toEqual({ resultId: MY_RESULT_ID });
 });
 
-test('이 탭에서 이미 궁합을 만든 링크로 돌아오면 입력 폼을 보인다', async () => {
+test('이 탭에서 이미 궁합을 만든 링크로 돌아오면 고르지 않고 입력 폼을 보인다', async () => {
   writeSession(MY_RESULT_ID);
   markShareJoined(SHARE_ID);
   getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
 
-  expect(await shareInputLoader(args())).toEqual({ ownerNickname: '달빛토끼' });
+  expect(await shareInputLoader(args())).toEqual({
+    ownerNickname: '달빛토끼',
+    canReusePrevious: false,
+  });
 });
 
 test('없는 링크는 404 를 던진다', async () => {
+  writeSession(MY_RESULT_ID);
   getSharedResultMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
   });
 
   await expect(shareInputLoader(args())).rejects.toMatchObject({ status: 404 });
-});
-
-test('보관된 내 결과를 백엔드가 모르면 비우고, 같은 링크를 다시 불러 입력 폼을 보인다', async () => {
-  writeSession(MY_RESULT_ID);
-  createCompatibilityMock.mockResolvedValue({
-    ok: false,
-    error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
-  });
-  getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
-
-  const redirect = await shareInputLoader(args()).catch((thrown: unknown) => thrown);
-
-  expect(redirect).toBeInstanceOf(Response);
-  expect((redirect as Response).headers.get('Location')).toBe(`/s/${SHARE_ID}`);
-  expect(readSession()).toBeNull();
-  // 다시 불리면 세션이 없어 궁합을 만들지 않고 입력 폼 뷰 모델을 돌려준다.
-  createCompatibilityMock.mockClear();
-  await expect(shareInputLoader(args())).resolves.toEqual({ ownerNickname: '달빛토끼' });
   expect(createCompatibilityMock).not.toHaveBeenCalled();
 });

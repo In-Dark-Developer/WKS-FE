@@ -205,58 +205,10 @@ test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 
   expect(getResultMock).not.toHaveBeenCalled();
 });
 
-// 공유 링크 첫 진입 대기 화면(Figma 1044:4150) — loader 가 끝나기 전까지 보인다.
+// 공유 링크 궁합 대기 화면(Figma 1044:4150) — '이전 정보 불러오기'를 누르면 궁합이 만들어질 때까지 보인다(FR-23).
 
-test('공유 링크로 들어오면 궁합 지도를 만드는 중 안내가 먼저 보인다', async () => {
+test('공유 링크 첫 진입은 궁합을 만들지 않아 궁합 지도를 만드는 중 안내가 뜨지 않는다', () => {
   writeSession(RESULT_ID);
-  let release: (() => void) | undefined;
-  createCompatibilityMock.mockReturnValue(
-    new Promise((resolve) => {
-      release = () =>
-        resolve({
-          ok: true,
-          data: { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '달빛토끼' },
-        });
-    }),
-  );
-
-  renderAt('/s/11111111-1111-4111-8111-111111111111');
-
-  expect(await screen.findByRole('status')).toHaveTextContent(
-    '이전 정보로 궁합지도를 만들고 있어요',
-  );
-  release?.();
-});
-
-test('궁합이 금방 만들어져도 대기 화면이 바로 사라지지 않는다', { timeout: 10000 }, async () => {
-  writeSession(RESULT_ID);
-  createCompatibilityMock.mockResolvedValue({
-    ok: true,
-    data: { score: 92, tier: 'GUIIN', originNickname: '서연', guestNickname: '달빛토끼' },
-  });
-  getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
-  const startedAt = Date.now();
-
-  renderAt('/s/11111111-1111-4111-8111-111111111111');
-
-  expect(await screen.findByRole('status')).toHaveTextContent(
-    '이전 정보로 궁합지도를 만들고 있어요',
-  );
-  // 궁합은 이미 끝났지만 화면은 남아 있다.
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  expect(screen.getByRole('status')).toBeInTheDocument();
-
-  expect(
-    await screen.findByRole(
-      'heading',
-      { level: 1, name: '달빛토끼님의 궁합 지도' },
-      { timeout: 4500 },
-    ),
-  ).toBeInTheDocument();
-  expect(Date.now() - startedAt).toBeGreaterThanOrEqual(2900);
-});
-
-test('사주를 처음 보는 방문자에게는 궁합 지도를 만드는 중 안내가 뜨지 않는다', () => {
   let release: (() => void) | undefined;
   getSharedResultMock.mockReturnValue(
     new Promise((resolve) => {
@@ -267,8 +219,40 @@ test('사주를 처음 보는 방문자에게는 궁합 지도를 만드는 중 
   renderAt('/s/11111111-1111-4111-8111-111111111111');
 
   expect(screen.queryByText(/이전 정보로 궁합지도를 만들고 있어요/)).not.toBeInTheDocument();
+  expect(createCompatibilityMock).not.toHaveBeenCalled();
   release?.();
 });
+
+test(
+  '이전 정보 불러오기를 누르면 대기 화면이 최소 3초 보인 뒤 궁합 지도로 간다',
+  { timeout: 10000 },
+  async () => {
+    writeSession(RESULT_ID);
+    getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+    createCompatibilityMock.mockResolvedValue(compatibility);
+
+    const router = renderAt('/s/11111111-1111-4111-8111-111111111111');
+    fireEvent.click(await screen.findByRole('button', { name: '이전 정보 불러오기' }));
+    const startedAt = Date.now();
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      '이전 정보로 궁합지도를 만들고 있어요',
+    );
+    expect(
+      await screen.findByRole(
+        'heading',
+        { level: 1, name: '달빛토끼님의 궁합 지도' },
+        { timeout: 4500 },
+      ),
+    ).toBeInTheDocument();
+    expect(Date.now() - startedAt).toBeGreaterThanOrEqual(2900);
+    expect(createCompatibilityMock).toHaveBeenCalledWith(
+      '11111111-1111-4111-8111-111111111111',
+      RESULT_ID,
+    );
+    expect(router.state.location.pathname).toBe('/s/11111111-1111-4111-8111-111111111111/map');
+  },
+);
 
 // 04/T7 조립 — 인연카드 화면을 결과 화면에 합쳤다(카드 뒤집기·카드 저장, 빈 순위의 친구에게 공유).
 
@@ -441,7 +425,7 @@ test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로
 });
 
 test(
-  '내 결과가 있으면 링크로 들어올 때 입력 없이 궁합을 만들고 지도로 가며, 내 사주의 뒤로가기는 지도로 돌아온다',
+  '내 결과가 있으면 링크로 들어올 때 이전 정보와 새로 작성을 고르게 하고, 이전 정보로 만든 지도에서 내 사주의 뒤로가기는 지도로 돌아온다',
   { timeout: 10000 },
   async () => {
     writeSession(RESULT_ID);
@@ -451,7 +435,11 @@ test(
 
     const router = renderAt(`/s/${SHARE_ID}`);
 
-    // 공유 링크 첫 진입은 대기 화면을 최소 3초 보여 준다 — RTL 기본 1초로는 모자라다.
+    expect(await screen.findByRole('button', { name: '새로 작성하기' })).toBeInTheDocument();
+    expect(createCompatibilityMock).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '이전 정보 불러오기' }));
+
+    // 궁합 대기 화면은 최소 3초다 — RTL 기본 1초로는 모자라다.
     fireEvent.click(
       await screen.findByRole('button', { name: '내 사주 내용도 확인하기' }, { timeout: 4500 }),
     );
@@ -468,6 +456,21 @@ test(
     expect(createCompatibilityMock).toHaveBeenCalledTimes(1);
   },
 );
+
+test('새로 작성하기를 고르면 보관된 내 결과를 두고 사주 입력 폼을 연다', async () => {
+  writeSession(RESULT_ID);
+  getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+
+  renderAt(`/s/${SHARE_ID}`);
+  fireEvent.click(await screen.findByRole('button', { name: '새로 작성하기' }));
+
+  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(
+    screen.getByText('아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.'),
+  ).toBeInTheDocument();
+  expect(createCompatibilityMock).not.toHaveBeenCalled();
+  expect(localStorage.getItem('wks:session')).toContain(RESULT_ID);
+});
 
 test('결과 없이 친구의 궁합 지도 주소로 오면 공유 링크 입력으로 보낸다', async () => {
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
