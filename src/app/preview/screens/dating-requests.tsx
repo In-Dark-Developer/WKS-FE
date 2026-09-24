@@ -49,7 +49,7 @@ const sent: readonly SentRequestView[] = [
     rank: 3,
     score: 87,
     relationLabel: '찰떡궁합',
-    mbti: null,
+    mbti: 'ISFP',
     bio: '운동하고 맛집 다니는 걸 좋아합니다.',
     photo: { isLocked: true, thumbnailUrl: photoHorse, cost: 10 },
     name: { isLocked: true, cost: 7 },

@@ -91,6 +91,9 @@ test('(2/2) 연락 수단에 따라 전화번호·인스타그램 아이디 규�
   expect(validateDetailsStep({ ...validDetails, contactValue: '010-1234' })).toMatchObject({
     fieldErrors: { contactValue: profileErrorMessages.phone },
   });
+  expect(validateDetailsStep({ ...validDetails, contactValue: '01212345678' })).toMatchObject({
+    fieldErrors: { contactValue: profileErrorMessages.phone },
+  });
 
   const instagram = validateDetailsStep({
     ...validDetails,

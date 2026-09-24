@@ -8,12 +8,17 @@ import type { CandidatePhoto, LockableField } from '../recommendation/cardsView'
 // 인연 카드의 사진·앞면·뒷면 내용 — 오늘의 인연(SCR-17)과 요청함 상세(SCR-20)가 ProfileCard 슬롯에 같이 쓴다.
 
 export function CandidatePhotoLayer({ photo }: { photo: CandidatePhoto }) {
+  const src = photo.isLocked ? photo.thumbnailUrl : photo.url;
+  // 썸네일이 없는 잠긴 사진은 그림 없이 어두운 바탕만 둔다.
+  if (src === null) {
+    return <div aria-label="가려진 인연 사진" className="size-full bg-neutral-700" role="img" />;
+  }
   return (
     <BlurredPhoto
       alt={photo.isLocked ? '흐리게 가린 인연 사진' : '인연 사진'}
       className="size-full"
       isBlurred={photo.isLocked}
-      src={photo.isLocked ? photo.thumbnailUrl : photo.url}
+      src={src}
     />
   );
 }
@@ -22,7 +27,7 @@ type FrontProps = {
   // 추천 순위 — 받은 신청처럼 순위가 없는 카드는 null.
   rank: number | null;
   relationLabel: string;
-  mbti: string | null;
+  mbti: string;
   // 궁합 점수 — 보이지 않기로 한 카드(받은 신청, Q17 미정)는 null.
   score: number | null;
   bio: string;
@@ -44,12 +49,10 @@ export function CandidateFront({ rank, relationLabel, mbti, score, bio, footer }
             )}
             <p className="font-sungkok text-display-24 text-neutral-0">{relationLabel}</p>
           </div>
-          {mbti ? (
-            <p className="flex items-center gap-12">
-              <span className="text-ui-12 text-neutral-200">MBTI</span>
-              <span className="font-sungkok text-ui-14 text-neutral-0">{mbti}</span>
-            </p>
-          ) : null}
+          <p className="flex items-center gap-12">
+            <span className="text-ui-12 text-neutral-200">MBTI</span>
+            <span className="font-sungkok text-ui-14 text-neutral-0">{mbti}</span>
+          </p>
         </div>
         {score === null ? null : (
           <p
