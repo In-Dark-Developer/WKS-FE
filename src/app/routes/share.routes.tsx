@@ -55,19 +55,25 @@ function ShareInputRoute() {
   // canReusePrevious=false 를 주고 navigation 이 멈춰 폼이 보인다.
   if (choice === 'reuse' && navigation.state !== 'idle') return <ShareJoinLoading />;
 
+  const form = <ShareInputScreen ownerNickname={view.ownerNickname} />;
   return (
     <IntroGate>
-      {view.canReusePrevious && choice !== 'new' ? (
-        <ShareEntryChoice
-          onReusePrevious={() => {
-            setChoice('reuse');
-            void navigate(`/s/${encodeURIComponent(shareId)}/join`);
-          }}
-          onWriteNew={() => setChoice('new')}
-          ownerNickname={view.ownerNickname}
-        />
+      {view.canReusePrevious ? (
+        // '새로 작성하기'를 눌러도 초대·선택은 남고 그 아래에 폼이 열린다(Figma 30:6323).
+        <>
+          <ShareEntryChoice
+            onReusePrevious={() => {
+              setChoice('reuse');
+              void navigate(`/s/${encodeURIComponent(shareId)}/join`);
+            }}
+            onWriteNew={() => setChoice('new')}
+            ownerFriends={view.ownerFriends}
+            ownerNickname={view.ownerNickname}
+          />
+          {choice === 'new' ? form : null}
+        </>
       ) : (
-        <ShareInputScreen ownerNickname={view.ownerNickname} />
+        form
       )}
     </IntroGate>
   );

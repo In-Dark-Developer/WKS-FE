@@ -3,11 +3,17 @@ import type { LoaderFunctionArgs } from 'react-router-dom';
 import { hasJoinedShare } from '@/api/joinedShares';
 import { readSession } from '@/api/session';
 
-import { loadSharedResult } from './shareMapLoader';
+import type { Friend } from './map/tiers';
+import { loadSharedResult, toOwnerFriends } from './shareMapLoader';
 
-// SCR-06 공유 링크 입력의 뷰 모델 — 부제에 넣을 링크 주인 닉네임(FR-15)과, 이 브라우저의 사주로 궁합을 만들 수 있는지.
-// `canReusePrevious` 면 입력 전에 '이전 정보 불러오기 / 새로 작성하기'를 고르게 한다(FR-23).
-export type ShareInputView = { ownerNickname: string; canReusePrevious: boolean };
+// SCR-06 공유 링크 입력의 뷰 모델 — 링크 주인 닉네임(FR-15), 이 브라우저의 사주로 궁합을 만들 수 있는지와
+// 그때 초대 화면에 보일 주인의 궁합 지도 구슬. `canReusePrevious` 면 입력 전에 '이전 정보 불러오기 /
+// 새로 작성하기'를 고르게 한다(FR-23, Figma v1.0 `4.2 기존 티저` 30:6128).
+export type ShareInputView = {
+  ownerNickname: string;
+  canReusePrevious: boolean;
+  ownerFriends: Friend[];
+};
 
 // SCR-06 `/s/:shareId` loader — 가드가 없다(FR-18). 이 브라우저에 내 결과가 있고 이 탭에서 이 링크로 궁합을 만든
 // 적이 없으면 고르게 한다 — 궁합은 '이전 정보 불러오기'가 `/s/:shareId/join` 에서 만든다(FR-23). 지도에서 뒤로
@@ -18,5 +24,5 @@ export async function shareInputLoader({ params }: LoaderFunctionArgs): Promise<
 
   const owner = await loadSharedResult(shareId);
   const canReusePrevious = readSession() !== null && !hasJoinedShare(shareId);
-  return { ownerNickname: owner.nickname, canReusePrevious };
+  return { ownerNickname: owner.nickname, canReusePrevious, ownerFriends: toOwnerFriends(owner) };
 }

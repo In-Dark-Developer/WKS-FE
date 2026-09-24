@@ -62,6 +62,7 @@ test('내 결과가 없으면 고르지 않고 링크 주인 닉네임으로 입
   expect(await shareInputLoader(args())).toEqual({
     ownerNickname: '달빛토끼',
     canReusePrevious: false,
+    ownerFriends: [],
   });
 });
 
@@ -72,6 +73,7 @@ test('내 결과가 있고 이 탭에서 이 링크로 궁합을 만든 적이 �
   expect(await shareInputLoader(args())).toEqual({
     ownerNickname: '달빛토끼',
     canReusePrevious: true,
+    ownerFriends: [],
   });
   expect(createCompatibilityMock).not.toHaveBeenCalled();
   // 새로 작성하기로 가도 보관된 내 결과는 그대로다(FR-23).
@@ -86,7 +88,29 @@ test('이 탭에서 이미 궁합을 만든 링크로 돌아오면 고르지 않
   expect(await shareInputLoader(args())).toEqual({
     ownerNickname: '달빛토끼',
     canReusePrevious: false,
+    ownerFriends: [],
   });
+});
+
+test('초대 지도의 구슬은 링크 주인의 궁합을 점수 높은 순으로 담는다', async () => {
+  writeSession(MY_RESULT_ID);
+  getSharedResultMock.mockResolvedValue({
+    ok: true,
+    data: {
+      ...owner,
+      compatibilities: [
+        { id: 1, nickname: '서연', score: 70, tier: 'BEOT', createdAt: '2026-09-15T01:00:00Z' },
+        { id: 2, nickname: '민지', score: 95, tier: 'GUIIN', createdAt: '2026-09-14T01:00:00Z' },
+      ],
+    },
+  });
+
+  const view = await shareInputLoader(args());
+
+  expect(view.ownerFriends).toEqual([
+    { nickname: '민지', score: 95, tier: 'GUIIN' },
+    { nickname: '서연', score: 70, tier: 'BEOT' },
+  ]);
 });
 
 test('없는 링크는 404 를 던진다', async () => {

@@ -32,6 +32,14 @@ export async function loadSharedResult(shareId: string): Promise<SharedResult> {
   throw new Response('공유 결과를 불러오지 못했다', { status: 503 });
 }
 
+// 링크 주인의 궁합 지도 구슬 — `nickname` 은 링크 주인 기준의 상대 닉네임이다. 순위는 점수 높은 순, 같은 점수는
+// 응답 순서(최근 순). 공유 링크 입력의 초대 지도와 친구의 궁합 지도가 함께 쓴다.
+export function toOwnerFriends(owner: SharedResult): Friend[] {
+  return owner.compatibilities
+    .map(({ nickname, score, tier }) => ({ nickname, score, tier }))
+    .sort((a, b) => b.score - a.score);
+}
+
 // SCR-13 `/s/:shareId/map` loader — 이 브라우저에 내 결과가 없으면 공유 링크 입력으로 보내고(FR-18), 있으면
 // 링크 주인의 궁합 지도를 다시 불러 새로고침에도 같은 지도를 보인다(FR-6).
 export async function shareMapLoader({ params }: LoaderFunctionArgs): Promise<SharedMapView> {
@@ -42,9 +50,10 @@ export async function shareMapLoader({ params }: LoaderFunctionArgs): Promise<Sh
   if (!session) throw redirect(`/s/${encodeURIComponent(shareId)}`);
 
   const owner = await loadSharedResult(shareId);
-  // `nickname` 은 링크 주인 기준의 상대 닉네임이다. 순위는 점수 높은 순, 같은 점수는 응답 순서(최근 순).
-  const friends = owner.compatibilities
-    .map(({ nickname, score, tier }) => ({ nickname, score, tier }))
-    .sort((a, b) => b.score - a.score);
-  return { shareId, nickname: owner.nickname, friends, myResultId: session.resultId };
+  return {
+    shareId,
+    nickname: owner.nickname,
+    friends: toOwnerFriends(owner),
+    myResultId: session.resultId,
+  };
 }
