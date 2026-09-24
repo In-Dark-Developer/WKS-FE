@@ -45,7 +45,7 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 
 - [ ] T3. Top 3 추천과 리롤 — Done when: 궁합 점수 기준 상위 3명이 카드로 보이고(앞면 점수·관계 유형·MBTI·자기소개), '다른 인연 만나보기'가 하루 1회는 무료로 자정에 초기화되며 그 뒤에는 실 3개를 차감하고, 차감 실패 시 추천이 바뀌지 않는다 · Touches: `src/features/dating/`, `src/ui/` · After: T1, T2, T4 · Owner: 이동건 · FR: FR-26, FR-27
 
-- [x] T4. 소개팅 화면 퍼블리싱 — Done when: 인트로·프로필(`76-3402`)의 Intro 1.1(비로그인)·2.1(로그인)·1.1.1(카카오 로그인 시트)·사주입력폼 (1/2)·(2/2), 메인/카드(`76-3401`)의 카드 앞면·뒷면·인연x·리롤 바텀시트(무료 o·x)·상단 실 잔액이 feature 가 정한 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, 새 표현 컴포넌트(`BottomSheet`·`ProfileCard`·`ThreadCount`·`Avatar`·`BlurredPhoto`)가 도메인 규칙 없이 `src/ui/` 에 있다. API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · Owner: 이정진 · UI: FR-24, FR-25, FR-26, FR-27, FR-31 (commit eae83ad)
+- [x] T4. 소개팅 화면 퍼블리싱 — Done when: 인트로·프로필(`76-3402`)의 Intro 1.1(비로그인)·2.1(로그인)·1.1.1(카카오 로그인 시트)·사주입력폼 (1/2)·(2/2), 메인/카드(`76-3401`)의 카드 앞면·뒷면·인연x·리롤 바텀시트(무료 o·x)·상단 실 잔액이 feature 가 정한 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, 새 표현 컴포넌트(`BottomSheet`·`ProfileCard`·`ThreadCount`·`Avatar`·`BlurredPhoto`)가 도메인 규칙 없이 `src/ui/` 에 있다. API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · Owner: 이정진 · UI: FR-20, FR-24, FR-25, FR-26, FR-27, FR-31 (commit eae83ad)
 
 퍼블리싱 먼저(2026-09-24): 화면은 T4 가 props 뷰 모델로만 그리고 `/preview` 에서 가짜 데이터로 확인한다. 데이터 연결(action·loader·응답→뷰 모델 변환)은 T1·T2·T3 이 한다 — 03/T5·T7 과 같은 분담이다.
 
