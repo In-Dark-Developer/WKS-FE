@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 
-import type { DatingCardsView, MatchCandidateView } from './cardsView';
+import type { CandidateRank, DatingCardsView, MatchCandidateView } from './cardsView';
 import { DatingCards } from './DatingCards';
 
 afterEach(() => {
@@ -9,12 +9,11 @@ afterEach(() => {
   document.body.style.overflow = '';
 });
 
-function candidate(id: string, rank: number): MatchCandidateView {
+function candidate(id: string, rank: CandidateRank): MatchCandidateView {
   return {
     id,
     rank,
     score: 90 - rank,
-    relationLabel: '천생연분',
     mbti: 'ENTP',
     bio: `${id} 자기소개`,
     photo: { isLocked: true, thumbnailUrl: `/${id}.webp`, cost: 10 },

@@ -1,7 +1,7 @@
 import { ProfileCard, type ProfileCardFace } from '@/ui/ProfileCard';
 
 import { CandidateBack, CandidateFront, CandidatePhotoLayer } from '../card/CandidateFaces';
-import type { MatchCandidateView } from './cardsView';
+import { type MatchCandidateView, relationLabelByRank } from './cardsView';
 
 type Props = {
   candidate: MatchCandidateView;
@@ -29,7 +29,7 @@ export function CandidateCard({ candidate, onOpenUnlock, initialFace }: Props) {
           bio={candidate.bio}
           mbti={candidate.mbti}
           rank={candidate.rank}
-          relationLabel={candidate.relationLabel}
+          relationLabel={relationLabelByRank[candidate.rank]}
           score={candidate.score}
         />
       }
