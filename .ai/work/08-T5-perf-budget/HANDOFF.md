@@ -15,10 +15,11 @@
 
 - `scripts/check-bundle-size.mjs` + `pnpm check:bundle` + CI `bundle size` 단계 (초과·산출물 없음 경로 exit 1 확인)
 - 운영 Lighthouse 3회: LCP 중앙값 4.77s(예산 2.5s 초과), FCP 3.65s, 초기 JS 161.4KB — RESULT T5 절
+- B안: 인트로 poster(`public/intro-poster.webp`)+preload, gtag·Amplitude 를 load 뒤로 — 로컬 devtools LCP 5.03→2.52s (RESULT 2차 절)
 
 ## Work In Progress
 
-- 없음 — LCP 줄이는 변경은 승인 대기
+- 없음
 
 ## Files Changed
 
@@ -38,8 +39,9 @@
 
 ## Known Problems
 
-- LCP 요소 = 인트로 영상(1.07MB, 포스터 없음). gtag 176KB·Amplitude 61KB 가 첫 화면 대역폭을 나눈다. 메인 번들 미사용 80KB
-- 고칠 곳이 모두 T5 Touches 밖: `src/features/intro/IntroVideo.tsx`·`src/ui/assets/`·`src/lib/analytics.ts`·`index.html`·`src/app/routes/`
+- simulate LCP 는 4.2s 그대로(비디오 LCP 모델링). 남은 병목은 FCP — 라우트 코드 분할(`src/app/routes/`, Lead)을 별도 Task 로 제안
+- 포스터 preload 는 모든 경로에서 7KB 를 받는다(인트로는 `/` 첫 방문만) — 비용이 작아 받아들임
+- ci.yml 변경은 병합 전 Lead 리뷰(PLAN)
 
 ## Unverified Assumptions
 
@@ -47,4 +49,4 @@
 
 ## Exact Next Action
 
-승인된 범위로 CURRENT Touches 를 고친 뒤 인트로 포스터부터 적용하고 Lighthouse 3회 재측정
+PLAN T5 에 작업 커밋 SHA → `scripts/ai-end.sh --ready` → 배포 뒤 운영 Lighthouse 3회 RESULT 에 추가
