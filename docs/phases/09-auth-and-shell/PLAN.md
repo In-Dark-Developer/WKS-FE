@@ -24,6 +24,7 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 - 친구 궁합 이유 상세 화면 (FR-22)
 - 공유 링크 진입의 '이전 정보 불러오기 / 새로 작성하기' 분기 (FR-23)
 - 결과(= 홈)의 잘 맞는 오행과 소개팅 입구 (FR-3 V1)
+- 첫 방문 메인 티저와 세 진입 (FR-1 V1)
 
 ## Out of Scope
 
@@ -53,12 +54,14 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 - [x] T6. 잘 맞는 오행과 소개팅 입구 — Done when: 결과(= 홈) 화면의 운세 영역에 `elementMatch`(잘 맞는 오행·이유, Figma `Card/Shell` 39:2481)가 보이고 그 아래 'OO 기운의 사람 만나보기'가 소개팅(`/dating`)으로 가며, `elementMatch` 가 null 인 옛 결과(약 905건)는 그 영역을 그리지 않고 다른 영역은 그대로 보이며, 공유 Flow 뒤 '내 사주 내용도 확인하기'로 들어온 결과에도 같은 컴포넌트가 쓰인다 · Touches: `src/features/saju/`, `src/api/schema/`, `src/app/preview/screens/` · Owner: 이정진 · FR: FR-3 (commit e826117)
 
+- [ ] T7. 메인 티저 — Done when: 첫 방문의 `/` 에 메인 티저(「0. 메인 진입 티저」)가 보이고 하단 네비는 보이지 않으며, 첫 방문인지 판단할 수 없으면 티저를 보이고, '내 사주 보기'는 사주 입력으로 가되 이 브라우저에 사주 결과가 있으면 로그인 없이 홈(결과)으로 가며, '새로운 인연 찾기'는 `/dating` 으로, '이미 아이디가 있어요'는 카카오 로그인으로 가고 로그인 뒤 도착 화면은 Q22 답을 따르고, 인트로 영상과의 순서는 Q23 답을 따른다 · Touches: `src/features/intro/`, `src/app/routes/`, `src/app/screens/` · After: T2 · Owner: 이정진 · FR: FR-1
+
 ## Relevant Specifications
 
-- `docs/prd/` — FR-3(V1), FR-19, FR-20, FR-21, FR-22, FR-23, NFR-7, NFR-8
-- `docs/prd/20-screens.md` — SCR-15, SCR-21, SCR-22
+- `docs/prd/` — FR-1(V1), FR-3(V1), FR-19, FR-20, FR-21, FR-22, FR-23, NFR-7, NFR-8
+- `docs/prd/20-screens.md` — SCR-01, SCR-15, SCR-21, SCR-22
 - `docs/api/openapi.yaml` — 궁합 이유 `GET /compatibilities/{id}/reason` · 결과의 `elementMatch`(2026-09-24 반영) · 로그인 콜백 · 계정-결과 연결(쿠키 방식 확정 대기)
-- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — `nav`, `3.1 궁합 지도 - 로그인 x`, `3.1.1 로그인`, `3.1 궁합 지도 - 로그인 o`, `3.2 친구 궁합 리스트 이유`, `4.2 기존 티저 (링크 진입 화면)`, `4.2 새로 작성하기 버튼 누를 시`
+- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — `0. 메인 진입 티저`, `nav`, `3.1 궁합 지도 - 로그인 x`, `3.1.1 로그인`, `3.1 궁합 지도 - 로그인 o`, `3.2 친구 궁합 리스트 이유`, `4.2 기존 티저 (링크 진입 화면)`, `4.2 새로 작성하기 버튼 누를 시`
 
 ## Acceptance Criteria
 
