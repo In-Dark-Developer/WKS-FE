@@ -3,8 +3,9 @@
 export type LockableField<T> = { isLocked: true; cost: number } | { isLocked: false; value: T };
 
 // 잠긴 사진은 썸네일(흐리게 보일 것)만 받는다. 원본 주소는 해금된 뒤에만 온다.
+// 썸네일 API 가 아직 없어(WKS-BE api-spec §10 #84) 지금 추천 응답으로는 null 이다.
 export type CandidatePhoto =
-  { isLocked: true; thumbnailUrl: string; cost: number } | { isLocked: false; url: string };
+  { isLocked: true; thumbnailUrl: string | null; cost: number } | { isLocked: false; url: string };
 
 export type CandidateRank = 1 | 2 | 3;
 
@@ -20,7 +21,8 @@ export type MatchCandidateView = {
   // 궁합 점수 순위. 정렬은 백엔드가 한다.
   rank: CandidateRank;
   score: number;
-  mbti: string | null;
+  // 프로필 등록에서 필수라 항상 온다(WKS-BE DatingProfileRequest).
+  mbti: string;
   bio: string;
   photo: CandidatePhoto;
   name: LockableField<string>;

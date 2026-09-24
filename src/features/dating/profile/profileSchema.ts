@@ -175,7 +175,8 @@ const detailsStepSchema = z
 
 function contactError(values: Pick<DetailsStepValues, 'contactMethod' | 'contactValue'>) {
   const isPhone = values.contactMethod === 'PHONE';
-  const pattern = isPhone ? /^01\d{8,9}$/ : /^[A-Za-z0-9._]{1,30}$/;
+  // 휴대폰 앞자리는 백엔드 PHONE_PATTERN(010·011·016~019)과 같게 둔다 — 여기서 통과하고 400 이 나지 않게.
+  const pattern = isPhone ? /^01[016789]\d{7,8}$/ : /^[A-Za-z0-9._]{1,30}$/;
   if (pattern.test(normalizeContact(values.contactValue))) return undefined;
   return isPhone ? profileErrorMessages.phone : profileErrorMessages.instagram;
 }

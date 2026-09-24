@@ -104,6 +104,7 @@ export function RequestInbox({
 // 목록 한 줄 — Figma Card/순위(109:1871). 누르면 상대 카드를 띄운다.
 function RequestRow({ request, onOpen }: { request: RequestProfileView; onOpen: () => void }) {
   const { photo, name, score } = request;
+  const photoSrc = photo.isLocked ? photo.thumbnailUrl : photo.url;
 
   return (
     <button
@@ -112,12 +113,16 @@ function RequestRow({ request, onOpen }: { request: RequestProfileView; onOpen: 
       type="button"
     >
       <span className="flex min-w-0 items-center gap-12">
-        <BlurredPhoto
-          alt=""
-          className="size-40 shrink-0 rounded-999 bg-neutral-300"
-          isBlurred={photo.isLocked}
-          src={photo.isLocked ? photo.thumbnailUrl : photo.url}
-        />
+        {photoSrc === null ? (
+          <span aria-hidden="true" className="size-40 shrink-0 rounded-999 bg-neutral-300" />
+        ) : (
+          <BlurredPhoto
+            alt=""
+            className="size-40 shrink-0 rounded-999 bg-neutral-300"
+            isBlurred={photo.isLocked}
+            src={photoSrc}
+          />
+        )}
         {name.isLocked ? (
           <span className="text-ui-16 font-semibold text-primary">
             <span aria-hidden="true" className="blur-sm select-none">

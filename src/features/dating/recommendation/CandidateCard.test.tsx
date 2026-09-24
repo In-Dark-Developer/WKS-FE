@@ -39,6 +39,16 @@ test.each([
   expect(screen.getByText(label)).toBeVisible();
 });
 
+test('썸네일이 없는 잠긴 사진은 그림 없이 가린다', () => {
+  const noThumb: MatchCandidateView = {
+    ...locked,
+    photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
+  };
+  render(<CandidateCard candidate={noThumb} onOpenUnlock={vi.fn()} />);
+
+  expect(screen.getByRole('img', { name: '가려진 인연 사진' })).not.toHaveAttribute('src');
+});
+
 test('잠긴 사진은 썸네일만 그린다', () => {
   render(<CandidateCard candidate={locked} onOpenUnlock={vi.fn()} />);
 

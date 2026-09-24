@@ -9,7 +9,7 @@ export type RequestProfileView = {
   // 궁합 점수 — 받은 신청에 보일지는 미정(Q17)이라 그동안 null 로 둔다.
   score: number | null;
   relationLabel: string;
-  mbti: string | null;
+  mbti: string;
   bio: string;
   photo: CandidatePhoto;
   name: LockableField<string>;

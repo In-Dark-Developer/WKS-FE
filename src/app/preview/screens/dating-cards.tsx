@@ -1,12 +1,11 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
 import { DatingCards, type DatingCardsView, type MatchCandidateView } from '@/features/dating';
-import photoHorse from '@/ui/assets/zodiac/zodiac-horse.webp';
 import photoRabbit from '@/ui/assets/zodiac/zodiac-rabbit.webp';
-import photoTiger from '@/ui/assets/zodiac/zodiac-tiger.webp';
 
 const noop = () => {};
 
-// 사람 사진 대신 십이간지 그림을 쓴다 — 잠긴 사진은 썸네일만 받는다.
+// 추천 응답(WKS-BE §10.4)에 있는 값만 쓴다 — 잠긴 사진 썸네일은 아직 오지 않아 null 이다.
+// 해금된 사진은 사람 사진 대신 십이간지 그림을 쓴다.
 const lockedCandidates: readonly MatchCandidateView[] = [
   {
     id: 'c1',
@@ -14,7 +13,7 @@ const lockedCandidates: readonly MatchCandidateView[] = [
     score: 98,
     mbti: 'ENTP',
     bio: '안녕하세요! 처음에는 조금 낯을 가리지만 친해지면 장난도 많고 말도 꽤 많은 편이에요. 평소에는 영화나 전시 보러 가는 걸 좋아하고, 새로운 카페나 맛집 찾아다니는 것도 좋아합니다. 같이 축제 공연 보러 갈 사람을 찾아요.',
-    photo: { isLocked: true, thumbnailUrl: photoRabbit, cost: 10 },
+    photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
     name: { isLocked: true, cost: 7 },
     department: { isLocked: true, cost: 5 },
     reason: { isLocked: true, cost: 3 },
@@ -25,7 +24,7 @@ const lockedCandidates: readonly MatchCandidateView[] = [
     score: 87,
     mbti: 'INFJ',
     bio: '조용한 카페에서 책 읽는 걸 좋아해요.',
-    photo: { isLocked: true, thumbnailUrl: photoTiger, cost: 10 },
+    photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
     name: { isLocked: true, cost: 7 },
     department: { isLocked: true, cost: 5 },
     reason: { isLocked: true, cost: 3 },
@@ -34,9 +33,9 @@ const lockedCandidates: readonly MatchCandidateView[] = [
     id: 'c3',
     rank: 3,
     score: 68,
-    mbti: null,
+    mbti: 'ISFP',
     bio: '운동하고 맛집 다니는 걸 좋아합니다.',
-    photo: { isLocked: true, thumbnailUrl: photoHorse, cost: 10 },
+    photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
     name: { isLocked: true, cost: 7 },
     department: { isLocked: true, cost: 5 },
     reason: { isLocked: true, cost: 3 },
