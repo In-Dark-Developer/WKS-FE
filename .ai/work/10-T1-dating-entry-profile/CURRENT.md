@@ -26,7 +26,7 @@ BLOCKED
 - 1~7 완료 (목 데이터, commit 2ee9119) — 진입 분기·프로필 (1/2)·(2/2)·사진·저장·실패 유지
 - 8. 로그인 연결 — 09/T2 병합 뒤 `dating.routes.tsx` 의 목 로그인/로그아웃을 features/auth 로 교체 ← 대기
 - 9. 프로필 저장 실제 호출 — 백엔드 `/api/dating/**` 명세 뒤 `src/api/dating.ts`·`schema/dating.ts`·openapi
-- 10. `--ready` (PR)
+- 10. 부분 전달 PR(목 연결분, 소유자 결정 2026-09-24) — 8·9 는 병합 뒤 `open 10/T1 … --reopen`(-r2)
 
 ## Last Checkpoint
 
@@ -47,4 +47,4 @@ BLOCKED
 
 ## Next Action
 
-BLOCKED — 09/T2 로그인 병합과 백엔드 dating 명세를 기다린다. 풀리면 Progress 8·9.
+PR 리뷰(@jjjung0921). 병합 뒤 09/T2 로그인·dating 명세가 나오면 -r2 스트림으로 Progress 8·9.

@@ -57,4 +57,4 @@
 
 ## Exact Next Action
 
-09/T2 병합 확인 → `dating.routes.tsx` 의 `signInMockAccount`·`signOutMockAccount` 를 features/auth 의 로그인 시작·로그아웃으로 교체.
+부분 전달 PR 병합 뒤, 09/T2 병합 시 -r2 스트림에서 `dating.routes.tsx` 의 목 로그인/로그아웃을 features/auth 로 교체. PLAN T1 은 [ ] 유지.

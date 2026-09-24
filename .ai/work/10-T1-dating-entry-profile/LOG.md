@@ -9,7 +9,7 @@
 - Not done: 실제 로그인(09/T2)·dating 저장 API(명세 없음) → BLOCKED
 - Developer changes: 없음 · Upstream changes: dev 병합(#198 V1 티저 spec, #199 09/T7 · FR-32 담당 이동건) — Touches 와 겹침 없음
 - Spec changes: openapi.yaml 에 /results/{id}/input · /signups/photo-upload-url · /me 추가(백엔드 api.md 2026-09-24), PLAN T1 Touches 에 src/api/ (소유자 승인)
-- Needs your attention: 인증 방식 Bearer vs 쿠키 불일치 — spec PR 필요
+- Needs your attention: 인증 방식 Bearer vs 쿠키 불일치 — spec PR 필요. 소유자 결정: 목 연결분을 부분 전달 PR 로 올린다(PLAN T1 [ ] 유지)
 - Verification: test 484 passed · typecheck · lint 0 경고
 
 ## 2026-09-24 · ai-stream · 10/T1 · 스트림 열기
