@@ -55,7 +55,7 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
   const actionData = preRegisterActionDataSchema.safeParse(useActionData());
 
   if (actionData.success && 'status' in actionData.data)
-    return <PreRegisterComplete mailSent={actionData.data.mailSent} onDone={onDone} />;
+    return <PreRegisterComplete onDone={onDone} />;
 
   const validation = validatePreRegister(values);
   const errors = attempted && !validation.success ? validation.fieldErrors : {};
