@@ -19,20 +19,20 @@ T5. 공유 진입 분기
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - shareInputLoader — 자동 궁합 대신 canReusePrevious 를 돌려준다 ✓
 - ShareEntryChoice 화면 — '이전 정보 불러오기'·'새로 작성하기' ✓
 - share.routes.tsx — 선택/폼 전환, 이전 정보는 /s/:shareId/join, 입력 주소 대기 화면 조정 ✓
 - 테스트(loader·화면·라우트) → test·typecheck·lint 통과 ✓
-- Figma 대조 후 배치·문구 보정 → `--ready` ← (BLOCKED: 디자인 대조 대기)
+- Figma v1.0 30:6128·30:6323 대조 반영 ✓
+- `git merge dev` → `scripts/ai-end.sh --ready` ←
 
 ## Last Checkpoint
 
-`b6033c6`
+`3684631`
 
 ## Relevant Documents
 
@@ -47,4 +47,4 @@ BLOCKED
 
 ## Next Action
 
-소유자가 Figma `4.2 기존 티저`·`4.2 새로 작성하기 버튼 누를 시` 를 공유하면 `ShareEntryChoice` 배치·문구를 맞추고 `git merge dev` → `scripts/ai-end.sh --ready`.
+`git merge dev` → `scripts/ai-end.sh --ready` (소유자). 폼 머리글 교체는 Touches 밖 — HANDOFF Known Problems.
