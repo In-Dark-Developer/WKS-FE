@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
+import { signInMockAccount } from '@/api/me';
+import { readSession } from '@/api/session';
 import { HomeScreen } from '@/app/screens/HomeScreen';
 import { requireSaju } from '@/app/routes/guards';
 import { fromSharedMapState } from '@/app/routes/fromSharedMap';
 import { readingLoader, SajuForm, sajuAction, type ReadingView } from '@/features/saju';
-import { IntroGate } from '@/features/intro';
+import { DATING_INTRO_PATH, LoginSheet } from '@/features/dating';
+import { IntroGate, MainTeaser } from '@/features/intro';
 import { PreRegisterModal, VerifyComplete, preRegisterAction } from '@/features/profile';
 import { track } from '@/lib/analytics';
 
@@ -37,6 +41,39 @@ function HomeRoute() {
   );
 }
 
+// SCR-01 메인 티저 (FR-1 V1). '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로, 없으면 사주 입력으로 간다.
+// '새로운 인연 찾기'는 소개팅 인트로로 가고 로그인·프로필 조건은 소개팅이 판단한다(FR-24).
+// '이미 아이디가 있어요'는 로그인 시트만 띄운다 — 로그인 뒤 계정 기록을 불러와 이 티저로 돌아온다(FR-21).
+// 카카오 로그인은 09/T2(features/auth)가 붙인다. 그 전까지는 소개팅 인트로와 같이 `VITE_API_MOCK=true` 의 목 계정만 켠다.
+function MainTeaserRoute({ pass }: { pass: () => void }) {
+  const navigate = useNavigate();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  return (
+    <>
+      <MainTeaser
+        onFindMatch={() => {
+          pass();
+          void navigate(DATING_INTRO_PATH);
+        }}
+        onHaveAccount={() => setIsLoginOpen(true)}
+        onViewSaju={() => {
+          const session = readSession();
+          pass();
+          if (session) void navigate(`/reading/${session.resultId}`);
+        }}
+      />
+      <LoginSheet
+        onClose={() => setIsLoginOpen(false)}
+        onKakaoLogin={() => {
+          signInMockAccount();
+          setIsLoginOpen(false);
+        }}
+        open={isLoginOpen}
+      />
+    </>
+  );
+}
+
 // SCR-09 사전신청 모달 — 결과 화면 하위 라우트라 결과 화면의 <Outlet /> 에 뜬다(FR-9).
 // 닫기(배경·ESC·완료의 '확인')는 부모 결과 화면으로 돌아간다.
 function PreRegisterModalRoute() {
@@ -46,11 +83,11 @@ function PreRegisterModalRoute() {
 
 // 사주 입력과 사주 결과(= 홈). 사전신청(SCR-09·SCR-14)은 결과 화면에 붙어 있어 같은 파일에 둔다.
 export const sajuRoutes: RouteObject[] = [
-  // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7. 첫 방문이면 SCR-01 인트로가 먼저 뜬다(FR-1).
+  // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7. 첫 방문이면 SCR-01 인트로와 메인 티저가 먼저 뜬다(FR-1).
   {
     index: true,
     element: (
-      <IntroGate>
+      <IntroGate teaser={(pass) => <MainTeaserRoute pass={pass} />}>
         <SajuForm />
       </IntroGate>
     ),
