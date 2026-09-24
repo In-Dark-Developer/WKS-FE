@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-24 · claude-code · -/- · PR CI 의 dev 미병합을 경고로
+
+- Commits: c724edd
+- Done: chk_sync --ci warn · 메시지 기준 브랜치 이름 · 공지 ci-sync-warn
+- Not done: 없음
+- Developer changes: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: dev 룰셋은 disabled 그대로
+- Verification: CI_BASE 두 값으로 --ci 실행 확인
+
 ## 2026-09-24 · ai-stream · -/- · 스트림 열기
 
 - Commits: (open)

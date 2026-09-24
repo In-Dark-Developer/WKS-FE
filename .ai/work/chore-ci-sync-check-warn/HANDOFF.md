@@ -2,18 +2,19 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-24
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+PR 이 열린 뒤 dev 가 앞서가도 ai-check 가 FAIL 하지 않고 경고만 하며, 메시지는 기준 브랜치(dev)를 가리킨다.
 
 ## Work Completed
 
-- 없음
+- `chk_sync`: --ci 는 warn, 그 밖(--ready)은 FAIL 유지. 메시지는 `${base#origin/}`
+- 공지 `2026-09-24-ci-sync-warn`(Required: no) + 색인
 
 ## Work In Progress
 
@@ -21,19 +22,19 @@
 
 ## Files Changed
 
-- 없음
+- `scripts/ai-end.sh` · `.ai/team/announcements/2026-09-24-ci-sync-warn.md` · `.ai/team/README.md`
 
 ## Decisions Made
 
-- 없음
+- dev 룰셋(disabled)은 소유자 결정으로 그대로 둔다 — up-to-date 강제 없음
 
 ## Tests Executed
 
-- 없음
+- `CI_BASE=origin/main scripts/ai-end.sh --ci` → warn, `CI_BASE=origin/dev` → ok · `bash -n`
 
 ## Test Results
 
-- 없음
+- 기대대로 동작
 
 ## Known Problems
 
@@ -45,4 +46,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR CI 확인 후 병합.
