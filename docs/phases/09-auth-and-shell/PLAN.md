@@ -54,7 +54,7 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 - [x] T6. 잘 맞는 오행과 소개팅 입구 — Done when: 결과(= 홈) 화면의 운세 영역에 `elementMatch`(잘 맞는 오행·이유, Figma `Card/Shell` 39:2481)가 보이고 그 아래 'OO 기운의 사람 만나보기'가 소개팅(`/dating`)으로 가며, `elementMatch` 가 null 인 옛 결과(약 905건)는 그 영역을 그리지 않고 다른 영역은 그대로 보이며, 공유 Flow 뒤 '내 사주 내용도 확인하기'로 들어온 결과에도 같은 컴포넌트가 쓰인다 · Touches: `src/features/saju/`, `src/api/schema/`, `src/app/preview/screens/` · Owner: 이정진 · FR: FR-3 (commit e826117)
 
-- [ ] T7. 메인 티저 — Done when: 첫 방문의 `/` 에서 인트로 영상이 끝나거나 건너뛰면 메인 티저(「0. 메인 진입 티저」)가 보이고 하단 네비는 보이지 않으며, 첫 방문인지 판단할 수 없으면 티저를 보이고, '내 사주 보기'는 사주 입력으로 가되 이 브라우저에 사주 결과가 있으면 로그인 없이 홈(결과)으로 가며, '새로운 인연 찾기'는 `/dating` 으로, '이미 아이디가 있어요'는 '카카오로 시작하기' 로그인 시트를 띄우고 로그인 뒤 계정 기록을 불러와 티저로 돌아온다 · Touches: `src/features/intro/`, `src/app/routes/`, `src/app/screens/` · After: T2 · Owner: 이정진 · FR: FR-1
+- [x] T7. 메인 티저 — Done when: 첫 방문의 `/` 에서 인트로 영상이 끝나거나 건너뛰면 메인 티저(「0. 메인 진입 티저」)가 보이고 하단 네비는 보이지 않으며, 첫 방문인지 판단할 수 없으면 티저를 보이고, '내 사주 보기'는 사주 입력으로 가되 이 브라우저에 사주 결과가 있으면 로그인 없이 홈(결과)으로 가며, '새로운 인연 찾기'는 `/dating` 으로, '이미 아이디가 있어요'는 '카카오로 시작하기' 로그인 시트를 띄우고 로그인 뒤 계정 기록을 불러와 티저로 돌아온다 · Touches: `src/features/intro/`, `src/app/routes/`, `src/app/screens/`, `src/features/dating/index.ts`, `src/ui/assets/teaser/` · After: T2 · Owner: 이정진 · FR: FR-1 (commit 588ddea)
 
 ## Relevant Specifications
 
