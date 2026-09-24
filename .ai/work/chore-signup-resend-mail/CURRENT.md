@@ -5,7 +5,7 @@
 - Branch: ws/chore-signup-resend-mail
 - Task: -/-
 - Issue: none
-- Touches: src/features/profile/PreRegisterForm.tsx,src/features/profile/PreRegisterComplete.tsx,src/features/profile/ResendMail.tsx,src/features/profile/ResendMail.test.tsx,src/features/profile/PreRegisterForm.test.tsx
+- Touches: src/features/profile/PreRegisterForm.tsx,src/features/profile/PreRegisterComplete.tsx,src/features/profile/ResendMail.tsx,src/features/profile/ResendMail.test.tsx,src/features/profile/PreRegisterForm.test.tsx,src/features/profile/preRegisterAction.ts,src/features/profile/preRegisterAction.test.ts,src/features/profile/formSchema.ts
 - Supersedes: none
 - Acked: 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-prd-completion-fields
 
