@@ -52,7 +52,7 @@
 
 - [x] T4. 공유 링크 미리보기 — Done when: `index.html` 에 서비스 공통 OG·Twitter 메타(제목·설명·썸네일·`og:url`)와 썸네일 이미지가 있어 카카오톡·인스타·메신저에 `https://threadoffate.site/s/<id>` 를 붙이면 제목·설명·썸네일이 보이고(SC-6), `shareId` 별 동적 미리보기(Netlify Edge Functions vs 백엔드 렌더)는 ADR 로 채택·기각이 남는다 · Touches: `index.html`, `public/og/`, `docs/decisions/`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48 (메타·썸네일·ADR 은 @jjjung0921 commit d32d0e7·b19cf37·5ff0930, 앱별 확인은 @gn00py48 — 카카오톡·인스타 DM·iMessage·라인 4개 앱에서 제목·설명·썸네일 확인, 2026-09-17, RESULT Validation Results)
 
-- [ ] T5. 성능 예산 측정 — Done when: 운영 주소를 Lighthouse 모바일(느린 4G) 3회 측정한 LCP 중앙값 < 2.5s 와 초기 JS < 250KB gzip 이 RESULT 에 기록되고, 넘으면 원인(폰트·이미지·번들)을 줄이는 변경이 병합되며, 빌드 산출물의 JS gzip 크기를 CI 가 검사해 250KB 를 넘으면 실패한다 (NFR-2) · Touches: `scripts/check-bundle-size.mjs`, `.github/workflows/ci.yml`, `package.json`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48
+- [x] T5. 성능 예산 측정 — Done when: 운영 주소를 Lighthouse 모바일(느린 4G) 3회 측정한 LCP 중앙값 < 2.5s 와 초기 JS < 250KB gzip 이 RESULT 에 기록되고, 넘으면 원인(폰트·이미지·번들)을 줄이는 변경이 병합되며, 빌드 산출물의 JS gzip 크기를 CI 가 검사해 250KB 를 넘으면 실패한다 (NFR-2) · Touches: `scripts/check-bundle-size.mjs`, `.github/workflows/ci.yml`, `package.json`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48 (commit 75dc54e, 387cba3)
 
 - [ ] T6. 출시 점검 — Done when: iOS Safari·Android Chrome 실기기 각 1대에서 SC-1~6 절차와 360·390·430px 가로 스크롤 0·키보드 폼 완주·본문 대비 4.5:1 을 확인해 결과·발견한 문제(이슈 번호)를 RESULT 에 남긴다 (NFR-1·5·6) · Touches: `docs/phases/08-launch-readiness/` · After: T3, T4 · Owner: @nicerjs23
 

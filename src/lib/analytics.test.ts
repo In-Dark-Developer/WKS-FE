@@ -13,6 +13,8 @@ async function freshModule() {
 
 afterEach(() => {
   vi.clearAllMocks();
+  // 'load 전' 시험이 덮어쓴 readyState 를 jsdom 원래 값으로 돌린다.
+  Reflect.deleteProperty(document, 'readyState');
 });
 
 test('init 전에는 아무것도 보내지 않는다 — 테스트·SDK 없는 환경에서 no-op 이다', async () => {
@@ -61,5 +63,21 @@ test('autocapture 는 페이지뷰·세션·유입만 켜고 폼 입력은 끈�
         fileDownloads: false,
       },
     }),
+  );
+});
+
+test('페이지 load 전에는 SDK 를 받지 않고, load 뒤에 받아 그 사이 이벤트도 보낸다 — 첫 화면 대역폭을 나누지 않는다', async () => {
+  Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true });
+  const { initAnalytics, track } = await freshModule();
+
+  initAnalytics();
+  track('saju_submitted', { entry: 'direct' });
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  expect(init).not.toHaveBeenCalled();
+
+  window.dispatchEvent(new Event('load'));
+
+  await vi.waitFor(() =>
+    expect(amplitudeTrack).toHaveBeenCalledWith('saju_submitted', { entry: 'direct' }),
   );
 });

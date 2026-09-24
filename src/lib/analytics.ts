@@ -39,11 +39,24 @@ const pending: { name: string; props: Record<string, unknown> }[] = [];
 
 // 앱 진입점에서 한 번 부른다. SDK 는 동적 import 로 첫 화면 번들 밖에 두고 뒤따라 받는다 — 축제 현장의
 // 모바일 회선에서 첫 화면이 분석 SDK 를 기다리지 않게 한다(ADR-20260916-amplitude-product-analytics).
+// 받기 시작하는 것도 페이지 load 뒤 한가한 때다 — 첫 화면 JS·인트로 영상과 대역폭을 나누면 LCP 가 늦는다
+// (08/T5, NFR-2). 그 사이 이벤트는 pending 에 모인다.
 // 페이지뷰·세션·유입 경로는 SDK 의 autocapture 가 맡고(SPA 경로 전환 포함), 폼 상호작용·파일 다운로드는
 // 끈다 — 깔때기 단계는 track 이벤트로 직접 보낸다.
 export function initAnalytics(): void {
   if (state !== 'off') return;
   state = 'loading';
+  if (document.readyState === 'complete') whenIdle(loadSdk);
+  else window.addEventListener('load', () => whenIdle(loadSdk), { once: true });
+}
+
+// requestIdleCallback 이 없는 브라우저(iOS Safari)는 다음 태스크로 미룬다. 한가한 때가 오지 않아도 3초 뒤에는 받는다.
+function whenIdle(run: () => void): void {
+  if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 3000 });
+  else setTimeout(run, 0);
+}
+
+function loadSdk(): void {
   void import('@amplitude/analytics-browser')
     .then((amplitude) => {
       amplitude.init(API_KEY, {

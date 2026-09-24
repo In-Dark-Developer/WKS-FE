@@ -110,7 +110,7 @@ jobs:
         run: |
           if [ "$EVENT_NAME" != "pull_request" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
           files=$(gh pr diff "$PR_NUMBER" --name-only)
-          if printf '%s\n' "$files" | grep -qE '^(src/|tests/|public/|index\.html|package\.json|pnpm-lock\.yaml|tsconfig|vite|vitest|eslint\.config\.js|\.prettierrc|\.nvmrc)'; then
+          if printf '%s\n' "$files" | grep -qE '^(src/|tests/|public/|scripts/check-bundle-size\.mjs|index\.html|package\.json|pnpm-lock\.yaml|tsconfig|vite|vitest|eslint\.config\.js|\.prettierrc|\.nvmrc)'; then
             echo "code=true" >> "$GITHUB_OUTPUT"
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
@@ -135,3 +135,8 @@ jobs:
       - name: test
         if: ${{ steps.scope.outputs.code == 'true' }}
         run: pnpm test
+      # 초기 JS 전송량 예산(NFR-2, 08/T5) — 빌드 산출물의 첫 화면 JS 를 gzip 으로 재 250KB 를 넘으면 실패한다.
+      # vite build 만 부른다 — tsc 는 위 typecheck 가 이미 돌렸다.
+      - name: bundle size
+        if: ${{ steps.scope.outputs.code == 'true' }}
+        run: pnpm exec vite build && pnpm check:bundle
