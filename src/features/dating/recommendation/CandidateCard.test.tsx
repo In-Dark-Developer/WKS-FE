@@ -10,7 +10,6 @@ const locked: MatchCandidateView = {
   id: 'c1',
   rank: 1,
   score: 68,
-  relationLabel: '천생연분',
   mbti: 'ENTP',
   bio: '영화와 전시를 좋아해요.',
   photo: { isLocked: true, thumbnailUrl: '/thumb-c1.webp', cost: 10 },
@@ -27,6 +26,17 @@ test('앞면에 순위·관계 유형·점수·MBTI·자기소개를 보인다',
   expect(screen.getByLabelText('궁합 점수 68점')).toBeVisible();
   expect(screen.getByText('ENTP')).toBeVisible();
   expect(screen.getByText('영화와 전시를 좋아해요.')).toBeVisible();
+});
+
+test.each([
+  [1, '천생연분'],
+  [2, '찰떡궁합'],
+  [3, '귀한인연'],
+] as const)('%i위의 관계 유형은 %s 로 고정한다', (rank, label) => {
+  render(<CandidateCard candidate={{ ...locked, rank }} onOpenUnlock={vi.fn()} />);
+
+  expect(screen.getByText(`Top${rank}`)).toBeVisible();
+  expect(screen.getByText(label)).toBeVisible();
 });
 
 test('잠긴 사진은 썸네일만 그린다', () => {

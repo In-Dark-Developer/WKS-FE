@@ -6,13 +6,20 @@ export type LockableField<T> = { isLocked: true; cost: number } | { isLocked: fa
 export type CandidatePhoto =
   { isLocked: true; thumbnailUrl: string; cost: number } | { isLocked: false; url: string };
 
+export type CandidateRank = 1 | 2 | 3;
+
+// 관계 유형 문구는 순위에 고정한다 — 백엔드 추천 응답에 등급(tier)이 없다(WKS-BE api-spec §10.4).
+export const relationLabelByRank: Record<CandidateRank, string> = {
+  1: '천생연분',
+  2: '찰떡궁합',
+  3: '귀한인연',
+};
+
 export type MatchCandidateView = {
   id: string;
-  // 1 ~ 3 — 궁합 점수 순위. 정렬은 백엔드가 한다.
-  rank: number;
+  // 궁합 점수 순위. 정렬은 백엔드가 한다.
+  rank: CandidateRank;
   score: number;
-  // 관계 유형 이름(예: 천생연분) — 백엔드가 준 문구 그대로.
-  relationLabel: string;
   mbti: string | null;
   bio: string;
   photo: CandidatePhoto;
