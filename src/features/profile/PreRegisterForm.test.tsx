@@ -100,6 +100,15 @@ test('제출이 성공하면 완료 상태를 보인다', async () => {
   expect(action).toHaveBeenCalledOnce();
 });
 
+test('인증 메일 발송이 실패해도 완료 화면에 실패 문구를 보이지 않는다', async () => {
+  renderForm({ ...filled, agreed: true }, { status: 'done', mailSent: false });
+
+  fireEvent.click(screen.getByRole('button', { name: '사전 신청하기' }));
+
+  expect(await screen.findByText('함께할 새로운 인연을 기다려 주세요.')).toBeInTheDocument();
+  expect(screen.queryByText(/인증 메일을 보내지 못했어요/)).not.toBeInTheDocument();
+});
+
 test('연결에 실패하면 입력값을 유지한 채 다시 신청하게 한다', async () => {
   renderForm({ ...filled, agreed: true }, { formError: 'connection' });
 
