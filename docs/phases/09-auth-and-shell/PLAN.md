@@ -41,17 +41,17 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 ## Tasks
 
-- [x] T1. 하단 네비게이션과 홈 분기 — Done when: 홈·궁합지도·소개팅 세 탭이 viewport 하단에 고정되고, 홈 탭이 사주 데이터 유무로 결과 또는 입력으로 분기하며, 공유 Flow(`/s/**`) 에서는 네비가 보이지 않고 '내 사주 내용도 확인하기' 이후에만 보인다 · Touches: `src/app/`, `src/ui/`, `docs/prd/30-functional-requirements.md` · Owner: 이정진 (commit 54d23a0)
+- [x] T1. 하단 네비게이션과 홈 분기 — Done when: 홈·궁합지도·소개팅 세 탭이 viewport 하단에 고정되고, 홈 탭이 사주 데이터 유무로 결과 또는 입력으로 분기하며, 공유 Flow(`/s/**`) 에서는 네비가 보이지 않고 '내 사주 내용도 확인하기' 이후에만 보인다 · Touches: `src/app/`, `src/ui/`, `docs/prd/30-functional-requirements.md` · Owner: 이정진 · FR: FR-19 (commit 54d23a0)
 
-- [ ] T2. 카카오 로그인과 쿠키 세션 — Done when: 카카오 로그인으로 JWT 쿠키(만료 15일)가 발급되고 새로고침·재방문에 세션이 유지되며, 카카오톡·인스타그램 인앱 브라우저에서도 로그인이 완주되고, 사주 보기·공유·친구 궁합은 비로그인으로 끝까지 동작한다 · Touches: `src/features/auth/`, `src/api/`, `docs/api/openapi.yaml` · Owner: 곽도윤
+- [ ] T2. 카카오 로그인과 쿠키 세션 — Done when: 카카오 로그인으로 JWT 쿠키(만료 15일)가 발급되고 새로고침·재방문에 세션이 유지되며, 카카오톡·인스타그램 인앱 브라우저에서도 로그인이 완주되고, 사주 보기·공유·친구 궁합은 비로그인으로 끝까지 동작한다 · Touches: `src/features/auth/`, `src/api/`, `docs/api/openapi.yaml` · Owner: 곽도윤 · FR: FR-20
 
-- [ ] T3. 궁합지도 계정 저장·복원 — Done when: 로그인 시 계정 기록이 우선 복원되고, 계정이 비어 있을 때만 현재 브라우저 결과를 계정에 연결하며, 로그인을 시작한 화면으로 복귀하고, 취소·실패해도 현재 지도와 비로그인 기록이 남는다 · Touches: `src/features/auth/`, `src/features/friends/`, `src/app/routes/` · After: T2 · Owner: 이정진
+- [ ] T3. 궁합지도 계정 저장·복원 — Done when: 로그인 시 계정 기록이 우선 복원되고, 계정이 비어 있을 때만 현재 브라우저 결과를 계정에 연결하며, 로그인을 시작한 화면으로 복귀하고, 취소·실패해도 현재 지도와 비로그인 기록이 남는다 · Touches: `src/features/auth/`, `src/features/friends/`, `src/app/routes/` · After: T2 · Owner: 이정진 · FR: FR-21
 
-- [x] T4. 친구 궁합 이유 상세 — Done when: 친구 궁합 Row 를 누르면 세 문단('왜 나에게 귀인일까요?' · '둘이 만나게 된다면?' · '둘이 싸우게 된다면?')이 보이고, 최초 열람에만 생성이 일어나며 그 동안 로딩 상태를 보여주고, 두 번째 열람은 저장값을 즉시 그린다 · Touches: `src/features/friends/map/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 (commit d40bab0)
+- [x] T4. 친구 궁합 이유 상세 — Done when: 친구 궁합 Row 를 누르면 세 문단('왜 나에게 귀인일까요?' · '둘이 만나게 된다면?' · '둘이 싸우게 된다면?')이 보이고, 최초 열람에만 생성이 일어나며 그 동안 로딩 상태를 보여주고, 두 번째 열람은 저장값을 즉시 그린다 · Touches: `src/features/friends/map/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 · FR: FR-22 (commit d40bab0)
 
-- [ ] T5. 공유 진입 분기 — Done when: 공유 링크로 들어온 사용자에게 브라우저에 쓸 수 있는 사주가 있으면 '이전 정보 불러오기'와 '새로 작성하기'를 고르게 하고, 이전 정보를 고르면 재입력 없이 궁합이 만들어지며, 새로 작성해도 기존 데이터가 지워지지 않는다 · Touches: `src/features/share/`, `src/features/friends/`, `src/app/routes/share.routes.tsx` · Owner: 강근우
+- [ ] T5. 공유 진입 분기 — Done when: 공유 링크로 들어온 사용자에게 브라우저에 쓸 수 있는 사주가 있으면 '이전 정보 불러오기'와 '새로 작성하기'를 고르게 하고, 이전 정보를 고르면 재입력 없이 궁합이 만들어지며, 새로 작성해도 기존 데이터가 지워지지 않는다 · Touches: `src/features/share/`, `src/features/friends/`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-23
 
-- [x] T6. 잘 맞는 오행과 소개팅 입구 — Done when: 결과(= 홈) 화면의 운세 영역에 `elementMatch`(잘 맞는 오행·이유, Figma `Card/Shell` 39:2481)가 보이고 그 아래 'OO 기운의 사람 만나보기'가 소개팅(`/dating`)으로 가며, `elementMatch` 가 null 인 옛 결과(약 905건)는 그 영역을 그리지 않고 다른 영역은 그대로 보이며, 공유 Flow 뒤 '내 사주 내용도 확인하기'로 들어온 결과에도 같은 컴포넌트가 쓰인다 · Touches: `src/features/saju/`, `src/api/schema/`, `src/app/preview/screens/` · Owner: 이정진 (commit e826117)
+- [x] T6. 잘 맞는 오행과 소개팅 입구 — Done when: 결과(= 홈) 화면의 운세 영역에 `elementMatch`(잘 맞는 오행·이유, Figma `Card/Shell` 39:2481)가 보이고 그 아래 'OO 기운의 사람 만나보기'가 소개팅(`/dating`)으로 가며, `elementMatch` 가 null 인 옛 결과(약 905건)는 그 영역을 그리지 않고 다른 영역은 그대로 보이며, 공유 Flow 뒤 '내 사주 내용도 확인하기'로 들어온 결과에도 같은 컴포넌트가 쓰인다 · Touches: `src/features/saju/`, `src/api/schema/`, `src/app/preview/screens/` · Owner: 이정진 · FR: FR-3 (commit e826117)
 
 ## Relevant Specifications
 

@@ -1,12 +1,14 @@
 name: notion-index-sync
 
 # docs/prd/*.md 의 FR·NFR 표를 ⚔️ PRD DB 에 복사한다. 단방향 — 보드를 고쳐도 저장소는 바뀌지 않는다.
+# `UI 완료`·`기능 완료` 는 PLAN Task 의 [x] 에서 오므로 PLAN 이 바뀌어도 돈다 — push 만. PR 의 담당 대조는
+# PLAN 과 무관해 Task PR 마다 돌리지 않는다(ADR-20260924-prd-completion-from-plans).
 # ADR·Phase 색인은 옛 워크스페이스에 있었고 지금 통합은 거기 접근 권한이 없다 — ⚔️ PRD 한 곳만 쓴다
 # (ADR-20260923-prd-single-notion-db).
 on:
   push:
     branches: [dev]
-    paths: ['docs/prd/**']
+    paths: ['docs/prd/**', 'docs/phases/*/PLAN.md']
   pull_request:
     paths: ['docs/prd/**']
   workflow_dispatch:
