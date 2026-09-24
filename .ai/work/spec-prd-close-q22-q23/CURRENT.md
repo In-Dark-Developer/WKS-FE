@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/prd/30-functional-requirements.md,docs/prd/50-scope.md,docs/phases/09-auth-and-shell/PLAN.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-prd-completion-fields, 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch
 
 ## Current Phase
 
@@ -21,12 +21,12 @@ spec: prd-close-q22-q23
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] Q22·Q23 닫기 · FR-32 지급 시점 (a89ba85)
 
 ## Last Checkpoint
 
