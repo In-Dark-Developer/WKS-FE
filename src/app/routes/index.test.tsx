@@ -64,9 +64,10 @@ const stubResult: Result = {
   compatibilities: [],
 };
 
-// 인트로(FR-1)는 첫 방문에만 뜬다 — 입력 화면을 보는 테스트는 이미 본 방문자로 시작한다.
+// 인트로·메인 티저(FR-1)는 첫 방문에만 뜬다 — 입력 화면을 보는 테스트는 둘 다 지난 방문자로 시작한다.
 beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
+  localStorage.setItem('wks:teaser-passed', '1');
   getMeMock.mockResolvedValue(unauthenticated);
 });
 
@@ -101,6 +102,62 @@ test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
   renderAt('/');
 
   expect(screen.getByLabelText('인트로 영상')).toBeInTheDocument();
+});
+
+// 인트로를 본 뒤 티저에서 아직 진입을 고르지 않은 방문자.
+function renderTeaser() {
+  localStorage.removeItem('wks:teaser-passed');
+  return renderAt('/');
+}
+
+test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
+  renderTeaser();
+
+  expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '새로운 인연 찾기' })).toBeInTheDocument();
+  expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
+});
+
+test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고 다음 방문에는 티저가 없다", async () => {
+  renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
+
+  expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+
+  cleanup();
+  renderAt('/');
+
+  expect(screen.queryByRole('button', { name: '내 사주 보기' })).not.toBeInTheDocument();
+});
+
+test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로 간다", async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+  const router = renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
+
+  await screen.findByRole('navigation', { name: '주요 메뉴' });
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
+test("티저의 '새로운 인연 찾기'는 소개팅 인트로로 간다", async () => {
+  const router = renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
+
+  await screen.findByRole('navigation', { name: '주요 메뉴' });
+  expect(router.state.location.pathname).toBe('/dating');
+});
+
+test("티저의 '이미 아이디가 있어요'는 로그인 시트를 띄우고 닫으면 티저에 남는다", async () => {
+  renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '이미 아이디가 있어요' }));
+
+  const sheet = await screen.findByRole('dialog', { name: '내 운명 찾아 떠나기' });
+  expect(within(sheet).getByRole('button', { name: '카카오로 시작하기' })).toBeInTheDocument();
+
+  fireEvent.click(within(sheet).getByRole('button', { name: '나중에 할래요' }));
+
+  expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
 });
 
 test('첫 방문이라도 결과 화면으로 바로 들어오면 인트로가 없다', async () => {
