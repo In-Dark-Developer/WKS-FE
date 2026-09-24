@@ -49,7 +49,7 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 - [x] T4. 친구 궁합 이유 상세 — Done when: 친구 궁합 Row 를 누르면 세 문단('왜 나에게 귀인일까요?' · '둘이 만나게 된다면?' · '둘이 싸우게 된다면?')이 보이고, 최초 열람에만 생성이 일어나며 그 동안 로딩 상태를 보여주고, 두 번째 열람은 저장값을 즉시 그린다 · Touches: `src/features/friends/map/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 · FR: FR-22 (commit d40bab0)
 
-- [ ] T5. 공유 진입 분기 — Done when: 공유 링크로 들어온 사용자에게 브라우저에 쓸 수 있는 사주가 있으면 '이전 정보 불러오기'와 '새로 작성하기'를 고르게 하고, 이전 정보를 고르면 재입력 없이 궁합이 만들어지며, 새로 작성해도 기존 데이터가 지워지지 않는다 · Touches: `src/features/share/`, `src/features/friends/`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-23
+- [x] T5. 공유 진입 분기 — Done when: 공유 링크로 들어온 사용자에게 브라우저에 쓸 수 있는 사주가 있으면 '이전 정보 불러오기'와 '새로 작성하기'를 고르게 하고, 이전 정보를 고르면 재입력 없이 궁합이 만들어지며, 새로 작성해도 기존 데이터가 지워지지 않는다 · Touches: `src/features/share/`, `src/features/friends/`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-23 (commit 3684631)
 
 - [x] T6. 잘 맞는 오행과 소개팅 입구 — Done when: 결과(= 홈) 화면의 운세 영역에 `elementMatch`(잘 맞는 오행·이유, Figma `Card/Shell` 39:2481)가 보이고 그 아래 'OO 기운의 사람 만나보기'가 소개팅(`/dating`)으로 가며, `elementMatch` 가 null 인 옛 결과(약 905건)는 그 영역을 그리지 않고 다른 영역은 그대로 보이며, 공유 Flow 뒤 '내 사주 내용도 확인하기'로 들어온 결과에도 같은 컴포넌트가 쓰인다 · Touches: `src/features/saju/`, `src/api/schema/`, `src/app/preview/screens/` · Owner: 이정진 · FR: FR-3 (commit e826117)
 
