@@ -39,7 +39,7 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 
 ## Tasks
 
-- [ ] T1. 소개팅 진입과 프로필 등록 — Done when: 비로그인 사용자에게 로그인을, 프로필이 없는 로그인 사용자에게 프로필 등록을 안내하고, 사주 정보(1/2)와 이름·사진·학교 정보(2/2) 두 단계가 각각 검증·오류·연결 실패 상태를 가지며, 등록을 마치면 추천 화면으로 넘어간다 · Touches: `src/features/dating/`, `src/app/routes/`, `docs/api/openapi.yaml` · After: T4 · Owner: 이동건 · FR: FR-24, FR-25
+- [ ] T1. 소개팅 진입과 프로필 등록 — Done when: 비로그인 사용자에게 로그인을, 프로필이 없는 로그인 사용자에게 프로필 등록을 안내하고, 사주 정보(1/2)와 이름·사진·학교 정보(2/2) 두 단계가 각각 검증·오류·연결 실패 상태를 가지며, 등록을 마치면 추천 화면으로 넘어간다 · Touches: `src/features/dating/`, `src/app/routes/`, `src/api/`, `docs/api/openapi.yaml` · After: T4 · Owner: 이동건 · FR: FR-24, FR-25
 
 - [ ] T2. 재화 '실' — Done when: 잔액이 소개팅 화면 상단에 보이고, 획득(가입 10 · 출석 5 · 친구 1명당 3 · 제휴)과 소모가 잔액에 반영되며, 잔액이 모자라면 소모 동작이 막히고 안내가 뜬다. 원장은 백엔드가 갖고 화면은 계산하지 않는다 · Touches: `src/features/dating/`, `src/api/` · After: T1 · Owner: 이동건 · FR: FR-31
 

@@ -1,13 +1,15 @@
 import { request, type ApiOutcome } from './client';
 import {
+  resultInputSchema,
   resultRequestSchema,
   resultSchema,
   type Result,
+  type ResultInput,
   type ResultRequestInput,
 } from './schema/result';
 import { forgetSession, writeSession } from './session';
 
-export type { ResultRequestInput } from './schema/result';
+export type { ResultInput, ResultRequestInput } from './schema/result';
 
 // 백엔드 dev(b61f849)에는 POST /results·GET /results/{id}가 있지만, 백엔드 없이 개발·테스트할 때
 // `VITE_API_MOCK=true`(로컬 .env, 기본은 꺼짐) 면 이 파일 안에서 만든 목 응답을 대신 돌려준다
@@ -15,6 +17,7 @@ export type { ResultRequestInput } from './schema/result';
 const isMockEnabled = () => import.meta.env.VITE_API_MOCK === 'true';
 
 const mockResults = new Map<string, Result>();
+const mockInputs = new Map<string, ResultInput>();
 
 function buildMockResult(input: ResultRequestInput): Result {
   return {
@@ -38,6 +41,7 @@ function buildMockResult(input: ResultRequestInput): Result {
 async function mockCreateResult(input: ResultRequestInput): Promise<ApiOutcome<Result>> {
   const result = buildMockResult(input);
   mockResults.set(result.resultId, result);
+  mockInputs.set(result.resultId, { ...input, isLeapMonth: input.isLeapMonth ?? false });
   return { ok: true, data: result };
 }
 
@@ -75,4 +79,17 @@ export async function getResult(resultId: string): Promise<ApiOutcome<Result>> {
     forgetSession(resultId);
   }
   return outcome;
+}
+
+// GET /results/{resultId}/input — 결과를 만들 때 넣은 입력값(FR-25 소개팅 프로필 (1/2) 채움).
+export async function getResultInput(resultId: string): Promise<ApiOutcome<ResultInput>> {
+  if (isMockEnabled()) {
+    const found = mockInputs.get(resultId);
+    if (found) return { ok: true, data: found };
+    return {
+      ok: false,
+      error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '점지된 결과를 찾을 수 없어요.' },
+    };
+  }
+  return request({ method: 'GET', path: `/results/${resultId}/input` }, resultInputSchema);
 }
