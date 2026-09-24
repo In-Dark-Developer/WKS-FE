@@ -5,7 +5,7 @@ import { ResendMail } from './ResendMail';
 import './PreRegisterComplete.css';
 
 // `mailSent` 가 false 면 신청은 됐지만 인증 메일이 안 갔다 — 백엔드가 그 사실을 응답으로 알려 준다.
-// 그때 `email` 로 재발송 버튼을 띄운다.
+// 그때 실패 문구 없이 `email` 로 재발송 버튼만 띄운다.
 type Props = { onDone?: () => void; mailSent?: boolean; email?: string };
 
 // SCR-09 완료 상태 — Figma 수정본 사전신청 모달 완료(695:2654).
@@ -25,9 +25,7 @@ export function PreRegisterComplete({ onDone, mailSent = true, email }: Props) {
           신청이 완료되었습니다
         </h1>
         <p className="font-display text-ui-12 whitespace-pre-line text-muted">
-          {mailSent
-            ? '함께할 새로운 인연을 기다려 주세요.'
-            : '인증 메일을 보내지 못했어요.\n아래 버튼으로 다시 받아 주세요.'}
+          함께할 새로운 인연을 기다려 주세요.
         </p>
         {!mailSent && email ? <ResendMail email={email} /> : null}
       </div>
