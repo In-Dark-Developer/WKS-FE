@@ -9,6 +9,7 @@ export {
 export { compatibilityReasonLoader, type ReasonLoaderData } from './reason/reasonLoader';
 export type { CompatibilityTier, Friend } from './map/tiers';
 export { joinShare, joinShareLoader } from './joinShareLoader';
+export { ShareEntryChoice } from './ShareEntryChoice';
 export { ShareJoinLoading } from './ShareJoinLoading';
 export { shareInputLoader, type ShareInputView } from './shareInputLoader';
 export { shareMapLoader, type SharedMapView } from './shareMapLoader';
