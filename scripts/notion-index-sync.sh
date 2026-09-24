@@ -3,6 +3,7 @@
 #
 #   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--check-owners] [--dry-run]
 #     --prd      docs/prd/*.md 의 FR·NFR 표 → ⚔️ PRD DB   (ID 로 upsert, 추적 열은 건드리지 않는다)
+#                `UI 완료`·`기능 완료` 는 docs/phases/*/PLAN.md Task 줄의 `UI:`·`FR:` 에서 이끌어낸다
 #     --adr      docs/decisions/ADR-*.md → 🏛️ ADR 색인               (번호 로 upsert)
 #     --phases   docs/phases/README.md 표 → 📅 Phase 색인             (번호 로 upsert)
 #     --check-owners  ⚔️ PRD DB 의 `담당자`(원본)와 저장소 `담당` 열(사본)을 대조한다 — 읽기만 하고
@@ -47,17 +48,48 @@ send() { # send <db> <find_prop> <find_value> <props_json>
 # ⚔️ PRD DB 로 보내는 속성. 저장소가 원천인 열만 쓴다 — 추적 열(상태·담당자·FE·BE·비고·수용 기준)은
 # 사람이 Notion 에서 관리하므로 여기서 보내지 않는다 (ADR-20260923-prd-single-notion-db).
 # 우선순위는 저장소 표기(Must/Should/Could)를 보드 표기(P0/P1/P2)로 옮긴다.
-prd_props() { # prd_props <ID> <구분> <요구사항> <우선순위|"">
-  jq -n --arg id "$1" --arg kind "$2" --arg req "$3" --arg pri "$4" '
+# `UI 완료`·`기능 완료` 는 plan_completion 이 값을 낸 FR 에만 보낸다 — 어느 Task 도 가리키지 않는 FR 은 손대지 않는다
+# (ADR-20260924-prd-completion-from-plans).
+prd_props() { # prd_props <ID> <구분> <요구사항> <우선순위|""> <UI 완료 yes|no|""> <기능 완료 yes|no|"">
+  jq -n --arg id "$1" --arg kind "$2" --arg req "$3" --arg pri "$4" --arg ui "${5:-}" --arg fn "${6:-}" '
     def text($v): { rich_text: [ { text: { content: $v } } ] };
     def board($p): if $p == "Must" then "P0" elif $p == "Should" then "P1" elif $p == "Could" then "P2" else "" end;
       { "이름": { title: [ { text: { content: $req } } ] }, "ID": text($id), "구분": { select: { name: $kind } } }
-    + (if board($pri) == "" then {} else { "우선순위": { select: { name: board($pri) } } } end)'
+    + (if board($pri) == "" then {} else { "우선순위": { select: { name: board($pri) } } } end)
+    + (if $ui == "" then {} else { "UI 완료": { checkbox: ($ui == "yes") } } end)
+    + (if $fn == "" then {} else { "기능 완료": { checkbox: ($fn == "yes") } } end)'
+}
+
+# PLAN Task 줄의 `· UI: FR-…` 는 그 FR 의 화면을 만드는 Task(퍼블리싱), `· FR: FR-…` 는 그 FR 을 동작하게 만드는
+# Task 다. FR 마다 가리키는 Task 가 모두 [x] 면 완료다. UI Task 가 없는 FR 은 기능 Task 가 화면까지 만든 것으로 보고
+# `UI 완료` 를 `기능 완료` 와 같게 둔다. → "<ID>	<UI yes|no|>	<기능 yes|no|>"
+plan_completion() {
+  awk '
+    /^- \[[ x]\] T[0-9]+\. / {
+      done = ($0 ~ /^- \[x\]/)
+      for (k = 1; k <= 2; k++) {
+        key = (k == 1) ? "UI" : "FR"
+        if (!match($0, " · " key ": [^·(]*")) continue
+        part = substr($0, RSTART, RLENGTH)
+        while (match(part, /FR-[0-9]+/)) {
+          id = substr(part, RSTART, RLENGTH); part = substr(part, RSTART + RLENGTH)
+          ids[id] = 1; total[key, id]++; if (done) finished[key, id]++
+        }
+      }
+    }
+    function state(key, id) { return total[key, id] ? (finished[key, id] == total[key, id] ? "yes" : "no") : "" }
+    END {
+      for (id in ids) {
+        fn = state("FR", id); ui = state("UI", id); if (ui == "") ui = fn
+        printf "%s\t%s\t%s\n", id, ui, fn
+      }
+    }' docs/phases/*/PLAN.md
 }
 # FR 표: | ID | Requirement | Area | Priority | Related |   NFR 표: | ID | Requirement | Target | 확인 방법 |
 # 구분(Area)은 FR 표가 갖고, NFR 은 모두 '비기능' 이다.
 sync_prd() {
-  local n=0 line id req pri target kind
+  local n=0 line id req pri target kind done_map ui fn
+  done_map=$(plan_completion)
   while IFS= read -r line; do
     id=$(trim "$(printf '%s' "$line" | cut -d'|' -f2)")
     req=$(trim "$(printf '%s' "$line" | cut -d'|' -f3)")
@@ -66,7 +98,9 @@ sync_prd() {
       NFR-*) kind=비기능; pri=""; target=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); [ -n "$target" ] && req="$req — $target";;
       *) continue;;
     esac
-    send "${NOTION_PRD_DB:-}" ID "$id" "$(prd_props "$id" "$kind" "$req" "$pri")" && n=$((n + 1))
+    ui=$(printf '%s\n' "$done_map" | awk -F'\t' -v k="$id" '$1 == k { print $2 }')
+    fn=$(printf '%s\n' "$done_map" | awk -F'\t' -v k="$id" '$1 == k { print $3 }')
+    send "${NOTION_PRD_DB:-}" ID "$id" "$(prd_props "$id" "$kind" "$req" "$pri" "$ui" "$fn")" && n=$((n + 1))
   done <<EOF
 $(grep -hE '^\| N?FR-[0-9]+ ' docs/prd/*.md)
 EOF
