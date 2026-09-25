@@ -37,14 +37,16 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 - Phase 03 (saju-reading) — 사주 결과·궁합지도가 이미 동작한다.
 - 백엔드: 카카오 로그인 콜백, 계정-결과 연결, 궁합 이유 생성 API 계약. 2026-09-22 BE 회의록 기준이며
-  `docs/api/openapi.yaml` 갱신이 T2 착수의 전제다.
+  `docs/api/openapi.yaml` 갱신이 T2 착수의 전제다. 2026-09-25 에 백엔드 §9 초안을 쿠키로 바꾼 **FE 가정 계약**을 넣고
+  T2·T3 를 목 모드(`VITE_API_MOCK=true`)로 먼저 진행한다 — 백엔드 쿠키 전환(Set-Cookie·CORS 자격 증명·쿠키 인증) 전에는
+  실제 모드 검증이 남으므로 T2·T3 는 부분 전달로 병합하고, 전환 뒤 실제 모드로 확인해 체크한다.
 - 운영·개발 서버 분리(NFR-10)와 Redirect URI 발급 — 백엔드 담당.
 
 ## Tasks
 
 - [x] T1. 하단 네비게이션과 홈 분기 — Done when: 홈·궁합지도·소개팅 세 탭이 viewport 하단에 고정되고, 홈 탭이 사주 데이터 유무로 결과 또는 입력으로 분기하며, 공유 Flow(`/s/**`) 에서는 네비가 보이지 않고 '내 사주 내용도 확인하기' 이후에만 보인다 · Touches: `src/app/`, `src/ui/`, `docs/prd/30-functional-requirements.md` · Owner: 이정진 · FR: FR-19 (commit 54d23a0)
 
-- [ ] T2. 카카오 로그인과 쿠키 세션 — Done when: 카카오 로그인으로 JWT 쿠키(만료 15일)가 발급되고 새로고침·재방문에 세션이 유지되며, 카카오톡·인스타그램 인앱 브라우저에서도 로그인이 완주되고, 사주 보기·공유·친구 궁합은 비로그인으로 끝까지 동작한다 · Touches: `src/features/auth/`, `src/api/`, `docs/api/openapi.yaml` · Owner: 곽도윤 · FR: FR-20
+- [ ] T2. 카카오 로그인과 쿠키 세션 — Done when: 카카오 로그인으로 JWT 쿠키(만료 15일)가 발급되고 새로고침·재방문에 세션이 유지되며, 카카오톡·인스타그램 인앱 브라우저에서도 로그인이 완주되고, 사주 보기·공유·친구 궁합은 비로그인으로 끝까지 동작한다 · Touches: `src/features/auth/`, `src/api/`, `docs/api/openapi.yaml` · Owner: 이정진 · FR: FR-20
 
 - [ ] T3. 궁합지도 계정 저장·복원 — Done when: 로그인 시 계정 기록이 우선 복원되고, 계정이 비어 있을 때만 현재 브라우저 결과를 계정에 연결하며, 로그인을 시작한 화면으로 복귀하고, 취소·실패해도 현재 지도와 비로그인 기록이 남는다 · Touches: `src/features/auth/`, `src/features/friends/`, `src/app/routes/` · After: T2 · Owner: 이정진 · FR: FR-21
 
