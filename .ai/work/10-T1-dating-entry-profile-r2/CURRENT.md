@@ -26,10 +26,8 @@ IN_PROGRESS
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. openapi: `/dating/profile/photo`·`/dating/profile`·`/dating/profile/me`·DATING_* 에러 4개 ←
-- 2. api: `uploads.ts` 를 photoId 계약으로, `dating.ts` 를 실제 요청/응답으로, `schema/dating.ts`
-- 3. feature: `DatingProfileScreen` — resultId 전송 제거, photoId, 404(계정 사주 없음)·409 문구
-- 4. test/typecheck/lint · 커밋 · `--ready`
+- 1~4 완료 (commit c9e61f3) — openapi §10 반영 · photoId 업로드 · resultId 제거 · DATING_* 5개
+- 5. `--ready` (PR) ←
 
 ## Last Checkpoint
 
@@ -49,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-Progress 1 — openapi 에 §10 계약 반영.
+`ai-end.sh --ready` 로 PR 초안.
