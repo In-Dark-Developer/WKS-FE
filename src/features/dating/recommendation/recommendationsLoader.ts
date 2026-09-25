@@ -25,10 +25,10 @@ function toLockable<T extends string>(field: DatingLockableField): LockableField
     : { isLocked: false, value: field.value as T };
 }
 
-// 잠긴 사진은 썸네일만 받는다 — 썸네일 API 가 아직 없어 null 이다(cardsView 주석).
-function toPhoto(field: DatingLockableField): CandidatePhoto {
+// 잠긴 사진은 흐린 썸네일만 받는다 — 원본 주소는 해금 뒤에만 온다(WKS-BE §10.4 `blurredPhotoUrl`).
+function toPhoto(field: DatingLockableField, blurredPhotoUrl: string | null): CandidatePhoto {
   return field.locked
-    ? { isLocked: true, thumbnailUrl: null, cost: field.cost }
+    ? { isLocked: true, thumbnailUrl: blurredPhotoUrl, cost: field.cost }
     : { isLocked: false, url: field.value };
 }
 
@@ -39,7 +39,7 @@ export function toCandidateView(candidate: DatingCandidate): MatchCandidateView 
     score: candidate.score,
     mbti: candidate.mbti,
     bio: candidate.bio,
-    photo: toPhoto(candidate.fields.photo),
+    photo: toPhoto(candidate.fields.photo, candidate.blurredPhotoUrl ?? null),
     name: toLockable(candidate.fields.name),
     department: toLockable(candidate.fields.department),
     reason: toLockable(candidate.fields.reason),

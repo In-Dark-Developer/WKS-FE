@@ -24,12 +24,15 @@ import {
 
 const CANDIDATE_ID = '3f2a9c1e-0000-4000-8000-000000000001';
 
+const BLURRED_URL = 'https://s3.example.com/blurred.jpg';
+
 const locked: DatingCandidate = {
   rank: 1,
   candidateId: CANDIDATE_ID,
   score: 90,
   mbti: 'INFP',
   bio: '안녕하세요',
+  blurredPhotoUrl: BLURRED_URL,
   fields: {
     photo: { locked: true, cost: 10 },
     name: { locked: true, cost: 7 },
@@ -58,10 +61,18 @@ test('잠긴 항목은 값 없이 비용만 옮긴다 (NFR-4)', () => {
     id: CANDIDATE_ID,
     rank: 1,
     score: 90,
-    photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
+    photo: { isLocked: true, thumbnailUrl: BLURRED_URL, cost: 10 },
     name: { isLocked: true, cost: 7 },
   });
   expect(JSON.stringify(view)).not.toContain('value');
+});
+
+test('사진이 없는 후보는 썸네일 없이 잠금만 보인다', () => {
+  expect(toCandidateView({ ...locked, blurredPhotoUrl: null }).photo).toEqual({
+    isLocked: true,
+    thumbnailUrl: null,
+    cost: 10,
+  });
 });
 
 test('해금한 항목은 값을 옮긴다', () => {

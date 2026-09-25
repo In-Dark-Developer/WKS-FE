@@ -54,6 +54,9 @@ export const datingCandidateSchema = z.object({
   score: z.number().int().min(0).max(100),
   mbti: z.string(),
   bio: z.string(),
+  // 흐리게 보여줄 썸네일의 임시 조회 주소 — 원본 사진 권한은 주지 않는다(WKS-BE §10.4, dev 51d5ec2).
+  // 사진이 없는 후보를 위해 없을 수도 있는 값으로 받는다.
+  blurredPhotoUrl: z.url().nullish(),
   fields: z.object({
     photo: datingLockableFieldSchema,
     name: datingLockableFieldSchema,

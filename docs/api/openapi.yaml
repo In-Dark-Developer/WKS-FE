@@ -424,48 +424,8 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
-    patch:
-      operationId: updateMyDatingProfile
-      summary: (V1) 내 소개팅 프로필 수정 — 전체 필드를 보낸다
-      description: "학교 이메일을 바꾸면 `emailVerified` 가 다시 false 가 되고, 재인증 전에는 추천 조회·매칭 요청이 막힌다. 이름만 바꾸면 인증 상태는 유지된다. WKS-BE api-spec.md §10.3."
-      tags: [dating]
-      security: [{ cookieAuth: [] }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/DatingProfileRequest" }
-      responses:
-        "200":
-          description: 수정됨
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [success, data]
-                properties:
-                  success: { type: boolean, const: true }
-                  data: { $ref: "#/components/schemas/DatingProfile" }
-        "400":
-          description: INVALID_INPUT
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-        "401":
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-        "404":
-          description: DATING_PROFILE_NOT_FOUND
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-        "409":
-          description: DATING_PROFILE_CONFLICT
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    # V1 에는 프로필 수정·사진 교체가 없다 — PATCH /dating/profile/me 는 405 METHOD_NOT_ALLOWED 다
+    #   (WKS-BE dev 0c6c772 에서 제거, api-spec.md §10.3). 2026-09-25 까지 이 사본에 있던 patch 를 지웠다.
   /dating/recommendations:
     get:
       operationId: getDatingRecommendations
@@ -936,6 +896,10 @@ components:
         score: { type: integer, minimum: 0, maximum: 100 }
         mbti: { type: string }
         bio: { type: string }
+        blurredPhotoUrl:
+          type: [string, "null"]
+          format: uri
+          description: "흐리게 보여줄 썸네일의 임시 조회 주소. 원본 사진 주소·S3 키는 해금 전까지 응답에 없다 (WKS-BE dev 51d5ec2)"
         fields:
           type: object
           required: [photo, name, department, reason]
@@ -947,8 +911,8 @@ components:
             reason: { $ref: "#/components/schemas/DatingLockableField" }
     ErrorCode:
       type: string
-      enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, DATING_PROFILE_NOT_FOUND, DATING_PROFILE_CONFLICT, DATING_NOT_VERIFIED, DATING_REQUEST_NOT_FOUND, DATING_REQUEST_CONFLICT, INTERNAL_ERROR, NOT_FOUND]
-      description: "백엔드 ErrorCode.java 와 1:1 (2026-09-24 2e615ca). HTTP — INVALID_INPUT 400 · RESULT_NOT_FOUND 404 · SELF_COMPATIBILITY 400 · COMPATIBILITY_NOT_FOUND 404 · DUPLICATE_SIGNUP 409 · INVALID_EMAIL_DOMAIN 400 · INVALID_TOKEN 400 · LLM_UNAVAILABLE 503 · UNAUTHENTICATED 401 · KAKAO_UNAVAILABLE 503 · INTERNAL_ERROR 500 · NOT_FOUND 404(없는 경로). UNAUTHENTICATED·KAKAO_UNAVAILABLE 은 로그인·인증 경로(/auth/kakao · /me) 용이다. 2026-09-25 5ec80d2 로 DATING_* 5개를 더했다 — DATING_PROFILE_NOT_FOUND 404 · DATING_PROFILE_CONFLICT 409 · DATING_NOT_VERIFIED 403 · DATING_REQUEST_NOT_FOUND 404 · DATING_REQUEST_CONFLICT 409"
+      enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, DATING_PROFILE_NOT_FOUND, DATING_PROFILE_CONFLICT, DATING_NOT_VERIFIED, DATING_REQUEST_NOT_FOUND, DATING_REQUEST_CONFLICT, METHOD_NOT_ALLOWED, INTERNAL_ERROR, NOT_FOUND]
+      description: "백엔드 ErrorCode.java 와 1:1 (2026-09-24 2e615ca). HTTP — INVALID_INPUT 400 · RESULT_NOT_FOUND 404 · SELF_COMPATIBILITY 400 · COMPATIBILITY_NOT_FOUND 404 · DUPLICATE_SIGNUP 409 · INVALID_EMAIL_DOMAIN 400 · INVALID_TOKEN 400 · LLM_UNAVAILABLE 503 · UNAUTHENTICATED 401 · KAKAO_UNAVAILABLE 503 · INTERNAL_ERROR 500 · NOT_FOUND 404(없는 경로). UNAUTHENTICATED·KAKAO_UNAVAILABLE 은 로그인·인증 경로(/auth/kakao · /me) 용이다. 2026-09-25 5ec80d2 로 DATING_* 5개를 더했다 — DATING_PROFILE_NOT_FOUND 404 · DATING_PROFILE_CONFLICT 409 · DATING_NOT_VERIFIED 403 · DATING_REQUEST_NOT_FOUND 404 · DATING_REQUEST_CONFLICT 409 · METHOD_NOT_ALLOWED 405(V1 에 없는 수정 API 호출)"
     ErrorResponse:
       type: object
       required: [success, error]

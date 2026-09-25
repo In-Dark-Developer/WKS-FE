@@ -840,6 +840,7 @@ test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린
           score: 98,
           mbti: 'ENTP',
           bio: '영화 보러 다니는 걸 좋아해요.',
+          blurredPhotoUrl: 'https://s3.example.com/blurred.jpg',
           fields: {
             photo: { locked: true, cost: 10 },
             name: { locked: true, cost: 7 },
