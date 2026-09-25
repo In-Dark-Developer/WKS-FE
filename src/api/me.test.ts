@@ -68,3 +68,16 @@ test('목 모드는 로그인 전 401, 로그인 뒤 이 브라우저의 사주�
   });
   expect(requestMock).not.toHaveBeenCalled();
 });
+
+test('목 로그인은 쿠키처럼 localStorage 에 남고, 깨진 값은 로그아웃으로 본다', async () => {
+  vi.stubEnv('VITE_API_MOCK', 'true');
+
+  signInMockAccount();
+  expect(JSON.parse(localStorage.getItem('wks:mock-account') ?? 'null')).toEqual({
+    isSignedIn: true,
+    hasDatingProfile: false,
+  });
+
+  localStorage.setItem('wks:mock-account', '{"isSignedIn":"yes"}');
+  expect(isUnauthenticated(await getMe())).toBe(true);
+});

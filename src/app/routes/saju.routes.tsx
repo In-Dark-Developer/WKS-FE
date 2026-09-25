@@ -2,12 +2,12 @@ import { useState } from 'react';
 import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
-import { signInMockAccount } from '@/api/me';
 import { readSession } from '@/api/session';
 import { HomeScreen } from '@/app/screens/HomeScreen';
 import { requireSaju } from '@/app/routes/guards';
 import { fromSharedMapState } from '@/app/routes/fromSharedMap';
 import { readingLoader, SajuForm, sajuAction, type ReadingView } from '@/features/saju';
+import { goToKakaoLogin } from '@/features/auth';
 import { DATING_INTRO_PATH, LoginSheet } from '@/features/dating';
 import { IntroGate, MainTeaser } from '@/features/intro';
 import { PreRegisterModal, VerifyComplete, preRegisterAction } from '@/features/profile';
@@ -44,7 +44,6 @@ function HomeRoute() {
 // SCR-01 메인 티저 (FR-1 V1). '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로, 없으면 사주 입력으로 간다.
 // '새로운 인연 찾기'는 소개팅 인트로로 가고 로그인·프로필 조건은 소개팅이 판단한다(FR-24).
 // '이미 아이디가 있어요'는 로그인 시트만 띄운다 — 로그인 뒤 계정 기록을 불러와 이 티저로 돌아온다(FR-21).
-// 카카오 로그인은 09/T2(features/auth)가 붙인다. 그 전까지는 소개팅 인트로와 같이 `VITE_API_MOCK=true` 의 목 계정만 켠다.
 function MainTeaserRoute({ pass }: { pass: () => void }) {
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -64,10 +63,7 @@ function MainTeaserRoute({ pass }: { pass: () => void }) {
       />
       <LoginSheet
         onClose={() => setIsLoginOpen(false)}
-        onKakaoLogin={() => {
-          signInMockAccount();
-          setIsLoginOpen(false);
-        }}
+        onKakaoLogin={() => goToKakaoLogin('/')}
         open={isLoginOpen}
       />
     </>
