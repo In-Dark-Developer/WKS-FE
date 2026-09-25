@@ -8,7 +8,7 @@
 - Done: GET /dating/recommendations 연결, 잠금 항목·잔액·빈 카드·403 안내, /dating/cards 라우트
 - Not done: 리롤 차감·무료 판정(BE 경로 없음, 목 전용) · 실 원장(10/T2)
 - Developer changes: 없음 · Upstream changes: 10/T1-r2(#210) 병합 — dating.ts·openapi 충돌을 이 브랜치에서 정리
-- Spec changes: docs/api/openapi.yaml (Touches 안, WKS-BE §10.4 대조)
+- Spec changes: docs/api/openapi.yaml (WKS-BE §10.4 대조) — PLAN T3 Touches 에 src/api/·src/app/routes/·openapi 추가(소유자 승인 2026-09-25)
 - Needs your attention: 리롤 API 요청 — 무료 1회(서버 자정)·실 3 차감은 백엔드 판정이어야 한다
 - Verification: test 527 passed · typecheck · lint 0 경고
 

@@ -15,8 +15,7 @@
 
 - openapi.yaml: `GET /dating/recommendations` · `DatingCandidate`·`DatingLockableField` (WKS-BE §10.4)
 - `api/dating.ts`: `getRecommendations` + 목 후보 3명, `rerollRecommendations`(목 전용 — BE 경로 없음)
-- `recommendation/recommendationsLoader.ts`: 응답 → `DatingCardsView` 변환(잠금 항목은 값 없이 비용만), 잔액은 `GET /me`, 403 은 안내 상태
-- `recommendation/DatingCardsScreen.tsx`·`NotVerifiedNotice.tsx`: 리롤 실패 시 추천 유지 + 토스트, 인증 전 안내
+- `recommendation/`: 응답 → `DatingCardsView` 변환(잠금은 값 없이 비용만) · 잔액은 `GET /me` · 리롤 실패 시 추천 유지 + 토스트 · 403 안내 화면
 - `/dating/cards` 라우트가 Placeholder 대신 카드 화면을 그린다
 
 ## Work In Progress
@@ -26,14 +25,13 @@
 ## Files Changed
 
 - `docs/api/openapi.yaml` · `src/api/{dating,schema/dating}.ts`
-- `src/features/dating/recommendation/{recommendationsLoader,DatingCardsScreen,NotVerifiedNotice}.tsx|ts` (+테스트 2개) · `index.ts`
-- `src/app/routes/dating.routes.tsx` · `index.test.tsx`(카드 화면 2건)
+- `src/features/dating/recommendation/*`(+테스트 2개)·`index.ts` · `src/app/routes/dating.routes.tsx`·`index.test.tsx`
 
 ## Decisions Made
 
 - 잔액은 `GET /me` 의 `threadBalance` 를 그대로 보인다 — 원장·획득·소모는 10/T2 몫이라 화면이 계산하지 않는다(FR-31)
 - 무료 리롤 여부를 알려주는 응답이 없어 지금은 항상 '무료 1회 남음'으로 둔다 — 리롤 API 가 서면 그 값으로 바꾼다
-- 잔액 부족은 확인 시트(`RerollSheet`)가 이미 버튼을 막고 문구를 보인다 — 화면에 같은 판정을 또 두지 않았다
+- 잔액 부족은 확인 시트가 이미 버튼을 막는다 — 화면에 같은 판정을 또 두지 않았다
 - 해금·운명의 실·요청함 버튼은 갈 화면이 없어 눌러도 아무 일도 하지 않는다(Phase 11)
 
 ## Tests Executed
