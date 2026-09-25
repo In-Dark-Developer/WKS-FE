@@ -21,18 +21,18 @@ T1. 소개팅 진입과 프로필 등록
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 1~4 완료 (commit c9e61f3) — openapi §10 반영 · photoId 업로드 · resultId 제거 · DATING_* 5개
-- 5. `--ready` (PR) ←
+- 5. dev 병합(09/T8) · `--ready` → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`cb3ac91`
+`fa9e1b2`
 
 ## Relevant Documents
 
