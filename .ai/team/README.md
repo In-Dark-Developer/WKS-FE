@@ -5,6 +5,7 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-25-cookie-auth-contract](announcements/2026-09-25-cookie-auth-contract.md) | yes | all | 백엔드 쿠키 전환 반영 (Phase 09 종료) |
 | [2026-09-24-prd-completion-fields](announcements/2026-09-24-prd-completion-fields.md) | yes | all | Phase 11 종료 |
 | [2026-09-24-dating-publishing-split](announcements/2026-09-24-dating-publishing-split.md) | yes | touches:src/features/dating/ | Phase 11 종료 |
 | [2026-09-24-ci-sync-warn](announcements/2026-09-24-ci-sync-warn.md) | no | all | Phase 10 종료 |
