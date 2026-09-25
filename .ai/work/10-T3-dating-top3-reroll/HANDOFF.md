@@ -54,7 +54,6 @@
 ## Unverified Assumptions
 
 - 해금한 항목이 `{ locked: false, value }` 로 온다 — 해금 API 가 없어 확인 전이다
-- 추천 응답의 `rank` 가 1~3 만 온다 (스키마가 그 범위를 강제한다)
 
 ## Exact Next Action
 
