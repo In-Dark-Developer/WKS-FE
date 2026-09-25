@@ -58,6 +58,8 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 - [x] T7. 메인 티저 — Done when: 첫 방문의 `/` 에서 인트로 영상이 끝나거나 건너뛰면 메인 티저(「0. 메인 진입 티저」)가 보이고 하단 네비는 보이지 않으며, 첫 방문인지 판단할 수 없으면 티저를 보이고, '내 사주 보기'는 사주 입력으로 가되 이 브라우저에 사주 결과가 있으면 로그인 없이 홈(결과)으로 가며, '새로운 인연 찾기'는 `/dating` 으로, '이미 아이디가 있어요'는 '카카오로 시작하기' 로그인 시트를 띄우고 로그인 뒤 계정 기록을 불러와 티저로 돌아온다 · Touches: `src/features/intro/`, `src/app/routes/`, `src/app/screens/`, `src/features/dating/index.ts`, `src/ui/assets/teaser/` · After: T2 · Owner: 이정진 · FR: FR-1 (commit 588ddea)
 
+- [ ] T8. 궁합지도 로그인 저장 유도 — Done when: 비로그인 사용자의 내 궁합지도(`/me/map`) 맨 아래에 '이 인연들을 계속 간직할까요?' 카드(Figma v1.0 `23:4901`)가 보이고 로그인 사용자에게는 보이지 않으며, '로그인하고 저장하기 →'가 '궁합지도 저장하기' 카카오 로그인 시트를 띄우고, 로그인 뒤 궁합지도로 돌아와 카드가 사라진다(친구의 궁합 지도 `/s/:shareId/map` 에는 두지 않는다) · Touches: `src/features/friends/map/`, `src/features/dating/intro/LoginSheet.tsx`, `src/app/screens/MyMapScreen.tsx`, `src/app/routes/map.routes.tsx`, `src/ui/assets/friends/` · After: T2 · Owner: 이정진 · FR: FR-20
+
 ## Relevant Specifications
 
 - `docs/prd/` — FR-1(V1), FR-3(V1), FR-19, FR-20, FR-21, FR-22, FR-23, NFR-7, NFR-8
