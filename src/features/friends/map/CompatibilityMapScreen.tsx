@@ -18,6 +18,8 @@ type Props = {
   // 맨 아래 버튼 자리 — mine 은 '친구에게 공유하고 궁합 지도 넓히기', visitor 는 '내 사주 내용도 확인하기'.
   // friends 는 share feature·라우팅을 모르므로 app 이 채운다.
   share?: ReactNode;
+  // 공유 버튼 아래 자리 — 비로그인 내 지도의 저장 유도 카드(FR-20). 로그인 판단은 app 이 한다.
+  footer?: ReactNode;
   // 친구 줄을 눌렀을 때 — 궁합 이유 시트(FR-22)를 여는 이동은 app 이 정한다. 없으면 줄을 누를 수 없다.
   onSelectFriend?: (friend: Friend) => void;
   // visitor 는 주인의 사주 요약 없이 지도·등급별 인원·순위만 보인다(FR-15) — 이 화면은 요약을 받지도 않는다.
@@ -30,6 +32,7 @@ export function CompatibilityMapScreen({
   friends,
   back,
   share,
+  footer,
   variant = 'mine',
   onSelectFriend,
 }: Props) {
@@ -50,6 +53,8 @@ export function CompatibilityMapScreen({
       <FriendRanking friends={friends} onSelect={onSelectFriend} />
       {/* 내용과 버튼 사이 — mine 36px(558:2571) · visitor 16px(713:3956). gap-12 에 더한다. */}
       {share ? <div className={variant === 'visitor' ? 'mt-4' : 'mt-24'}>{share}</div> : null}
+      {/* 버튼과 카드 사이 40px(Figma 24:5094 gap-40) — gap-12 에 더한다. */}
+      {footer ? <div className="mt-[28px]">{footer}</div> : null}
     </div>
   );
 }
