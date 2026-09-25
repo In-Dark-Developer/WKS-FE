@@ -17,6 +17,9 @@ export type {
   DatingSajuInput,
 } from './profile/profileSchema';
 export { DatingCards } from './recommendation/DatingCards';
+export { DatingCardsScreen } from './recommendation/DatingCardsScreen';
+export { NotVerifiedNotice } from './recommendation/NotVerifiedNotice';
+export { datingCardsLoader, type DatingCardsState } from './recommendation/recommendationsLoader';
 export type {
   CandidatePhoto,
   DatingCardsView,

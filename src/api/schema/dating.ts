@@ -38,3 +38,35 @@ export const datingPhotoUploadSchema = z.object({
 });
 
 export type DatingPhotoUpload = z.infer<typeof datingPhotoUploadSchema>;
+
+// 추천 카드(§10.4) — 잠긴 항목은 값 없이 비용만 온다(FR-28 · NFR-4). 해금 API 가 아직 없어 `value` 가 실제로
+// 어떤 모양으로 오는지는 확인 전이다 — locked=false 면 문자열 값으로 가정한다.
+export const datingLockableFieldSchema = z.union([
+  z.object({ locked: z.literal(true), cost: z.number().int().nonnegative() }),
+  z.object({ locked: z.literal(false), value: z.string() }),
+]);
+
+export type DatingLockableField = z.infer<typeof datingLockableFieldSchema>;
+
+export const datingCandidateSchema = z.object({
+  rank: z.number().int().min(1).max(3),
+  candidateId: z.string().uuid(),
+  score: z.number().int().min(0).max(100),
+  mbti: z.string(),
+  bio: z.string(),
+  fields: z.object({
+    photo: datingLockableFieldSchema,
+    name: datingLockableFieldSchema,
+    department: datingLockableFieldSchema,
+    reason: datingLockableFieldSchema,
+  }),
+});
+
+export type DatingCandidate = z.infer<typeof datingCandidateSchema>;
+
+// 최대 3명. 후보가 없으면 빈 배열이다.
+export const datingRecommendationsSchema = z.object({
+  candidates: z.array(datingCandidateSchema).max(3),
+});
+
+export type DatingRecommendations = z.infer<typeof datingRecommendationsSchema>;

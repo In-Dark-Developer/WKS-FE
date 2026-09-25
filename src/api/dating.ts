@@ -4,11 +4,20 @@ import { readSession } from './session';
 import {
   datingProfileRequestSchema,
   datingProfileSchema,
+  datingRecommendationsSchema,
+  type DatingCandidate,
   type DatingProfile,
   type DatingProfileRequest,
+  type DatingRecommendations,
 } from './schema/dating';
 
-export type { DatingProfile, DatingProfileRequest } from './schema/dating';
+export type {
+  DatingCandidate,
+  DatingLockableField,
+  DatingProfile,
+  DatingProfileRequest,
+  DatingRecommendations,
+} from './schema/dating';
 
 // 소개팅(`/api/dating/**`) 호출 — 인증 필요. `VITE_API_MOCK=true` 면 요청 없이 목 응답을 돌려준다
 // (results.ts 와 같은 규칙). 백엔드는 이 경로를 아직 Bearer 로 받으므로(api-spec.md §10) 쿠키 전환 전까지
@@ -50,4 +59,62 @@ export async function createDatingProfile(
     return { ok: true, data: buildMockProfile(body) };
   }
   return request({ method: 'POST', path: '/dating/profile', body }, datingProfileSchema);
+}
+
+// 목 후보 — 잠금 비용은 백엔드 기본값(photo 10 · name 7 · department 5 · reason 3)과 같게 둔다.
+const mockCandidateSeeds = [
+  {
+    score: 98,
+    mbti: 'ENTP',
+    bio: '영화와 전시 보러 다니는 걸 좋아해요. 축제 공연도 같이 볼 사람을 찾아요.',
+  },
+  { score: 87, mbti: 'INFJ', bio: '조용한 카페에서 책 읽는 걸 좋아해요.' },
+  { score: 68, mbti: 'ISFP', bio: '운동하고 맛집 다니는 걸 좋아합니다.' },
+] as const;
+
+function buildMockCandidates(): DatingCandidate[] {
+  return mockCandidateSeeds.map((seed, index) => ({
+    rank: index + 1,
+    candidateId: crypto.randomUUID(),
+    score: seed.score,
+    mbti: seed.mbti,
+    bio: seed.bio,
+    fields: {
+      photo: { locked: true, cost: 10 },
+      name: { locked: true, cost: 7 },
+      department: { locked: true, cost: 5 },
+      reason: { locked: true, cost: 3 },
+    },
+  }));
+}
+
+// 목 모드에서만 쓰는 추천 보관 — 리롤해야 바뀐다(실제 모드는 백엔드가 같은 규칙을 갖는다).
+let mockCandidates: DatingCandidate[] | null = null;
+
+export function resetMockRecommendations(): void {
+  mockCandidates = null;
+}
+
+// GET /dating/recommendations — 오늘의 인연 Top 3(FR-26). 학교 메일 인증 전에는 403 DATING_NOT_VERIFIED,
+// 내 프로필이 없으면 404 DATING_PROFILE_NOT_FOUND 다.
+export async function getRecommendations(): Promise<ApiOutcome<DatingRecommendations>> {
+  if (isMockEnabled()) {
+    mockCandidates ??= buildMockCandidates();
+    return { ok: true, data: { candidates: mockCandidates } };
+  }
+  return request({ method: 'GET', path: '/dating/recommendations' }, datingRecommendationsSchema);
+}
+
+// 리롤(FR-27) — 백엔드에 아직 경로가 없다(api-spec.md §10 '#84 구현 상태'). 목 모드에서만 새 세 명을 만들고,
+// 실제 모드는 요청 없이 실패로 돌려준다 — 화면은 추천을 그대로 두고 안내만 띄운다.
+export async function rerollRecommendations(): Promise<ApiOutcome<DatingRecommendations>> {
+  if (!isMockEnabled()) {
+    return {
+      ok: false,
+      error: { kind: 'api', code: 'NOT_FOUND', message: '다시 점지하기는 아직 준비 중이에요.' },
+    };
+  }
+  await new Promise((resolve) => setTimeout(resolve, MOCK_SAVE_DELAY_MS));
+  mockCandidates = buildMockCandidates();
+  return { ok: true, data: { candidates: mockCandidates } };
 }

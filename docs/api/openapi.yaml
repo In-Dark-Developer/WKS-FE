@@ -466,6 +466,46 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/recommendations:
+    get:
+      operationId: getDatingRecommendations
+      summary: (V1) 오늘의 인연 Top 3 — 궁합 점수 내림차순 (FR-26)
+      description: "최대 3명. 학교 메일 인증을 마친 이성 중에서 고르고, 한 번 카드에 나온 상대는 리롤 뒤 새 추천에서 빠진다. **잠긴 항목·사진 주소·연락처는 응답에 없다**(NFR-4) — 잠긴 항목은 `locked: true` 와 비용만 온다. 등급(tier)은 내려오지 않아 관계 유형 문구는 화면이 순위로 정한다. 인증 전에는 403 DATING_NOT_VERIFIED. WKS-BE api-spec.md §10.4 (dev 5ec80d2)."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: "조회됨 — 후보가 없으면 candidates 가 빈 배열이다"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data:
+                    type: object
+                    required: [candidates]
+                    properties:
+                      candidates:
+                        type: array
+                        maxItems: 3
+                        items: { $ref: "#/components/schemas/DatingCandidate" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "403":
+          description: DATING_NOT_VERIFIED — 학교 메일 인증 전
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_PROFILE_NOT_FOUND — 내 소개팅 프로필 없음
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
   /me:
     get:
       operationId: getMe
@@ -878,6 +918,33 @@ components:
         mbti: { type: string }
         bio: { type: string }
         photoId: { type: string, format: uuid }
+    DatingLockableField:
+      description: "해금하지 않은 항목은 값 없이 비용만 온다(FR-28 · NFR-4). 해금 뒤 모양은 해금 API 가 서면 확정한다 [미확인]"
+      type: object
+      required: [locked]
+      properties:
+        locked: { type: boolean }
+        cost: { type: integer, description: "여는 데 드는 실 개수 — locked 가 true 일 때 온다" }
+        value: { type: string, description: "해금한 항목의 값 — locked 가 false 일 때 온다" }
+    DatingCandidate:
+      description: "추천 카드 한 장 (WKS-BE §10.4). `candidateId` 는 상대의 소개팅 프로필 id 다"
+      type: object
+      required: [rank, candidateId, score, mbti, bio, fields]
+      properties:
+        rank: { type: integer, minimum: 1, maximum: 3, description: "궁합 점수 순위 — 정렬은 백엔드가 한다" }
+        candidateId: { type: string, format: uuid }
+        score: { type: integer, minimum: 0, maximum: 100 }
+        mbti: { type: string }
+        bio: { type: string }
+        fields:
+          type: object
+          required: [photo, name, department, reason]
+          description: "항목별 잠금 상태와 비용 — 기본 비용은 photo 10 · name 7 · department 5 · reason 3 이다"
+          properties:
+            photo: { $ref: "#/components/schemas/DatingLockableField" }
+            name: { $ref: "#/components/schemas/DatingLockableField" }
+            department: { $ref: "#/components/schemas/DatingLockableField" }
+            reason: { $ref: "#/components/schemas/DatingLockableField" }
     ErrorCode:
       type: string
       enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, DATING_PROFILE_NOT_FOUND, DATING_PROFILE_CONFLICT, DATING_NOT_VERIFIED, DATING_REQUEST_NOT_FOUND, DATING_REQUEST_CONFLICT, INTERNAL_ERROR, NOT_FOUND]

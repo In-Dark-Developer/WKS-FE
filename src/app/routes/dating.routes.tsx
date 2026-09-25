@@ -2,14 +2,17 @@ import type { RouteObject } from 'react-router-dom';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
 
 import { logout } from '@/api/auth';
-import { Placeholder } from '@/app/Placeholder';
 import { requireAuth, requireDatingProfile } from '@/app/routes/guards';
 import { goToKakaoLogin } from '@/features/auth';
 import {
+  DatingCardsScreen,
   DatingIntroScreen,
   DatingProfileScreen,
+  NotVerifiedNotice,
+  datingCardsLoader,
   datingIntroLoader,
   datingProfileLoader,
+  type DatingCardsState,
   type DatingIntroView,
   type DatingProfileStart,
 } from '@/features/dating';
@@ -40,6 +43,12 @@ function DatingProfileRoute() {
   return <DatingProfileScreen start={start} />;
 }
 
+function DatingCardsRoute() {
+  const state = useLoaderData<DatingCardsState>();
+  if (state.kind === 'not-verified') return <NotVerifiedNotice />;
+  return <DatingCardsScreen view={state.view} />;
+}
+
 export const datingRoutes: RouteObject[] = [
   {
     path: 'dating',
@@ -53,13 +62,13 @@ export const datingRoutes: RouteObject[] = [
     element: <DatingProfileRoute />,
   },
   {
-    // SCR-17 Top 3 카드 — 10/T3 가 추천 연결과 함께 채운다.
+    // SCR-17 Top 3 카드 (FR-26 · FR-27).
     path: 'dating/cards',
     handle: { nav: 'dating' },
     loader: async () => {
       await requireDatingProfile();
-      return null;
+      return datingCardsLoader();
     },
-    element: <Placeholder />,
+    element: <DatingCardsRoute />,
   },
 ];

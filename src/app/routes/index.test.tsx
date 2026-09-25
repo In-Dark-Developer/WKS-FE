@@ -34,6 +34,12 @@ const unauthenticated = {
   ok: false,
   error: { kind: 'api', code: 'UNAUTHENTICATED', message: '로그인이 필요해요.' },
 } as const;
+// 추천도 경계에서 대체한다 — Top 3 라우트가 GET /dating/recommendations 를 부른다(10/T3).
+const { getRecommendationsMock } = vi.hoisted(() => ({ getRecommendationsMock: vi.fn() }));
+vi.mock('@/api/dating', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/dating')>();
+  return { ...actual, getRecommendations: getRecommendationsMock };
+});
 vi.mock('@/api/shares', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/shares')>();
   return {
@@ -69,6 +75,7 @@ beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
   localStorage.setItem('wks:teaser-passed', '1');
   getMeMock.mockResolvedValue(unauthenticated);
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
 });
 
 afterEach(() => {
@@ -81,6 +88,7 @@ afterEach(() => {
   createCompatibilityMock.mockReset();
   getCompatibilityReasonMock.mockReset();
   getMeMock.mockReset();
+  getRecommendationsMock.mockReset();
 });
 
 function renderAt(path: string) {
@@ -754,7 +762,9 @@ test('목록에 없는 궁합 ID 로 들어오면 시트 없이 궁합 지도로
 
 // 소개팅 진입 분기(10/T1, FR-24 · Phase 10 AC1) — 로그인 여부와 등록 상태는 GET /me 로만 판단한다.
 
-function member(overrides: { hasResult?: boolean; hasDatingProfile?: boolean } = {}) {
+function member(
+  overrides: { hasResult?: boolean; hasDatingProfile?: boolean; threadBalance?: number } = {},
+) {
   return {
     ok: true,
     data: {
@@ -814,4 +824,52 @@ test('내 정보 조회가 실패해도 인트로는 열리고 다시 누를 수
   fireEvent.click(await screen.findByRole('button', { name: '내 운명 찾아 떠나기' }));
 
   expect(await screen.findByRole('status')).toHaveTextContent('정보를 불러오지 못했어요');
+});
+
+test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린다 (10/T3 · FR-26)', async () => {
+  getMeMock.mockResolvedValue(
+    member({ hasResult: true, hasDatingProfile: true, threadBalance: 12 }),
+  );
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: {
+      candidates: [
+        {
+          rank: 1,
+          candidateId: '3f2a9c1e-0000-4000-8000-000000000001',
+          score: 98,
+          mbti: 'ENTP',
+          bio: '영화 보러 다니는 걸 좋아해요.',
+          fields: {
+            photo: { locked: true, cost: 10 },
+            name: { locked: true, cost: 7 },
+            department: { locked: true, cost: 5 },
+            reason: { locked: true, cost: 3 },
+          },
+        },
+      ],
+    },
+  });
+
+  renderAt('/dating/cards');
+
+  expect(
+    await screen.findByRole('heading', { name: '나와 잘 맞는 인연 TOP 3' }),
+  ).toBeInTheDocument();
+  expect(screen.getByLabelText('운명의 실 보유 12개')).toBeInTheDocument();
+  expect(screen.getByText('영화 보러 다니는 걸 좋아해요.')).toBeInTheDocument();
+});
+
+test('학교 메일 인증 전에는 Top 3 대신 안내를 보인다 (10/T3)', async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: true, hasDatingProfile: true }));
+  getRecommendationsMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'DATING_NOT_VERIFIED', message: '학교 메일 인증이 필요해요.' },
+  });
+
+  renderAt('/dating/cards');
+
+  expect(
+    await screen.findByRole('heading', { name: '학교 메일 인증이 필요해요' }),
+  ).toBeInTheDocument();
 });
