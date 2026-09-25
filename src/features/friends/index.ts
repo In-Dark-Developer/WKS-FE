@@ -1,5 +1,6 @@
 export { CompatibilityMapScreen } from './map/CompatibilityMapScreen';
 export { FriendRanking } from './map/FriendRanking';
+export { MapSaveCard } from './map/MapSaveCard';
 export {
   CompatibilityReasonSheet,
   ReasonAnswers,
