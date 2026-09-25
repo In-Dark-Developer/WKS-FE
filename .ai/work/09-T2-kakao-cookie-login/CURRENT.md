@@ -27,3 +27,22 @@ REVIEW
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 1~4 완료 (api·features/auth·app/routes·검증). 실제 모드 검증은 BE 쿠키 전환 뒤
+
+## Last Checkpoint
+
+<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
+`1e895a8`
+
+## Relevant Documents
+
+- `docs/phases/09-auth-and-shell/PLAN.md`
+
+## Relevant Source Files
+
+<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
+- `src/api/auth.ts` · `src/api/client.ts:requestOnce` · `src/api/me.ts:readMockAccount`
+- `src/features/auth/kakaoLogin.ts` · `src/app/routes/auth.routes.ts`
+
+## Next Action
+
+BE 쿠키 전환 후 실제 모드(카카오·인앱) 확인 → PLAN T2 체크. 그 전에 09/T3 진행.
