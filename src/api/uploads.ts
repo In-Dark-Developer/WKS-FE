@@ -1,17 +1,16 @@
 import { request, type ApiOutcome } from './client';
-import { photoContentTypeSchema, photoUploadUrlSchema } from './schema/upload';
+import { datingPhotoContentTypeSchema, datingPhotoUploadSchema } from './schema/dating';
 
-// 사진 업로드 — 발급 → S3 PUT 두 단계를 한 함수로 묶어 화면은 photoKey 만 받는다(ARCHITECTURE `uploads.ts`).
-// [미확인] 소개팅 프로필 사진이 사전등록과 같은 발급 경로를 쓰는지는 백엔드 명세 전(2026-09-24)이다 —
-// 지금은 사전등록 경로를 쓴다. `VITE_API_MOCK=true` 면 요청 없이 목 photoKey 를 돌려준다.
+// 사진 업로드 — 발급(POST /dating/profile/photo) → S3 PUT 두 단계를 한 함수로 묶어 화면은 photoId 만 받는다
+// (ARCHITECTURE `uploads.ts` · WKS-BE api-spec.md §10.1). `VITE_API_MOCK=true` 면 요청 없이 목 id 를 돌려준다.
 const isMockEnabled = () => import.meta.env.VITE_API_MOCK === 'true';
 
 const MOCK_UPLOAD_DELAY_MS = 500;
 
-export type PhotoUpload = { photoKey: string };
+export type PhotoUpload = { photoId: string };
 
-export async function uploadPhoto(file: File): Promise<ApiOutcome<PhotoUpload>> {
-  const contentType = photoContentTypeSchema.safeParse(file.type);
+export async function uploadDatingPhoto(file: File): Promise<ApiOutcome<PhotoUpload>> {
+  const contentType = datingPhotoContentTypeSchema.safeParse(file.type);
   if (!contentType.success) {
     return {
       ok: false,
@@ -21,12 +20,12 @@ export async function uploadPhoto(file: File): Promise<ApiOutcome<PhotoUpload>> 
 
   if (isMockEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, MOCK_UPLOAD_DELAY_MS));
-    return { ok: true, data: { photoKey: `mock-photos/${crypto.randomUUID()}` } };
+    return { ok: true, data: { photoId: crypto.randomUUID() } };
   }
 
   const issued = await request(
-    { method: 'POST', path: '/signups/photo-upload-url', body: { contentType: contentType.data } },
-    photoUploadUrlSchema,
+    { method: 'POST', path: '/dating/profile/photo', body: { contentType: contentType.data } },
+    datingPhotoUploadSchema,
   );
   if (!issued.ok) return issued;
 
@@ -41,5 +40,5 @@ export async function uploadPhoto(file: File): Promise<ApiOutcome<PhotoUpload>> 
   } catch {
     return { ok: false, error: { kind: 'network' } };
   }
-  return { ok: true, data: { photoKey: issued.data.photoKey } };
+  return { ok: true, data: { photoId: issued.data.photoId } };
 }
