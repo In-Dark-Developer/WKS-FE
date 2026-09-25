@@ -21,19 +21,18 @@ T3. Top 3 추천과 리롤
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. 추천 응답의 `blurredPhotoUrl` 을 잠긴 사진에 싣는다 (BE 51d5ec2) ←
-- 2. openapi: `PATCH /dating/profile/me` 제거(405) · `METHOD_NOT_ALLOWED` 추가 · 쿠키 전환 완료 반영
-- 3. test/typecheck/lint · 커밋 · `--ready`
+- 1~3 완료 (commit a28de8d) — blurredPhotoUrl · openapi 동기화 · 검증 4종
+- 4. `--ready` → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`67d92d1`
+`a28de8d`
 
 ## Relevant Documents
 
@@ -48,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-Progress 1 — `blurredPhotoUrl` 반영.
+`ai-end.sh --ready` 로 PR 초안.

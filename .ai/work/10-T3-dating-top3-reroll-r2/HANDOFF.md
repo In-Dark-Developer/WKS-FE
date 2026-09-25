@@ -13,27 +13,30 @@
 
 ## Work Completed
 
-- 없음
+- 추천 카드의 잠긴 사진이 `blurredPhotoUrl`(WKS-BE §10.4)로 흐리게 보인다 — 사진 없는 후보는 null 그대로
+- openapi 사본을 백엔드 dev 0c6c772 와 맞췄다: `PATCH /dating/profile/me` 제거(405 주석으로 남김) · `METHOD_NOT_ALLOWED` 에러 코드 · `DatingCandidate.blurredPhotoUrl` · 쿠키 전환 완료를 머리 주석에 기록
 
 ## Work In Progress
 
-- CURRENT Progress 1~3. 확정된 변경만 반영한다 — 리롤·실·해금 API 는 아직 없어 손대지 않는다.
+- 없음 (PR 대기)
 
 ## Files Changed
 
-- 없음
+- `docs/api/openapi.yaml` · `src/api/schema/dating.ts`
+- `src/features/dating/recommendation/{recommendationsLoader,cardsView}.ts` (+테스트) · `src/app/routes/index.test.tsx`
 
 ## Decisions Made
 
-- 없음
+- 확정된 백엔드 변경만 반영했다 — 리롤·실·해금 API 는 아직 없어 목 그대로 두고 건드리지 않았다
+- 목 추천(`api/dating.ts`)에는 `blurredPhotoUrl` 을 넣지 않았다 — 없는 이미지 주소를 지어내지 않기 위해서다(목 모드는 잠금 표시만 보인다)
 
 ## Tests Executed
 
-- 없음
+- `pnpm test` · `pnpm typecheck` · `pnpm lint` · `npx @redocly/cli lint docs/api/openapi.yaml`
 
 ## Test Results
 
-- 없음
+- 100 files / 528 passed · typecheck·lint 경고 0 · redocly 새 문제 없음(기존 6건 그대로)
 
 ## Known Problems
 
@@ -47,4 +50,4 @@
 
 ## Exact Next Action
 
-CURRENT Progress 1 — `datingCandidateSchema` 에 `blurredPhotoUrl` 을 넣고 `toCandidateView` 가 잠긴 사진에 싣는다.
+`scripts/ai-end.sh --ready` 로 PR. 실제 모드 확인은 학교 메일 인증 연동·콜백 주소 등록 뒤에.
