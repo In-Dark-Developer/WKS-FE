@@ -1,15 +1,15 @@
 # Work Log — phase-06-close
 
-<!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## 2026-09-26 · claude-code · 06/- · Phase 06 종료
+<!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
+
+## 2026-09-26 · claude-code · 06/- · Phase 06 종료
 
 - Commits: 이 PR
-- Done: RESULT.md(AC1~AC7 근거), PLAN DONE, phases 표
+- Done: RESULT.md(AC1~AC8 근거), PLAN DONE, phases 표
 - Not done: gc(저장소 전체 정리라 제외), tag(병합 뒤)
 - Developer changes: 없음 · Upstream changes: 없음 · Spec changes: 없음
 - Needs your attention: 보관 기간 미정(Q4) · 테스트 간헐 실패
 - Verification: test 528 · typecheck · lint
-
-## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
 ## 2026-09-26 · ai-stream · 06/- · 스트림 열기
 
