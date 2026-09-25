@@ -21,21 +21,18 @@ T3. Top 3 추천과 리롤
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. openapi: `GET /dating/recommendations` (WKS-BE §10.4) ←
-- 2. api: `getRecommendations` + 목 3명 · 리롤은 BE 미구현이라 목 전용
-- 3. feature: 응답 → `DatingCardsView` 변환(잠금 항목·순위 문구·잔액) + 테스트
-- 4. route `/dating/cards`: 카드·리롤 시트 연결, 403 DATING_NOT_VERIFIED·0명 상태
-- 5. test/typecheck/lint · 커밋 · `--ready`
+- 1~5 완료 (commit 5b1165c) — openapi §10.4 · getRecommendations · 뷰 변환 · /dating/cards · 검증
+- 6. dev 병합(10/T1-r2 #210) 완료 · `--ready` → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`f5d5f3a`
+`5b1165c`
 
 ## Relevant Documents
 
@@ -50,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-Progress 1 — openapi 에 추천 계약 반영.
+`ai-end.sh --ready` 로 PR 초안.
