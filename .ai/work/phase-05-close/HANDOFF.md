@@ -3,7 +3,7 @@
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
 - From: @nicerjs23 (claude-code · Phase 05 Lead)
-- To: @gn00py48 (Phase 04 Lead — 04 종료가 선행이다) · @jjjung0921 (PR 리뷰)
+- To: @gn00py48 (강근우 · Phase 04 Lead — 04 종료가 선행이다) · @jjjung0921 (이정진 · PR 리뷰)
 - Date: 2026-09-25
 - Phase / Task: 05/-
 
@@ -40,7 +40,7 @@ Phase 05(friend-score)의 RESULT.md 가 Task 9개와 AC 별 검증 결과를 사
 
 ## Known Problems
 
-- **Phase 04(Lead @gn00py48)가 PLANNED** — 8/8 로 Task 는 끝났는데 종료 선언이 없다. 이게 05·08 을 막는다
+- **Phase 04(Lead @gn00py48 · 강근우)가 PLANNED** — 8/8 로 Task 는 끝났는데 종료 선언이 없다. 이게 05·08 을 막는다
 - 태그가 `phase/01`·`phase/03` 뿐이라 04 이후 Phase 종료가 통째로 밀려 있다
 - AC3 는 운영 백엔드에 실제 데이터(결과 2건·궁합 1건·LLM 2회)가 쌓여 미뤄 둔 검증이다 — 개발 서버 주소가 생기면 거기서 하는 편이 낫다
 
