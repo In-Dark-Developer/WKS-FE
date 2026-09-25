@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { saveDatingProfile } from '@/api/dating';
+import { createDatingProfile } from '@/api/dating';
 import { createResult } from '@/api/results';
-import { uploadPhoto } from '@/api/uploads';
+import { uploadDatingPhoto } from '@/api/uploads';
 
 import { DatingProfileForm, type ProfileSubmitState } from '../profile/DatingProfileForm';
 import type { DatingPhotoView } from '../profile/photoView';
@@ -13,10 +13,11 @@ import type { DatingProfileStart } from './profileLoader';
 
 type Props = { start: DatingProfileStart };
 
-type Photo = DatingPhotoView & { photoKey?: string };
+type Photo = DatingPhotoView & { photoId?: string };
 
 // SCR-16 프로필 등록 연결(FR-25) — 사진은 고르는 즉시 올리고, 제출은 (사주가 없으면) 사주 생성 → 프로필 저장
 // 순서다. 어느 단계가 실패해도 입력값은 폼에 남고 실패 안내만 뜬다. 저장하면 Top 3 로 간다.
+// 저장 요청에 resultId 를 싣지 않는다 — 백엔드가 계정에 연결된 결과를 쓴다(WKS-BE api-spec.md §10.2).
 export function DatingProfileScreen({ start }: Props) {
   const navigate = useNavigate();
   const [photo, setPhoto] = useState<Photo>({ status: 'empty' });
@@ -34,15 +35,16 @@ export function DatingProfileScreen({ start }: Props) {
   async function handlePhotoSelect(file: File) {
     const nextPreview = URL.createObjectURL(file);
     setPhoto({ status: 'uploading', previewUrl: nextPreview });
-    const outcome = await uploadPhoto(file);
+    const outcome = await uploadDatingPhoto(file);
     if (!outcome.ok) {
       console.error('사진 업로드 실패', outcome.error);
       setPhoto({ status: 'error' });
       return;
     }
-    setPhoto({ status: 'uploaded', previewUrl: nextPreview, photoKey: outcome.data.photoKey });
+    setPhoto({ status: 'uploaded', previewUrl: nextPreview, photoId: outcome.data.photoId });
   }
 
+  // 사주가 없으면 먼저 만든다 — 계정 연결은 백엔드가 로그인 때 한다(§9 연결·복원 규칙).
   async function ensureResultId(input: DatingProfileInput): Promise<string | null> {
     if (resultId !== null) return resultId;
     const created = await createResult(input.saju);
@@ -55,20 +57,15 @@ export function DatingProfileScreen({ start }: Props) {
   }
 
   async function handleSubmit(input: DatingProfileInput) {
-    if (submitState === 'submitting' || photo.photoKey === undefined) return;
+    if (submitState === 'submitting' || photo.photoId === undefined) return;
     setSubmitState('submitting');
 
-    const savedResultId = await ensureResultId(input);
-    if (savedResultId === null) {
+    if ((await ensureResultId(input)) === null) {
       setSubmitState('failed');
       return;
     }
 
-    const saved = await saveDatingProfile({
-      resultId: savedResultId,
-      photoKey: photo.photoKey,
-      ...input.details,
-    });
+    const saved = await createDatingProfile({ photoId: photo.photoId, ...input.details });
     if (!saved.ok) {
       console.error('프로필 저장 실패', saved.error);
       setSubmitState('failed');
