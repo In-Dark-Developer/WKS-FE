@@ -1,9 +1,10 @@
 import type { RouteObject } from 'react-router-dom';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
 
-import { signInMockAccount, signOutMockAccount } from '@/api/me';
+import { logout } from '@/api/auth';
 import { Placeholder } from '@/app/Placeholder';
 import { requireAuth, requireDatingProfile } from '@/app/routes/guards';
+import { goToKakaoLogin } from '@/features/auth';
 import {
   DatingIntroScreen,
   DatingProfileScreen,
@@ -16,20 +17,18 @@ import {
 // 소개팅(Phase 10·11). 인트로는 가드가 없다 — 사주 없이도 소개팅부터 볼 수 있고(기능명세서 1.3), 로그인·프로필
 // 조건은 인트로가 GET /me 로 판단한다(FR-24). 프로필 등록·Top 3 는 requireAuth·requireDatingProfile 이 막는다.
 
-// 카카오 로그인·로그아웃은 로그인 Task(09/T2, features/auth)가 붙인다. 그 전까지는 `VITE_API_MOCK=true` 의
-// 목 계정만 켜고 끈다 — 실제 모드에서는 GET /me 가 계속 401 이라 비로그인 인트로에 남는다.
+// 로그인은 카카오 왕복 뒤 이 인트로로 돌아오고, 로그아웃은 백엔드가 세션 쿠키를 지운 뒤 GET /me 를 다시 읽는다.
 function DatingIntroRoute() {
   const view = useLoaderData<DatingIntroView>();
   const revalidator = useRevalidator();
   return (
     <DatingIntroScreen
-      onKakaoLogin={() => {
-        signInMockAccount();
-        void revalidator.revalidate();
-      }}
+      onKakaoLogin={() => goToKakaoLogin('/dating')}
       onLogout={() => {
-        signOutMockAccount();
-        void revalidator.revalidate();
+        void logout().then((outcome) => {
+          if (!outcome.ok) console.error('로그아웃 실패', outcome.error);
+          void revalidator.revalidate();
+        });
       }}
       view={view}
     />

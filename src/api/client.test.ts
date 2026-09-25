@@ -28,7 +28,17 @@ test('성공 응답을 데이터로 돌려준다', async () => {
   expect(result).toEqual({ ok: true, data: { id: 'r1' } });
 });
 
-test('세션이 있어도 Authorization 헤더를 싣지 않는다 — 백엔드에 인증이 없다', async () => {
+test('모든 요청을 credentials include 로 보낸다 — 로그인 세션은 HttpOnly 쿠키다', async () => {
+  const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, data: { id: 'r1' } }));
+  vi.stubGlobal('fetch', fetchMock);
+
+  await request({ method: 'POST', path: '/x', body: {} }, dataSchema);
+
+  const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+  expect(init.credentials).toBe('include');
+});
+
+test('세션이 있어도 Authorization 헤더를 싣지 않는다 — 인증은 쿠키로만 한다', async () => {
   writeSession(RESULT_ID);
   const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, data: { id: 'r1' } }));
   vi.stubGlobal('fetch', fetchMock);

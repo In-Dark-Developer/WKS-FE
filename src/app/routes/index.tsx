@@ -4,6 +4,7 @@ import { AppShell } from '@/app/AppShell';
 import { RootLayout } from '@/app/RootLayout';
 import { RouteError } from '@/app/RouteError';
 import { RouteLoading } from '@/app/RouteLoading';
+import { authRoutes } from '@/app/routes/auth.routes';
 import { datingRoutes } from '@/app/routes/dating.routes';
 import { mapRoutes } from '@/app/routes/map.routes';
 import { sajuRoutes } from '@/app/routes/saju.routes';
@@ -27,6 +28,6 @@ export const routes: RouteObject[] = [
         <RouteLoading />
       </AppShell>
     ),
-    children: [...sajuRoutes, ...shareRoutes, ...mapRoutes, ...datingRoutes],
+    children: [...sajuRoutes, ...shareRoutes, ...mapRoutes, ...datingRoutes, ...authRoutes],
   },
 ];
