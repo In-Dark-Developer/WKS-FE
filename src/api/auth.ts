@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
 import { request, type ApiOutcome } from './client';
-import { signInMockAccount, signOutMockAccount } from './me';
+import {
+  linkMockAccountResult,
+  readMockAccountResultId,
+  signInMockAccount,
+  signOutMockAccount,
+} from './me';
 import { kakaoLoginResultSchema, type KakaoLoginResult } from './schema/auth';
 
 export type { KakaoLoginResult } from './schema/auth';
@@ -22,11 +27,19 @@ export type KakaoLoginInput = {
 export async function loginWithKakao(
   input: KakaoLoginInput,
 ): Promise<ApiOutcome<KakaoLoginResult>> {
-  if (isMockEnabled()) {
-    signInMockAccount();
-    return { ok: true, data: { isNewUser: false, restoredResultId: null, rewardGranted: null } };
-  }
+  if (isMockEnabled()) return mockLogin(input.resultId);
   return request({ method: 'POST', path: '/auth/kakao', body: input }, kakaoLoginResultSchema);
+}
+
+// 백엔드 §9 연결·복원 규칙 — 계정 결과가 있으면 그것을 복원하고, 없을 때만 브라우저 결과를 계정에 연결한다.
+function mockLogin(browserResultId: string | null): ApiOutcome<KakaoLoginResult> {
+  signInMockAccount();
+  const accountResultId = readMockAccountResultId();
+  if (accountResultId === null && browserResultId !== null) linkMockAccountResult(browserResultId);
+  return {
+    ok: true,
+    data: { isNewUser: false, restoredResultId: accountResultId, rewardGranted: null },
+  };
 }
 
 // POST /auth/logout — HttpOnly 쿠키는 프론트가 지울 수 없어 백엔드가 만료시킨다. 쿠키가 없어도 성공한다(멱등).

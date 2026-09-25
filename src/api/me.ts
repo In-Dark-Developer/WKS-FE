@@ -12,11 +12,15 @@ export type { Me } from './schema/me';
 const isMockEnabled = () => import.meta.env.VITE_API_MOCK === 'true';
 
 // 목 계정 — 쿠키처럼 새로고침·카카오 왕복(전체 페이지 이동)에도 남도록 localStorage 에 둔다. 목 모드에서만 쓴다.
-// 사주 유무는 이 브라우저의 '내 결과'로 흉내 낸다.
+// resultId 는 계정에 연결된 결과(백엔드 계정당 1개)이고 로그아웃해도 남는다 — 다시 로그인하면 복원된다(auth.ts).
 const MOCK_KEY = 'wks:mock-account';
-const mockAccountSchema = z.object({ isSignedIn: z.boolean(), hasDatingProfile: z.boolean() });
+const mockAccountSchema = z.object({
+  isSignedIn: z.boolean(),
+  hasDatingProfile: z.boolean(),
+  resultId: z.string().uuid().nullable().catch(null),
+});
 type MockAccount = z.infer<typeof mockAccountSchema>;
-const signedOut: MockAccount = { isSignedIn: false, hasDatingProfile: false };
+const signedOut: MockAccount = { isSignedIn: false, hasDatingProfile: false, resultId: null };
 
 function readMockAccount(): MockAccount {
   try {
@@ -43,6 +47,20 @@ export function signInMockAccount(): void {
 }
 
 export function signOutMockAccount(): void {
+  writeMockAccount({ ...readMockAccount(), isSignedIn: false, hasDatingProfile: false });
+}
+
+// 목 계정에 연결된 결과 — 목 로그인(auth.ts)이 백엔드 연결·복원 규칙을 흉내 낼 때 읽고 쓴다.
+export function readMockAccountResultId(): string | null {
+  return readMockAccount().resultId;
+}
+
+export function linkMockAccountResult(resultId: string): void {
+  writeMockAccount({ ...readMockAccount(), resultId });
+}
+
+// 테스트 전용 — 계정까지 지운다.
+export function resetMockAccount(): void {
   writeMockAccount(signedOut);
 }
 
@@ -63,7 +81,7 @@ function mockGetMe(): ApiOutcome<Me> {
     ok: true,
     data: {
       memberId: 1,
-      hasResult: readSession() !== null,
+      hasResult: mockAccount.resultId !== null || readSession() !== null,
       hasDatingProfile: mockAccount.hasDatingProfile,
       threadBalance: mockAccount.hasDatingProfile ? 10 : 0,
     },

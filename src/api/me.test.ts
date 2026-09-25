@@ -10,8 +10,8 @@ import {
   getMe,
   isUnauthenticated,
   markMockDatingProfile,
+  resetMockAccount,
   signInMockAccount,
-  signOutMockAccount,
 } from './me';
 import { meSchema } from './schema/me';
 import { clearSession, writeSession } from './session';
@@ -26,7 +26,7 @@ beforeEach(() => {
 afterEach(() => {
   requestMock.mockReset();
   vi.unstubAllEnvs();
-  signOutMockAccount();
+  resetMockAccount();
   clearSession();
 });
 
@@ -76,6 +76,7 @@ test('목 로그인은 쿠키처럼 localStorage 에 남고, 깨진 값은 로�
   expect(JSON.parse(localStorage.getItem('wks:mock-account') ?? 'null')).toEqual({
     isSignedIn: true,
     hasDatingProfile: false,
+    resultId: null,
   });
 
   localStorage.setItem('wks:mock-account', '{"isSignedIn":"yes"}');
