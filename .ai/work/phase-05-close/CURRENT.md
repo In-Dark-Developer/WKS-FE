@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: docs/phases/05-*/,.ai/work/
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-ci-sync-warn, 2026-09-24-dating-publishing-split, 2026-09-24-prd-completion-fields, 2026-09-25-cookie-auth-contract
 
 ## Current Phase
 
@@ -21,12 +21,15 @@ Phase 05 종료
 
 ## Status
 
-TODO
+BLOCKED
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- RESULT.md 작성 완료 (T1~T10 · AC 별 검증 결과 · 수동 3건 미실행 명시)
+- 검증 재실행: test 527 · typecheck · lint · build 통과
+- 막힘: Phase 04(Lead @gn00py48)가 PLANNED — 선행 Phase 가 DONE 이어야 05 를 닫는다
+- 04 가 닫히면: PLAN Status=DONE → `ai-stream.sh phases` → `gc` → PR → 병합 후 `tag 05`
 
 ## Last Checkpoint
 
@@ -40,8 +43,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- 없음 (코드 변경 없는 Phase 종료 스트림)
 
 ## Next Action
 
-`AGENTS.md`에서 05/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+Phase 04 종료를 기다린다. 닫히면 PLAN Status=DONE → `ai-stream.sh phases` → `gc` → PR.
