@@ -8,7 +8,7 @@ vi.mock('./client', async (importOriginal) => {
 });
 
 import { loginWithKakao, logout } from './auth';
-import { getMe, isUnauthenticated, signOutMockAccount } from './me';
+import { getMe, isUnauthenticated, resetMockAccount } from './me';
 import { kakaoLoginResultSchema } from './schema/auth';
 
 const INPUT = {
@@ -25,7 +25,7 @@ beforeEach(() => {
 afterEach(() => {
   requestMock.mockReset();
   vi.unstubAllEnvs();
-  signOutMockAccount();
+  resetMockAccount();
 });
 
 test('loginWithKakao 는 POST /auth/kakao 에 코드·resultId 를 보내고 토큰 없는 응답을 검증한다', async () => {
@@ -67,4 +67,27 @@ test('목 모드는 요청 없이 목 계정을 켜고 끈다', async () => {
   await logout();
   expect(isUnauthenticated(await getMe())).toBe(true);
   expect(requestMock).not.toHaveBeenCalled();
+});
+
+test('목 로그인은 백엔드 규칙대로 계정이 비었을 때만 연결하고, 다음 로그인에서 계정 결과를 복원한다', async () => {
+  vi.stubEnv('VITE_API_MOCK', 'true');
+  const OTHER = '9b1d2c3e-2222-4222-8222-222222222222';
+
+  await expect(loginWithKakao(INPUT)).resolves.toMatchObject({
+    ok: true,
+    data: { restoredResultId: null },
+  });
+  await logout();
+
+  // 다른 브라우저 결과로 다시 로그인해도 계정 결과가 이긴다.
+  await expect(loginWithKakao({ ...INPUT, resultId: OTHER })).resolves.toMatchObject({
+    ok: true,
+    data: { restoredResultId: INPUT.resultId },
+  });
+  await logout();
+  // 브라우저 결과 없이(새 기기) 로그인해도 복원된다.
+  await expect(loginWithKakao({ ...INPUT, resultId: null })).resolves.toMatchObject({
+    ok: true,
+    data: { restoredResultId: INPUT.resultId },
+  });
 });

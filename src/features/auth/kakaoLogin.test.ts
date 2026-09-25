@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 const { loginMock } = vi.hoisted(() => ({ loginMock: vi.fn() }));
 vi.mock('@/api/auth', () => ({ loginWithKakao: loginMock }));
 
-import { clearSession, writeSession } from '@/api/session';
+import { clearSession, readSession, writeSession } from '@/api/session';
 
 import { completeKakaoLogin, KAKAO_CALLBACK_PATH, startKakaoLogin } from './kakaoLogin';
 
@@ -107,4 +107,45 @@ test('외부로 나가는 복귀 경로는 / 로 바꾼다', async () => {
   const result = await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
 
   expect(result.returnTo).toBe('/');
+});
+
+test('계정 결과가 복원되면 세션을 그 값으로 바꾸고 복귀 경로의 옛 id 를 고친다', async () => {
+  const ACCOUNT_ID = '9b1d2c3e-2222-4222-8222-222222222222';
+  writeSession(RESULT_ID);
+  loginMock.mockResolvedValue({
+    ok: true,
+    data: { isNewUser: false, restoredResultId: ACCOUNT_ID, rewardGranted: null },
+  });
+  const state = stateOf(startKakaoLogin(`/reading/${RESULT_ID}`));
+
+  const result = await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
+
+  expect(result.returnTo).toBe(`/reading/${ACCOUNT_ID}`);
+  expect(readSession()).toEqual({ resultId: ACCOUNT_ID });
+});
+
+test('새 기기(세션 없음)에서도 계정 결과를 세션에 넣는다', async () => {
+  loginMock.mockResolvedValue({
+    ok: true,
+    data: { isNewUser: false, restoredResultId: RESULT_ID, rewardGranted: null },
+  });
+  const state = stateOf(startKakaoLogin('/'));
+
+  await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
+
+  expect(readSession()).toEqual({ resultId: RESULT_ID });
+});
+
+test('취소·실패하면 이 브라우저의 세션을 건드리지 않는다', async () => {
+  writeSession(RESULT_ID);
+  loginMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'KAKAO_UNAVAILABLE', message: 'x' },
+  });
+  let state = stateOf(startKakaoLogin('/me/map'));
+  await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
+  state = stateOf(startKakaoLogin('/me/map'));
+  await completeKakaoLogin(new URLSearchParams({ error: 'access_denied', state }));
+
+  expect(readSession()).toEqual({ resultId: RESULT_ID });
 });

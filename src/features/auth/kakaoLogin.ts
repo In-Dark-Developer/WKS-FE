@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { loginWithKakao } from '@/api/auth';
 import type { ApiFailure } from '@/api/client';
-import { readSession } from '@/api/session';
+import { readSession, writeSession } from '@/api/session';
 
 // 카카오 로그인 왕복 — 인가 화면으로 전체 페이지 이동(팝업 아님, 인앱 브라우저에서도 동작)했다가 콜백 경로로 돌아와
 // 인가 코드를 백엔드에 넘긴다. 세션은 백엔드가 쿠키로 심으므로 여기서는 토큰을 다루지 않는다(openapi `/auth/kakao`).
@@ -90,8 +90,9 @@ export type KakaoLoginOutcome =
   | { kind: 'api-error'; error: ApiFailure };
 
 // 콜백 경로의 쿼리로 로그인을 마친다. 성공·실패와 무관하게 돌아갈 화면(returnTo)을 함께 준다 — 취소·실패해도
-// 시작한 화면으로 돌아가고 비로그인 기록은 그대로 남는다(FR-21). 이 브라우저의 resultId 가 있으면 함께 보내
-// 백엔드가 계정에 연결·복원한다.
+// 시작한 화면으로 돌아가고 비로그인 기록(세션)은 건드리지 않는다(FR-21). 이 브라우저의 resultId 를 함께 보내면
+// 백엔드가 계정이 비어 있을 때만 연결하고, 계정 결과가 있으면 그 id(restoredResultId)를 준다 — 계정이 이기므로
+// 세션을 그 값으로 바꾸고, 복귀 경로에 옛 resultId 가 있으면(`/reading/:id`) 새 값으로 고친다.
 export async function completeKakaoLogin(
   searchParams: URLSearchParams,
 ): Promise<{ returnTo: string; outcome: KakaoLoginOutcome }> {
@@ -104,12 +105,21 @@ export async function completeKakaoLogin(
   const code = searchParams.get('code');
   if (code === null) return { returnTo, outcome: { kind: 'missing-code' } };
 
+  const browserResultId = readSession()?.resultId ?? null;
   const result = await loginWithKakao({
     code,
     redirectUri: callbackUri(),
-    resultId: readSession()?.resultId ?? null,
+    resultId: browserResultId,
     ref: null,
   });
   if (!result.ok) return { returnTo, outcome: { kind: 'api-error', error: result.error } };
-  return { returnTo, outcome: { kind: 'success', restoredResultId: result.data.restoredResultId } };
+
+  const { restoredResultId } = result.data;
+  const outcome = { kind: 'success', restoredResultId } as const;
+  if (restoredResultId === null || restoredResultId === browserResultId)
+    return { returnTo, outcome };
+  writeSession(restoredResultId);
+  const restoredReturnTo =
+    browserResultId === null ? returnTo : returnTo.split(browserResultId).join(restoredResultId);
+  return { returnTo: restoredReturnTo, outcome };
 }
