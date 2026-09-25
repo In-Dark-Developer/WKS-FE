@@ -1,9 +1,9 @@
 # Phase 04 — share-and-card
 
-- Status: PLANNED
+- Status: DONE
 - Lead: @gn00py48
 - Depends on: 03
-- Start: 2026-09-13 · End: 2026-09-17 (MVP 마감 — PRD Constraints)
+- Start: 2026-09-13 · End: 2026-09-17 (MVP 마감 — PRD Constraints) · 종료 처리 2026-09-26
 
 ## Goal
 
@@ -70,13 +70,13 @@
 
 ## Acceptance Criteria
 
-- [ ] AC1. 결과 화면(친구 궁합 순위가 비어 있을 때)의 '친구에게 공유'가 현재 origin 기준 `/s/<shareId>` 를 공유 시트로 넘기고, Web Share 가 없는 브라우저에서는 클립보드 복사와 완료 안내로 대체된다 (FR-4)
-- [ ] AC2. 결과 화면(`/reading/:id`)에 들어오면 운명 카드 뒷면부터 보이고 '카드 뒤집기'로 앞면·뒷면을 전환하며, 등급은 `fortunes[]` 의 SS~B 문자 등급이다. 별도 인연카드 화면·'인연카드 보기' 버튼은 없다 (FR-5)
-- [ ] AC3. '인스타 스토리 공유하기'가 카드를 PNG 로 만들어 Web Share(파일)로 넘긴다 (FR-5)
-- [ ] AC4. 파일 공유를 지원하지 않는 브라우저에서 같은 PNG 를 저장할 수 있고 안내가 뜬다 (FR-16)
-- [ ] AC5. `src/features/share/` 와 `src/ui/` 의 화면 컴포넌트가 `src/api/` 를 import 하지 않고, 모든 화면 상태를 `/preview` 에서 가짜 데이터로 볼 수 있다 (publishing-first)
-- [ ] AC6. 절대 주소가 코드에 없다 — 공유 URL 은 `location.origin` 으로 만든다 (hosting-domains)
-- [ ] AC7. 새 화면·로직에 테스트가 있고 Commands 4개가 경고 없이 통과한다
+- [x] AC1. 결과 화면(친구 궁합 순위가 비어 있을 때)의 '친구에게 공유'가 현재 origin 기준 `/s/<shareId>` 를 공유 시트로 넘기고, Web Share 가 없는 브라우저에서는 클립보드 복사와 완료 안내로 대체된다 (FR-4)
+- [x] AC2. 결과 화면(`/reading/:id`)에 들어오면 운명 카드 뒷면부터 보이고 '카드 뒤집기'로 앞면·뒷면을 전환하며, 등급은 `fortunes[]` 의 SS~B 문자 등급이다. 별도 인연카드 화면·'인연카드 보기' 버튼은 없다 (FR-5)
+- [x] AC3. '인스타 스토리 공유하기'가 카드를 PNG 로 만들어 Web Share(파일)로 넘긴다 (FR-5)
+- [x] AC4. 파일 공유를 지원하지 않는 브라우저에서 같은 PNG 를 저장할 수 있고 안내가 뜬다 (FR-16)
+- [x] AC5. `src/features/share/` 와 `src/ui/` 의 화면 컴포넌트가 `src/api/` 를 import 하지 않고, 모든 화면 상태를 `/preview` 에서 가짜 데이터로 볼 수 있다 (publishing-first)
+- [x] AC6. 절대 주소가 코드에 없다 — 공유 URL 은 `location.origin` 으로 만든다 (hosting-domains)
+- [x] AC7. 새 화면·로직에 테스트가 있고 Commands 4개가 경고 없이 통과한다
 
 ## Validation Plan
 
