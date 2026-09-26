@@ -7,6 +7,7 @@ import {
   type ResultInput,
   type ResultRequestInput,
 } from './schema/result';
+import { readMockAccountResultId } from './me';
 import { forgetSession, writeSession } from './session';
 
 export type { ResultInput, ResultRequestInput } from './schema/result';
@@ -92,4 +93,25 @@ export async function getResultInput(resultId: string): Promise<ApiOutcome<Resul
     };
   }
   return request({ method: 'GET', path: `/results/${resultId}/input` }, resultInputSchema);
+}
+
+// GET /me/result — 계정에 연결된 내 결과(FR-21). 이 브라우저에 세션이 없어도(기기 변경·저장소 삭제) 계정 사주를
+// 찾는다. 받은 resultId 를 세션에 다시 보관해 이후 기존 API 를 그대로 쓴다(openapi getMyResult). 없으면 404.
+export async function getMyResult(): Promise<ApiOutcome<Result>> {
+  const outcome = isMockEnabled()
+    ? await mockGetMyResult()
+    : await request({ method: 'GET', path: '/me/result' }, resultSchema);
+  if (outcome.ok) writeSession(outcome.data.resultId);
+  return outcome;
+}
+
+async function mockGetMyResult(): Promise<ApiOutcome<Result>> {
+  const resultId = readMockAccountResultId();
+  if (resultId === null) {
+    return {
+      ok: false,
+      error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '점지된 결과를 찾을 수 없어요.' },
+    };
+  }
+  return mockGetResult(resultId);
 }
