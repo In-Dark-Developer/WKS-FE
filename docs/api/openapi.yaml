@@ -526,7 +526,7 @@ paths:
     post:
       operationId: sendDatingRequest
       summary: (V1) 운명의 실 보내기 — 지금 내 추천 카드의 상대에게 매칭 요청 (FR-29)
-      description: "무료 — 실을 차감하지 않는다. `candidateId` 는 §10.4 추천 응답의 상대 프로필 id 다(`requestId` 와 다르다). 본인·이미 요청한 두 사람(방향 무관, 거절 뒤 포함)·지금 추천 카드에 없는 상대는 409 DATING_REQUEST_CONFLICT. 내 학교 메일 인증 전이면 403. WKS-BE api-spec.md §11 (dev 8827766)."
+      description: "무료 — 실을 차감하지 않는다. `candidateId` 는 §10.4 추천 응답의 상대 프로필 id 다(`requestId` 와 다르다). 본인·취소되지 않은 요청이 이미 있는 두 사람(방향 무관, 거절·수락 뒤 포함)·지금 추천 카드에 없는 상대는 409 DATING_REQUEST_CONFLICT. 취소한 뒤에는 상대가 지금 추천 카드에 있으면 다시 보낼 수 있다. 내 학교 메일 인증 전이면 403. WKS-BE api-spec.md §11 (dev 4d2e534)."
       tags: [dating]
       security: [{ cookieAuth: [] }]
       requestBody:
@@ -570,14 +570,14 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
         "409":
-          description: DATING_REQUEST_CONFLICT — 이미 요청한 쌍 · 추천 카드에 없는 상대 · 상대가 인증 전
+          description: DATING_REQUEST_CONFLICT — 취소되지 않은 요청이 있는 쌍 · 추천 카드에 없는 상대 · 상대가 인증 전
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
     get:
       operationId: listDatingRequests
       summary: (V1) 요청함 — 보낸 신청(sent) · 받은 신청(received) (FR-30)
-      description: "최신 요청부터. 비어 있으면 `data: []`. 행에는 상대 프로필(이름·사진·MBTI·점수 등)이 없고 `candidateId` 만 온다 — `candidateId` 는 **조회한 사람 기준 상대**의 프로필 id 라 같은 요청도 보낸 사람·받은 사람 목록에서 값이 다르다. 연락처는 ACCEPTED 에서만 **상대의 것**이 온다. 요청 수 상한 없음."
+      description: "최신 요청부터. 비어 있으면 `data: []`. 행마다 상대 프로필 `counterpart` 가 온다(목록에만 — 생성·수락·거절·취소 응답에는 없다). `candidateId` 는 **조회한 사람 기준 상대**의 프로필 id 라 같은 요청도 보낸 사람·받은 사람 목록에서 값이 다르다. 연락처는 ACCEPTED 에서만 **상대의 것**이 온다. CANCELLED 는 보낸 목록에만 남고 받은 목록에서는 빠진다. 요청 수 상한 없음. WKS-BE api-spec.md §11.1 (dev 4d2e534)."
       tags: [dating]
       security: [{ cookieAuth: [] }]
       parameters:
@@ -598,7 +598,7 @@ paths:
                   success: { type: boolean, const: true }
                   data:
                     type: array
-                    items: { $ref: "#/components/schemas/DatingRequest" }
+                    items: { $ref: "#/components/schemas/DatingRequestListItem" }
         "400":
           description: INVALID_INPUT — box 가 sent·received 가 아니다
           content:
@@ -684,8 +684,42 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
-    # FR-30 의 '요청 취소'(보낸 사람이 응답 전 취소)와 '매칭에 실패했어요'(상대가 다른 사람과 맺어짐) 는 BE 계약에 없다
-    #   — WKS-BE dev 8827766 기준. 백엔드 문의 중(스트림 spec-dating-requests-api HANDOFF).
+  /dating/requests/{requestId}/cancel:
+    post:
+      operationId: cancelDatingRequest
+      summary: (V1) 보낸 신청 취소 — 응답 전 요청 거두기 (FR-30)
+      description: "보낸 사람만. PENDING 일 때만 — 이미 수락·거절·취소됐으면 409. 취소와 수락·거절이 동시에 오면 먼저 처리된 쪽만 성공한다. 취소된 요청은 받은 사람 목록에서 바로 빠지고 보낸 목록에는 CANCELLED 로 남는다. WKS-BE api-spec.md §11.2 (dev 4d2e534)."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: requestId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: 취소됨 — status CANCELLED, respondedAt 은 취소 시각, 연락처 null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingRequest" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_REQUEST_NOT_FOUND — 없거나 내가 보낸 요청이 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: DATING_REQUEST_CONFLICT — 이미 수락·거절·취소됐다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    # FR-30 의 '매칭에 실패했어요'(상대가 다른 사람과 맺어짐) 는 BE 계약에 없다 — 수락은 다른 요청의 상태를 바꾸지 않는다 (WKS-BE dev 4d2e534).
   /me:
     get:
       operationId: getMe
@@ -1166,24 +1200,52 @@ components:
         balance: { type: integer, minimum: 0, description: "차감한 뒤 내 실 잔액" }
     DatingRequestStatus:
       type: string
-      enum: [PENDING, ACCEPTED, REJECTED]
-      description: "요청 상태 — 백엔드 `DatingRequestStatus` 와 1:1. 취소·실패 상태는 없다"
+      enum: [PENDING, ACCEPTED, REJECTED, CANCELLED]
+      description: "요청 상태 — 백엔드 `DatingRequestStatus` 와 1:1. CANCELLED 는 보낸 사람이 취소한 것(보낸 목록에만 보인다). 실패 상태는 없다"
     DatingRequest:
-      description: "매칭 요청 한 건 (WKS-BE §11, `DatingRequestResponse`). 보낸·받은 목록과 생성·수락·거절 응답이 같은 모양이다"
+      description: "매칭 요청 한 건 (WKS-BE §11, `DatingRequestResponse`) — 생성·수락·거절·취소 응답. 목록 행은 여기에 `counterpart` 를 더한 `DatingRequestListItem` 이다"
       type: object
       required: [requestId, candidateId, status, createdAt, respondedAt, contactMethod, contactValue]
       properties:
-        requestId: { type: string, format: uuid, description: "요청 자체의 id — accept·reject 경로에 쓴다" }
+        requestId: { type: string, format: uuid, description: "요청 자체의 id — accept·reject·cancel 경로에 쓴다" }
         candidateId: { type: string, format: uuid, description: "조회한 사람 기준 상대의 소개팅 프로필 id" }
         status: { $ref: "#/components/schemas/DatingRequestStatus" }
         createdAt: { type: string, format: date-time }
-        respondedAt: { type: [string, "null"], format: date-time, description: "수락·거절 시각 — PENDING 이면 null" }
+        respondedAt: { type: [string, "null"], format: date-time, description: "수락·거절·취소 시각 — PENDING 이면 null" }
         contactMethod:
           oneOf:
             - { $ref: "#/components/schemas/ContactMethod" }
             - { type: "null" }
           description: "ACCEPTED 일 때만 상대의 연락 수단 — 그 밖에는 null (NFR-4)"
         contactValue: { type: [string, "null"], description: "ACCEPTED 일 때만 상대의 전화번호 또는 인스타그램 아이디 — 그 밖에는 null" }
+    DatingRequestListItem:
+      description: "요청함 목록의 행 (WKS-BE §11.1, `DatingRequestListResponse`) — `DatingRequest` 에 상대 프로필을 더한다"
+      allOf:
+        - { $ref: "#/components/schemas/DatingRequest" }
+        - type: object
+          required: [counterpart]
+          properties:
+            counterpart: { $ref: "#/components/schemas/DatingRequestCounterpart" }
+    DatingRequestCounterpart:
+      description: "요청 상대의 프로필. `score` 는 보낸 사람이 추천받을 때 저장된 점수라 추천 카드가 바뀌어도 남는다. 받은 목록(box=received)은 보낸 사람의 photo·name·department 가 실 차감 없이 열려 있고, 보낸 목록(box=sent)은 내가 추천 카드에서 연 만큼만 열려 있다. 궁합 까닭(reason)은 없다"
+      type: object
+      required: [score, mbti, bio, fields]
+      properties:
+        score: { type: integer, minimum: 0, maximum: 100 }
+        mbti: { type: string }
+        bio: { type: string }
+        blurredPhotoUrl:
+          type: [string, "null"]
+          format: uri
+          description: "흐리게 보여줄 썸네일의 임시 조회 주소"
+        fields:
+          type: object
+          required: [photo, name, department]
+          description: "잠금 규칙은 추천 카드와 같다. 열린 photo 의 value 는 만료되는 원본 사진 조회 주소다(S3 키는 없다)"
+          properties:
+            photo: { $ref: "#/components/schemas/DatingLockableField" }
+            name: { $ref: "#/components/schemas/DatingLockableField" }
+            department: { $ref: "#/components/schemas/DatingLockableField" }
     DatingCandidate:
       description: "추천 카드 한 장 (WKS-BE §10.4). `candidateId` 는 상대의 소개팅 프로필 id 다"
       type: object
