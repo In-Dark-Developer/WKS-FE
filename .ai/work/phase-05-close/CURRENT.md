@@ -21,15 +21,15 @@ Phase 05 종료
 
 ## Status
 
-BLOCKED
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- RESULT.md 작성 완료 (T1~T10 · AC 별 검증 결과 · 수동 3건 미실행 명시)
-- 검증 재실행: test 527 · typecheck · lint · build 통과
-- 막힘: Phase 04(Lead @gn00py48)가 PLANNED — 선행 Phase 가 DONE 이어야 05 를 닫는다
-- 04 가 닫히면: PLAN Status=DONE → `ai-stream.sh phases` → `gc` → PR → 병합 후 `tag 05`
+- RESULT.md 작성 · 검증 4종 재실행 (2026-09-25)
+- Phase 04 가 DONE 이 됨 → PLAN Status=DONE · AC 체크(수동 3건은 미체크로 남김)
+- `ai-stream.sh phases` · `gc`(17 스트림 정리) 완료
+- PR → 병합 후 `ai-stream.sh tag 05`
 
 ## Last Checkpoint
 
@@ -47,4 +47,4 @@ BLOCKED
 
 ## Next Action
 
-Phase 04 종료를 기다린다. 닫히면 PLAN Status=DONE → `ai-stream.sh phases` → `gc` → PR.
+PR 리뷰·병합 → `scripts/ai-stream.sh tag 05`.

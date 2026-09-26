@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-27 · claude-code · 05/- · Phase 05 종료 (04 가 DONE 이 되어 풀림)
+
+- Commits: (이 커밋)
+- Done: RESULT 머리 확정(DONE, 2026-09-27) · PLAN Status=DONE·AC 체크 · phases 표 갱신 · gc 17 스트림
+- Not done: AC3·AC6·AC8 수동 검증 — 체크박스를 비워 두고 08/T6 로 넘김
+- Developer changes: 없음 · Upstream changes: Phase 04·06 이 DONE 이 됨
+- Spec changes: 없음 (docs/phases 만)
+- Needs your attention: 병합 뒤 `ai-stream.sh tag 05` · Phase 08 의 선행이 풀린다
+- Verification: test 105 files / 556 passed
+
 ## 2026-09-25 · claude-code · 05/- · Phase 05 RESULT 작성 (종료는 04 대기)
 
 - Commits: (이 커밋)

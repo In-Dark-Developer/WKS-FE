@@ -2,8 +2,8 @@
 
 <!-- Phase 종료 시 작성한다. PLAN.md와 대조해 사실만 적는다. 실행하지 않은 검증을 완료로 적지 않는다. -->
 
-- Completed on: (Phase 04 종료 대기 — 아래 Not Completed)
-- Final Status: (종료 조건 충족 전)
+- Completed on: 2026-09-27
+- Final Status: DONE
 - Tag: `phase/05`
 
 ## Completed
@@ -20,14 +20,14 @@
 
 ## Not Completed
 
-- **Phase 종료 선언 자체** — `Depends on: 04` 인 Phase 04(Lead @gn00py48)가 아직 `PLANNED` 다. Phase 규칙상 선행 Phase 가 DONE 이어야 05 를 닫을 수 있다.
-- AC3·AC6·AC8 의 **수동 검증 일부** (아래 Validation Results). 자동 검증과 브라우저 확인은 각 Task PR 에 기록돼 있다.
+- AC3·AC6·AC8 의 **수동 검증 일부** (아래 Validation Results) — 실기기와 브라우저 두 대가 필요한 절차다. 자동 검증과 데스크톱 브라우저 확인은 각 Task PR 에 기록돼 있고, 남은 3건은 08/T6 출시 점검에서 같은 기기로 확인한다(Follow-up).
 
 ## Deviations from Plan
 
 - **T6 은 없다** — 계획 초기의 SCR-07(별도 궁합 결과 화면)이 2026-09-15 소유자 결정으로 삭제되면서 함께 빠졌다. 공유받은 사람은 별도 랜딩·결과 화면 없이 **링크 주인의 궁합 지도 → 자기 결과 화면**으로 간다. 그래서 Task 는 T1~T10 중 9개다.
 - **흐름 순서가 두 번 바뀌었다** — T7 은 '지도 먼저', T10 이 '입력 먼저'로 재조립했다(PR #117). 링크를 처음 받은 사람이 주인 지도부터 보면 자기 자리를 알 수 없다는 판단이었다.
 - **담당 이동** — T5·T8 이 2026-09-15 계획 변경(PR #105)으로 @jjjung0921 에게 갔다. 퍼블리싱/연동 분리(공지 `2026-09-13-publishing-first`)를 따른 것이다.
+- **AC3·AC6·AC8 은 체크하지 않은 채 Phase 를 닫는다** — 실기기·브라우저 두 대가 필요한 수동 절차라 08/T6 출시 점검에서 같은 기기로 한 번에 확인한다. 자동 검증과 데스크톱 브라우저 확인은 끝났고, 실행하지 않은 검증을 완료로 적지 않는다는 규칙(AGENTS.md Rule 8)을 따른 것이다. Phase 03 도 AC5 가 문자 그대로는 미충족인 채 DONE 으로 닫았다.
 - **Phase 종료 후 후속 수정이 여러 건 병합됐다** — 공유 대기 화면 최소 노출(#145·#148), 인스타 공유를 카드 저장으로(#147), 순위 아래 공유(#149). 기능 자체는 이 Phase 범위 안이고 QA 로 들어온 것이다.
 
 ## Important Decisions
@@ -58,5 +58,5 @@
 
 ## Follow-up Work
 
-- Phase 04 종료(@gn00py48) → 이 Phase 를 `DONE` 으로 바꾸고 `ai-stream.sh tag 05`
-- 08/T6 실기기 점검에서 AC3·AC6·AC8 확인 결과를 이 문서에 추가
+- 08/T6 실기기 점검에서 AC3·AC6·AC8 확인 결과를 이 문서에 추가한다 (Phase 08, Lead @jjjung0921)
+- V1(Phase 09~11)에서 공유 흐름이 바뀐 부분은 그 Phase 의 RESULT 가 기록한다 — 이 Phase 는 V0.5 기준이다
