@@ -77,7 +77,10 @@ test('목 로그인은 쿠키처럼 localStorage 에 남고, 깨진 값은 로�
     isSignedIn: true,
     hasDatingProfile: false,
     resultId: null,
+    // 가입 지급 10 은 최초 로그인에 들어온다(백엔드 §12).
+    threadEarned: 10,
     threadSpent: 0,
+    lastCheckInDate: null,
   });
 
   localStorage.setItem('wks:mock-account', '{"isSignedIn":"yes"}');

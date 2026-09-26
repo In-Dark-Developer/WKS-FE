@@ -1,4 +1,5 @@
 import { getRecommendations, type DatingCandidate, type DatingLockableField } from '@/api/dating';
+import { listDatingRequests } from '@/api/matchRequests';
 import { getWallet } from '@/api/wallet';
 
 import {
@@ -58,7 +59,11 @@ export function toRerollView(hasFreeReroll: boolean, balance: number): RerollVie
 // 화면은 계산하지 않는다(FR-31). `/me` 의 threadBalance 는 진입 게이트용 요약이라 여기서 쓰지 않는다.
 // requireDatingProfile 이 먼저 로그인·프로필을 확인하므로 여기서는 인증을 다시 판단하지 않는다.
 export async function datingCardsLoader(): Promise<DatingCardsState> {
-  const [wallet, recommendations] = await Promise.all([getWallet(), getRecommendations()]);
+  const [wallet, recommendations, sent] = await Promise.all([
+    getWallet(),
+    getRecommendations(),
+    listDatingRequests('sent'),
+  ]);
 
   if (!recommendations.ok) {
     if (
@@ -74,12 +79,18 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
   // 잔액을 못 읽어도 카드는 보인다 — 0 으로 두면 소모 동작이 막히고 안내가 뜬다(FR-31).
   const balance = wallet.ok ? wallet.data.balance : 0;
   if (!wallet.ok) console.error('GET /wallet 실패', wallet.error);
+  // 보낸 신청을 못 읽으면 모두 안 보낸 것으로 둔다 — 다시 보내면 백엔드가 409 로 막는다.
+  if (!sent.ok) console.error('GET /dating/requests?box=sent 실패', sent.error);
+  const sentIds = new Set(sent.ok ? sent.data.map((request) => request.candidateId) : []);
 
   return {
     kind: 'ready',
     view: {
       balance,
-      candidates: recommendations.data.candidates.map(toCandidateView),
+      candidates: recommendations.data.candidates.map((candidate) => ({
+        ...toCandidateView(candidate),
+        isThreadSent: sentIds.has(candidate.candidateId),
+      })),
       reroll: toRerollView(true, balance),
     },
   };

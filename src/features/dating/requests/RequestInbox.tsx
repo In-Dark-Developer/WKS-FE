@@ -95,6 +95,7 @@ export function RequestInbox({
           onClose={() => setOpenId(undefined)}
           onDecline={() => act(onDecline, receivedOpen.id)}
           request={receivedOpen}
+          status={receivedOpen.status}
         />
       ) : null}
     </div>

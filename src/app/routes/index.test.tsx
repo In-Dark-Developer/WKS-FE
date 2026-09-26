@@ -35,6 +35,12 @@ const unauthenticated = {
   error: { kind: 'api', code: 'UNAUTHENTICATED', message: '로그인이 필요해요.' },
 } as const;
 // 추천도 경계에서 대체한다 — Top 3 라우트가 GET /dating/recommendations 를 부른다(10/T3).
+// 잔액도 경계에서 대체한다 — 카드 화면은 원장(`GET /wallet`)에서 읽는다(10/T2 · FR-31).
+const { getWalletMock } = vi.hoisted(() => ({ getWalletMock: vi.fn() }));
+vi.mock('@/api/wallet', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/wallet')>();
+  return { ...actual, getWallet: getWalletMock };
+});
 const { getRecommendationsMock } = vi.hoisted(() => ({ getRecommendationsMock: vi.fn() }));
 vi.mock('@/api/dating', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/dating')>();
@@ -75,6 +81,7 @@ beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
   getMeMock.mockResolvedValue(unauthenticated);
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
+  getWalletMock.mockResolvedValue({ ok: true, data: { balance: 0, canCheckInToday: true } });
 });
 
 afterEach(() => {
@@ -88,6 +95,7 @@ afterEach(() => {
   getCompatibilityReasonMock.mockReset();
   getMeMock.mockReset();
   getRecommendationsMock.mockReset();
+  getWalletMock.mockReset();
 });
 
 function renderAt(path: string) {
@@ -848,9 +856,8 @@ test('내 정보 조회가 실패해도 인트로는 열리고 다시 누를 수
 });
 
 test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린다 (10/T3 · FR-26)', async () => {
-  getMeMock.mockResolvedValue(
-    member({ hasResult: true, hasDatingProfile: true, threadBalance: 12 }),
-  );
+  getMeMock.mockResolvedValue(member({ hasResult: true, hasDatingProfile: true }));
+  getWalletMock.mockResolvedValue({ ok: true, data: { balance: 12, canCheckInToday: true } });
   getRecommendationsMock.mockResolvedValue({
     ok: true,
     data: {

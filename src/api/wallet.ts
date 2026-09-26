@@ -1,6 +1,11 @@
 import { request, type ApiOutcome } from './client';
 import { checkInMockWallet, readMockBalance } from './me';
-import { walletCheckInSchema, walletSchema, type Wallet, type WalletCheckIn } from './schema/wallet';
+import {
+  walletCheckInSchema,
+  walletSchema,
+  type Wallet,
+  type WalletCheckIn,
+} from './schema/wallet';
 
 export type { Wallet, WalletCheckIn } from './schema/wallet';
 

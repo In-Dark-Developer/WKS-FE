@@ -2,7 +2,15 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
-const { rerollMock, unlockMock } = vi.hoisted(() => ({ rerollMock: vi.fn(), unlockMock: vi.fn() }));
+const { rerollMock, unlockMock, sendMock } = vi.hoisted(() => ({
+  rerollMock: vi.fn(),
+  unlockMock: vi.fn(),
+  sendMock: vi.fn(),
+}));
+vi.mock('@/api/matchRequests', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/matchRequests')>();
+  return { ...actual, sendDatingRequest: sendMock };
+});
 vi.mock('@/api/dating', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/dating')>();
   return { ...actual, rerollRecommendations: rerollMock };
@@ -16,6 +24,7 @@ import type { DatingCardsView, MatchCandidateView } from './cardsView';
 import {
   DatingCardsScreen,
   REROLL_FAILED_MESSAGE,
+  THREAD_FAILED_MESSAGE,
   UNLOCK_SHORT_MESSAGE,
 } from './DatingCardsScreen';
 
@@ -47,6 +56,7 @@ afterEach(() => {
   cleanup();
   rerollMock.mockReset();
   unlockMock.mockReset();
+  sendMock.mockReset();
   vi.restoreAllMocks();
 });
 
@@ -118,4 +128,58 @@ test('잔액이 모자라 백엔드가 거절하면 열지 않고 알린다', as
 
   expect(await screen.findByRole('status')).toHaveTextContent(UNLOCK_SHORT_MESSAGE);
   expect(screen.queryByRole('heading', { name: /정보를 열었어요/ })).not.toBeInTheDocument();
+});
+
+// 11/T2 운명의 실 보내기 (FR-29).
+
+test('열지 않은 항목이 남았으면 확인받고 보낸 뒤 보낸 모달을 띄운다', async () => {
+  sendMock.mockResolvedValue({ ok: true, data: { requestId: 'r1', candidateId: 'c1' } });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 보내기' }));
+  expect(sendMock).not.toHaveBeenCalled();
+  fireEvent.click(await screen.findByRole('button', { name: '보내기' }));
+
+  expect(await screen.findByRole('button', { name: '보러가기' })).toBeInTheDocument();
+  expect(sendMock).toHaveBeenCalledWith('c1');
+});
+
+test('확인에서 취소하면 보내지 않는다', async () => {
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 보내기' }));
+  fireEvent.click(await screen.findByRole('button', { name: '취소' }));
+
+  expect(sendMock).not.toHaveBeenCalled();
+});
+
+test('전송이 실패하면 보낸 모달 없이 알린다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  sendMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  const opened = {
+    ...candidate,
+    photo: { isLocked: false as const, url: 'https://example.com/p.jpg' },
+    name: { isLocked: false as const, value: '이서연' },
+    department: { isLocked: false as const, value: '영화영상학과' },
+    reason: { isLocked: false as const, value: '잘 맞아요' },
+  };
+  renderScreen({ balance: 10, candidates: [opened], reroll: { kind: 'free' } });
+
+  // 다 열었으면 확인 없이 바로 보낸다.
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 보내기' }));
+
+  expect(await screen.findByRole('status')).toHaveTextContent(THREAD_FAILED_MESSAGE);
+  expect(screen.queryByRole('button', { name: '보러가기' })).not.toBeInTheDocument();
+});
+
+test('이미 보낸 상대는 다시 보낼 수 없고 더 열 수도 없다', () => {
+  renderScreen({
+    balance: 10,
+    candidates: [{ ...candidate, isThreadSent: true }],
+    reroll: { kind: 'free' },
+  });
+
+  expect(screen.getByRole('button', { name: '운명의 실을 보냈어요' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  expect(screen.queryByRole('button', { name: '열람하기' })).not.toBeInTheDocument();
 });
