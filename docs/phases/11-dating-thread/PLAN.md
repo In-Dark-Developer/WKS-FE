@@ -35,7 +35,7 @@
 
 ## Tasks
 
-- [ ] T1. 정보 해금 — Done when: 사진·이름·학과·궁합 까닭을 항목별로 열 수 있고 각 비용(10 · 7 · 5 · 3)이 잔액에서 차감되며, 같은 상대의 같은 항목은 한 번만 차감되고, 해금 전에는 화면과 네트워크 응답 어디에도 그 값이 없다 · Touches: `src/features/dating/`, `src/ui/`, `docs/api/openapi.yaml` · After: T3 · Owner: 강근우 · FR: FR-28
+- [x] T1. 정보 해금 — Done when: 사진·이름·학과·궁합 까닭을 항목별로 열 수 있고 각 비용(10 · 7 · 5 · 3)이 잔액에서 차감되며, 같은 상대의 같은 항목은 한 번만 차감되고, 해금 전에는 화면과 네트워크 응답 어디에도 그 값이 없다 · Touches: `src/features/dating/`, `src/ui/`, `docs/api/openapi.yaml` · After: T3 · Owner: 강근우 · FR: FR-28 (commit 20bbc0f)
 
 - [ ] T2. 운명의 실과 요청함 — Done when: 보내기 전 '보낸 뒤에는 열지 않은 정보를 더 볼 수 없다'를 확인받고 전송되며, 요청함이 '보낸 신청'과 '받은 신청'으로 나뉘고, 받은 신청의 상대 정보는 해금 없이 전부 보이며, 수락하면 양쪽에 서로 등록한 연락 수단(전화번호 또는 인스타그램, 택1)이 공개되고 거절하면 공개되지 않는다 · Touches: `src/features/dating/`, `src/app/routes/` · After: T1, T3 · Owner: 강근우 · FR: FR-29, FR-30
 
