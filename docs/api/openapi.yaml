@@ -9,10 +9,10 @@
 # - 2026-09-24 (10/T1): 백엔드 api.md(2026-09-24 공유본, 운영 Swagger 장애 중) 로 GET /results/{id}/input ·
 #   POST /signups/photo-upload-url · GET /me 를 더했다. /me 의 인증 전달 방식(Bearer 헤더 vs 쿠키)은 미정이라
 #   security 를 적지 않았다 — 09/T2 가 /auth/kakao 와 함께 정한다.
-# - 2026-09-25 (spec-cookie-auth-contract): 로그인 계약을 **FE 가정안**으로 넣었다 — 백엔드 api-spec.md §9 초안(dev 5ec80d2)의
-#   POST /auth/kakao · GET /me · GET /me/result 를 그대로 두고, 토큰 전달만 NFR-7 대로 HttpOnly 쿠키로 바꿨다(응답 body 에 token 없음,
-#   Authorization 헤더 없음). 로그아웃은 쿠키를 지워야 하므로 POST /auth/logout 을 더했다. 백엔드 쿠키 전환 전이라 실제 모드에서는
-#   아직 동작하지 않는다 — 백엔드 구현이 확정되면 이 줄을 지우고 실제 값으로 맞춘다. 가정한 값은 [가정] 으로 표시했다.
+# - 2026-09-26 (spec-cookie-auth-sync): WKS-BE dev 0c6c772(#91 쿠키 전환 2d65342) 대조 — 로그인은 HttpOnly 쿠키 `wks_token`
+#   (Secure·SameSite=Lax·Path=/·Domain 없음·15일). POST /auth/kakao 응답 body 에 token 이 없고, POST /auth/logout 이 쿠키를 지운다.
+#   2026-09-25 FE 가정안(#205)과 이름(WKS_SESSION)·SameSite(None)만 달랐다. Lax 라 같은 사이트끼리만 쿠키가 오간다 —
+#   운영·dev 도메인·localhost↔localhost 는 되고, *.netlify.app 미리보기·localhost→원격 API 는 늘 비로그인이다.
 # - 디자인·PRD 에는 있으나 이 계약에 없는 것(인연카드 등급 cardGrades · 사전신청 추가 정보 Q14 · 후보 · 운명의 실)은 넣지 않았다 — PRD Open Questions.
 # - 백엔드 문서가 값을 확정하지 않은 곳은 description 에 [미확인] 을 붙였다.
 # - 검증 예: npx @redocly/cli lint docs/api/openapi.yaml
@@ -700,7 +700,7 @@ paths:
           description: 로그인 성공 — 세션 쿠키가 심긴다
           headers:
             Set-Cookie:
-              description: "[가정] `WKS_SESSION=<JWT>; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=1296000`(15일, 갱신 없음). 이름은 백엔드가 정하며 프론트는 읽지 않는다. 운영(threadoffate.site ↔ api.threadoffate.site)은 같은 사이트지만 netlify·localhost 개발 origin 은 교차 사이트라 SameSite=None 이 필요하다."
+              description: "`wks_token=<JWT>; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1296000`(15일, 갱신 없음, Domain 없음 — API 호스트 전용). 프론트는 읽지 않는다. SameSite=Lax 라 같은 사이트(threadoffate.site ↔ api.threadoffate.site, dev.threadoffate.site ↔ api-dev.threadoffate.site, localhost ↔ localhost)에서만 심기고 실린다."
               schema: { type: string }
           content:
             application/json:
@@ -723,15 +723,15 @@ paths:
   /auth/logout:
     post:
       operationId: logout
-      summary: "(V1) [가정] 세션 쿠키를 지운다"
-      description: "HttpOnly 쿠키는 프론트가 지울 수 없으므로 백엔드가 같은 이름·속성에 `Max-Age=0` 으로 덮어쓴다. 쿠키가 없거나 만료돼도 200 이다(멱등). 백엔드 §9 초안은 '서버 엔드포인트 없음'이었으나 헤더 토큰 기준이라 쿠키 전환에 맞춰 더한 가정이다."
+      summary: (V1) 세션 쿠키를 지운다
+      description: "HttpOnly 쿠키는 프론트가 지울 수 없으므로 백엔드가 같은 이름·속성에 `Max-Age=0` 으로 덮어쓴다. 인증 없이 부를 수 있고 쿠키가 없거나 만료돼도 200 이다(멱등). 서버 쪽 토큰 무효화는 없다 — 밖으로 나간 토큰 사본은 만료까지 유효하다(백엔드 §9)."
       tags: [auth]
       responses:
         "200":
           description: 로그아웃됨 — 세션 쿠키 만료
           headers:
             Set-Cookie:
-              description: "[가정] `WKS_SESSION=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0`"
+              description: "`wks_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`"
               schema: { type: string }
           content:
             application/json:
@@ -766,8 +766,8 @@ components:
     cookieAuth:
       type: apiKey
       in: cookie
-      name: WKS_SESSION
-      description: "(V1) [가정] 로그인 세션 JWT. HttpOnly 라 프론트 코드는 읽지 않고 브라우저가 싣는다 — 요청은 `credentials: 'include'`. 백엔드 CORS 는 origin 을 명시하고 `Access-Control-Allow-Credentials: true` 를 줘야 한다(와일드카드 불가). 인증이 필요한 경로: /me · /me/result · (V1) 소개팅·실. 사주·궁합·공유·사전등록은 쿠키를 무시한다."
+      name: wks_token
+      description: "(V1) 로그인 세션 JWT(백엔드 JwtCookie, SameSite=Lax). HttpOnly 라 프론트 코드는 읽지 않고 브라우저가 싣는다 — 요청은 `credentials: 'include'`. 백엔드 CORS 는 origin 을 명시하고 `Access-Control-Allow-Credentials: true` 를 줘야 한다(와일드카드 불가). 인증이 필요한 경로: /me · /me/result · /dating/** · /wallet/**. 사주·궁합·공유·사전등록은 쿠키를 무시한다."
   schemas:
     Gender:
       type: string
