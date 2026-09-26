@@ -128,7 +128,7 @@ test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
-test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고 다음 방문에는 티저가 없다", async () => {
+test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고, 결과 없이 떠났다 돌아오면 다시 티저다", async () => {
   renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
@@ -137,7 +137,18 @@ test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열�
   cleanup();
   renderAt('/');
 
-  expect(screen.queryByRole('button', { name: '내 사주 보기' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+});
+
+test('결과가 없으면 소개팅에서 홈 탭을 눌러도 티저가 홈이다', async () => {
+  const router = renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
+  const nav = await screen.findByRole('navigation', { name: '주요 메뉴' });
+
+  fireEvent.click(within(nav).getByRole('button', { name: '홈' }));
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
 });
 
 test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로 간다", async () => {

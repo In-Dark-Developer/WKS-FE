@@ -26,7 +26,7 @@ export function markTeaserPassed(): void {
   teaserPassed = true;
 }
 
-// 테스트 전용 — 새 접속을 흉내 낸다.
+// 지난 기록을 지운다 — 사주가 없는 채로 `/` 를 떠나면 IntroGate 가 부른다(다음에 오면 티저부터). 테스트는 새 접속을 흉내 낼 때 쓴다.
 export function resetTeaserPassed(): void {
   teaserPassed = false;
 }
