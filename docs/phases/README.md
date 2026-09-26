@@ -17,7 +17,7 @@
 | 06 | [dating-gate](06-dating-gate/PLAN.md) | @gn00py48 | 03 | DONE | 4/4 | [RESULT](06-dating-gate/RESULT.md) |
 | 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | PLANNED | 0/1 | — |
 | 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 5/6 | [RESULT](08-launch-readiness/RESULT.md) |
-| 09 | [auth-and-shell](09-auth-and-shell/PLAN.md) | @jjjung0921 | 03 | PLANNED | 5/10 | — |
+| 09 | [auth-and-shell](09-auth-and-shell/PLAN.md) | @jjjung0921 | 03 | PLANNED | 7/10 | — |
 | 10 | [dating-onboarding](10-dating-onboarding/PLAN.md) | @jjjung0921 | 09 | PLANNED | 1/4 | — |
 | 11 | [dating-thread](11-dating-thread/PLAN.md) | @jjjung0921 | 10 | PLANNED | 1/3 | — |
 <!-- phases:end -->
