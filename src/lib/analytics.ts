@@ -2,7 +2,7 @@
 // 서버 API key 가 아니라 비밀값이 아니다 — ADR-20260916-amplitude-product-analytics.
 const API_KEY = '0829db3a91ddacee78bef8e460503e0a';
 
-// 사주 입력으로 들어온 입구: '/'(direct) · 공유 링크(share).
+// 사주 입력으로 들어온 입구: 티저의 '내 사주 보기' → `/saju`(direct) · 공유 링크 `/s/:shareId`(share).
 export type SajuEntry = 'direct' | 'share';
 
 // '친구에게 공유' 3단 폴백이 어디까지 갔는지(features/share/link/shareLink.ts 의 ShareOutcome).
