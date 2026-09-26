@@ -78,7 +78,7 @@ test('인연이 없으면 안내와 버튼 자리를 보인다', () => {
   expect(screen.getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
 });
 
-test('맨 아래 공유 자리에 받은 버튼을 그린다', () => {
+test('내 지도는 공유 버튼을 지도 바로 아래, 순위보다 위에 그린다', () => {
   render(
     <CompatibilityMapScreen
       friends={friends}
@@ -90,9 +90,11 @@ test('맨 아래 공유 자리에 받은 버튼을 그린다', () => {
   expect(
     screen.getByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
   ).toBeInTheDocument();
-  expect(
-    screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' }),
-  ).toBeInTheDocument();
+  const share = screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' });
+  const map = screen.getByRole('region', { name: '달빛토끼님의 궁합 지도' });
+  const ranking = screen.getByRole('heading', { name: '친구 궁합 순위' });
+  expect(map.compareDocumentPosition(share) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(share.compareDocumentPosition(ranking) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
 
 test('방문자 지도는 링크 주인의 지도와 부제를 보이고 버튼 자리에 받은 버튼을 그린다', () => {
