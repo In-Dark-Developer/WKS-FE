@@ -9,7 +9,7 @@
 - Issue: none
 - Touches: src/features/dating/,src/app/routes/dating.routes.tsx,src/app/preview/screens/dating-profile.tsx
 - Supersedes: none
-- Acked: none
+
 
 ## Current Phase
 
@@ -27,8 +27,7 @@ REVIEW
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - [x] 프로필 단계를 주소(`?step=`)로 올리고 뒤로가기 연결 (d96842f)
-- [x] 카카오 로그인 복귀를 `/dating/profile` 로
-- [x] test·typecheck·lint·목 모드 브라우저 확인
+- [x] 카카오 로그인 복귀를 `/dating/profile` 로 · test·typecheck·lint·목 모드 브라우저 확인
 
 ## Last Checkpoint
 
