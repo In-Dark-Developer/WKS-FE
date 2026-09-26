@@ -26,7 +26,6 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- WKS-BE dev 4d2e534 의 요청 취소(#101)·목록 counterpart(#103) 확인
 - openapi: DatingRequestStatus CANCELLED · /cancel · 목록 전용 스키마
 - 공지 · 검증 · PR ←
 
