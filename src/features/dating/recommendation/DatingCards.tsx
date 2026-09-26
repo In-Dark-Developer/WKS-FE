@@ -82,7 +82,7 @@ export function DatingCards({
                   <CandidateCard
                     candidate={candidate}
                     initialFace={initialCardFace}
-                    onOpenUnlock={onOpenUnlock}
+                    onOpenUnlock={candidate.isThreadSent ? undefined : onOpenUnlock}
                   />
                 </li>
               ))}
@@ -102,13 +102,13 @@ export function DatingCards({
 
         <div className="flex flex-col gap-12">
           <Button
-            disabled={!active}
+            disabled={!active || active.isThreadSent === true}
             onClick={() => {
               if (active) onSendThread(active.id);
             }}
             size="m"
           >
-            운명의 실 보내기
+            {active?.isThreadSent ? '운명의 실을 보냈어요' : '운명의 실 보내기'}
           </Button>
           <div className="flex flex-col items-center gap-8">
             <Button

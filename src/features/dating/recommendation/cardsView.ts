@@ -28,6 +28,8 @@ export type MatchCandidateView = {
   name: LockableField<string>;
   department: LockableField<string>;
   reason: LockableField<string>;
+  // 이미 운명의 실을 보낸 상대 — 더 열 수도, 다시 보낼 수도 없다(FR-29). 요청함 `box=sent` 에서 온다.
+  isThreadSent?: boolean;
 };
 
 // 다른 인연 만나보기 — 오늘 무료가 남았는지, 아니면 비용과 잔액으로 가능한지. 판단은 백엔드 값을 옮긴 것이다(FR-27 · FR-31).

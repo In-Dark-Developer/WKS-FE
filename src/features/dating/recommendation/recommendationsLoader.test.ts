@@ -1,4 +1,4 @@
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 const { getMeMock, getRecommendationsMock } = vi.hoisted(() => ({
   getMeMock: vi.fn(),
@@ -7,6 +7,11 @@ const { getMeMock, getRecommendationsMock } = vi.hoisted(() => ({
 vi.mock('@/api/me', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/me')>();
   return { ...actual, getMe: getMeMock };
+});
+const { listRequestsMock } = vi.hoisted(() => ({ listRequestsMock: vi.fn() }));
+vi.mock('@/api/matchRequests', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/matchRequests')>();
+  return { ...actual, listDatingRequests: listRequestsMock };
 });
 vi.mock('@/api/dating', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/dating')>();
@@ -48,7 +53,12 @@ function me(threadBalance: number) {
   };
 }
 
+beforeEach(() => {
+  listRequestsMock.mockResolvedValue({ ok: true, data: [] });
+});
+
 afterEach(() => {
+  listRequestsMock.mockReset();
   getMeMock.mockReset();
   getRecommendationsMock.mockReset();
   vi.restoreAllMocks();
@@ -148,4 +158,28 @@ test('열렸는데 값이 아직 없는 항목은 비용 0 잠금으로 두어 �
   expect(view.name).toEqual({ isLocked: false, value: '이서연' });
   expect(view.reason).toEqual({ isLocked: true, cost: 0 });
   expect(view.photo).toEqual({ isLocked: true, thumbnailUrl: BLURRED_URL, cost: 0 });
+});
+
+test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는다 (FR-29)', async () => {
+  getMeMock.mockResolvedValue(me(10));
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+  listRequestsMock.mockResolvedValue({
+    ok: true,
+    data: [
+      {
+        requestId: '312f3185-f114-4db0-a2fb-54d0669b7e33',
+        candidateId: CANDIDATE_ID,
+        status: 'PENDING',
+        createdAt: '2026-09-24T12:00:00Z',
+        respondedAt: null,
+        contactMethod: null,
+        contactValue: null,
+      },
+    ],
+  });
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(true);
+  expect(listRequestsMock).toHaveBeenCalledWith('sent');
 });

@@ -15,14 +15,23 @@ export type RequestProfileView = {
   name: LockableField<string>;
   department: LockableField<string>;
   reason: LockableField<string>;
+  // 매칭이 성립했을 때만 — 상대가 등록한 연락 수단 하나(FR-30 · NFR-4).
+  contact?: ContactView | null;
 };
 
-// 보낸 신청 — 기다리는 중이거나, 거절됐거나 상대가 다른 사람과 맺어져 실패했다(FR-30).
-export type SentRequestView = RequestProfileView & { status: 'PENDING' | 'FAILED' };
+export type ContactView = { method: 'PHONE' | 'INSTAGRAM'; value: string };
+
+// 보낸 신청 — 기다리는 중이거나, 성립했거나, 거절돼 실패했다(FR-30).
+export type SentRequestView = RequestProfileView & { status: 'PENDING' | 'MATCHED' | 'FAILED' };
+
+// 받은 신청 — 응답 전이거나, 수락해 성립했거나, 거절했다. 퍼블리싱 미리보기는 상태 없이(응답 전) 넘긴다.
+export type ReceivedRequestView = RequestProfileView & {
+  status?: 'PENDING' | 'MATCHED' | 'DECLINED';
+};
 
 export type RequestInboxView = {
   sent: readonly SentRequestView[];
-  received: readonly RequestProfileView[];
+  received: readonly ReceivedRequestView[];
 };
 
 export type RequestTab = 'sent' | 'received';
