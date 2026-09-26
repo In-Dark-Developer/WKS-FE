@@ -466,6 +466,170 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/requests:
+    post:
+      operationId: sendDatingRequest
+      summary: (V1) 운명의 실 보내기 — 지금 내 추천 카드의 상대에게 매칭 요청 (FR-29)
+      description: "무료 — 실을 차감하지 않는다. `candidateId` 는 §10.4 추천 응답의 상대 프로필 id 다(`requestId` 와 다르다). 본인·이미 요청한 두 사람(방향 무관, 거절 뒤 포함)·지금 추천 카드에 없는 상대는 409 DATING_REQUEST_CONFLICT. 내 학교 메일 인증 전이면 403. WKS-BE api-spec.md §11 (dev 8827766)."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [candidateId]
+              properties:
+                candidateId: { type: string, format: uuid }
+      responses:
+        "201":
+          description: 요청됨 — status PENDING, 연락처는 null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingRequest" }
+        "400":
+          description: INVALID_INPUT — 본인에게 요청
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "403":
+          description: DATING_NOT_VERIFIED — 내 학교 메일 인증 전
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_PROFILE_NOT_FOUND — 상대 또는 내 소개팅 프로필 없음
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: DATING_REQUEST_CONFLICT — 이미 요청한 쌍 · 추천 카드에 없는 상대 · 상대가 인증 전
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    get:
+      operationId: listDatingRequests
+      summary: (V1) 요청함 — 보낸 신청(sent) · 받은 신청(received) (FR-30)
+      description: "최신 요청부터. 비어 있으면 `data: []`. 행에는 상대 프로필(이름·사진·MBTI·점수 등)이 없고 `candidateId` 만 온다 — `candidateId` 는 **조회한 사람 기준 상대**의 프로필 id 라 같은 요청도 보낸 사람·받은 사람 목록에서 값이 다르다. 연락처는 ACCEPTED 에서만 **상대의 것**이 온다. 요청 수 상한 없음."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: box
+          in: query
+          required: true
+          schema: { type: string, enum: [sent, received] }
+          description: "그 밖의 값은 400 INVALID_INPUT"
+      responses:
+        "200":
+          description: 목록
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/DatingRequest" }
+        "400":
+          description: INVALID_INPUT — box 가 sent·received 가 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_PROFILE_NOT_FOUND — 내 소개팅 프로필 없음
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/requests/{requestId}/accept:
+    post:
+      operationId: acceptDatingRequest
+      summary: (V1) 받은 신청 수락 — 매칭 성립, 상대 연락처 공개 (FR-30 · SC-9)
+      description: "받은 사람만. PENDING 일 때만 — 이미 응답했으면 409. 응답의 연락처는 상대(보낸 사람)의 것이고, 보낸 사람은 목록(`box=sent`)에서 내 연락처를 받는다. 수락이 다른 요청의 상태를 바꾸지 않는다."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: requestId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: 수락됨 — status ACCEPTED, respondedAt·contactMethod·contactValue 채워짐
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingRequest" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_REQUEST_NOT_FOUND — 없거나 내가 받은 요청이 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: DATING_REQUEST_CONFLICT — 이미 응답했거나 한쪽이 인증 자격을 잃었다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/requests/{requestId}/reject:
+    post:
+      operationId: rejectDatingRequest
+      summary: (V1) 받은 신청 거절 — 연락처는 공개되지 않는다 (FR-30)
+      description: "받은 사람만. PENDING 일 때만 — 이미 응답했으면 409. 거절한 쌍은 다시 요청할 수 없다."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: requestId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: 거절됨 — status REJECTED, 연락처 null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingRequest" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_REQUEST_NOT_FOUND — 없거나 내가 받은 요청이 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: DATING_REQUEST_CONFLICT — 이미 응답했다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    # FR-30 의 '요청 취소'(보낸 사람이 응답 전 취소)와 '매칭에 실패했어요'(상대가 다른 사람과 맺어짐) 는 BE 계약에 없다
+    #   — WKS-BE dev 8827766 기준. 백엔드 문의 중(스트림 spec-dating-requests-api HANDOFF).
   /me:
     get:
       operationId: getMe
@@ -886,6 +1050,26 @@ components:
         locked: { type: boolean }
         cost: { type: integer, description: "여는 데 드는 실 개수 — locked 가 true 일 때 온다" }
         value: { type: string, description: "해금한 항목의 값 — locked 가 false 일 때 온다" }
+    DatingRequestStatus:
+      type: string
+      enum: [PENDING, ACCEPTED, REJECTED]
+      description: "요청 상태 — 백엔드 `DatingRequestStatus` 와 1:1. 취소·실패 상태는 없다"
+    DatingRequest:
+      description: "매칭 요청 한 건 (WKS-BE §11, `DatingRequestResponse`). 보낸·받은 목록과 생성·수락·거절 응답이 같은 모양이다"
+      type: object
+      required: [requestId, candidateId, status, createdAt, respondedAt, contactMethod, contactValue]
+      properties:
+        requestId: { type: string, format: uuid, description: "요청 자체의 id — accept·reject 경로에 쓴다" }
+        candidateId: { type: string, format: uuid, description: "조회한 사람 기준 상대의 소개팅 프로필 id" }
+        status: { $ref: "#/components/schemas/DatingRequestStatus" }
+        createdAt: { type: string, format: date-time }
+        respondedAt: { type: [string, "null"], format: date-time, description: "수락·거절 시각 — PENDING 이면 null" }
+        contactMethod:
+          oneOf:
+            - { $ref: "#/components/schemas/ContactMethod" }
+            - { type: "null" }
+          description: "ACCEPTED 일 때만 상대의 연락 수단 — 그 밖에는 null (NFR-4)"
+        contactValue: { type: [string, "null"], description: "ACCEPTED 일 때만 상대의 전화번호 또는 인스타그램 아이디 — 그 밖에는 null" }
     DatingCandidate:
       description: "추천 카드 한 장 (WKS-BE §10.4). `candidateId` 는 상대의 소개팅 프로필 id 다"
       type: object
