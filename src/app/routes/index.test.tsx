@@ -6,6 +6,7 @@ import type { Result } from '@/api/schema/result';
 import type { SharedResult } from '@/api/schema/share';
 import { writeSession } from '@/api/session';
 import { routes } from '@/app/routes';
+import { markTeaserPassed, resetTeaserPassed } from '@/features/intro/introSeen';
 
 // getResult 는 src/api/ 경계 — 라우트 조립만 확인하니 실제 요청을 보내지 않는다 (CONVENTIONS 8장).
 const { getResultMock, createResultMock } = vi.hoisted(() => ({
@@ -70,10 +71,10 @@ const stubResult: Result = {
   compatibilities: [],
 };
 
-// 인트로·메인 티저(FR-1)는 첫 방문에만 뜬다 — 입력 화면을 보는 테스트는 둘 다 지난 방문자로 시작한다.
+// 인트로는 첫 방문에만, 메인 티저는 접속마다 뜬다(FR-1) — 입력 화면을 보는 테스트는 둘 다 지난 방문자로 시작한다.
 beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
-  localStorage.setItem('wks:teaser-passed', '1');
+  markTeaserPassed();
   getMeMock.mockResolvedValue(unauthenticated);
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
 });
@@ -82,6 +83,7 @@ afterEach(() => {
   cleanup();
   localStorage.clear();
   sessionStorage.clear();
+  resetTeaserPassed();
   getResultMock.mockReset();
   createResultMock.mockReset();
   getSharedResultMock.mockReset();
@@ -114,7 +116,7 @@ test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
 
 // 인트로를 본 뒤 티저에서 아직 진입을 고르지 않은 방문자.
 function renderTeaser() {
-  localStorage.removeItem('wks:teaser-passed');
+  resetTeaserPassed();
   return renderAt('/');
 }
 

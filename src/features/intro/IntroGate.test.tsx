@@ -2,10 +2,12 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, test } from 'vitest';
 
 import { IntroGate } from './IntroGate';
+import { resetTeaserPassed } from './introSeen';
 
 afterEach(() => {
   cleanup();
   localStorage.clear();
+  resetTeaserPassed();
 });
 
 function renderGate() {
@@ -62,7 +64,7 @@ test('인트로가 끝나면 티저가 뜨고, 티저를 지나야 입력 화면
   expect(screen.getByRole('heading', { name: '사주 입력' })).toBeInTheDocument();
 });
 
-test('인트로만 보고 티저를 지나지 않았으면 다음 방문에 티저부터 뜬다', () => {
+test('인트로만 보고 티저를 지나지 않았으면 다음 접속에 티저부터 뜬다', () => {
   renderGateWithTeaser();
   fireEvent.ended(screen.getByLabelText('인트로 영상'));
   cleanup();
@@ -72,7 +74,7 @@ test('인트로만 보고 티저를 지나지 않았으면 다음 방문에 티�
   expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
 });
 
-test('티저를 지난 방문자는 인트로·티저 없이 입력 화면을 본다', () => {
+test('같은 접속 안에서 티저를 지났으면 다시 들어와도 입력 화면을 본다', () => {
   renderGateWithTeaser();
   fireEvent.ended(screen.getByLabelText('인트로 영상'));
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
@@ -80,4 +82,16 @@ test('티저를 지난 방문자는 인트로·티저 없이 입력 화면을 �
   renderGateWithTeaser();
 
   expect(screen.getByRole('heading', { name: '사주 입력' })).toBeInTheDocument();
+});
+
+test('티저를 지났어도 새로 접속하면 인트로 없이 티저가 먼저 뜬다', () => {
+  renderGateWithTeaser();
+  fireEvent.ended(screen.getByLabelText('인트로 영상'));
+  fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
+  cleanup();
+  resetTeaserPassed(); // 새 페이지 로드
+  renderGateWithTeaser();
+
+  expect(screen.queryByLabelText('인트로 영상')).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
 });

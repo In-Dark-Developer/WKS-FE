@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
-// 인트로를 봤는지, 메인 티저를 지났는지만 기억한다 (FR-1). 세션 토큰(`src/api/session.ts`)과는 다른 키다.
+// 인트로를 봤는지(방문을 넘어), 메인 티저를 지났는지(이번 접속 안에서만) 기억한다 (FR-1). 세션(`src/api/session.ts`)과는 다른 키다.
 const KEY = 'wks:intro-seen';
-const TEASER_KEY = 'wks:teaser-passed';
 
 const seenSchema = z.literal('1');
 
@@ -14,13 +13,22 @@ export function markIntroSeen(): void {
   writeFlag(KEY);
 }
 
-// 티저의 '내 사주 보기'·'새로운 인연 찾기'를 고르면 지난 것이다 — 로그인만 하고 돌아온 티저는 아직 지나지 않았다.
+// 티저는 접속(페이지 로드)마다 먼저 뜬다(FR-1, 2026-09-26 소유자 확정) — 그래서 저장소가 아니라 이 페이지의 메모리에만 둔다.
+// '내 사주 보기'·'새로운 인연 찾기'를 고르면 지난 것이고, 같은 접속 안에서 앱 안 이동으로 `/` 에 돌아오면 다시 뜨지 않는다.
+// 로그인만 하고 돌아온 티저는 카카오 왕복이 새 접속이라 다시 뜬다.
+let teaserPassed = false;
+
 export function hasPassedTeaser(): boolean {
-  return readFlag(TEASER_KEY);
+  return teaserPassed;
 }
 
 export function markTeaserPassed(): void {
-  writeFlag(TEASER_KEY);
+  teaserPassed = true;
+}
+
+// 테스트 전용 — 새 접속을 흉내 낸다.
+export function resetTeaserPassed(): void {
+  teaserPassed = false;
 }
 
 function readFlag(key: string): boolean {
