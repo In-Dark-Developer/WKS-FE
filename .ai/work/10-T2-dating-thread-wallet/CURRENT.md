@@ -21,21 +21,19 @@ T2. 재화 '실'
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. openapi: `GET /wallet`·`POST /wallet/check-in` (WKS-BE §12, dev adf54ab) ←
-- 2. api: `wallet.ts` 신규 — 잔액 조회·출석. 목은 가입 10(최초 로그인) 기준으로 `me.ts` 와 맞춘다
-- 3. feature: 카드 화면 잔액을 `/wallet` 하나로 모은다(해금 응답 balance 로 즉시 반영, `/me` 는 게이트 전용)
-- 4. 잔액 부족 안내 — 해금·리롤이 막히는 경로 확인 (402 INSUFFICIENT_THREAD)
-- 5. test/typecheck/lint · 커밋 · `--ready`
+- 1~5 완료 (commit 8792afa·dbf0d20) — openapi §12 · wallet.ts · 목 원장 정렬 · 잔액 단일 출처 · 검증
+- 6. dev 병합(11/T2 #228) 충돌 정리 완료 (commit f1a000f)
+- 7. `--ready` → PR · 강근우님께 notes/to-gn00py48-wallet.md 전달 ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`82a02f4`
+`dbf0d20`
 
 ## Relevant Documents
 
@@ -50,4 +48,4 @@ IN_PROGRESS
 
 ## Next Action
 
-Progress 1 — openapi 에 §12 반영.
+`ai-end.sh --ready` 로 PR. 강근우님께 handoff 노트 전달(소유자 승인 완료).
