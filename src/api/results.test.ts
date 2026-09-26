@@ -6,7 +6,13 @@ vi.mock('./client', async (importOriginal) => {
   return { ...actual, request: requestMock };
 });
 
-import { createResult, getResult, getResultInput, type ResultRequestInput } from './results';
+import {
+  createResult,
+  getMyResult,
+  getResult,
+  getResultInput,
+  type ResultRequestInput,
+} from './results';
 import { resultInputSchema } from './schema/result';
 import { clearSession, readSession, writeSession } from './session';
 
@@ -159,4 +165,25 @@ test('목 모드의 getResultInput 은 목으로 만든 결과의 입력값을 �
     ok: false,
     error: { code: 'RESULT_NOT_FOUND' },
   });
+});
+
+test('getMyResult 는 GET /me/result 를 부르고 받은 resultId 를 내 결과로 다시 보관한다', async () => {
+  requestMock.mockResolvedValue({ ok: true, data: { resultId: RESULT_ID } });
+
+  await expect(getMyResult()).resolves.toEqual({ ok: true, data: { resultId: RESULT_ID } });
+  expect(requestMock).toHaveBeenCalledWith(
+    { method: 'GET', path: '/me/result' },
+    expect.anything(),
+  );
+  expect(readSession()).toEqual({ resultId: RESULT_ID });
+});
+
+test('계정에 결과가 없으면 getMyResult 는 내 결과를 바꾸지 않는다', async () => {
+  requestMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
+  });
+
+  await expect(getMyResult()).resolves.toMatchObject({ ok: false });
+  expect(readSession()).toBeNull();
 });
