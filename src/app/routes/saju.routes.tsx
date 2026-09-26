@@ -70,6 +70,9 @@ function MainTeaserRoute({ pass }: { pass: () => void }) {
   );
 }
 
+// 사주 결과가 없으면 `/` 에 올 때마다 티저가 홈이다(FR-19) — 떠날 때 결과가 있어야 티저를 지난 기록을 남긴다.
+const hasSaju = () => readSession() !== null;
+
 // SCR-09 사전신청 모달 — 결과 화면 하위 라우트라 결과 화면의 <Outlet /> 에 뜬다(FR-9).
 // 닫기(배경·ESC·완료의 '확인')는 부모 결과 화면으로 돌아간다.
 function PreRegisterModalRoute() {
@@ -83,7 +86,7 @@ export const sajuRoutes: RouteObject[] = [
   {
     index: true,
     element: (
-      <IntroGate teaser={(pass) => <MainTeaserRoute pass={pass} />}>
+      <IntroGate keepPassedOnLeave={hasSaju} teaser={(pass) => <MainTeaserRoute pass={pass} />}>
         <SajuForm />
       </IntroGate>
     ),

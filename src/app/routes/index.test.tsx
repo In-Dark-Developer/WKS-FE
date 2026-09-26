@@ -128,7 +128,7 @@ test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
-test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고 다음 방문에는 티저가 없다", async () => {
+test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고, 결과 없이 떠났다 돌아오면 다시 티저다", async () => {
   renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
@@ -137,7 +137,18 @@ test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열�
   cleanup();
   renderAt('/');
 
-  expect(screen.queryByRole('button', { name: '내 사주 보기' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+});
+
+test('결과가 없으면 소개팅에서 홈 탭을 눌러도 티저가 홈이다', async () => {
+  const router = renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
+  const nav = await screen.findByRole('navigation', { name: '주요 메뉴' });
+
+  fireEvent.click(within(nav).getByRole('button', { name: '홈' }));
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
 });
 
 test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로 간다", async () => {
@@ -470,12 +481,18 @@ test('공유 링크로 들어오면 세션 없이 링크 주인 닉네임이 든
 
   renderAt(`/s/${SHARE_ID}`);
 
+  // 사주가 없는 방문자도 초대 머리와 주인의 궁합 지도 아래에서 입력한다 (FR-15 V1, Figma 30:5916).
   expect(
-    await screen.findByText(
-      '아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.',
-    ),
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의궁합지도에 초대됐어요' }),
   ).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: '사주를 입력해 인연을 확인하세요' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText(/달빛토끼님과 나의 궁합을 확인할 수 있어요/)).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '이전 정보 불러오기' })).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
   // 주인의 사주 요약은 화면에 없다 (FR-15).
   expect(screen.queryByText('꽃길만 걷는 인연')).not.toBeInTheDocument();
 });
@@ -490,9 +507,9 @@ test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로
   createCompatibilityMock.mockResolvedValue(compatibility);
 
   const router = renderAt(`/s/${SHARE_ID}`);
-  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
   fillValidSaju();
-  fireEvent.click(screen.getByRole('button', { name: '운명 지도 확인하기' }));
+  fireEvent.click(screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }));
 
   expect(
     await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
@@ -543,9 +560,12 @@ test('새로 작성하기를 고르면 보관된 내 결과를 두고 사주 입
   renderAt(`/s/${SHARE_ID}`);
   fireEvent.click(await screen.findByRole('button', { name: '새로 작성하기' }));
 
-  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
   expect(
-    screen.getByText('아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.'),
+    await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
+  // 기존 방문자의 '새로 작성하기' 폼도 신규 방문자와 같은 문구다 (Figma 30:6323).
+  expect(
+    screen.getByRole('heading', { name: '사주를 입력해 인연을 확인하세요' }),
   ).toBeInTheDocument();
   expect(createCompatibilityMock).not.toHaveBeenCalled();
   expect(localStorage.getItem('wks:session')).toContain(RESULT_ID);
@@ -556,7 +576,9 @@ test('결과 없이 친구의 궁합 지도 주소로 오면 공유 링크 입�
 
   const router = renderAt(`/s/${SHARE_ID}/map`);
 
-  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}`);
 });
 
@@ -679,7 +701,7 @@ test('사주 입력과 공유 Flow 에는 하단 네비가 없다', async () => 
 
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
   renderAt(`/s/${SHARE_ID}`);
-  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
