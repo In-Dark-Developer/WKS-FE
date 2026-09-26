@@ -22,6 +22,7 @@ import {
   joinShare,
   joinShareLoader,
   ShareEntryChoice,
+  ShareInvite,
   ShareJoinLoading,
   shareInputLoader,
   shareMapLoader,
@@ -55,26 +56,24 @@ function ShareInputRoute() {
   // canReusePrevious=false 를 주고 navigation 이 멈춰 폼이 보인다.
   if (choice === 'reuse' && navigation.state !== 'idle') return <ShareJoinLoading />;
 
-  const form = <ShareInputScreen ownerNickname={view.ownerNickname} />;
+  // 초대 머리는 사주 유무와 상관없이 늘 위에 있다(FR-15 V1). 신규 방문자는 바로 폼, 기존 방문자는 먼저 고르고
+  // '새로 작성하기'를 누르면 선택 아래에 같은 폼이 열린다(Figma 30:5916 · 30:6128 · 30:6323).
+  const showForm = !view.canReusePrevious || choice === 'new';
   return (
     <IntroGate>
-      {view.canReusePrevious ? (
-        // '새로 작성하기'를 눌러도 초대·선택은 남고 그 아래에 폼이 열린다(Figma 30:6323).
-        <>
+      <div className="flex flex-col gap-40">
+        <ShareInvite ownerFriends={view.ownerFriends} ownerNickname={view.ownerNickname} />
+        {view.canReusePrevious ? (
           <ShareEntryChoice
             onReusePrevious={() => {
               setChoice('reuse');
               void navigate(`/s/${encodeURIComponent(shareId)}/join`);
             }}
             onWriteNew={() => setChoice('new')}
-            ownerFriends={view.ownerFriends}
-            ownerNickname={view.ownerNickname}
           />
-          {choice === 'new' ? form : null}
-        </>
-      ) : (
-        form
-      )}
+        ) : null}
+        {showForm ? <ShareInputScreen ownerNickname={view.ownerNickname} /> : null}
+      </div>
     </IntroGate>
   );
 }
