@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
+import { getMe } from '@/api/me';
 import { readSession } from '@/api/session';
 import { HomeScreen } from '@/app/screens/HomeScreen';
 import { requireSaju } from '@/app/routes/guards';
@@ -48,14 +49,24 @@ export const SAJU_INPUT_PATH = '/saju';
 // 없으면 사주 입력(`/saju`)으로 간다.
 // '새로운 인연 찾기'는 소개팅 인트로로 가고 로그인·프로필 조건은 소개팅이 판단한다(FR-24).
 // '이미 아이디가 있어요'는 로그인 시트만 띄운다 — 로그인 뒤 계정 기록을 불러와 이 티저로 돌아온다(FR-21).
+// 이미 로그인했으면 그 링크를 그리지 않는다. 로그인 여부는 GET /me 로만 판단하고, 조회가 실패하면 로그인하지 않은
+// 것으로 본다 — 링크가 한 번 더 보이는 편이 로그인할 길을 막는 것보다 낫다.
+type MainTeaserView = { isSignedIn: boolean };
+
+async function mainTeaserLoader(): Promise<MainTeaserView> {
+  const me = await getMe();
+  return { isSignedIn: me.ok };
+}
+
 function MainTeaserRoute() {
+  const { isSignedIn } = useLoaderData<MainTeaserView>();
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   return (
     <>
       <MainTeaser
         onFindMatch={() => void navigate(DATING_INTRO_PATH)}
-        onHaveAccount={() => setIsLoginOpen(true)}
+        onHaveAccount={isSignedIn ? undefined : () => setIsLoginOpen(true)}
         onViewSaju={() => {
           const session = readSession();
           void navigate(session ? `/reading/${session.resultId}` : SAJU_INPUT_PATH);
@@ -82,6 +93,7 @@ export const sajuRoutes: RouteObject[] = [
   // SCR-01 인트로·메인 티저 — 첫 방문이면 인트로 영상이 먼저 뜬다(FR-1). 사주가 없으면 이 티저가 홈이다(FR-19).
   {
     index: true,
+    loader: mainTeaserLoader,
     element: (
       <IntroGate>
         <MainTeaserRoute />

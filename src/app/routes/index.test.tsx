@@ -112,20 +112,22 @@ test('루트 경로가 화면을 렌더한다', async () => {
   ).toBeInTheDocument();
 });
 
-test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
+test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', async () => {
   localStorage.clear();
   renderAt('/');
 
-  expect(screen.getByLabelText('인트로 영상')).toBeInTheDocument();
+  expect(await screen.findByLabelText('인트로 영상')).toBeInTheDocument();
 });
 
-// 인트로를 본 방문자 — `/` 는 언제나 티저다.
-function renderTeaser() {
-  return renderAt('/');
+// 인트로를 본 방문자 — `/` 는 언제나 티저다. 티저 loader(GET /me)가 끝나 티저가 그려질 때까지 기다린다.
+async function renderTeaser() {
+  const router = renderAt('/');
+  await screen.findByRole('button', { name: '내 사주 보기' });
+  return router;
 }
 
-test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
-  renderTeaser();
+test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', async () => {
+  await renderTeaser();
 
   expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '새로운 인연 찾기' })).toBeInTheDocument();
@@ -133,7 +135,7 @@ test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
 });
 
 test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력(/saju)을 열고, 뒤로가기는 티저로 돌아온다", async () => {
-  const router = renderTeaser();
+  const router = await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
   expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
@@ -146,7 +148,7 @@ test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력(/saju)�
 });
 
 test('결과가 없으면 소개팅에서 홈 탭을 눌러도 티저가 홈이다', async () => {
-  const router = renderTeaser();
+  const router = await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
   const nav = await screen.findByRole('navigation', { name: '주요 메뉴' });
 
@@ -159,7 +161,7 @@ test('결과가 없으면 소개팅에서 홈 탭을 눌러도 티저가 홈이�
 test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로 간다", async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
-  const router = renderTeaser();
+  const router = await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
   await screen.findByRole('navigation', { name: '주요 메뉴' });
@@ -167,7 +169,7 @@ test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 �
 });
 
 test("티저의 '새로운 인연 찾기'는 소개팅 인트로로 간다", async () => {
-  const router = renderTeaser();
+  const router = await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
 
   await screen.findByRole('navigation', { name: '주요 메뉴' });
@@ -175,7 +177,7 @@ test("티저의 '새로운 인연 찾기'는 소개팅 인트로로 간다", asy
 });
 
 test("티저의 '이미 아이디가 있어요'는 로그인 시트를 띄우고 닫으면 티저에 남는다", async () => {
-  renderTeaser();
+  await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '이미 아이디가 있어요' }));
 
   const sheet = await screen.findByRole('dialog', { name: '내 운명 찾아 떠나기' });
@@ -184,6 +186,21 @@ test("티저의 '이미 아이디가 있어요'는 로그인 시트를 띄우고
   fireEvent.click(within(sheet).getByRole('button', { name: '나중에 할래요' }));
 
   expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+});
+
+test("로그인했으면 티저에 '이미 아이디가 있어요'가 없다", async () => {
+  getMeMock.mockResolvedValue(member());
+  await renderTeaser();
+
+  expect(screen.queryByRole('button', { name: '이미 아이디가 있어요' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '새로운 인연 찾기' })).toBeInTheDocument();
+});
+
+test("로그인 여부를 확인하지 못하면 티저에 '이미 아이디가 있어요'를 둔다", async () => {
+  getMeMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  await renderTeaser();
+
+  expect(screen.getByRole('button', { name: '이미 아이디가 있어요' })).toBeInTheDocument();
 });
 
 test('첫 방문이라도 결과 화면으로 바로 들어오면 인트로가 없다', async () => {
