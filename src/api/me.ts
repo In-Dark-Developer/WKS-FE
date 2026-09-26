@@ -18,9 +18,16 @@ const mockAccountSchema = z.object({
   isSignedIn: z.boolean(),
   hasDatingProfile: z.boolean(),
   resultId: z.string().uuid().nullable().catch(null),
+  // 목 모드에서 해금(unlocks.ts)으로 쓴 실 — 잔액은 가입 지급 10 에서 뺀 값이다.
+  threadSpent: z.number().int().nonnegative().catch(0),
 });
 type MockAccount = z.infer<typeof mockAccountSchema>;
-const signedOut: MockAccount = { isSignedIn: false, hasDatingProfile: false, resultId: null };
+const signedOut: MockAccount = {
+  isSignedIn: false,
+  hasDatingProfile: false,
+  resultId: null,
+  threadSpent: 0,
+};
 
 function readMockAccount(): MockAccount {
   try {
@@ -69,6 +76,19 @@ export function markMockDatingProfile(): void {
   writeMockAccount({ ...readMockAccount(), hasDatingProfile: true });
 }
 
+function mockBalance(account: MockAccount): number {
+  return Math.max(0, (account.hasDatingProfile ? 10 : 0) - account.threadSpent);
+}
+
+// 목 모드 해금(unlocks.ts)이 부른다 — 잔액이 모자라면 쓰지 않고 null, 쓰면 남은 잔액을 돌려준다.
+export function spendMockThread(cost: number): number | null {
+  const account = readMockAccount();
+  const balance = mockBalance(account);
+  if (cost > balance) return null;
+  writeMockAccount({ ...account, threadSpent: account.threadSpent + cost });
+  return balance - cost;
+}
+
 function mockGetMe(): ApiOutcome<Me> {
   const mockAccount = readMockAccount();
   if (!mockAccount.isSignedIn) {
@@ -83,7 +103,7 @@ function mockGetMe(): ApiOutcome<Me> {
       memberId: 1,
       hasResult: mockAccount.resultId !== null || readSession() !== null,
       hasDatingProfile: mockAccount.hasDatingProfile,
-      threadBalance: mockAccount.hasDatingProfile ? 10 : 0,
+      threadBalance: mockBalance(mockAccount),
     },
   };
 }
