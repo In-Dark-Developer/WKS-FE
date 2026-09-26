@@ -1,7 +1,5 @@
 # Current State — 11-T1-unlock
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
-
 - Stream: 11-T1-unlock
 - Owner: gn00py48@gmail.com
 - Branch: ws/11-T1-unlock
@@ -25,7 +23,6 @@ REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - openapi `/dating/candidates/{candidateId}/unlock` · LockableField 확정 · INSUFFICIENT_THREAD (WKS-BE §10.5, dev adf54ab) ✓
 - api: envelope 코드 · lockable 스키마 · `unlocks.ts`(목 포함) ✓
 - features: 카드 → 해금 모달 → 여러 항목 순서대로 해금 → 완료 모달 · 실패·부족 안내 ✓
@@ -33,7 +30,6 @@ REVIEW
 
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
 `20bbc0f`
 
 ## Relevant Documents
