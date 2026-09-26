@@ -41,24 +41,24 @@ function HomeRoute() {
   );
 }
 
-// SCR-01 메인 티저 (FR-1 V1). '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로, 없으면 사주 입력으로 간다.
+// 사주 입력(SCR-02) 주소 — 티저(`/`)와 나눠 '내 사주 보기'가 기록을 쌓게 한다. 뒤로가기가 티저로 돌아온다(2026-09-26).
+export const SAJU_INPUT_PATH = '/saju';
+
+// SCR-01 메인 티저 (FR-1 V1) — `/` 에 올 때마다 보인다. '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로,
+// 없으면 사주 입력(`/saju`)으로 간다.
 // '새로운 인연 찾기'는 소개팅 인트로로 가고 로그인·프로필 조건은 소개팅이 판단한다(FR-24).
 // '이미 아이디가 있어요'는 로그인 시트만 띄운다 — 로그인 뒤 계정 기록을 불러와 이 티저로 돌아온다(FR-21).
-function MainTeaserRoute({ pass }: { pass: () => void }) {
+function MainTeaserRoute() {
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   return (
     <>
       <MainTeaser
-        onFindMatch={() => {
-          pass();
-          void navigate(DATING_INTRO_PATH);
-        }}
+        onFindMatch={() => void navigate(DATING_INTRO_PATH)}
         onHaveAccount={() => setIsLoginOpen(true)}
         onViewSaju={() => {
           const session = readSession();
-          pass();
-          if (session) void navigate(`/reading/${session.resultId}`);
+          void navigate(session ? `/reading/${session.resultId}` : SAJU_INPUT_PATH);
         }}
       />
       <LoginSheet
@@ -70,9 +70,6 @@ function MainTeaserRoute({ pass }: { pass: () => void }) {
   );
 }
 
-// 사주 결과가 없으면 `/` 에 올 때마다 티저가 홈이다(FR-19) — 떠날 때 결과가 있어야 티저를 지난 기록을 남긴다.
-const hasSaju = () => readSession() !== null;
-
 // SCR-09 사전신청 모달 — 결과 화면 하위 라우트라 결과 화면의 <Outlet /> 에 뜬다(FR-9).
 // 닫기(배경·ESC·완료의 '확인')는 부모 결과 화면으로 돌아간다.
 function PreRegisterModalRoute() {
@@ -82,14 +79,19 @@ function PreRegisterModalRoute() {
 
 // 사주 입력과 사주 결과(= 홈). 사전신청(SCR-09·SCR-14)은 결과 화면에 붙어 있어 같은 파일에 둔다.
 export const sajuRoutes: RouteObject[] = [
-  // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7. 첫 방문이면 SCR-01 인트로와 메인 티저가 먼저 뜬다(FR-1).
+  // SCR-01 인트로·메인 티저 — 첫 방문이면 인트로 영상이 먼저 뜬다(FR-1). 사주가 없으면 이 티저가 홈이다(FR-19).
   {
     index: true,
     element: (
-      <IntroGate keepPassedOnLeave={hasSaju} teaser={(pass) => <MainTeaserRoute pass={pass} />}>
-        <SajuForm />
+      <IntroGate>
+        <MainTeaserRoute />
       </IntroGate>
     ),
+  },
+  // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7. 티저의 '내 사주 보기'로 온다.
+  {
+    path: SAJU_INPUT_PATH.slice(1),
+    element: <SajuForm />,
     action: sajuAction,
   },
   // SCR-04 사주 결과 = 홈 — 03/T5 ReadingResult (세션 필요), loader 03/T7. 인연카드(SCR-05)는 이 화면에 합쳤다(04/T7).
