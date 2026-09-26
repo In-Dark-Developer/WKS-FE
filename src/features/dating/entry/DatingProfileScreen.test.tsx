@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
@@ -47,13 +47,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function renderScreen(start: DatingProfileStart) {
+// entries 는 이 화면까지 쌓인 방문 기록이다 — 기본은 주소로 바로 연 첫 방문.
+function renderScreen(start: DatingProfileStart, entries: string[] = ['/dating/profile']) {
   const router = createMemoryRouter(
     [
+      { path: '/dating', element: <p>인트로</p> },
       { path: '/dating/profile', element: <DatingProfileScreen start={start} /> },
       { path: '/dating/cards', element: <p>Top 3</p> },
     ],
-    { initialEntries: ['/dating/profile'] },
+    { initialEntries: entries, initialIndex: entries.length - 1 },
   );
   render(<RouterProvider router={router} />);
   return router;
@@ -135,4 +137,56 @@ test('사진 업로드가 실패하면 사진 칸에 알리고 저장하지 않�
 
   expect(await screen.findByText('본인 사진을 한 장 올려 주세요')).toBeInTheDocument();
   expect(createDatingProfileMock).not.toHaveBeenCalled();
+});
+
+test('(1/2) 를 거쳐 온 (2/2) 의 뒤로가기는 (1/2) 로 돌아간다', async () => {
+  const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '다음으로' }));
+  await screen.findByRole('progressbar', { name: '프로필 등록 2/2 단계' });
+  expect(router.state.location.search).toBe('?step=2');
+
+  fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+
+  expect(
+    await screen.findByRole('progressbar', { name: '프로필 등록 1/2 단계' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/dating/profile');
+});
+
+test('브라우저 뒤로가기도 (2/2) 에서 (1/2) 로 돌아간다', async () => {
+  const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '다음으로' }));
+  await screen.findByRole('progressbar', { name: '프로필 등록 2/2 단계' });
+  await act(() => router.navigate(-1));
+
+  expect(
+    await screen.findByRole('progressbar', { name: '프로필 등록 1/2 단계' }),
+  ).toBeInTheDocument();
+});
+
+test('사주가 있어 인트로에서 곧장 온 (2/2) 의 뒤로가기는 인트로로 돌아간다', async () => {
+  const router = renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+});
+
+test('돌아갈 기록이 없는 (2/2) 의 뒤로가기는 인트로로 간다', async () => {
+  const router = renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju });
+
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
 });
