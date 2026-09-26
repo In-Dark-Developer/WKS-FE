@@ -1,5 +1,5 @@
 import { getRecommendations, type DatingCandidate, type DatingLockableField } from '@/api/dating';
-import { getMe } from '@/api/me';
+import { getWallet } from '@/api/wallet';
 
 import {
   type CandidatePhoto,
@@ -54,10 +54,11 @@ export function toRerollView(hasFreeReroll: boolean, balance: number): RerollVie
   return { kind: 'paid', cost: REROLL_COST, canAfford: balance >= REROLL_COST };
 }
 
-// `/dating/cards` loader — 잔액과 후보를 함께 읽는다. 잔액은 `GET /me` 가 원장이고 화면은 계산하지 않는다(FR-31).
+// `/dating/cards` loader — 잔액과 후보를 함께 읽는다. 잔액의 단일 출처는 `GET /wallet`(원장)이고
+// 화면은 계산하지 않는다(FR-31). `/me` 의 threadBalance 는 진입 게이트용 요약이라 여기서 쓰지 않는다.
 // requireDatingProfile 이 먼저 로그인·프로필을 확인하므로 여기서는 인증을 다시 판단하지 않는다.
 export async function datingCardsLoader(): Promise<DatingCardsState> {
-  const [me, recommendations] = await Promise.all([getMe(), getRecommendations()]);
+  const [wallet, recommendations] = await Promise.all([getWallet(), getRecommendations()]);
 
   if (!recommendations.ok) {
     if (
@@ -70,8 +71,9 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
     throw new Response('추천을 불러오지 못했다', { status: 503 });
   }
 
-  const balance = me.ok ? me.data.threadBalance : 0;
-  if (!me.ok) console.error('GET /me 실패', me.error);
+  // 잔액을 못 읽어도 카드는 보인다 — 0 으로 두면 소모 동작이 막히고 안내가 뜬다(FR-31).
+  const balance = wallet.ok ? wallet.data.balance : 0;
+  if (!wallet.ok) console.error('GET /wallet 실패', wallet.error);
 
   return {
     kind: 'ready',

@@ -18,15 +18,21 @@ const mockAccountSchema = z.object({
   isSignedIn: z.boolean(),
   hasDatingProfile: z.boolean(),
   resultId: z.string().uuid().nullable().catch(null),
-  // 목 모드에서 해금(unlocks.ts)으로 쓴 실 — 잔액은 가입 지급 10 에서 뺀 값이다.
+  // 목 모드 실 원장(WKS-BE §12) — 가입 10 은 최초 로그인에 한 번, 출석 5 는 하루 한 번 쌓이고
+  // 해금(unlocks.ts)이 쓴 만큼 빠진다. 잔액은 항상 이 셋의 합이다.
+  threadEarned: z.number().int().nonnegative().catch(0),
   threadSpent: z.number().int().nonnegative().catch(0),
+  // 마지막 출석 날짜(YYYY-MM-DD, 기기 시각) — 실제 판정은 백엔드가 KST 로 한다.
+  lastCheckInDate: z.string().nullable().catch(null),
 });
 type MockAccount = z.infer<typeof mockAccountSchema>;
 const signedOut: MockAccount = {
   isSignedIn: false,
   hasDatingProfile: false,
   resultId: null,
+  threadEarned: 0,
   threadSpent: 0,
+  lastCheckInDate: null,
 };
 
 function readMockAccount(): MockAccount {
@@ -49,8 +55,18 @@ function writeMockAccount(account: MockAccount): void {
   }
 }
 
+// 가입 지급 10 은 계정당 한 번이다 — 백엔드는 카카오 최초 로그인에 준다(§12).
+const MOCK_SIGNUP_REWARD = 10;
+const MOCK_CHECK_IN_REWARD = 5;
+
 export function signInMockAccount(): void {
-  writeMockAccount({ ...readMockAccount(), isSignedIn: true });
+  const account = readMockAccount();
+  const isFirst = account.threadEarned === 0 && account.threadSpent === 0;
+  writeMockAccount({
+    ...account,
+    isSignedIn: true,
+    threadEarned: isFirst ? MOCK_SIGNUP_REWARD : account.threadEarned,
+  });
 }
 
 export function signOutMockAccount(): void {
@@ -77,7 +93,36 @@ export function markMockDatingProfile(): void {
 }
 
 function mockBalance(account: MockAccount): number {
-  return Math.max(0, (account.hasDatingProfile ? 10 : 0) - account.threadSpent);
+  return Math.max(0, account.threadEarned - account.threadSpent);
+}
+
+function mockToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// 목 모드 잔액 조회(wallet.ts) — 백엔드 `GET /wallet` 과 같은 모양으로 돌려준다.
+export function readMockBalance(): { balance: number; canCheckInToday: boolean } {
+  const account = readMockAccount();
+  return {
+    balance: mockBalance(account),
+    canCheckInToday: account.lastCheckInDate !== mockToday(),
+  };
+}
+
+// 목 모드 출석(wallet.ts) — 오늘 이미 받았으면 지급 없이 checkedIn: false 다.
+export function checkInMockWallet(): { checkedIn: boolean; balance: number } {
+  const account = readMockAccount();
+  const today = mockToday();
+  if (account.lastCheckInDate === today) {
+    return { checkedIn: false, balance: mockBalance(account) };
+  }
+  const next = {
+    ...account,
+    threadEarned: account.threadEarned + MOCK_CHECK_IN_REWARD,
+    lastCheckInDate: today,
+  };
+  writeMockAccount(next);
+  return { checkedIn: true, balance: mockBalance(next) };
 }
 
 // 목 모드 해금(unlocks.ts)이 부른다 — 잔액이 모자라면 쓰지 않고 null, 쓰면 남은 잔액을 돌려준다.

@@ -47,6 +47,8 @@ tags:
     description: (V1) 로그인한 계정의 상태 요약
   - name: dating
     description: (V1) 소개팅 프로필과 오늘의 인연 추천
+  - name: wallet
+    description: (V1) 재화 '실' 원장 — 잔액과 출석 체크
   - name: health
     description: 헬스체크
 paths:
@@ -795,6 +797,52 @@ paths:
                 properties:
                   success: { type: boolean, const: true }
                   data: { type: "null" }
+  /wallet:
+    get:
+      operationId: getWallet
+      summary: (V1) 실 잔액 (FR-31)
+      description: "원장 기반이라 잔액은 지급·차감 내역의 합이다. 화면은 이 값을 그대로 보이고 계산하지 않는다. 획득은 가입 10(카카오 최초 로그인 시 자동·계정당 1회) · 출석 5 · 친구 궁합지도 등록 3(자동) 이고, 제휴 지급은 백엔드 미구현이다. 소모는 정보 해금뿐이며 현금 충전은 없다. WKS-BE api-spec.md §12 (dev adf54ab)."
+      tags: [wallet]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: 조회됨
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/Wallet" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /wallet/check-in:
+    post:
+      operationId: checkInWallet
+      summary: (V1) 출석 체크 — 하루 한 번 실 5 (FR-31)
+      description: "KST 날짜 기준 1일 1회. 오늘 이미 했으면 오류가 아니라 200 에 `checkedIn: false` 로 온다 — 다시 눌러도 안전하다(WKS-BE 2026-09-26 결정)."
+      tags: [wallet]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: "처리됨 — 이미 한 날이면 checkedIn 이 false 다"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/WalletCheckIn" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
   /health:
     get:
       operationId: getHealth
@@ -1159,6 +1207,18 @@ components:
             name: { $ref: "#/components/schemas/DatingLockableField" }
             department: { $ref: "#/components/schemas/DatingLockableField" }
             reason: { $ref: "#/components/schemas/DatingLockableField" }
+    Wallet:
+      type: object
+      required: [balance, canCheckInToday]
+      properties:
+        balance: { type: integer, minimum: 0, description: "실 잔액 — 원장 합계" }
+        canCheckInToday: { type: boolean, description: "오늘 출석 체크로 받을 수 있는지 (KST 기준)" }
+    WalletCheckIn:
+      type: object
+      required: [checkedIn, balance]
+      properties:
+        checkedIn: { type: boolean, description: "이번 호출로 지급됐으면 true, 오늘 이미 받았으면 false" }
+        balance: { type: integer, minimum: 0 }
     ErrorCode:
       type: string
       enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, DATING_PROFILE_NOT_FOUND, DATING_PROFILE_CONFLICT, DATING_NOT_VERIFIED, DATING_REQUEST_NOT_FOUND, DATING_REQUEST_CONFLICT, INSUFFICIENT_THREAD, METHOD_NOT_ALLOWED, INTERNAL_ERROR, NOT_FOUND]
