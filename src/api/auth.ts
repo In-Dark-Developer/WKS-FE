@@ -7,6 +7,7 @@ import {
   signInMockAccount,
   signOutMockAccount,
 } from './me';
+import { clearSession } from './session';
 import { kakaoLoginResultSchema, type KakaoLoginResult } from './schema/auth';
 
 export type { KakaoLoginResult } from './schema/auth';
@@ -43,10 +44,17 @@ function mockLogin(browserResultId: string | null): ApiOutcome<KakaoLoginResult>
 }
 
 // POST /auth/logout — HttpOnly 쿠키는 프론트가 지울 수 없어 백엔드가 만료시킨다. 쿠키가 없어도 성공한다(멱등).
+// 성공하면 이 브라우저의 '내 결과'도 지운다 — 로그인이 덮어쓴 계정 결과가 공용 기기에 남지 않게
+// (ADR-20260927-logout-clears-browser-result). 실패하면 로그인 상태 그대로라 남긴다.
 export async function logout(): Promise<ApiOutcome<null>> {
-  if (isMockEnabled()) {
-    signOutMockAccount();
-    return { ok: true, data: null };
-  }
-  return request({ method: 'POST', path: '/auth/logout' }, z.null());
+  const outcome = isMockEnabled()
+    ? mockLogout()
+    : await request({ method: 'POST', path: '/auth/logout' }, z.null());
+  if (outcome.ok) clearSession();
+  return outcome;
+}
+
+function mockLogout(): ApiOutcome<null> {
+  signOutMockAccount();
+  return { ok: true, data: null };
 }

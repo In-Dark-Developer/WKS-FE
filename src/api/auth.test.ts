@@ -9,6 +9,7 @@ vi.mock('./client', async (importOriginal) => {
 
 import { loginWithKakao, logout } from './auth';
 import { getMe, isUnauthenticated, resetMockAccount } from './me';
+import { readSession, writeSession } from './session';
 import { kakaoLoginResultSchema } from './schema/auth';
 
 const INPUT = {
@@ -56,6 +57,24 @@ test('logout 은 POST /auth/logout 을 부르고 data null 을 기대한다', as
   const [input, schema] = requestMock.mock.calls[0] as [unknown, z.ZodType];
   expect(input).toEqual({ method: 'POST', path: '/auth/logout' });
   expect(schema.safeParse(null).success).toBe(true);
+});
+
+test('logout 이 성공하면 이 브라우저의 내 결과를 지운다', async () => {
+  writeSession(INPUT.resultId);
+  requestMock.mockResolvedValue({ ok: true, data: null });
+
+  await logout();
+
+  expect(readSession()).toBeNull();
+});
+
+test('logout 이 실패하면 로그인 상태 그대로라 내 결과를 남긴다', async () => {
+  writeSession(INPUT.resultId);
+  requestMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+
+  await logout();
+
+  expect(readSession()).toEqual({ resultId: INPUT.resultId });
 });
 
 test('목 모드는 요청 없이 목 계정을 켜고 끈다', async () => {
