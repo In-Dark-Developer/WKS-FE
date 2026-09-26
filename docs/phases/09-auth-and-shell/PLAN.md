@@ -45,7 +45,7 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 ## Tasks
 
-- [x] T1. 하단 네비게이션과 홈 분기 — Done when: 홈·궁합지도·소개팅 세 탭이 viewport 하단에 고정되고, 홈 탭이 사주 데이터 유무로 결과 또는 입력으로 분기하며, 공유 Flow(`/s/**`) 에서는 네비가 보이지 않고 '내 사주 내용도 확인하기' 이후에만 보인다 · Touches: `src/app/`, `src/ui/`, `docs/prd/30-functional-requirements.md` · Owner: 이정진 · FR: FR-19 (commit 54d23a0)
+- [x] T1. 하단 네비게이션과 홈 분기 — Done when: 홈·궁합지도·소개팅 세 탭이 viewport 하단에 고정되고, 홈 탭이 사주 데이터 유무로 결과 또는 입력으로 분기하며, 공유 Flow(`/s/**`) 에서는 네비가 보이지 않고 '내 사주 내용도 확인하기' 이후에만 보인다 · Touches: `src/app/`, `src/ui/`, `docs/prd/30-functional-requirements.md` · Owner: 이정진 · FR: FR-19 (commit 54d23a0, 03286e9)
 
 - [ ] T2. 카카오 로그인과 쿠키 세션 — Done when: 카카오 로그인으로 JWT 쿠키(만료 15일)가 발급되고 새로고침·재방문에 세션이 유지되며, 카카오톡·인스타그램 인앱 브라우저에서도 로그인이 완주되고, 사주 보기·공유·친구 궁합은 비로그인으로 끝까지 동작한다 · Touches: `src/features/auth/`, `src/api/`, `docs/api/openapi.yaml` · Owner: 이정진 · FR: FR-20
 
