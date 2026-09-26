@@ -13,7 +13,7 @@
 | 02 | [design-system](02-design-system/PLAN.md) | @gn00py48 | 01 | DONE | 6/6 | [RESULT](02-design-system/RESULT.md) |
 | 03 | [saju-reading](03-saju-reading/PLAN.md) | @nicerjs23 | 02 | DONE | 8/8 | [RESULT](03-saju-reading/RESULT.md) |
 | 04 | [share-and-card](04-share-and-card/PLAN.md) | @gn00py48 | 03 | DONE | 8/8 | [RESULT](04-share-and-card/RESULT.md) |
-| 05 | [friend-score](05-friend-score/PLAN.md) | @nicerjs23 | 04 | PLANNED | 9/9 | — |
+| 05 | [friend-score](05-friend-score/PLAN.md) | @nicerjs23 | 04 | DONE | 9/9 | [RESULT](05-friend-score/RESULT.md) |
 | 06 | [dating-gate](06-dating-gate/PLAN.md) | @gn00py48 | 03 | DONE | 4/4 | [RESULT](06-dating-gate/RESULT.md) |
 | 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | PLANNED | 0/1 | — |
 | 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 5/6 | [RESULT](08-launch-readiness/RESULT.md) |
