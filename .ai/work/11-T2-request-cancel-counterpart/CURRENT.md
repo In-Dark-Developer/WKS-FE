@@ -25,7 +25,6 @@ REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - CANCELLED·counterpart 스키마 · 취소 API·버튼 연결
 - counterpart 뷰(받은 신청 점수) · CANCELLED 숨김·재요청
 - 테스트 · 검증 · PR ←
