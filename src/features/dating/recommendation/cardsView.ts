@@ -3,7 +3,7 @@
 export type LockableField<T> = { isLocked: true; cost: number } | { isLocked: false; value: T };
 
 // 잠긴 사진은 썸네일(흐리게 보일 것)만 받는다. 원본 주소는 해금된 뒤에만 온다.
-// 썸네일 API 가 아직 없어(WKS-BE api-spec §10 #84) 지금 추천 응답으로는 null 이다.
+// 썸네일은 추천 응답의 `blurredPhotoUrl` 이다(WKS-BE api-spec §10.4). 사진이 없는 후보는 null 이다.
 export type CandidatePhoto =
   { isLocked: true; thumbnailUrl: string | null; cost: number } | { isLocked: false; url: string };
 
@@ -28,6 +28,8 @@ export type MatchCandidateView = {
   name: LockableField<string>;
   department: LockableField<string>;
   reason: LockableField<string>;
+  // 이미 운명의 실을 보낸 상대 — 더 열 수도, 다시 보낼 수도 없다(FR-29). 요청함 `box=sent` 에서 온다.
+  isThreadSent?: boolean;
 };
 
 // 다른 인연 만나보기 — 오늘 무료가 남았는지, 아니면 비용과 잔액으로 가능한지. 판단은 백엔드 값을 옮긴 것이다(FR-27 · FR-31).

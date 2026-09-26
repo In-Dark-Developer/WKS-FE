@@ -35,9 +35,9 @@
 
 ## Tasks
 
-- [ ] T1. 정보 해금 — Done when: 사진·이름·학과·궁합 까닭을 항목별로 열 수 있고 각 비용(10 · 7 · 5 · 3)이 잔액에서 차감되며, 같은 상대의 같은 항목은 한 번만 차감되고, 해금 전에는 화면과 네트워크 응답 어디에도 그 값이 없다 · Touches: `src/features/dating/`, `src/ui/`, `docs/api/openapi.yaml` · After: T3 · Owner: 강근우 · FR: FR-28
+- [x] T1. 정보 해금 — Done when: 사진·이름·학과·궁합 까닭을 항목별로 열 수 있고 각 비용(10 · 7 · 5 · 3)이 잔액에서 차감되며, 같은 상대의 같은 항목은 한 번만 차감되고, 해금 전에는 화면과 네트워크 응답 어디에도 그 값이 없다 · Touches: `src/features/dating/`, `src/ui/`, `docs/api/openapi.yaml` · After: T3 · Owner: 강근우 · FR: FR-28 (commit 20bbc0f)
 
-- [ ] T2. 운명의 실과 요청함 — Done when: 보내기 전 '보낸 뒤에는 열지 않은 정보를 더 볼 수 없다'를 확인받고 전송되며, 요청함이 '보낸 신청'과 '받은 신청'으로 나뉘고, 받은 신청의 상대 정보는 해금 없이 전부 보이며, 수락하면 양쪽에 서로 등록한 연락 수단(전화번호 또는 인스타그램, 택1)이 공개되고 거절하면 공개되지 않는다 · Touches: `src/features/dating/`, `src/app/routes/` · After: T1, T3 · Owner: 강근우 · FR: FR-29, FR-30
+- [x] T2. 운명의 실과 요청함 — Done when: 보내기 전 '보낸 뒤에는 열지 않은 정보를 더 볼 수 없다'를 확인받고 전송되며, 요청함이 '보낸 신청'과 '받은 신청'으로 나뉘고, 받은 신청의 상대 정보는 해금 없이 전부 보이며, 수락하면 양쪽에 서로 등록한 연락 수단(전화번호 또는 인스타그램, 택1)이 공개되고 거절하면 공개되지 않는다 · Touches: `src/features/dating/`, `src/app/routes/` · After: T1, T3 · Owner: 강근우 · FR: FR-29, FR-30 (commit bbde9a8 — 부분: 받은 신청 프로필·요청 취소는 BE 계약 대기)
 
 - [x] T3. 해금·운명의 실·요청함 퍼블리싱 — Done when: 메인/카드(`76-3401`)의 해금 모달(기본·hover·selected·구매 완료)·전체 해금 카드(앞면·뒷면)·운명의 실 보냈을 때 모달 1·2, 요청 리스트(`76-3400`)의 보관함 내가보낸사람·나에게보낸사람과 각 상세 모달이 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, `LockedValue`·`Tabs` 가 도메인 규칙 없이 `src/ui/` 에 있다. Phase 10 T4 의 `ProfileCard`·`BottomSheet` 를 재사용하고, API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · Owner: 이정진 · UI: FR-28, FR-29, FR-30 (commit 2c7a29d)
 

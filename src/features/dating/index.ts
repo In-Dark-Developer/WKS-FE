@@ -27,7 +27,9 @@ export type {
   MatchCandidateView,
   RerollView,
 } from './recommendation/cardsView';
+export { DatingRequestsScreen } from './requests/DatingRequestsScreen';
 export { RequestInbox } from './requests/RequestInbox';
+export { datingRequestsLoader } from './requests/requestsLoader';
 export type {
   RequestInboxView,
   RequestProfileView,

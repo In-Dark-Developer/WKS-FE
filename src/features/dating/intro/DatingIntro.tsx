@@ -1,5 +1,20 @@
 import { useState } from 'react';
 
+import bottom1 from '@/ui/assets/dating/card-wall/bottom-1.webp';
+import bottom2 from '@/ui/assets/dating/card-wall/bottom-2.webp';
+import bottom3 from '@/ui/assets/dating/card-wall/bottom-3.webp';
+import bottom4 from '@/ui/assets/dating/card-wall/bottom-4.webp';
+import bottom5 from '@/ui/assets/dating/card-wall/bottom-5.webp';
+import middle1 from '@/ui/assets/dating/card-wall/middle-1.webp';
+import middle2 from '@/ui/assets/dating/card-wall/middle-2.webp';
+import middle3 from '@/ui/assets/dating/card-wall/middle-3.webp';
+import middle4 from '@/ui/assets/dating/card-wall/middle-4.webp';
+import middle5 from '@/ui/assets/dating/card-wall/middle-5.webp';
+import top1 from '@/ui/assets/dating/card-wall/top-1.webp';
+import top2 from '@/ui/assets/dating/card-wall/top-2.webp';
+import top3 from '@/ui/assets/dating/card-wall/top-3.webp';
+import top4 from '@/ui/assets/dating/card-wall/top-4.webp';
+import top5 from '@/ui/assets/dating/card-wall/top-5.webp';
 import { Button } from '@/ui/Button';
 
 import { DatingBackdrop } from '../DatingBackdrop';
@@ -81,13 +96,24 @@ export function DatingIntro({
 // 카드 한 벌을 두 번 이어 붙이고 한 벌 길이만큼 옮긴 뒤 처음으로 돌아가므로 이음매가 보이지 않는다 —
 // 간격을 gap 이 아니라 카드마다 오른쪽 여백(pr-12)으로 줘야 두 벌 사이 간격도 카드 사이 간격과 같다.
 // 카드는 세 줄 모두 같은 규격(171×216)이고, 줄 사이 간격도 카드 사이 간격과 같은 12px 이다.
-// phase 는 Figma 에서 그 줄이 왼쪽으로 밀려 있던 거리(px)이고, 한 벌 길이(183px × 4) 중 그만큼 진행한 데서 시작한다.
-const wallCards = ['a', 'b', 'c', 'd'] as const;
-const setWidth = (171 + 12) * wallCards.length;
+// phase 는 Figma 에서 그 줄이 왼쪽으로 밀려 있던 거리(px)이고, 한 벌 길이(183px × 5) 중 그만큼 진행한 데서 시작한다.
+// 사진은 Figma 1.2 로그인 성공(365:9257)의 줄별 카드 다섯 장이다.
+const cardsPerSet = 5;
+const setWidth = (171 + 12) * cardsPerSet;
 const wallRows = [
-  { id: 'top', direction: 'left', phase: 227 },
-  { id: 'middle', direction: 'right', phase: 212 },
-  { id: 'bottom', direction: 'left', phase: 547 },
+  { id: 'top', direction: 'left', phase: 227, photos: [top1, top2, top3, top4, top5] },
+  {
+    id: 'middle',
+    direction: 'right',
+    phase: 212,
+    photos: [middle1, middle2, middle3, middle4, middle5],
+  },
+  {
+    id: 'bottom',
+    direction: 'left',
+    phase: 547,
+    photos: [bottom1, bottom2, bottom3, bottom4, bottom5],
+  },
 ] as const;
 
 // 왼쪽으로 흐르는 줄은 0 → -한 벌, 오른쪽은 -한 벌 → 0 으로 움직인다. 음수 지연으로 그 진행 지점에서 시작한다.
@@ -106,9 +132,9 @@ function CardWall() {
           key={row.id}
           style={{ animationDelay: startDelay(row.direction, row.phase) }}
         >
-          {[...wallCards, ...wallCards].map((card, index) => (
-            <div className="shrink-0 pr-12" key={`${card}-${index}`}>
-              <WallCard />
+          {[...row.photos, ...row.photos].map((photo, index) => (
+            <div className="shrink-0 pr-12" key={index}>
+              <WallCard photo={photo} />
             </div>
           ))}
         </div>
@@ -117,13 +143,19 @@ function CardWall() {
   );
 }
 
-// 카드 한 장 — 모든 줄이 이 하나를 쓴다.
-function WallCard() {
+// 카드 한 장 — 모든 줄이 이 하나를 쓴다. 사진은 Figma 처럼 흐리게 깔고 아래쪽을 어둡게 덮는다.
+function WallCard({ photo }: { photo: string }) {
   return (
-    <div className="flex h-[216px] w-[171px] flex-col justify-end gap-4 rounded-8 border border-neutral-0 bg-linear-to-b from-neutral-500 to-neutral-900 p-12 text-neutral-0 blur-[1px]">
-      <span className="font-sungkok text-ui-12">천생연분</span>
-      <span className="h-4 w-3/4 rounded-999 bg-neutral-400" />
-      <span className="h-4 w-full rounded-999 bg-neutral-400" />
+    <div className="relative flex h-[216px] w-[171px] flex-col justify-end gap-4 overflow-hidden rounded-8 border border-neutral-0 bg-neutral-900 p-12 text-neutral-0">
+      <img
+        alt=""
+        className="absolute top-[-14px] left-[-6px] h-[229px] w-[183px] max-w-none object-cover blur-[7.5px]"
+        src={photo}
+      />
+      <div className="absolute inset-x-0 bottom-0 h-[117px] bg-linear-to-b from-transparent to-neutral-900 opacity-90" />
+      <span className="relative font-sungkok text-ui-12">천생연분</span>
+      <span className="relative h-4 w-3/4 rounded-999 bg-neutral-400" />
+      <span className="relative h-4 w-full rounded-999 bg-neutral-400" />
     </div>
   );
 }

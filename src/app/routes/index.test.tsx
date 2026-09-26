@@ -70,10 +70,9 @@ const stubResult: Result = {
   compatibilities: [],
 };
 
-// 인트로·메인 티저(FR-1)는 첫 방문에만 뜬다 — 입력 화면을 보는 테스트는 둘 다 지난 방문자로 시작한다.
+// 인트로는 첫 방문에만, 메인 티저는 접속마다 뜬다(FR-1) — 입력 화면을 보는 테스트는 둘 다 지난 방문자로 시작한다.
 beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
-  localStorage.setItem('wks:teaser-passed', '1');
   getMeMock.mockResolvedValue(unauthenticated);
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
 });
@@ -112,9 +111,8 @@ test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
   expect(screen.getByLabelText('인트로 영상')).toBeInTheDocument();
 });
 
-// 인트로를 본 뒤 티저에서 아직 진입을 고르지 않은 방문자.
+// 인트로를 본 방문자 — `/` 는 언제나 티저다.
 function renderTeaser() {
-  localStorage.removeItem('wks:teaser-passed');
   return renderAt('/');
 }
 
@@ -126,16 +124,28 @@ test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
-test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고 다음 방문에는 티저가 없다", async () => {
-  renderTeaser();
+test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력(/saju)을 열고, 뒤로가기는 티저로 돌아온다", async () => {
+  const router = renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
   expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/saju');
 
-  cleanup();
-  renderAt('/');
+  await router.navigate(-1);
 
-  expect(screen.queryByRole('button', { name: '내 사주 보기' })).not.toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+});
+
+test('결과가 없으면 소개팅에서 홈 탭을 눌러도 티저가 홈이다', async () => {
+  const router = renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
+  const nav = await screen.findByRole('navigation', { name: '주요 메뉴' });
+
+  fireEvent.click(within(nav).getByRole('button', { name: '홈' }));
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
 });
 
 test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로 간다", async () => {
@@ -401,7 +411,7 @@ test('다른 결과를 만든 브라우저로 결과 화면에 들어오면 입�
   expect(getResultMock).not.toHaveBeenCalled();
 });
 
-test('백엔드가 모르는 결과면 사주 입력으로 돌아간다 — 죽은 resultId 로 오류 화면에 갇히지 않는다', async () => {
+test('백엔드가 모르는 결과면 티저(홈)로 돌아간다 — 죽은 resultId 로 오류 화면에 갇히지 않는다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: false,
@@ -410,7 +420,7 @@ test('백엔드가 모르는 결과면 사주 입력으로 돌아간다 — 죽�
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
 });
 
 test('결과 조회가 연결 문제로 실패하면 오류 화면을 보인다', async () => {
@@ -468,12 +478,18 @@ test('공유 링크로 들어오면 세션 없이 링크 주인 닉네임이 든
 
   renderAt(`/s/${SHARE_ID}`);
 
+  // 사주가 없는 방문자도 초대 머리와 주인의 궁합 지도 아래에서 입력한다 (FR-15 V1, Figma 30:5916).
   expect(
-    await screen.findByText(
-      '아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.',
-    ),
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의궁합지도에 초대됐어요' }),
   ).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: '사주를 입력해 인연을 확인하세요' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText(/달빛토끼님과 나의 궁합을 확인할 수 있어요/)).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '이전 정보 불러오기' })).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
   // 주인의 사주 요약은 화면에 없다 (FR-15).
   expect(screen.queryByText('꽃길만 걷는 인연')).not.toBeInTheDocument();
 });
@@ -488,9 +504,9 @@ test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로
   createCompatibilityMock.mockResolvedValue(compatibility);
 
   const router = renderAt(`/s/${SHARE_ID}`);
-  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
   fillValidSaju();
-  fireEvent.click(screen.getByRole('button', { name: '운명 지도 확인하기' }));
+  fireEvent.click(screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }));
 
   expect(
     await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
@@ -541,9 +557,12 @@ test('새로 작성하기를 고르면 보관된 내 결과를 두고 사주 입
   renderAt(`/s/${SHARE_ID}`);
   fireEvent.click(await screen.findByRole('button', { name: '새로 작성하기' }));
 
-  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
   expect(
-    screen.getByText('아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.'),
+    await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
+  // 기존 방문자의 '새로 작성하기' 폼도 신규 방문자와 같은 문구다 (Figma 30:6323).
+  expect(
+    screen.getByRole('heading', { name: '사주를 입력해 인연을 확인하세요' }),
   ).toBeInTheDocument();
   expect(createCompatibilityMock).not.toHaveBeenCalled();
   expect(localStorage.getItem('wks:session')).toContain(RESULT_ID);
@@ -554,7 +573,9 @@ test('결과 없이 친구의 궁합 지도 주소로 오면 공유 링크 입�
 
   const router = renderAt(`/s/${SHARE_ID}/map`);
 
-  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}`);
 });
 
@@ -670,14 +691,14 @@ test('홈 탭은 사주가 없으면 티저가 아니라 사주 입력으로 간
 });
 
 test('사주 입력과 공유 Flow 에는 하단 네비가 없다', async () => {
-  renderAt('/');
+  renderAt('/saju');
   await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' });
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
   cleanup();
 
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
   renderAt(`/s/${SHARE_ID}`);
-  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
@@ -840,6 +861,7 @@ test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린
           score: 98,
           mbti: 'ENTP',
           bio: '영화 보러 다니는 걸 좋아해요.',
+          blurredPhotoUrl: 'https://s3.example.com/blurred.jpg',
           fields: {
             photo: { locked: true, cost: 10 },
             name: { locked: true, cost: 7 },

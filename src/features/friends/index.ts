@@ -11,6 +11,7 @@ export { compatibilityReasonLoader, type ReasonLoaderData } from './reason/reaso
 export type { CompatibilityTier, Friend } from './map/tiers';
 export { joinShare, joinShareLoader } from './joinShareLoader';
 export { ShareEntryChoice } from './ShareEntryChoice';
+export { ShareInvite } from './ShareInvite';
 export { ShareJoinLoading } from './ShareJoinLoading';
 export { shareInputLoader, type ShareInputView } from './shareInputLoader';
 export { shareMapLoader, type SharedMapView } from './shareMapLoader';

@@ -77,6 +77,7 @@ test('목 로그인은 쿠키처럼 localStorage 에 남고, 깨진 값은 로�
     isSignedIn: true,
     hasDatingProfile: false,
     resultId: null,
+    threadSpent: 0,
   });
 
   localStorage.setItem('wks:mock-account', '{"isSignedIn":"yes"}');

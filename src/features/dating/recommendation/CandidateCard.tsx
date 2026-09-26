@@ -5,8 +5,9 @@ import { type MatchCandidateView, relationLabelByRank } from './cardsView';
 
 type Props = {
   candidate: MatchCandidateView;
-  // 뒷면 '열람하기'·자물쇠 알약 — 해금 모달(SCR-18)을 여는 일은 부르는 쪽이 한다.
-  onOpenUnlock: (candidateId: string) => void;
+  // 뒷면 '열람하기'·자물쇠 알약 — 해금 모달(SCR-18)을 여는 일은 부르는 쪽이 한다. 없으면 버튼을 그리지 않는다
+  // (운명의 실을 보낸 상대 — FR-29).
+  onOpenUnlock?: (candidateId: string) => void;
   initialFace?: ProfileCardFace;
 };
 
@@ -18,7 +19,7 @@ export function CandidateCard({ candidate, onOpenUnlock, initialFace }: Props) {
         <CandidateBack
           department={candidate.department}
           name={candidate.name}
-          onUnlock={() => onOpenUnlock(candidate.id)}
+          onUnlock={onOpenUnlock ? () => onOpenUnlock(candidate.id) : undefined}
           photo={candidate.photo}
           reason={candidate.reason}
         />

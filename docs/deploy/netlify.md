@@ -6,8 +6,8 @@ ADR-20260922-netlify-org-repo-direct 의 설정·운영 절차. (개인 fork 중
 In-Dark-Developer/WKS-FE (main 병합)
   └─ Netlify 자동 빌드·배포 (netlify.toml)
 브라우저 ─ threadoffate.site ─ Route53 A 75.2.60.5 ─ Netlify (main)
-       ├ dev.threadoffate.site ─ Netlify 브랜치 배포 (dev)
-       └ api.threadoffate.site ─ Route53 ─ 백엔드 서버
+       ├ dev.threadoffate.site ─ Netlify 브랜치 배포 (dev) ─ api-dev.threadoffate.site (백엔드 dev 서버)
+       └ api.threadoffate.site ─ Route53 ─ 백엔드 운영 서버
 ```
 
 ## 1. Netlify 사이트
@@ -51,8 +51,9 @@ curl -sL https://dev--wks-fe.netlify.app/ | grep -o 'assets/index-[A-Za-z0-9_-]*
 
 - `api.threadoffate.site` 에 **HTTPS(443) 와 TLS 인증서** — 프론트가 HTTPS 라 HTTP API 는 브라우저가 막는다
 - CORS 허용 origin: `https://threadoffate.site`, `https://www.threadoffate.site`, `https://dev.threadoffate.site`, 그리고 사이트의 `*.netlify.app` 주소
-- dev 배포는 아직 운영 API(`api.threadoffate.site`)를 부른다(`netlify.toml` 의 `[context.dev]` 에 API 주소가 없다). 백엔드 dev 서버
-  `api-dev.threadoffate.site` 가 열리면 `[context.dev.environment]` 로 옮긴다 — 2026-09-24 기준 응답하지 않는다
+- dev 배포는 백엔드 dev 서버 `api-dev.threadoffate.site` 를 부른다(`netlify.toml` 의 `[context.dev.environment]`, 2026-09-26).
+  dev 서버 CORS 에 `https://dev.threadoffate.site` 를, `KAKAO_ALLOWED_REDIRECT_URIS` 에 `https://dev.threadoffate.site/auth/kakao/callback`
+  을 둔다. 운영 서버에는 운영 콜백 `https://threadoffate.site/auth/kakao/callback` 을 둔다
 - Route53 레코드 2 의 두 줄, 운영 `/api` 접두 확인
 
 ## 주의

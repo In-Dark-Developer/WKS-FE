@@ -3,11 +3,21 @@ import { ProfileCard } from '@/ui/ProfileCard';
 
 import { CandidateBack, CandidateFront, CandidatePhotoLayer } from '../card/CandidateFaces';
 import { DatingDialog } from '../DatingDialog';
-import type { RequestProfileView, SentRequestView } from './requestsView';
+import type {
+  ContactView,
+  ReceivedRequestView,
+  RequestProfileView,
+  SentRequestView,
+} from './requestsView';
 
 type Props = { request: RequestProfileView; onClose: () => void } & (
   | { kind: 'sent'; status: SentRequestView['status']; onCancel: () => void }
-  | { kind: 'received'; onAccept: () => void; onDecline: () => void }
+  | {
+      kind: 'received';
+      status?: ReceivedRequestView['status'];
+      onAccept: () => void;
+      onDecline: () => void;
+    }
 );
 
 // 요청함에서 한 사람을 눌렀을 때 뜨는 카드 — Figma 보관함/내가보낸사람/모달(109:2397) · 실패(118:2814) ·
@@ -52,6 +62,17 @@ export function RequestDetail(props: Props) {
 function Actions(props: Props) {
   const pillClass = 'rounded-999 px-20 py-4 font-display text-ui-12 whitespace-nowrap';
 
+  // 성립하면 상대가 등록한 연락 수단을 보인다 — 성립 후 화면은 디자인이 없어(FR-30) 카드 버튼 자리에 적는다.
+  if (props.status === 'MATCHED' && props.request.contact) {
+    return <ContactPill className={pillClass} contact={props.request.contact} />;
+  }
+
+  if (props.kind === 'received' && props.status === 'DECLINED') {
+    return (
+      <p className={cn(pillClass, 'bg-neutral-700 text-inverse')}>다음 기회로 미룬 인연이에요</p>
+    );
+  }
+
   if (props.kind === 'received') {
     return (
       <>
@@ -84,5 +105,18 @@ function Actions(props: Props) {
     >
       요청 취소
     </button>
+  );
+}
+
+const contactLabel: Record<ContactView['method'], string> = {
+  PHONE: '전화번호',
+  INSTAGRAM: '인스타그램',
+};
+
+function ContactPill({ contact, className }: { contact: ContactView; className: string }) {
+  return (
+    <p className={cn(className, 'bg-rose-500 text-inverse select-all')}>
+      {`${contactLabel[contact.method]} ${contact.method === 'INSTAGRAM' ? '@' : ''}${contact.value}`}
+    </p>
   );
 }

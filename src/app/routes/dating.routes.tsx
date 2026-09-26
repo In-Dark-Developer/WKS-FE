@@ -1,5 +1,5 @@
 import type { RouteObject } from 'react-router-dom';
-import { useLoaderData, useRevalidator } from 'react-router-dom';
+import { useLoaderData, useRevalidator, useSearchParams } from 'react-router-dom';
 
 import { logout } from '@/api/auth';
 import { requireAuth, requireDatingProfile } from '@/app/routes/guards';
@@ -8,13 +8,16 @@ import {
   DatingCardsScreen,
   DatingIntroScreen,
   DatingProfileScreen,
+  DatingRequestsScreen,
   NotVerifiedNotice,
   datingCardsLoader,
+  datingRequestsLoader,
   datingIntroLoader,
   datingProfileLoader,
   type DatingCardsState,
   type DatingIntroView,
   type DatingProfileStart,
+  type RequestInboxView,
 } from '@/features/dating';
 
 // 소개팅(Phase 10·11). 인트로는 가드가 없다 — 사주 없이도 소개팅부터 볼 수 있고(기능명세서 1.3), 로그인·프로필
@@ -49,6 +52,14 @@ function DatingCardsRoute() {
   return <DatingCardsScreen view={state.view} />;
 }
 
+// '보러가기'(운명의 실 보낸 뒤)는 `?tab=sent` 로 보낸 신청 탭을 연다.
+function DatingRequestsRoute() {
+  const view = useLoaderData<RequestInboxView>();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'received' ? 'received' : 'sent';
+  return <DatingRequestsScreen initialTab={initialTab} view={view} />;
+}
+
 export const datingRoutes: RouteObject[] = [
   {
     path: 'dating',
@@ -70,5 +81,15 @@ export const datingRoutes: RouteObject[] = [
       return datingCardsLoader();
     },
     element: <DatingCardsRoute />,
+  },
+  {
+    // SCR-20 요청함 (FR-30).
+    path: 'dating/requests',
+    handle: { nav: 'dating' },
+    loader: async () => {
+      await requireDatingProfile();
+      return datingRequestsLoader();
+    },
+    element: <DatingRequestsRoute />,
   },
 ];

@@ -45,13 +45,17 @@ function ErrorLabel({ children, invalid }: { children: string; invalid: boolean 
 }
 
 type Props = {
-  // 제목 아래 설명 — 공유 링크 입력(SCR-06)은 링크 주인 닉네임이 든 문구다(Figma 720:3653).
+  // 제목 아래 설명 — 공유 링크 입력(SCR-06)은 링크 주인 닉네임이 든 문구다. 줄바꿈(\n)을 그대로 보인다.
   description?: string;
+  // 섹션 제목 — 주면 페이지 제목('운명도 꿰어야 사랑이다') 대신 초대 머리 아래의 섹션 머리글로 그린다
+  // (공유 링크 입력, Figma v1.0 30:6120 — UI/18/600).
+  sectionTitle?: string;
   submitLabel?: string;
 };
 
 export function SajuForm({
   description = '생년월일로 점지받는 나의 인연',
+  sectionTitle,
   submitLabel = '점지 확인하기',
 }: Props) {
   const [values, setValues] = useState<SajuFormValues>(initialSajuFormValues);
@@ -96,10 +100,17 @@ export function SajuForm({
         noValidate
         onSubmit={handleSubmit}
       >
-        <header className="flex flex-col gap-8">
-          <h1 className="font-display text-display-28 text-primary">운명도 꿰어야 사랑이다</h1>
-          <p className="text-ui-14 text-inverse">{description}</p>
-        </header>
+        {sectionTitle === undefined ? (
+          <header className="flex flex-col gap-8">
+            <h1 className="font-display text-display-28 text-primary">운명도 꿰어야 사랑이다</h1>
+            <p className="text-ui-14 text-inverse">{description}</p>
+          </header>
+        ) : (
+          <header className="flex flex-col gap-8">
+            <h2 className="text-ui-18 font-semibold text-primary">{sectionTitle}</h2>
+            <p className="text-ui-14 font-medium whitespace-pre-line text-primary">{description}</p>
+          </header>
+        )}
 
         <fieldset className="flex flex-col gap-24 disabled:opacity-80" disabled={submitting}>
           <div className="flex flex-col gap-24 rounded-16 border border-default bg-opacity-card-neutral-0-50 px-12 pt-12 pb-16 backdrop-blur-[25px]">

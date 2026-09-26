@@ -9,10 +9,10 @@
 # - 2026-09-24 (10/T1): 백엔드 api.md(2026-09-24 공유본, 운영 Swagger 장애 중) 로 GET /results/{id}/input ·
 #   POST /signups/photo-upload-url · GET /me 를 더했다. /me 의 인증 전달 방식(Bearer 헤더 vs 쿠키)은 미정이라
 #   security 를 적지 않았다 — 09/T2 가 /auth/kakao 와 함께 정한다.
-# - 2026-09-25 (spec-cookie-auth-contract): 로그인 계약을 **FE 가정안**으로 넣었다 — 백엔드 api-spec.md §9 초안(dev 5ec80d2)의
-#   POST /auth/kakao · GET /me · GET /me/result 를 그대로 두고, 토큰 전달만 NFR-7 대로 HttpOnly 쿠키로 바꿨다(응답 body 에 token 없음,
-#   Authorization 헤더 없음). 로그아웃은 쿠키를 지워야 하므로 POST /auth/logout 을 더했다. 백엔드 쿠키 전환 전이라 실제 모드에서는
-#   아직 동작하지 않는다 — 백엔드 구현이 확정되면 이 줄을 지우고 실제 값으로 맞춘다. 가정한 값은 [가정] 으로 표시했다.
+# - 2026-09-26 (spec-cookie-auth-sync): WKS-BE dev 0c6c772(#91 쿠키 전환 2d65342) 대조 — 로그인은 HttpOnly 쿠키 `wks_token`
+#   (Secure·SameSite=Lax·Path=/·Domain 없음·15일). POST /auth/kakao 응답 body 에 token 이 없고, POST /auth/logout 이 쿠키를 지운다.
+#   2026-09-25 FE 가정안(#205)과 이름(WKS_SESSION)·SameSite(None)만 달랐다. Lax 라 같은 사이트끼리만 쿠키가 오간다 —
+#   운영·dev 도메인·localhost↔localhost 는 되고, *.netlify.app 미리보기·localhost→원격 API 는 늘 비로그인이다.
 # - 디자인·PRD 에는 있으나 이 계약에 없는 것(인연카드 등급 cardGrades · 사전신청 추가 정보 Q14 · 후보 · 운명의 실)은 넣지 않았다 — PRD Open Questions.
 # - 백엔드 문서가 값을 확정하지 않은 곳은 description 에 [미확인] 을 붙였다.
 # - 검증 예: npx @redocly/cli lint docs/api/openapi.yaml
@@ -424,48 +424,8 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
-    patch:
-      operationId: updateMyDatingProfile
-      summary: (V1) 내 소개팅 프로필 수정 — 전체 필드를 보낸다
-      description: "학교 이메일을 바꾸면 `emailVerified` 가 다시 false 가 되고, 재인증 전에는 추천 조회·매칭 요청이 막힌다. 이름만 바꾸면 인증 상태는 유지된다. WKS-BE api-spec.md §10.3."
-      tags: [dating]
-      security: [{ cookieAuth: [] }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/DatingProfileRequest" }
-      responses:
-        "200":
-          description: 수정됨
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [success, data]
-                properties:
-                  success: { type: boolean, const: true }
-                  data: { $ref: "#/components/schemas/DatingProfile" }
-        "400":
-          description: INVALID_INPUT
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-        "401":
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-        "404":
-          description: DATING_PROFILE_NOT_FOUND
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
-        "409":
-          description: DATING_PROFILE_CONFLICT
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    # V1 에는 프로필 수정·사진 교체가 없다 — PATCH /dating/profile/me 는 405 METHOD_NOT_ALLOWED 다
+    #   (WKS-BE dev 0c6c772 에서 제거, api-spec.md §10.3). 2026-09-25 까지 이 사본에 있던 patch 를 지웠다.
   /dating/recommendations:
     get:
       operationId: getDatingRecommendations
@@ -506,6 +466,224 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/candidates/{candidateId}/unlock:
+    post:
+      operationId: unlockDatingCandidateField
+      summary: (V1) 카드 정보 해금 — 사진 10 · 이름 7 · 학과 5 · 궁합 까닭 3 (FR-28)
+      description: "항목 하나를 실로 연다. 이미 연 항목이면 **차감 없이** 값만 돌려준다 — 궁합 까닭 생성이 실패해 값이 비었을 때 다시 부르면 차감 없이 생성만 다시 한다. 여러 항목은 한 번에 하나씩 부른다. `candidateId` 가 지금 내 Top 3 에 없으면 404. WKS-BE api-spec.md §10.5 (dev adf54ab)."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: candidateId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [field]
+              properties:
+                field: { $ref: "#/components/schemas/DatingUnlockField" }
+      responses:
+        "200":
+          description: 해금됨(또는 이미 열려 있음)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingUnlockResult" }
+        "400":
+          description: INVALID_INPUT — field 가 네 값이 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "402":
+          description: INSUFFICIENT_THREAD — 잔액 부족, 차감·해금 없음
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_PROFILE_NOT_FOUND — 내 Top 3 에 없는 상대
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "503":
+          description: LLM_UNAVAILABLE — REASON 생성 실패. 차감은 끝났으니 다시 부르면 차감 없이 재시도
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/requests:
+    post:
+      operationId: sendDatingRequest
+      summary: (V1) 운명의 실 보내기 — 지금 내 추천 카드의 상대에게 매칭 요청 (FR-29)
+      description: "무료 — 실을 차감하지 않는다. `candidateId` 는 §10.4 추천 응답의 상대 프로필 id 다(`requestId` 와 다르다). 본인·이미 요청한 두 사람(방향 무관, 거절 뒤 포함)·지금 추천 카드에 없는 상대는 409 DATING_REQUEST_CONFLICT. 내 학교 메일 인증 전이면 403. WKS-BE api-spec.md §11 (dev 8827766)."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [candidateId]
+              properties:
+                candidateId: { type: string, format: uuid }
+      responses:
+        "201":
+          description: 요청됨 — status PENDING, 연락처는 null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingRequest" }
+        "400":
+          description: INVALID_INPUT — 본인에게 요청
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "403":
+          description: DATING_NOT_VERIFIED — 내 학교 메일 인증 전
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_PROFILE_NOT_FOUND — 상대 또는 내 소개팅 프로필 없음
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: DATING_REQUEST_CONFLICT — 이미 요청한 쌍 · 추천 카드에 없는 상대 · 상대가 인증 전
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    get:
+      operationId: listDatingRequests
+      summary: (V1) 요청함 — 보낸 신청(sent) · 받은 신청(received) (FR-30)
+      description: "최신 요청부터. 비어 있으면 `data: []`. 행에는 상대 프로필(이름·사진·MBTI·점수 등)이 없고 `candidateId` 만 온다 — `candidateId` 는 **조회한 사람 기준 상대**의 프로필 id 라 같은 요청도 보낸 사람·받은 사람 목록에서 값이 다르다. 연락처는 ACCEPTED 에서만 **상대의 것**이 온다. 요청 수 상한 없음."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: box
+          in: query
+          required: true
+          schema: { type: string, enum: [sent, received] }
+          description: "그 밖의 값은 400 INVALID_INPUT"
+      responses:
+        "200":
+          description: 목록
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/DatingRequest" }
+        "400":
+          description: INVALID_INPUT — box 가 sent·received 가 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_PROFILE_NOT_FOUND — 내 소개팅 프로필 없음
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/requests/{requestId}/accept:
+    post:
+      operationId: acceptDatingRequest
+      summary: (V1) 받은 신청 수락 — 매칭 성립, 상대 연락처 공개 (FR-30 · SC-9)
+      description: "받은 사람만. PENDING 일 때만 — 이미 응답했으면 409. 응답의 연락처는 상대(보낸 사람)의 것이고, 보낸 사람은 목록(`box=sent`)에서 내 연락처를 받는다. 수락이 다른 요청의 상태를 바꾸지 않는다."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: requestId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: 수락됨 — status ACCEPTED, respondedAt·contactMethod·contactValue 채워짐
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingRequest" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_REQUEST_NOT_FOUND — 없거나 내가 받은 요청이 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: DATING_REQUEST_CONFLICT — 이미 응답했거나 한쪽이 인증 자격을 잃었다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /dating/requests/{requestId}/reject:
+    post:
+      operationId: rejectDatingRequest
+      summary: (V1) 받은 신청 거절 — 연락처는 공개되지 않는다 (FR-30)
+      description: "받은 사람만. PENDING 일 때만 — 이미 응답했으면 409. 거절한 쌍은 다시 요청할 수 없다."
+      tags: [dating]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { name: requestId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: 거절됨 — status REJECTED, 연락처 null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/DatingRequest" }
+        "401":
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "404":
+          description: DATING_REQUEST_NOT_FOUND — 없거나 내가 받은 요청이 아니다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "409":
+          description: DATING_REQUEST_CONFLICT — 이미 응답했다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    # FR-30 의 '요청 취소'(보낸 사람이 응답 전 취소)와 '매칭에 실패했어요'(상대가 다른 사람과 맺어짐) 는 BE 계약에 없다
+    #   — WKS-BE dev 8827766 기준. 백엔드 문의 중(스트림 spec-dating-requests-api HANDOFF).
   /me:
     get:
       operationId: getMe
@@ -576,7 +754,7 @@ paths:
           description: 로그인 성공 — 세션 쿠키가 심긴다
           headers:
             Set-Cookie:
-              description: "[가정] `WKS_SESSION=<JWT>; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=1296000`(15일, 갱신 없음). 이름은 백엔드가 정하며 프론트는 읽지 않는다. 운영(threadoffate.site ↔ api.threadoffate.site)은 같은 사이트지만 netlify·localhost 개발 origin 은 교차 사이트라 SameSite=None 이 필요하다."
+              description: "`wks_token=<JWT>; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1296000`(15일, 갱신 없음, Domain 없음 — API 호스트 전용). 프론트는 읽지 않는다. SameSite=Lax 라 같은 사이트(threadoffate.site ↔ api.threadoffate.site, dev.threadoffate.site ↔ api-dev.threadoffate.site, localhost ↔ localhost)에서만 심기고 실린다."
               schema: { type: string }
           content:
             application/json:
@@ -599,15 +777,15 @@ paths:
   /auth/logout:
     post:
       operationId: logout
-      summary: "(V1) [가정] 세션 쿠키를 지운다"
-      description: "HttpOnly 쿠키는 프론트가 지울 수 없으므로 백엔드가 같은 이름·속성에 `Max-Age=0` 으로 덮어쓴다. 쿠키가 없거나 만료돼도 200 이다(멱등). 백엔드 §9 초안은 '서버 엔드포인트 없음'이었으나 헤더 토큰 기준이라 쿠키 전환에 맞춰 더한 가정이다."
+      summary: (V1) 세션 쿠키를 지운다
+      description: "HttpOnly 쿠키는 프론트가 지울 수 없으므로 백엔드가 같은 이름·속성에 `Max-Age=0` 으로 덮어쓴다. 인증 없이 부를 수 있고 쿠키가 없거나 만료돼도 200 이다(멱등). 서버 쪽 토큰 무효화는 없다 — 밖으로 나간 토큰 사본은 만료까지 유효하다(백엔드 §9)."
       tags: [auth]
       responses:
         "200":
           description: 로그아웃됨 — 세션 쿠키 만료
           headers:
             Set-Cookie:
-              description: "[가정] `WKS_SESSION=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0`"
+              description: "`wks_token=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`"
               schema: { type: string }
           content:
             application/json:
@@ -642,8 +820,8 @@ components:
     cookieAuth:
       type: apiKey
       in: cookie
-      name: WKS_SESSION
-      description: "(V1) [가정] 로그인 세션 JWT. HttpOnly 라 프론트 코드는 읽지 않고 브라우저가 싣는다 — 요청은 `credentials: 'include'`. 백엔드 CORS 는 origin 을 명시하고 `Access-Control-Allow-Credentials: true` 를 줘야 한다(와일드카드 불가). 인증이 필요한 경로: /me · /me/result · (V1) 소개팅·실. 사주·궁합·공유·사전등록은 쿠키를 무시한다."
+      name: wks_token
+      description: "(V1) 로그인 세션 JWT(백엔드 JwtCookie, SameSite=Lax). HttpOnly 라 프론트 코드는 읽지 않고 브라우저가 싣는다 — 요청은 `credentials: 'include'`. 백엔드 CORS 는 origin 을 명시하고 `Access-Control-Allow-Credentials: true` 를 줘야 한다(와일드카드 불가). 인증이 필요한 경로: /me · /me/result · /dating/** · /wallet/**. 사주·궁합·공유·사전등록은 쿠키를 무시한다."
   schemas:
     Gender:
       type: string
@@ -919,13 +1097,45 @@ components:
         bio: { type: string }
         photoId: { type: string, format: uuid }
     DatingLockableField:
-      description: "해금하지 않은 항목은 값 없이 비용만 온다(FR-28 · NFR-4). 해금 뒤 모양은 해금 API 가 서면 확정한다 [미확인]"
+      description: "잠겨 있으면 `cost` 만, 열렸으면 `value` 만 채우고 반대쪽은 항상 null 이다 — 잠긴 값은 응답에 없다(FR-28 · NFR-4). 열렸는데 `value` 가 null 이면 값 생성이 늦거나 실패한 것이라 해금 API 를 다시 부른다(차감 없음). WKS-BE §10.4 (dev adf54ab)"
       type: object
-      required: [locked]
+      required: [locked, cost, value]
       properties:
         locked: { type: boolean }
-        cost: { type: integer, description: "여는 데 드는 실 개수 — locked 가 true 일 때 온다" }
-        value: { type: string, description: "해금한 항목의 값 — locked 가 false 일 때 온다" }
+        cost: { type: [integer, "null"], description: "여는 데 드는 실 개수 — 잠겨 있을 때만" }
+        value: { type: [string, "null"], description: "열린 값 — 이름·학과·궁합 까닭 문장, 사진은 원본의 서명된 임시 URL" }
+    DatingUnlockField:
+      type: string
+      enum: [PHOTO, NAME, DEPARTMENT, REASON]
+      description: "해금 항목 — 비용 PHOTO 10 · NAME 7 · DEPARTMENT 5 · REASON 3"
+    DatingUnlockResult:
+      description: "해금 응답 (WKS-BE `DatingUnlockResponse`)"
+      type: object
+      required: [field, value, balance]
+      properties:
+        field: { $ref: "#/components/schemas/DatingUnlockField" }
+        value: { type: [string, "null"], description: "열린 값 — 사진은 원본의 서명된 임시 URL" }
+        balance: { type: integer, minimum: 0, description: "차감한 뒤 내 실 잔액" }
+    DatingRequestStatus:
+      type: string
+      enum: [PENDING, ACCEPTED, REJECTED]
+      description: "요청 상태 — 백엔드 `DatingRequestStatus` 와 1:1. 취소·실패 상태는 없다"
+    DatingRequest:
+      description: "매칭 요청 한 건 (WKS-BE §11, `DatingRequestResponse`). 보낸·받은 목록과 생성·수락·거절 응답이 같은 모양이다"
+      type: object
+      required: [requestId, candidateId, status, createdAt, respondedAt, contactMethod, contactValue]
+      properties:
+        requestId: { type: string, format: uuid, description: "요청 자체의 id — accept·reject 경로에 쓴다" }
+        candidateId: { type: string, format: uuid, description: "조회한 사람 기준 상대의 소개팅 프로필 id" }
+        status: { $ref: "#/components/schemas/DatingRequestStatus" }
+        createdAt: { type: string, format: date-time }
+        respondedAt: { type: [string, "null"], format: date-time, description: "수락·거절 시각 — PENDING 이면 null" }
+        contactMethod:
+          oneOf:
+            - { $ref: "#/components/schemas/ContactMethod" }
+            - { type: "null" }
+          description: "ACCEPTED 일 때만 상대의 연락 수단 — 그 밖에는 null (NFR-4)"
+        contactValue: { type: [string, "null"], description: "ACCEPTED 일 때만 상대의 전화번호 또는 인스타그램 아이디 — 그 밖에는 null" }
     DatingCandidate:
       description: "추천 카드 한 장 (WKS-BE §10.4). `candidateId` 는 상대의 소개팅 프로필 id 다"
       type: object
@@ -936,6 +1146,10 @@ components:
         score: { type: integer, minimum: 0, maximum: 100 }
         mbti: { type: string }
         bio: { type: string }
+        blurredPhotoUrl:
+          type: [string, "null"]
+          format: uri
+          description: "흐리게 보여줄 썸네일의 임시 조회 주소. 원본 사진 주소·S3 키는 해금 전까지 응답에 없다 (WKS-BE dev 51d5ec2)"
         fields:
           type: object
           required: [photo, name, department, reason]
@@ -947,8 +1161,8 @@ components:
             reason: { $ref: "#/components/schemas/DatingLockableField" }
     ErrorCode:
       type: string
-      enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, DATING_PROFILE_NOT_FOUND, DATING_PROFILE_CONFLICT, DATING_NOT_VERIFIED, DATING_REQUEST_NOT_FOUND, DATING_REQUEST_CONFLICT, INTERNAL_ERROR, NOT_FOUND]
-      description: "백엔드 ErrorCode.java 와 1:1 (2026-09-24 2e615ca). HTTP — INVALID_INPUT 400 · RESULT_NOT_FOUND 404 · SELF_COMPATIBILITY 400 · COMPATIBILITY_NOT_FOUND 404 · DUPLICATE_SIGNUP 409 · INVALID_EMAIL_DOMAIN 400 · INVALID_TOKEN 400 · LLM_UNAVAILABLE 503 · UNAUTHENTICATED 401 · KAKAO_UNAVAILABLE 503 · INTERNAL_ERROR 500 · NOT_FOUND 404(없는 경로). UNAUTHENTICATED·KAKAO_UNAVAILABLE 은 로그인·인증 경로(/auth/kakao · /me) 용이다. 2026-09-25 5ec80d2 로 DATING_* 5개를 더했다 — DATING_PROFILE_NOT_FOUND 404 · DATING_PROFILE_CONFLICT 409 · DATING_NOT_VERIFIED 403 · DATING_REQUEST_NOT_FOUND 404 · DATING_REQUEST_CONFLICT 409"
+      enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, DATING_PROFILE_NOT_FOUND, DATING_PROFILE_CONFLICT, DATING_NOT_VERIFIED, DATING_REQUEST_NOT_FOUND, DATING_REQUEST_CONFLICT, INSUFFICIENT_THREAD, METHOD_NOT_ALLOWED, INTERNAL_ERROR, NOT_FOUND]
+      description: "백엔드 ErrorCode.java 와 1:1 (2026-09-24 2e615ca). HTTP — INVALID_INPUT 400 · RESULT_NOT_FOUND 404 · SELF_COMPATIBILITY 400 · COMPATIBILITY_NOT_FOUND 404 · DUPLICATE_SIGNUP 409 · INVALID_EMAIL_DOMAIN 400 · INVALID_TOKEN 400 · LLM_UNAVAILABLE 503 · UNAUTHENTICATED 401 · KAKAO_UNAVAILABLE 503 · INTERNAL_ERROR 500 · NOT_FOUND 404(없는 경로). UNAUTHENTICATED·KAKAO_UNAVAILABLE 은 로그인·인증 경로(/auth/kakao · /me) 용이다. 2026-09-25 5ec80d2 로 DATING_* 5개를 더했다 — DATING_PROFILE_NOT_FOUND 404 · DATING_PROFILE_CONFLICT 409 · DATING_NOT_VERIFIED 403 · DATING_REQUEST_NOT_FOUND 404 · DATING_REQUEST_CONFLICT 409 · METHOD_NOT_ALLOWED 405(V1 에 없는 수정 API 호출). 2026-09-26 adf54ab 로 INSUFFICIENT_THREAD 402(실 부족 — 해금)를 더했다"
     ErrorResponse:
       type: object
       required: [success, error]

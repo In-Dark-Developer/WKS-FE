@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
-// 인트로를 봤는지, 메인 티저를 지났는지만 기억한다 (FR-1). 세션 토큰(`src/api/session.ts`)과는 다른 키다.
+// 인트로를 봤는지만 기억한다 (FR-1). 메인 티저는 `/` 에 올 때마다 보이므로 기록이 없다. 세션(`src/api/session.ts`)과는 다른 키다.
 const KEY = 'wks:intro-seen';
-const TEASER_KEY = 'wks:teaser-passed';
 
 const seenSchema = z.literal('1');
 
@@ -12,15 +11,6 @@ export function hasSeenIntro(): boolean {
 
 export function markIntroSeen(): void {
   writeFlag(KEY);
-}
-
-// 티저의 '내 사주 보기'·'새로운 인연 찾기'를 고르면 지난 것이다 — 로그인만 하고 돌아온 티저는 아직 지나지 않았다.
-export function hasPassedTeaser(): boolean {
-  return readFlag(TEASER_KEY);
-}
-
-export function markTeaserPassed(): void {
-  writeFlag(TEASER_KEY);
 }
 
 function readFlag(key: string): boolean {
