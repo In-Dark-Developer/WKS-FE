@@ -25,6 +25,7 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 - 공유 링크 진입의 '이전 정보 불러오기 / 새로 작성하기' 분기 (FR-23)
 - 결과(= 홈)의 잘 맞는 오행과 소개팅 입구 (FR-3 V1)
 - 첫 방문 메인 티저와 세 진입 (FR-1 V1)
+- 공유 링크 흐름 v1.0 — 신규 진입 초대 티저, 공유 궁합 결과·자세히 보기 (FR-6 V1 · FR-15 V1)
 
 ## Out of Scope
 
@@ -59,6 +60,10 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 - [x] T7. 메인 티저 — Done when: 첫 방문의 `/` 에서 인트로 영상이 끝나거나 건너뛰면 메인 티저(「0. 메인 진입 티저」)가 보이고 하단 네비는 보이지 않으며, 첫 방문인지 판단할 수 없으면 티저를 보이고, '내 사주 보기'는 사주 입력으로 가되 이 브라우저에 사주 결과가 있으면 로그인 없이 홈(결과)으로 가며, '새로운 인연 찾기'는 `/dating` 으로, '이미 아이디가 있어요'는 '카카오로 시작하기' 로그인 시트를 띄우고 로그인 뒤 계정 기록을 불러와 티저로 돌아온다 · Touches: `src/features/intro/`, `src/app/routes/`, `src/app/screens/`, `src/features/dating/index.ts`, `src/ui/assets/teaser/` · After: T2 · Owner: 이정진 · FR: FR-1 (commit 588ddea)
 
 - [ ] T8. 궁합지도 로그인 저장 유도 — Done when: 비로그인 사용자의 내 궁합지도(`/me/map`) 맨 아래에 '이 인연들을 계속 간직할까요?' 카드(Figma v1.0 `23:4901`)가 보이고 로그인 사용자에게는 보이지 않으며, '로그인하고 저장하기 →'가 '궁합지도 저장하기' 카카오 로그인 시트를 띄우고, 로그인 뒤 궁합지도로 돌아와 카드가 사라진다(친구의 궁합 지도 `/s/:shareId/map` 에는 두지 않는다) · Touches: `src/features/friends/map/`, `src/features/dating/intro/LoginSheet.tsx`, `src/app/screens/MyMapScreen.tsx`, `src/app/routes/map.routes.tsx`, `src/ui/assets/friends/` · After: T2 · Owner: 이정진 · FR: FR-20
+
+- [ ] T9. 공유 링크 신규 진입 초대 티저 — Done when: 이 브라우저에 사주가 없는 방문자가 `/s/:shareId` 로 들어오면 'OO님의 궁합지도에 초대됐어요' 초대 헤더와 링크 주인의 궁합 지도 아래 사주 입력 폼이 보이고(Figma v1.0 4.1 신규 티저 `30:5916`), 폼의 제목·부제·버튼('내 운명을 친구 궁합 지도에 꿰기')이 그 프레임 문구와 같으며, 기존 방문자가 '새로 작성하기'로 여는 폼(`30:6323`)도 같은 문구이고, 제출하면 지금처럼 결과·궁합을 만든다 · Touches: `src/features/friends/`, `src/features/saju/`, `src/app/screens/ShareInputScreen.tsx`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-15
+
+- [ ] T10. 공유 궁합 결과와 자세히 보기 — Done when: 궁합을 만들면(신규 제출·'이전 정보 불러오기' 모두) 공유 궁합 결과(SCR-24 `/s/:shareId/result`, Figma v1.0 `15:1089`·`30:6570`)로 가서 주인 지도, 나와 주인의 궁합 한 줄, 그 궁합의 이유 세 문단(`GET /compatibilities/{id}/reason`, 생성 중 로딩)이 보이고, '전체 보기 >'는 주인의 전체 지도(SCR-13, `16:1827`)로 가며 그 화면 맨 위 '뒤로가기'가 SCR-24 로 돌아오고, 두 화면의 '내 사주 내용도 확인하기'는 자기 결과로 가며, 새로고침해도 같은 화면이 보인다 · Touches: `src/features/friends/`, `src/app/screens/`, `src/app/routes/share.routes.tsx` · After: T9 · Owner: 강근우 · FR: FR-6
 
 ## Relevant Specifications
 
