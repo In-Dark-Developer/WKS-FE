@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
-const { getMeMock, getRecommendationsMock } = vi.hoisted(() => ({
-  getMeMock: vi.fn(),
+const { getWalletMock, getRecommendationsMock } = vi.hoisted(() => ({
+  getWalletMock: vi.fn(),
   getRecommendationsMock: vi.fn(),
 }));
-vi.mock('@/api/me', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/api/me')>();
-  return { ...actual, getMe: getMeMock };
+vi.mock('@/api/wallet', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/wallet')>();
+  return { ...actual, getWallet: getWalletMock };
 });
 const { listRequestsMock } = vi.hoisted(() => ({ listRequestsMock: vi.fn() }));
 vi.mock('@/api/matchRequests', async (importOriginal) => {
@@ -46,11 +46,9 @@ const locked: DatingCandidate = {
   },
 };
 
-function me(threadBalance: number) {
-  return {
-    ok: true,
-    data: { memberId: 1, hasResult: true, hasDatingProfile: true, threadBalance },
-  };
+// 잔액의 단일 출처는 원장(`GET /wallet`)이다 — `/me` 의 threadBalance 는 쓰지 않는다(FR-31).
+function wallet(balance: number) {
+  return { ok: true, data: { balance, canCheckInToday: true } };
 }
 
 beforeEach(() => {
@@ -59,7 +57,7 @@ beforeEach(() => {
 
 afterEach(() => {
   listRequestsMock.mockReset();
-  getMeMock.mockReset();
+  getWalletMock.mockReset();
   getRecommendationsMock.mockReset();
   vi.restoreAllMocks();
 });
@@ -105,7 +103,7 @@ test('리롤은 무료가 남으면 free, 아니면 잔액으로 가능 여부�
 });
 
 test('loader 는 잔액과 후보를 함께 싣는다', async () => {
-  getMeMock.mockResolvedValue(me(12));
+  getWalletMock.mockResolvedValue(wallet(12));
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
 
   const state = await datingCardsLoader();
@@ -115,7 +113,7 @@ test('loader 는 잔액과 후보를 함께 싣는다', async () => {
 });
 
 test('후보가 0명이면 빈 목록으로 그린다 (FR-26)', async () => {
-  getMeMock.mockResolvedValue(me(0));
+  getWalletMock.mockResolvedValue(wallet(0));
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
 
   const state = await datingCardsLoader();
@@ -127,7 +125,7 @@ test('후보가 0명이면 빈 목록으로 그린다 (FR-26)', async () => {
 });
 
 test('학교 메일 인증 전(403)에는 안내 상태를 돌려준다', async () => {
-  getMeMock.mockResolvedValue(me(0));
+  getWalletMock.mockResolvedValue(wallet(0));
   getRecommendationsMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'DATING_NOT_VERIFIED', message: '학교 메일 인증이 필요해요.' },
@@ -138,7 +136,7 @@ test('학교 메일 인증 전(403)에는 안내 상태를 돌려준다', async 
 
 test('그 밖의 조회 실패는 오류 화면으로 보낸다', async () => {
   vi.spyOn(console, 'error').mockImplementation(() => {});
-  getMeMock.mockResolvedValue(me(0));
+  getWalletMock.mockResolvedValue(wallet(0));
   getRecommendationsMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
 
   await expect(datingCardsLoader()).rejects.toBeInstanceOf(Response);
@@ -161,7 +159,7 @@ test('열렸는데 값이 아직 없는 항목은 비용 0 잠금으로 두어 �
 });
 
 test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는다 (FR-29)', async () => {
-  getMeMock.mockResolvedValue(me(10));
+  getWalletMock.mockResolvedValue(wallet(10));
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
   listRequestsMock.mockResolvedValue({
     ok: true,
@@ -182,4 +180,16 @@ test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는�
 
   expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(true);
   expect(listRequestsMock).toHaveBeenCalledWith('sent');
+});
+
+test('잔액을 못 읽으면 0 으로 두고 소모를 막는다 (FR-31)', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getWalletMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+
+  const state = await datingCardsLoader();
+
+  expect(state).toMatchObject({ kind: 'ready', view: { balance: 0 } });
+  // 카드는 그대로 보인다 — 잔액만 0 이다.
+  if (state.kind === 'ready') expect(state.view.candidates).toHaveLength(1);
 });
