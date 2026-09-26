@@ -63,5 +63,5 @@ test('배경 카드 벽은 세 줄이 왼쪽·오른쪽·왼쪽으로 흐르고,
     'left',
   ]);
   // 두 벌이어야 한 벌만큼 옮긴 뒤 처음으로 돌아가도 이음매가 보이지 않는다.
-  for (const row of rows) expect(row.children).toHaveLength(8);
+  for (const row of rows) expect(row.children).toHaveLength(10);
 });
