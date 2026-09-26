@@ -6,7 +6,6 @@ import type { Result } from '@/api/schema/result';
 import type { SharedResult } from '@/api/schema/share';
 import { writeSession } from '@/api/session';
 import { routes } from '@/app/routes';
-import { markTeaserPassed, resetTeaserPassed } from '@/features/intro/introSeen';
 
 // getResult 는 src/api/ 경계 — 라우트 조립만 확인하니 실제 요청을 보내지 않는다 (CONVENTIONS 8장).
 const { getResultMock, createResultMock } = vi.hoisted(() => ({
@@ -74,7 +73,6 @@ const stubResult: Result = {
 // 인트로는 첫 방문에만, 메인 티저는 접속마다 뜬다(FR-1) — 입력 화면을 보는 테스트는 둘 다 지난 방문자로 시작한다.
 beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
-  markTeaserPassed();
   getMeMock.mockResolvedValue(unauthenticated);
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
 });
@@ -83,7 +81,6 @@ afterEach(() => {
   cleanup();
   localStorage.clear();
   sessionStorage.clear();
-  resetTeaserPassed();
   getResultMock.mockReset();
   createResultMock.mockReset();
   getSharedResultMock.mockReset();
@@ -114,9 +111,8 @@ test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
   expect(screen.getByLabelText('인트로 영상')).toBeInTheDocument();
 });
 
-// 인트로를 본 뒤 티저에서 아직 진입을 고르지 않은 방문자.
+// 인트로를 본 방문자 — `/` 는 언제나 티저다.
 function renderTeaser() {
-  resetTeaserPassed();
   return renderAt('/');
 }
 
@@ -128,16 +124,17 @@ test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
-test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고, 결과 없이 떠났다 돌아오면 다시 티저다", async () => {
-  renderTeaser();
+test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력(/saju)을 열고, 뒤로가기는 티저로 돌아온다", async () => {
+  const router = renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
   expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/saju');
 
-  cleanup();
-  renderAt('/');
+  await router.navigate(-1);
 
-  expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
 });
 
 test('결과가 없으면 소개팅에서 홈 탭을 눌러도 티저가 홈이다', async () => {
@@ -414,7 +411,7 @@ test('다른 결과를 만든 브라우저로 결과 화면에 들어오면 입�
   expect(getResultMock).not.toHaveBeenCalled();
 });
 
-test('백엔드가 모르는 결과면 사주 입력으로 돌아간다 — 죽은 resultId 로 오류 화면에 갇히지 않는다', async () => {
+test('백엔드가 모르는 결과면 티저(홈)로 돌아간다 — 죽은 resultId 로 오류 화면에 갇히지 않는다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: false,
@@ -423,7 +420,7 @@ test('백엔드가 모르는 결과면 사주 입력으로 돌아간다 — 죽�
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
 });
 
 test('결과 조회가 연결 문제로 실패하면 오류 화면을 보인다', async () => {
@@ -694,7 +691,7 @@ test('홈 탭은 사주가 없으면 티저가 아니라 사주 입력으로 간
 });
 
 test('사주 입력과 공유 Flow 에는 하단 네비가 없다', async () => {
-  renderAt('/');
+  renderAt('/saju');
   await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' });
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
   cleanup();
