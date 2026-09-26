@@ -133,3 +133,19 @@ test('그 밖의 조회 실패는 오류 화면으로 보낸다', async () => {
 
   await expect(datingCardsLoader()).rejects.toBeInstanceOf(Response);
 });
+
+test('열렸는데 값이 아직 없는 항목은 비용 0 잠금으로 두어 다시 열게 한다 (§10.4)', () => {
+  const view = toCandidateView({
+    ...locked,
+    fields: {
+      ...locked.fields,
+      photo: { locked: false, value: null },
+      name: { locked: false, value: '이서연' },
+      reason: { locked: false, value: null },
+    },
+  });
+
+  expect(view.name).toEqual({ isLocked: false, value: '이서연' });
+  expect(view.reason).toEqual({ isLocked: true, cost: 0 });
+  expect(view.photo).toEqual({ isLocked: true, thumbnailUrl: BLURRED_URL, cost: 0 });
+});

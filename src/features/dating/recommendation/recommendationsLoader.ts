@@ -19,17 +19,20 @@ export type DatingCardsState =
   // 학교 메일 인증 전에는 후보를 받을 수 없다(403 DATING_NOT_VERIFIED).
   | { kind: 'not-verified' };
 
+// 열렸는데 값이 아직 없는 항목(궁합 까닭 생성 실패 등)은 비용 0 의 잠금으로 둔다 — 다시 열면 백엔드가 차감 없이
+// 값만 다시 만든다(WKS-BE §10.4 · §10.5). 빈 값을 열린 것처럼 보이지 않는다.
 function toLockable<T extends string>(field: DatingLockableField): LockableField<T> {
-  return field.locked
-    ? { isLocked: true, cost: field.cost }
-    : { isLocked: false, value: field.value as T };
+  if (field.locked) return { isLocked: true, cost: field.cost };
+  if (field.value === null) return { isLocked: true, cost: 0 };
+  // 이름·학과·까닭 문장은 백엔드가 준 문자열 그대로다 — T 는 부르는 쪽의 표시 타입이다.
+  return { isLocked: false, value: field.value as T };
 }
 
 // 잠긴 사진은 흐린 썸네일만 받는다 — 원본 주소는 해금 뒤에만 온다(WKS-BE §10.4 `blurredPhotoUrl`).
 function toPhoto(field: DatingLockableField, blurredPhotoUrl: string | null): CandidatePhoto {
-  return field.locked
-    ? { isLocked: true, thumbnailUrl: blurredPhotoUrl, cost: field.cost }
-    : { isLocked: false, url: field.value };
+  if (field.locked) return { isLocked: true, thumbnailUrl: blurredPhotoUrl, cost: field.cost };
+  if (field.value === null) return { isLocked: true, thumbnailUrl: blurredPhotoUrl, cost: 0 };
+  return { isLocked: false, url: field.value };
 }
 
 export function toCandidateView(candidate: DatingCandidate): MatchCandidateView {

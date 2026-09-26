@@ -19,7 +19,7 @@
 | 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 5/6 | [RESULT](08-launch-readiness/RESULT.md) |
 | 09 | [auth-and-shell](09-auth-and-shell/PLAN.md) | @jjjung0921 | 03 | PLANNED | 7/10 | — |
 | 10 | [dating-onboarding](10-dating-onboarding/PLAN.md) | @jjjung0921 | 09 | PLANNED | 1/4 | — |
-| 11 | [dating-thread](11-dating-thread/PLAN.md) | @jjjung0921 | 10 | PLANNED | 1/3 | — |
+| 11 | [dating-thread](11-dating-thread/PLAN.md) | @jjjung0921 | 10 | PLANNED | 2/3 | — |
 <!-- phases:end -->
 
 ## Phase Rules

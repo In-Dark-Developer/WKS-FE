@@ -2,14 +2,22 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
-const { rerollMock } = vi.hoisted(() => ({ rerollMock: vi.fn() }));
+const { rerollMock, unlockMock } = vi.hoisted(() => ({ rerollMock: vi.fn(), unlockMock: vi.fn() }));
 vi.mock('@/api/dating', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/dating')>();
   return { ...actual, rerollRecommendations: rerollMock };
 });
+vi.mock('@/api/unlocks', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/unlocks')>();
+  return { ...actual, unlockCandidateField: unlockMock };
+});
 
 import type { DatingCardsView, MatchCandidateView } from './cardsView';
-import { DatingCardsScreen, REROLL_FAILED_MESSAGE } from './DatingCardsScreen';
+import {
+  DatingCardsScreen,
+  REROLL_FAILED_MESSAGE,
+  UNLOCK_SHORT_MESSAGE,
+} from './DatingCardsScreen';
 
 const candidate: MatchCandidateView = {
   id: 'c1',
@@ -38,6 +46,7 @@ function openRerollSheet() {
 afterEach(() => {
   cleanup();
   rerollMock.mockReset();
+  unlockMock.mockReset();
   vi.restoreAllMocks();
 });
 
@@ -74,4 +83,39 @@ test('잔액과 빈 카드를 그린다 (FR-26)', () => {
 
   expect(screen.getByLabelText('운명의 실 보유 7개')).toBeInTheDocument();
   expect(screen.getByText('운명의 인연을 기다리고 있어요')).toBeInTheDocument();
+});
+
+// 11/T1 해금 — 카드 뒷면의 '열람하기' → 해금 모달 → 고른 항목을 열고 완료 모달 (FR-28).
+
+function openUnlockDialog() {
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  fireEvent.click(screen.getByRole('button', { name: '열람하기' }));
+}
+
+test('고른 항목을 열고 남은 실과 연 항목을 완료 모달로 알린다', async () => {
+  unlockMock.mockResolvedValue({ ok: true, data: { field: 'NAME', value: '이서연', balance: 3 } });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openUnlockDialog();
+  fireEvent.click(await screen.findByRole('button', { name: /이름/ }));
+  fireEvent.click(screen.getByRole('button', { name: '7개 사용하기' }));
+
+  expect(await screen.findByRole('heading', { name: /정보를 열었어요/ })).toBeInTheDocument();
+  expect(unlockMock).toHaveBeenCalledWith('c1', 'NAME');
+  expect(screen.getAllByLabelText('운명의 실 보유 3개').length).toBeGreaterThan(0);
+});
+
+test('잔액이 모자라 백엔드가 거절하면 열지 않고 알린다', async () => {
+  unlockMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'INSUFFICIENT_THREAD', message: '부족' },
+  });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openUnlockDialog();
+  fireEvent.click(await screen.findByRole('button', { name: /사진/ }));
+  fireEvent.click(screen.getByRole('button', { name: '10개 사용하기' }));
+
+  expect(await screen.findByRole('status')).toHaveTextContent(UNLOCK_SHORT_MESSAGE);
+  expect(screen.queryByRole('heading', { name: /정보를 열었어요/ })).not.toBeInTheDocument();
 });
