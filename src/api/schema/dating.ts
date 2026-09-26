@@ -39,11 +39,12 @@ export const datingPhotoUploadSchema = z.object({
 
 export type DatingPhotoUpload = z.infer<typeof datingPhotoUploadSchema>;
 
-// 추천 카드(§10.4) — 잠긴 항목은 값 없이 비용만 온다(FR-28 · NFR-4). 해금 API 가 아직 없어 `value` 가 실제로
-// 어떤 모양으로 오는지는 확인 전이다 — locked=false 면 문자열 값으로 가정한다.
+// 추천 카드(§10.4) — 잠겨 있으면 `cost` 만, 열렸으면 `value` 만 오고 반대쪽은 null 이다(FR-28 · NFR-4, WKS-BE
+// dev adf54ab). 열렸는데 `value` 가 null 이면 값 생성(궁합 까닭 LLM)이 늦거나 실패한 것이라 해금을 다시 부른다.
+// 반대쪽 null 키는 zod 가 떨어낸다.
 export const datingLockableFieldSchema = z.union([
   z.object({ locked: z.literal(true), cost: z.number().int().nonnegative() }),
-  z.object({ locked: z.literal(false), value: z.string() }),
+  z.object({ locked: z.literal(false), value: z.string().nullable() }),
 ]);
 
 export type DatingLockableField = z.infer<typeof datingLockableFieldSchema>;
@@ -73,3 +74,17 @@ export const datingRecommendationsSchema = z.object({
 });
 
 export type DatingRecommendations = z.infer<typeof datingRecommendationsSchema>;
+
+// 해금 항목(§10.5) — 비용 PHOTO 10 · NAME 7 · DEPARTMENT 5 · REASON 3.
+export const datingUnlockFieldSchema = z.enum(['PHOTO', 'NAME', 'DEPARTMENT', 'REASON']);
+
+export type DatingUnlockField = z.infer<typeof datingUnlockFieldSchema>;
+
+// 해금 응답 — 열린 값과 차감 뒤 잔액. 사진은 원본의 서명된 임시 URL 이다.
+export const datingUnlockResultSchema = z.object({
+  field: datingUnlockFieldSchema,
+  value: z.string().nullable(),
+  balance: z.number().int().nonnegative(),
+});
+
+export type DatingUnlockResult = z.infer<typeof datingUnlockResultSchema>;
