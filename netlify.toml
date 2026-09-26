@@ -28,3 +28,8 @@
 # TOML 리터럴 문자열(작은따옴표)이라 \n 이 그대로 printf 에 전달된다.
 [context.dev]
   command = 'pnpm build && printf "/*\n  X-Robots-Tag: noindex\n" > dist/_headers'
+
+# dev 브랜치 배포는 백엔드 dev 서버를 부른다 — 운영 데이터와 섞이지 않고, 로그인 쿠키(SameSite=Lax)가
+# dev.threadoffate.site ↔ api-dev.threadoffate.site 같은 사이트 사이에서 오간다.
+[context.dev.environment]
+  VITE_API_BASE_URL = "https://api-dev.threadoffate.site/api"
