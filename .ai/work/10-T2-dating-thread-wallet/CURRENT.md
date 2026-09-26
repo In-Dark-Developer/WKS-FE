@@ -7,9 +7,9 @@
 - Branch: ws/10-T2-dating-thread-wallet
 - Task: 10/T2
 - Issue: none
-- Touches: src/features/dating/, src/api/
+- Touches: src/features/dating/, src/api/, docs/api/openapi.yaml
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-ci-sync-warn, 2026-09-24-dating-publishing-split, 2026-09-24-prd-completion-fields, 2026-09-25-cookie-auth-contract
 
 ## Current Phase
 
@@ -21,12 +21,16 @@ T2. 재화 '실'
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. openapi: `GET /wallet`·`POST /wallet/check-in` (WKS-BE §12, dev adf54ab) ←
+- 2. api: `wallet.ts` 신규 — 잔액 조회·출석. 목은 가입 10(최초 로그인) 기준으로 `me.ts` 와 맞춘다
+- 3. feature: 카드 화면 잔액을 `/wallet` 하나로 모은다(해금 응답 balance 로 즉시 반영, `/me` 는 게이트 전용)
+- 4. 잔액 부족 안내 — 해금·리롤이 막히는 경로 확인 (402 INSUFFICIENT_THREAD)
+- 5. test/typecheck/lint · 커밋 · `--ready`
 
 ## Last Checkpoint
 
@@ -35,13 +39,15 @@ TODO
 
 ## Relevant Documents
 
-- `docs/phases/10-dating-onboarding/PLAN.md`
+- `docs/phases/10-dating-onboarding/PLAN.md` T2 · `docs/prd/30-functional-requirements.md` FR-31
+- WKS-BE `docs/api-spec.md` §12 실(재화) (dev adf54ab)
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/api/me.ts:mockBalance,spendMockThread` · `src/api/unlocks.ts` (11/T1 이 만든 차감 경로)
+- `src/features/dating/recommendation/recommendationsLoader.ts:datingCardsLoader` · `DatingCardsScreen.tsx`
 
 ## Next Action
 
-`docs/phases/10-dating-onboarding/PLAN.md`에서 10/T2의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+Progress 1 — openapi 에 §12 반영.
