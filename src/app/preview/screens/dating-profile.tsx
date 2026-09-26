@@ -43,6 +43,7 @@ function FakeProfileForm({
     isFilled ? { status: 'uploaded', previewUrl: fakePhoto } : { status: 'empty' },
   );
   const [submitState, setSubmitState] = useState<ProfileSubmitState>('idle');
+  const [step, setStep] = useState(initialStep);
 
   function handlePhotoSelect(file: File) {
     setPhoto({ status: 'uploading' });
@@ -59,12 +60,14 @@ function FakeProfileForm({
 
   return (
     <DatingProfileForm
-      initialStep={initialStep}
       initialValues={isFilled ? { saju, details } : undefined}
+      onBack={() => setStep(1)}
       onPhotoSelect={handlePhotoSelect}
+      onStepChange={setStep}
       onSubmit={handleSubmit}
       photo={photo}
       showErrorsInitially={showErrorsInitially}
+      step={step}
       submitState={submitState}
     />
   );

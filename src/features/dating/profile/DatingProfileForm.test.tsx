@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { useState, type ComponentProps } from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import { DatingProfileForm } from './DatingProfileForm';
@@ -24,10 +25,21 @@ const validDetails = {
 
 const uploaded = { status: 'uploaded', previewUrl: '/me.webp' } as const;
 
-test('(1/2) 를 비운 채 넘어가려 하면 오류를 보이고 (2/2) 로 가지 않는다', () => {
-  render(
-    <DatingProfileForm onPhotoSelect={vi.fn()} onSubmit={vi.fn()} photo={{ status: 'empty' }} />,
+type FormProps = ComponentProps<typeof DatingProfileForm>;
+
+// 단계는 부르는 쪽이 갖는다 — 테스트에서는 상태 하나로 흉내 낸다.
+function StepHost({
+  initialStep = 1,
+  ...props
+}: Omit<FormProps, 'step' | 'onStepChange' | 'onBack'> & { initialStep?: 1 | 2 }) {
+  const [step, setStep] = useState(initialStep);
+  return (
+    <DatingProfileForm {...props} onBack={() => setStep(1)} onStepChange={setStep} step={step} />
   );
+}
+
+test('(1/2) 를 비운 채 넘어가려 하면 오류를 보이고 (2/2) 로 가지 않는다', () => {
+  render(<StepHost onPhotoSelect={vi.fn()} onSubmit={vi.fn()} photo={{ status: 'empty' }} />);
 
   fireEvent.click(screen.getByRole('button', { name: '다음으로' }));
 
@@ -39,7 +51,7 @@ test('(1/2) 를 비운 채 넘어가려 하면 오류를 보이고 (2/2) 로 가
 test('두 단계를 통과하면 사주 정보와 학교 정보를 함께 onSubmit 으로 넘긴다', () => {
   const onSubmit = vi.fn();
   render(
-    <DatingProfileForm
+    <StepHost
       initialValues={{ saju: validSaju, details: validDetails }}
       onPhotoSelect={vi.fn()}
       onSubmit={onSubmit}
@@ -67,7 +79,7 @@ test('두 단계를 통과하면 사주 정보와 학교 정보를 함께 onSubm
 test('사진이 올라가지 않았으면 제출하지 않고 사진 오류를 보인다', () => {
   const onSubmit = vi.fn();
   render(
-    <DatingProfileForm
+    <StepHost
       initialStep={2}
       initialValues={{ saju: validSaju, details: validDetails }}
       onPhotoSelect={vi.fn()}
@@ -84,7 +96,7 @@ test('사진이 올라가지 않았으면 제출하지 않고 사진 오류를 �
 
 test('연결에 실패하면 입력값을 둔 채 안내를 보인다', () => {
   render(
-    <DatingProfileForm
+    <StepHost
       initialStep={2}
       initialValues={{ saju: validSaju, details: validDetails }}
       onPhotoSelect={vi.fn()}
