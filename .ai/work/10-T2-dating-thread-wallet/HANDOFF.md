@@ -4,7 +4,7 @@
 
 - From: @nicerjs23 (claude-code)
 - To: @jjjung0921 (이정진 · Phase 10 Lead — PR 리뷰) · @gn00py48 (강근우 · 해금이 같은 잔액을 쓴다)
-- Date: 2026-09-26
+- Date: 2026-09-27
 - Phase / Task: 10/T2
 
 ## Goal
@@ -16,8 +16,7 @@
 - openapi: `GET /wallet` · `POST /wallet/check-in` · `Wallet`·`WalletCheckIn` (WKS-BE §12, dev adf54ab)
 - `src/api/wallet.ts`·`schema/wallet.ts` 신규 — 잔액 조회·출석 체크
 - 목 원장을 백엔드 규칙과 맞춤(`me.ts`): 가입 10 은 **최초 로그인** 1회 · 출석 5 는 하루 1회 · 해금이 쓴 만큼 차감
-- 카드 화면 잔액의 단일 출처를 `GET /wallet` 으로 바꿈 — `/me` 의 `threadBalance` 는 진입 게이트 요약으로만 남음
-- 잔액 조회 실패는 0 으로 두어 소모가 막히고 안내가 뜨게 함(FR-31)
+- 카드 잔액의 단일 출처를 `GET /wallet` 으로 바꿈(`/me` 는 게이트 요약). 조회 실패는 0 으로 두어 소모가 막힌다(FR-31)
 - 11/T2(#228) 병합 충돌 정리 — 같은 `Promise.all` 을 둘이 고쳐 잔액(원장)·보낸 신청 둘 다 살림
 
 ## Work In Progress

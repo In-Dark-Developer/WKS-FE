@@ -27,8 +27,7 @@ REVIEW
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
 - 1~5 완료 (commit 8792afa·dbf0d20) — openapi §12 · wallet.ts · 목 원장 정렬 · 잔액 단일 출처 · 검증
-- 6. dev 병합(11/T2 #228) 충돌 정리 완료 (commit f1a000f)
-- 7. `--ready` → PR · 강근우님께 notes/to-gn00py48-wallet.md 전달 ←
+- 6~7. dev 병합(11/T2 #228) 충돌 정리 · PR·강근우님 전달 ←
 
 ## Last Checkpoint
 
