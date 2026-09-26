@@ -2,15 +2,25 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
-const { acceptMock, rejectMock } = vi.hoisted(() => ({ acceptMock: vi.fn(), rejectMock: vi.fn() }));
+const { acceptMock, rejectMock, cancelMock } = vi.hoisted(() => ({
+  acceptMock: vi.fn(),
+  rejectMock: vi.fn(),
+  cancelMock: vi.fn(),
+}));
 vi.mock('@/api/matchRequests', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/matchRequests')>();
-  return { ...actual, acceptDatingRequest: acceptMock, rejectDatingRequest: rejectMock };
+  return {
+    ...actual,
+    acceptDatingRequest: acceptMock,
+    rejectDatingRequest: rejectMock,
+    cancelDatingRequest: cancelMock,
+  };
 });
 
 import {
   ACCEPTED_MESSAGE,
-  CANCEL_UNAVAILABLE_MESSAGE,
+  CANCEL_FAILED_MESSAGE,
+  CANCELLED_MESSAGE,
   DatingRequestsScreen,
 } from './DatingRequestsScreen';
 import type { ReceivedRequestView, RequestInboxView, SentRequestView } from './requestsView';
@@ -57,6 +67,7 @@ afterEach(() => {
   cleanup();
   acceptMock.mockReset();
   rejectMock.mockReset();
+  cancelMock.mockReset();
   vi.restoreAllMocks();
 });
 
@@ -99,11 +110,27 @@ test('성립한 신청은 카드에 상대 연락처를 보인다', async () => 
   expect(screen.queryByRole('button', { name: '요청 취소' })).not.toBeInTheDocument();
 });
 
-test('요청 취소는 백엔드 경로가 없어 안내만 한다', async () => {
+test('보낸 신청의 요청 취소는 취소 요청을 보내고 알린다 (FR-30)', async () => {
+  cancelMock.mockResolvedValue({ ok: true, data: { requestId: 's1', status: 'CANCELLED' } });
   renderScreen({ sent: [sentPending], received: [] }, 'sent');
 
   fireEvent.click(screen.getByRole('button', { name: /이름을 열지 않은 인연/ }));
   fireEvent.click(await screen.findByRole('button', { name: '요청 취소' }));
 
-  expect(await screen.findByRole('status')).toHaveTextContent(CANCEL_UNAVAILABLE_MESSAGE);
+  expect(await screen.findByRole('status')).toHaveTextContent(CANCELLED_MESSAGE);
+  expect(cancelMock).toHaveBeenCalledWith('s1');
+});
+
+test('상대가 먼저 응답해 취소가 실패하면(409) 실패를 알린다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  cancelMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'DATING_REQUEST_CONFLICT', message: '이미 처리된 요청' },
+  });
+  renderScreen({ sent: [sentPending], received: [] }, 'sent');
+
+  fireEvent.click(screen.getByRole('button', { name: /이름을 열지 않은 인연/ }));
+  fireEvent.click(await screen.findByRole('button', { name: '요청 취소' }));
+
+  expect(await screen.findByRole('status')).toHaveTextContent(CANCEL_FAILED_MESSAGE);
 });

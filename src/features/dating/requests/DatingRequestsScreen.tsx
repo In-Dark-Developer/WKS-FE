@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useRevalidator } from 'react-router-dom';
 
-import { acceptDatingRequest, rejectDatingRequest } from '@/api/matchRequests';
+import { acceptDatingRequest, cancelDatingRequest, rejectDatingRequest } from '@/api/matchRequests';
 import { Toast } from '@/ui/Toast';
 
 import { RequestInbox } from './RequestInbox';
@@ -11,10 +11,11 @@ type Props = { view: RequestInboxView; initialTab?: RequestTab };
 
 export const ACCEPTED_MESSAGE = '인연이 닿았어요! 카드에서 연락처를 확인하세요.';
 export const RESPOND_FAILED_MESSAGE = '응답하지 못했어요. 잠시 후 다시 시도해 주세요.';
-// 백엔드에 요청 취소 경로가 없다(WKS-BE api-spec §11) — 문의 중이라 안내만 한다.
-export const CANCEL_UNAVAILABLE_MESSAGE = '요청 취소는 아직 준비 중이에요.';
+export const CANCELLED_MESSAGE = '요청을 취소했어요.';
+export const CANCEL_FAILED_MESSAGE = '요청을 취소하지 못했어요. 잠시 후 다시 시도해 주세요.';
 
 // SCR-20 요청함 연결(FR-30) — 수락하면 성립해 상대 연락처가 카드에 보이고, 거절하면 보이지 않는다.
+// 보낸 신청은 응답 전에만 취소할 수 있고, 취소하면 목록에서 빠진다.
 export function DatingRequestsScreen({ view, initialTab }: Props) {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
@@ -34,13 +35,25 @@ export function DatingRequestsScreen({ view, initialTab }: Props) {
     void revalidator.revalidate();
   }
 
+  // 상대가 먼저 응답했으면 409 — 어느 실패든 목록을 다시 읽어 지금 상태를 보인다.
+  async function cancel(requestId: string) {
+    const outcome = await cancelDatingRequest(requestId);
+    if (!outcome.ok) {
+      console.error('요청 취소 실패', outcome.error);
+      setMessage(CANCEL_FAILED_MESSAGE);
+    } else {
+      setMessage(CANCELLED_MESSAGE);
+    }
+    void revalidator.revalidate();
+  }
+
   return (
     <>
       <RequestInbox
         initialTab={initialTab}
         onAccept={(requestId) => void respond(requestId, 'accept')}
         onBack={() => void navigate('/dating/cards')}
-        onCancel={() => setMessage(CANCEL_UNAVAILABLE_MESSAGE)}
+        onCancel={(requestId) => void cancel(requestId)}
         onDecline={(requestId) => void respond(requestId, 'decline')}
         view={view}
       />
