@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { readSession } from '@/api/session';
 import heartIcon from '@/ui/assets/icons/heart.svg';
@@ -28,15 +28,19 @@ function isNavTab(id: string): id is NavTab {
 }
 
 // 라우트 handle.nav 가 켠 화면에만 뜬다(`RootLayout`). 자리는 layout.css 의 [data-bottom-nav] 가 정한다.
+// 지금 있는 주소로는 이동하지 않는다 — 같은 주소가 이동 기록에 한 번 더 쌓이면 브라우저 뒤로 가기가 제자리에 머문다.
 export function BottomNavBar({ active }: { active: NavTab }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   return (
     <div data-bottom-nav="">
       <BottomNav
         activeId={active}
         items={items}
         onSelect={(id) => {
-          if (isNavTab(id)) void navigate(pathOf(id));
+          if (!isNavTab(id)) return;
+          const path = pathOf(id);
+          if (path !== pathname) void navigate(path);
         }}
       />
     </div>

@@ -657,6 +657,40 @@ test('홈 탭은 이 브라우저의 사주가 있으면 결과로 간다', asyn
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
 });
 
+test('홈 탭으로 결과에 온 뒤 뒤로 가기를 누르면 누르기 전 화면이 보인다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = renderAt('/me/map');
+  await screen.findByRole('navigation', { name: '주요 메뉴' });
+  fireEvent.click(navTab('홈'));
+  await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' });
+
+  await router.navigate(-1);
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/me/map'));
+});
+
+// 이미 홈인데 홈을 다시 누르면 같은 주소가 기록에 한 번 더 쌓여, 뒤로 가기 한 번이 제자리에 머물렀다.
+test('이미 홈일 때 홈 탭을 다시 눌러도 뒤로 가기 한 번이면 이전 화면이다', async () => {
+  writeSession(RESULT_ID);
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = createMemoryRouter(routes, {
+    initialEntries: ['/dating', `/reading/${RESULT_ID}`],
+    initialIndex: 1,
+  });
+  render(<RouterProvider router={router} />);
+  await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' });
+  fireEvent.click(navTab('홈'));
+  // 이동이 걸렸다면 그 loader 가 끝날 때까지 기다린다 — 끝나기 전에 뒤로 가면 push 전과 비교하게 된다
+  await vi.waitFor(() => expect(router.state.navigation.state).toBe('idle'));
+
+  await router.navigate(-1);
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+});
+
 test('홈 탭은 사주가 없으면 티저가 아니라 사주 입력으로 간다', async () => {
   const router = renderAt('/dating');
   await screen.findByRole('navigation', { name: '주요 메뉴' });
