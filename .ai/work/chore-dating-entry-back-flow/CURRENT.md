@@ -21,17 +21,19 @@ chore: dating-entry-back-flow
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 프로필 단계를 주소(`?step=`)로 올리고 뒤로가기 연결 (d96842f)
+- [x] 카카오 로그인 복귀를 `/dating/profile` 로
+- [x] test·typecheck·lint·목 모드 브라우저 확인
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`5096e2c`
+`d96842f`
 
 ## Relevant Documents
 
@@ -40,8 +42,10 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/dating/entry/DatingProfileScreen.tsx:handleBack`
+- `src/features/dating/profile/DatingProfileForm.tsx`
+- `src/app/routes/dating.routes.tsx:DatingIntroRoute`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 리뷰 · CI 확인 후 병합
