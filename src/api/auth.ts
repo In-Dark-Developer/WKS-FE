@@ -11,7 +11,7 @@ import { kakaoLoginResultSchema, type KakaoLoginResult } from './schema/auth';
 
 export type { KakaoLoginResult } from './schema/auth';
 
-// 카카오 로그인·로그아웃 — docs/api/openapi.yaml `/auth/kakao`·`/auth/logout`(FE 가정 계약, PR #205).
+// 카카오 로그인·로그아웃 — docs/api/openapi.yaml `/auth/kakao`·`/auth/logout`(WKS-BE #91 로 확정, 쿠키 `wks_token`).
 // 세션은 백엔드가 Set-Cookie 로 심고 지운다. 이 파일은 토큰을 받지도 저장하지도 않는다 — 로그인 여부는 me.ts 가 판단한다.
 // `VITE_API_MOCK=true` 면 me.ts 의 목 계정을 켜고 끈다(results.ts 와 같은 규칙).
 const isMockEnabled = () => import.meta.env.VITE_API_MOCK === 'true';
