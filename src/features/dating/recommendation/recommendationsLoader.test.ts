@@ -181,3 +181,15 @@ test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는�
   expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(true);
   expect(listRequestsMock).toHaveBeenCalledWith('sent');
 });
+
+test('잔액을 못 읽으면 0 으로 두고 소모를 막는다 (FR-31)', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getWalletMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+
+  const state = await datingCardsLoader();
+
+  expect(state).toMatchObject({ kind: 'ready', view: { balance: 0 } });
+  // 카드는 그대로 보인다 — 잔액만 0 이다.
+  if (state.kind === 'ready') expect(state.view.candidates).toHaveLength(1);
+});
