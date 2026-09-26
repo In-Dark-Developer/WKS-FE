@@ -22,7 +22,7 @@ export type DatingCardsState =
 
 // 열렸는데 값이 아직 없는 항목(궁합 까닭 생성 실패 등)은 비용 0 의 잠금으로 둔다 — 다시 열면 백엔드가 차감 없이
 // 값만 다시 만든다(WKS-BE §10.4 · §10.5). 빈 값을 열린 것처럼 보이지 않는다.
-function toLockable<T extends string>(field: DatingLockableField): LockableField<T> {
+export function toLockable<T extends string>(field: DatingLockableField): LockableField<T> {
   if (field.locked) return { isLocked: true, cost: field.cost };
   if (field.value === null) return { isLocked: true, cost: 0 };
   // 이름·학과·까닭 문장은 백엔드가 준 문자열 그대로다 — T 는 부르는 쪽의 표시 타입이다.
@@ -30,7 +30,10 @@ function toLockable<T extends string>(field: DatingLockableField): LockableField
 }
 
 // 잠긴 사진은 흐린 썸네일만 받는다 — 원본 주소는 해금 뒤에만 온다(WKS-BE §10.4 `blurredPhotoUrl`).
-function toPhoto(field: DatingLockableField, blurredPhotoUrl: string | null): CandidatePhoto {
+export function toPhoto(
+  field: DatingLockableField,
+  blurredPhotoUrl: string | null,
+): CandidatePhoto {
   if (field.locked) return { isLocked: true, thumbnailUrl: blurredPhotoUrl, cost: field.cost };
   if (field.value === null) return { isLocked: true, thumbnailUrl: blurredPhotoUrl, cost: 0 };
   return { isLocked: false, url: field.value };
@@ -80,8 +83,15 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
   const balance = wallet.ok ? wallet.data.balance : 0;
   if (!wallet.ok) console.error('GET /wallet 실패', wallet.error);
   // 보낸 신청을 못 읽으면 모두 안 보낸 것으로 둔다 — 다시 보내면 백엔드가 409 로 막는다.
+  // 취소한 신청은 보내지 않은 것으로 본다 — 카드에 있는 상대면 다시 보낼 수 있다(WKS-BE §11.2).
   if (!sent.ok) console.error('GET /dating/requests?box=sent 실패', sent.error);
-  const sentIds = new Set(sent.ok ? sent.data.map((request) => request.candidateId) : []);
+  const sentIds = new Set(
+    sent.ok
+      ? sent.data
+          .filter((request) => request.status !== 'CANCELLED')
+          .map((request) => request.candidateId)
+      : [],
+  );
 
   return {
     kind: 'ready',

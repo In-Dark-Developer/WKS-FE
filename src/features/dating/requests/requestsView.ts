@@ -1,12 +1,12 @@
 import type { CandidatePhoto, LockableField } from '../recommendation/cardsView';
 
-// 요청함(SCR-20) 뷰 모델 — 응답 → 뷰 모델 변환은 연동 Task(11/T2)가 한다.
+// 요청함(SCR-20) 뷰 모델 — 응답 → 뷰 모델 변환은 requestsLoader 가 한다.
 // 상대 한 사람. 보낸 신청은 보내기 전에 연 항목만 열려 있고, 받은 신청은 해금 없이 전부 열려 온다(FR-30).
 export type RequestProfileView = {
   id: string;
   // 추천 당시 순위 — 받은 신청은 null.
   rank: number | null;
-  // 궁합 점수 — 받은 신청에 보일지는 미정(Q17)이라 그동안 null 로 둔다.
+  // 궁합 점수 — 보낸·받은 신청 모두 보인다(Figma 109:2251). 퍼블리싱 미리보기는 null 로 숨길 수 있다.
   score: number | null;
   relationLabel: string;
   mbti: string;

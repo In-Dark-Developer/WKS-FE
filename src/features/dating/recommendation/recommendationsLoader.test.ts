@@ -182,6 +182,29 @@ test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는�
   expect(listRequestsMock).toHaveBeenCalledWith('sent');
 });
 
+test('취소한 신청의 상대 카드는 보내지 않은 것으로 보여 다시 보낼 수 있다', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+  listRequestsMock.mockResolvedValue({
+    ok: true,
+    data: [
+      {
+        requestId: '312f3185-f114-4db0-a2fb-54d0669b7e33',
+        candidateId: CANDIDATE_ID,
+        status: 'CANCELLED',
+        createdAt: '2026-09-24T12:00:00Z',
+        respondedAt: '2026-09-24T12:05:00Z',
+        contactMethod: null,
+        contactValue: null,
+      },
+    ],
+  });
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(false);
+});
+
 test('잔액을 못 읽으면 0 으로 두고 소모를 막는다 (FR-31)', async () => {
   vi.spyOn(console, 'error').mockImplementation(() => {});
   getWalletMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });

@@ -14,7 +14,7 @@ vi.mock('@/api/dating', async (importOriginal) => {
 });
 
 import type { DatingCandidate } from '@/api/dating';
-import type { DatingRequest } from '@/api/matchRequests';
+import type { DatingRequestListItem } from '@/api/matchRequests';
 
 import { datingRequestsLoader } from './requestsLoader';
 
@@ -35,7 +35,19 @@ const candidate: DatingCandidate = {
   },
 };
 
-function request(overrides: Partial<DatingRequest>): DatingRequest {
+const lockedCounterpart: DatingRequestListItem['counterpart'] = {
+  score: 87,
+  mbti: 'INFJ',
+  bio: '책 읽는 걸 좋아해요.',
+  blurredPhotoUrl: null,
+  fields: {
+    photo: { locked: true, cost: 10 },
+    name: { locked: false, value: '박지훈' },
+    department: { locked: true, cost: 5 },
+  },
+};
+
+function request(overrides: Partial<DatingRequestListItem>): DatingRequestListItem {
   return {
     requestId: crypto.randomUUID(),
     candidateId: CANDIDATE_ID,
@@ -44,6 +56,7 @@ function request(overrides: Partial<DatingRequest>): DatingRequest {
     respondedAt: null,
     contactMethod: null,
     contactValue: null,
+    counterpart: lockedCounterpart,
     ...overrides,
   };
 }
@@ -54,17 +67,26 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-test('보낸 신청은 지금 카드의 상대로 채우고, 거절은 매칭 실패·수락은 연락처와 성립으로 보인다', async () => {
+test('보낸 신청은 counterpart 로 채우고, 거절은 매칭 실패·수락은 연락처와 성립·취소는 목록에서 뺀다', async () => {
   const pending = request({});
   const accepted = request({
     candidateId: crypto.randomUUID(),
     status: 'ACCEPTED',
     contactMethod: 'PHONE',
     contactValue: '010-3333-3333',
+    counterpart: {
+      ...lockedCounterpart,
+      score: 71,
+      fields: { ...lockedCounterpart.fields, name: { locked: true, cost: 7 } },
+    },
   });
   const rejected = request({ candidateId: crypto.randomUUID(), status: 'REJECTED' });
+  const cancelled = request({ candidateId: crypto.randomUUID(), status: 'CANCELLED' });
   listMock.mockImplementation((box: string) =>
-    Promise.resolve({ ok: true, data: box === 'sent' ? [pending, accepted, rejected] : [] }),
+    Promise.resolve({
+      ok: true,
+      data: box === 'sent' ? [pending, accepted, rejected, cancelled] : [],
+    }),
   );
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [candidate] } });
 
@@ -79,17 +101,33 @@ test('보낸 신청은 지금 카드의 상대로 채우고, 거절은 매칭 �
   });
   expect(view.sent[1]).toMatchObject({
     status: 'MATCHED',
+    rank: null,
+    score: 71,
+    relationLabel: '보낸 인연',
     contact: { method: 'PHONE', value: '010-3333-3333' },
-    name: { isLocked: true },
+    name: { isLocked: true, cost: 7 },
+    reason: { isLocked: true, cost: 0 },
   });
   expect(view.sent[2]).toMatchObject({ status: 'FAILED', contact: null });
+  expect(view.sent).toHaveLength(3);
 });
 
-test('받은 신청은 프로필 없이 가린 채 상태와 연락처만 옮긴다 — 백엔드가 프로필을 주지 않는다', async () => {
+test('받은 신청은 counterpart 의 열린 프로필과 궁합 점수를 보인다 (FR-30)', async () => {
   const received = request({
     status: 'ACCEPTED',
     contactMethod: 'INSTAGRAM',
     contactValue: 'fate',
+    counterpart: {
+      score: 92,
+      mbti: 'ISTJ',
+      bio: '같이 부스 구경해요.',
+      blurredPhotoUrl: 'https://s3.example.com/blurred',
+      fields: {
+        photo: { locked: false, value: 'https://s3.example.com/original' },
+        name: { locked: false, value: '김운명' },
+        department: { locked: false, value: '국어국문학과' },
+      },
+    },
   });
   listMock.mockImplementation((box: string) =>
     Promise.resolve({ ok: true, data: box === 'received' ? [received] : [] }),
@@ -102,9 +140,14 @@ test('받은 신청은 프로필 없이 가린 채 상태와 연락처만 옮긴
     expect.objectContaining({
       id: received.requestId,
       status: 'MATCHED',
-      score: null,
+      rank: null,
+      score: 92,
+      relationLabel: '나를 찾아온 인연',
       contact: { method: 'INSTAGRAM', value: 'fate' },
-      name: { isLocked: true, cost: 0 },
+      photo: { isLocked: false, url: 'https://s3.example.com/original' },
+      name: { isLocked: false, value: '김운명' },
+      department: { isLocked: false, value: '국어국문학과' },
+      reason: { isLocked: true, cost: 0 },
     }),
   ]);
 });

@@ -1,8 +1,8 @@
 import { getRecommendations, type DatingCandidate } from '@/api/dating';
-import { listDatingRequests, type DatingRequest } from '@/api/matchRequests';
+import { listDatingRequests, type DatingRequestListItem } from '@/api/matchRequests';
 
-import { relationLabelByRank } from '../recommendation/cardsView';
-import { toCandidateView } from '../recommendation/recommendationsLoader';
+import { relationLabelByRank, type CandidateRank } from '../recommendation/cardsView';
+import { toLockable, toPhoto } from '../recommendation/recommendationsLoader';
 import type {
   ContactView,
   ReceivedRequestView,
@@ -11,32 +11,46 @@ import type {
   SentRequestView,
 } from './requestsView';
 
-// 백엔드 요청 목록에는 상대 프로필이 없다(WKS-BE api-spec §11 — `candidateId`·상태·연락처뿐). 프로필을 모르는
-// 상대는 모두 가린 채 그린다 — 받은 신청은 '해금 없이 전부 공개'(FR-30)가 목표지만 값이 오지 않는다(백엔드 문의 중).
-function hiddenProfile(id: string, relationLabel: string): RequestProfileView {
+type ListedRequest = DatingRequestListItem & { status: 'PENDING' | 'ACCEPTED' | 'REJECTED' };
+
+// 상대 프로필은 목록 행의 `counterpart` 에서 온다(WKS-BE §11.1). 받은 신청은 사진·이름·학과가 실 없이 열려 오고,
+// 보낸 신청은 카드에서 연 만큼만 열려 온다. 궁합 까닭은 목록에 없어 지금 카드에 있는 상대만 그 카드 값을 쓴다.
+function toProfile(
+  request: ListedRequest,
+  relationLabel: string,
+  candidate: DatingCandidate | undefined,
+): RequestProfileView {
+  const { counterpart } = request;
+  const rank = candidate === undefined ? null : (candidate.rank as CandidateRank);
   return {
-    id,
-    rank: null,
-    score: null,
-    relationLabel,
-    mbti: '',
-    bio: '',
-    photo: { isLocked: true, thumbnailUrl: null, cost: 0 },
-    name: { isLocked: true, cost: 0 },
-    department: { isLocked: true, cost: 0 },
-    reason: { isLocked: true, cost: 0 },
+    id: request.requestId,
+    rank,
+    score: counterpart.score,
+    relationLabel: rank === null ? relationLabel : relationLabelByRank[rank],
+    mbti: counterpart.mbti,
+    bio: counterpart.bio,
+    photo: toPhoto(counterpart.fields.photo, counterpart.blurredPhotoUrl ?? null),
+    name: toLockable(counterpart.fields.name),
+    department: toLockable(counterpart.fields.department),
+    reason:
+      candidate === undefined ? { isLocked: true, cost: 0 } : toLockable(candidate.fields.reason),
   };
 }
 
-function toContact(request: DatingRequest): ContactView | null {
+function toContact(request: ListedRequest): ContactView | null {
   return request.contactMethod !== null && request.contactValue !== null
     ? { method: request.contactMethod, value: request.contactValue }
     : null;
 }
 
-// 보낸 신청 — 지금 Top 3 카드에 있는 상대면 그 카드의 값(보내기 전에 연 항목만 열림)을 쓴다. 거절은 '매칭 실패'다.
+// 취소한 신청은 요청함에 보이지 않는다 — 백엔드는 보낸 목록에 이력으로 남기지만 화면은 뺀다.
+function isListed(request: DatingRequestListItem): request is ListedRequest {
+  return request.status !== 'CANCELLED';
+}
+
+// 보낸 신청 — 거절은 '매칭 실패'다. 지금 Top 3 카드에 있는 상대면 순위와 궁합 까닭을 그 카드에서 가져온다.
 export function toSentRequestView(
-  request: DatingRequest,
+  request: ListedRequest,
   candidate: DatingCandidate | undefined,
 ): SentRequestView {
   const status =
@@ -45,18 +59,11 @@ export function toSentRequestView(
       : request.status === 'REJECTED'
         ? 'FAILED'
         : 'PENDING';
-  const base: RequestProfileView =
-    candidate === undefined
-      ? hiddenProfile(request.requestId, '보낸 인연')
-      : {
-          ...toCandidateView(candidate),
-          id: request.requestId,
-          relationLabel: relationLabelByRank[candidate.rank as 1 | 2 | 3],
-        };
-  return { ...base, status, contact: toContact(request) };
+  return { ...toProfile(request, '보낸 인연', candidate), status, contact: toContact(request) };
 }
 
-export function toReceivedRequestView(request: DatingRequest): ReceivedRequestView {
+// 받은 신청 — 궁합 점수도 보인다(Figma 보관함/나에게보낸사람 109:2251 · 109:2498).
+export function toReceivedRequestView(request: ListedRequest): ReceivedRequestView {
   const status =
     request.status === 'ACCEPTED'
       ? 'MATCHED'
@@ -64,13 +71,13 @@ export function toReceivedRequestView(request: DatingRequest): ReceivedRequestVi
         ? 'DECLINED'
         : 'PENDING';
   return {
-    ...hiddenProfile(request.requestId, '나를 찾아온 인연'),
+    ...toProfile(request, '나를 찾아온 인연', undefined),
     status,
     contact: toContact(request),
   };
 }
 
-// `/dating/requests` loader — 보낸·받은 신청과, 보낸 상대의 카드를 채우려고 지금 추천을 함께 읽는다.
+// `/dating/requests` loader — 보낸·받은 신청과, 보낸 상대의 순위·까닭을 채우려고 지금 추천을 함께 읽는다.
 // requireDatingProfile 이 로그인·프로필을 먼저 확인한다.
 export async function datingRequestsLoader(): Promise<RequestInboxView> {
   const [sent, received, recommendations] = await Promise.all([
@@ -86,15 +93,15 @@ export async function datingRequestsLoader(): Promise<RequestInboxView> {
     );
     throw new Response('요청함을 불러오지 못했다', { status: 503 });
   }
-  // 추천을 못 읽어도 요청함은 연다 — 보낸 상대가 가려져 보일 뿐이다.
+  // 추천을 못 읽어도 요청함은 연다 — 보낸 상대의 순위·까닭이 빠질 뿐이다.
   const candidates = recommendations.ok ? recommendations.data.candidates : [];
   return {
-    sent: sent.data.map((request) =>
+    sent: sent.data.filter(isListed).map((request) =>
       toSentRequestView(
         request,
         candidates.find((candidate) => candidate.candidateId === request.candidateId),
       ),
     ),
-    received: received.data.map(toReceivedRequestView),
+    received: received.data.filter(isListed).map(toReceivedRequestView),
   };
 }
