@@ -21,12 +21,7 @@ vi.mock('@/api/dating', async (importOriginal) => {
 
 import type { DatingCandidate } from '@/api/dating';
 
-import {
-  datingCardsLoader,
-  toBirthYearLabel,
-  toCandidateView,
-  toRerollView,
-} from './recommendationsLoader';
+import { datingCardsLoader, toCandidateView, toRerollView } from './recommendationsLoader';
 
 const CANDIDATE_ID = '3f2a9c1e-0000-4000-8000-000000000001';
 
@@ -227,8 +222,8 @@ test('잔액을 못 읽으면 0 으로 두고 소모를 막는다 (FR-31)', asyn
   if (state.kind === 'ready') expect(state.view.candidates).toHaveLength(1);
 });
 
-test('생년월일은 연도 두 자리 년생으로 바꾸고, 없으면 나이 칸을 숨긴다', () => {
-  expect(toBirthYearLabel('2002-03-14')).toBe('02년생');
-  expect(toBirthYearLabel(null)).toBeNull();
-  expect(toBirthYearLabel(undefined)).toBeNull();
+test('나이는 서버 문구(03년생) 그대로 옮기고, 없으면 나이 칸을 숨긴다', () => {
+  expect(toCandidateView({ ...locked, age: '03년생' }).birthYear).toBe('03년생');
+  expect(toCandidateView({ ...locked, age: null }).birthYear).toBeNull();
+  expect(toCandidateView(locked).birthYear).toBeNull();
 });

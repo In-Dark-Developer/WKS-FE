@@ -28,8 +28,8 @@ export type DatingRequest = z.infer<typeof datingRequestSchema>;
 export const datingRequestCounterpartSchema = z.object({
   score: z.number().int().min(0).max(100),
   mbti: z.string(),
-  // 생년월일 — 추천 카드와 같다(dating.ts `age`). 없을 수 있다.
-  age: z.iso.date().nullish(),
+  // 나이 표시 문구 — 추천 카드와 같다(dating.ts `age`). 없을 수 있다.
+  age: z.string().nullish(),
   bio: z.string(),
   blurredPhotoUrl: z.url().nullish(),
   fields: z.object({
