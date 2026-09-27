@@ -16,7 +16,8 @@ export type RequestProfileView = {
   photo: CandidatePhoto;
   name: LockableField<string>;
   department: LockableField<string>;
-  reason: LockableField<string>;
+  // 궁합 까닭 — 요청 목록에는 없어(WKS-BE §11.1) 지금 Top 3 카드에 있는 상대만 그 카드 값을 쓴다. 모르면 null.
+  reason: LockableField<string> | null;
   // 매칭이 성립했을 때만 — 상대가 등록한 연락 수단 하나(FR-30 · NFR-4).
   contact?: ContactView | null;
 };

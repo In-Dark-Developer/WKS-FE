@@ -37,3 +37,17 @@ test('해금은 됐는데 값이 아직 없는 항목은 0개가 아니라 다�
   expect(screen.getByRole('button', { name: /이름 7개로 열기/ })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /0개로 열기/ })).not.toBeInTheDocument();
 });
+
+test('궁합 이유를 모르는 상대는 흐리게 가리지 않고 없음 안내를 보인다 (11/T9)', () => {
+  render(
+    <CandidateBack
+      department={{ isLocked: false, value: '경영학과' }}
+      name={{ isLocked: false, value: '이서연' }}
+      photo={photo}
+      reason={null}
+    />,
+  );
+
+  expect(screen.getByText('궁합 이유는 오늘의 인연 카드에서만 볼 수 있어요.')).toBeInTheDocument();
+  expect(screen.queryByText(/잠겨 있어요/)).not.toBeInTheDocument();
+});

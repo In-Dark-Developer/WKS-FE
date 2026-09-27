@@ -106,7 +106,7 @@ test('보낸 신청은 counterpart 로 채우고, 거절은 매칭 실패·수�
     relationLabel: '보낸 인연',
     contact: { method: 'PHONE', value: '010-3333-3333' },
     name: { isLocked: true, cost: 7 },
-    reason: { isLocked: true, cost: 0 },
+    reason: null,
   });
   expect(view.sent[2]).toMatchObject({ status: 'FAILED', contact: null });
   expect(view.sent).toHaveLength(3);
@@ -147,7 +147,7 @@ test('받은 신청은 counterpart 의 열린 프로필과 궁합 점수를 보�
       photo: { isLocked: false, url: 'https://s3.example.com/original' },
       name: { isLocked: false, value: '김운명' },
       department: { isLocked: false, value: '국어국문학과' },
-      reason: { isLocked: true, cost: 0 },
+      reason: null,
     }),
   ]);
 });
