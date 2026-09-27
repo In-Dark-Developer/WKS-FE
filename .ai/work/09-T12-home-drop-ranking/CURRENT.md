@@ -21,7 +21,7 @@ T12. 홈에서 친구 궁합 순위 제거
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
