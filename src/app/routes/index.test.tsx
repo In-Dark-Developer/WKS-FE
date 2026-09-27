@@ -8,13 +8,19 @@ import { writeSession } from '@/api/session';
 import { routes } from '@/app/routes';
 
 // getResult 는 src/api/ 경계 — 라우트 조립만 확인하니 실제 요청을 보내지 않는다 (CONVENTIONS 8장).
-const { getResultMock, createResultMock } = vi.hoisted(() => ({
+const { getResultMock, createResultMock, getMyResultMock } = vi.hoisted(() => ({
   getResultMock: vi.fn(),
   createResultMock: vi.fn(),
+  getMyResultMock: vi.fn(),
 }));
 vi.mock('@/api/results', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/results')>();
-  return { ...actual, getResult: getResultMock, createResult: createResultMock };
+  return {
+    ...actual,
+    getResult: getResultMock,
+    createResult: createResultMock,
+    getMyResult: getMyResultMock,
+  };
 });
 const { getCompatibilityReasonMock } = vi.hoisted(() => ({
   getCompatibilityReasonMock: vi.fn(),
@@ -90,6 +96,7 @@ afterEach(() => {
   sessionStorage.clear();
   getResultMock.mockReset();
   createResultMock.mockReset();
+  getMyResultMock.mockReset();
   getSharedResultMock.mockReset();
   createCompatibilityMock.mockReset();
   getCompatibilityReasonMock.mockReset();
@@ -166,6 +173,44 @@ test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 �
 
   await screen.findByRole('navigation', { name: '주요 메뉴' });
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
+test("로그인했는데 이 브라우저에 결과가 없으면 티저가 계정 결과를 복원해 '내 사주 보기'가 결과로 간다", async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  // 실제 getMyResult 는 받은 resultId 를 세션에 보관한다 — 목도 같게 둔다.
+  getMyResultMock.mockImplementation(() => {
+    writeSession(RESULT_ID);
+    return Promise.resolve({ ok: true, data: stubResult });
+  });
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+  const router = await renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
+
+  await screen.findByRole('navigation', { name: '주요 메뉴' });
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
+test('이 브라우저에 결과가 있거나 계정에 결과가 없으면 티저가 계정 결과를 부르지 않는다', async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: false }));
+  await renderTeaser();
+  cleanup();
+
+  writeSession(OTHER_RESULT_ID);
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  await renderTeaser();
+
+  expect(getMyResultMock).not.toHaveBeenCalled();
+});
+
+test("계정 결과를 불러오지 못해도 티저는 뜨고 '내 사주 보기'는 사주 입력으로 간다", async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  getMyResultMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  const router = await renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
+
+  expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/saju');
 });
 
 test("티저의 '새로운 인연 찾기'는 소개팅 인트로로 간다", async () => {
