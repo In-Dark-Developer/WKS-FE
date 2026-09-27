@@ -10,6 +10,8 @@ export type RequestProfileView = {
   score: number | null;
   relationLabel: string;
   mbti: string;
+  // 나이 — '02년생'. 없으면 칸을 숨긴다.
+  birthYear?: string | null;
   bio: string;
   photo: CandidatePhoto;
   name: LockableField<string>;

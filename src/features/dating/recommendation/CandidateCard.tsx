@@ -28,6 +28,7 @@ export function CandidateCard({ candidate, onOpenUnlock, initialFace }: Props) {
       front={
         <CandidateFront
           bio={candidate.bio}
+          birthYear={candidate.birthYear}
           mbti={candidate.mbti}
           rank={candidate.rank}
           relationLabel={relationLabelByRank[candidate.rank]}
