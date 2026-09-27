@@ -6,7 +6,8 @@ const { getWalletMock, getRecommendationsMock } = vi.hoisted(() => ({
 }));
 vi.mock('@/api/wallet', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/wallet')>();
-  return { ...actual, getWallet: getWalletMock };
+  // 접속 출석은 네트워크를 타지 않게 끝난 것으로 둔다.
+  return { ...actual, getWallet: getWalletMock, ensureDailyCheckIn: () => Promise.resolve() };
 });
 const { listRequestsMock } = vi.hoisted(() => ({ listRequestsMock: vi.fn() }));
 vi.mock('@/api/matchRequests', async (importOriginal) => {
@@ -115,7 +116,7 @@ test('후보가 0명이면 빈 목록으로 그린다 (FR-26)', async () => {
 
   expect(state).toEqual({
     kind: 'ready',
-    view: { balance: 0, candidates: [], reroll: { kind: 'free' } },
+    view: { balance: 0, checkedInToday: false, candidates: [], reroll: { kind: 'free' } },
   });
 });
 

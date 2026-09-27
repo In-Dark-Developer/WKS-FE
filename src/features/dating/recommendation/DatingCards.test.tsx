@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import type { CandidateRank, DatingCardsView, MatchCandidateView } from './cardsView';
@@ -25,6 +25,7 @@ function candidate(id: string, rank: CandidateRank): MatchCandidateView {
 
 const view: DatingCardsView = {
   balance: 12,
+  checkedInToday: true,
   candidates: [candidate('c1', 1), candidate('c2', 2), candidate('c3', 3)],
   reroll: { kind: 'free' },
 };
@@ -88,5 +89,28 @@ test('유료 리롤은 비용을 보이고, 잔액이 모자라면 막는다', (
   fireEvent.click(screen.getByRole('button', { name: '자정까지 기다릴게요' }));
 
   expect(onReroll).not.toHaveBeenCalled();
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법은 지급 완료로 보인다', () => {
+  render(
+    <DatingCards
+      onOpenRequests={vi.fn()}
+      onOpenUnlock={vi.fn()}
+      onReroll={vi.fn()}
+      onSendThread={vi.fn()}
+      view={{ ...view, checkedInToday: false }}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: /획득 방법 보기/ }));
+
+  const dialog = screen.getByRole('dialog', { name: '운명의 실 획득 방법' });
+  expect(within(dialog).getByText('12개')).toBeInTheDocument();
+  // 기본 지급만 받았고 출석은 아직이다.
+  expect(within(dialog).getAllByText('지급 완료')).toHaveLength(1);
+  expect(within(dialog).getByText('5')).toBeInTheDocument();
+
+  fireEvent.click(within(dialog).getByRole('button', { name: '닫기' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

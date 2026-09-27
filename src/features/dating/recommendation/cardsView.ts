@@ -37,6 +37,8 @@ export type RerollView = { kind: 'free' } | { kind: 'paid'; cost: number; canAff
 
 export type DatingCardsView = {
   balance: number;
+  // 오늘 출석 지급을 받았는지(`GET /wallet` canCheckInToday 의 반대) — 재화 안내 모달이 '지급 완료'로 보인다.
+  checkedInToday: boolean;
   candidates: readonly MatchCandidateView[];
   reroll: RerollView;
 };
