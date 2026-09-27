@@ -236,13 +236,14 @@ test('이 브라우저가 만든 결과면 결과 화면에 머문다', async ()
   ).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
   expect(screen.getByRole('main')).toHaveAttribute('data-backdrop', 'result');
-  // 친구 궁합 순위(05/T2 FriendRanking)가 ranking 슬롯에 조립돼 있다 — 인연이 없을 때 안내.
-  expect(screen.getByText('아직 인연이 없어요')).toBeInTheDocument();
+  // 친구 궁합 순위·친구에게 공유는 홈에 없다 — 궁합지도가 갖는다(09/T12, Figma 8:794).
+  expect(screen.queryByText('아직 인연이 없어요')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '친구에게 공유' })).not.toBeInTheDocument();
   // 뒤로가기는 친구의 궁합 지도에서 들어왔을 때만 있다 (FR-6).
   expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
 });
 
-test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () => {
+test('궁합 목록이 있어도 홈에는 친구 궁합 순위가 없다 (09/T12)', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: true,
@@ -256,13 +257,16 @@ test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () =>
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  expect(await screen.findByText('친구1')).toBeInTheDocument();
-  expect(screen.getByText('92')).toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('친구1')).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: '지도 보기 >' })).not.toBeInTheDocument();
 });
 
 // 05/T3 조립 — 궁합 지도(`/me/map`)와 결과 화면 순위의 '지도 보기'.
 
-test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서 친구가 점수 높은 순으로 보인다', async () => {
+test('궁합 지도에는 친구가 점수 높은 순으로 보인다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: true,
@@ -275,8 +279,7 @@ test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서
     },
   });
 
-  const router = renderAt(`/reading/${RESULT_ID}`);
-  fireEvent.click(await screen.findByRole('link', { name: '지도 보기 >' }));
+  const router = renderAt('/me/map');
 
   expect(
     await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
@@ -383,37 +386,6 @@ test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·카드 �
   // 카드 저장은 앞면 오른쪽 아래 아이콘이다(09/T11).
   expect(screen.getByRole('button', { name: '카드 저장하기' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'SS 등급' })).toBeInTheDocument();
-});
-
-test('친구 궁합 순위가 비어 있으면 안내 아래에 친구에게 공유가 있다', async () => {
-  writeSession(RESULT_ID);
-  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
-
-  renderAt(`/reading/${RESULT_ID}`);
-
-  const empty = (await screen.findByText('아직 인연이 없어요')).closest('[role="status"]');
-  if (!(empty instanceof HTMLElement)) throw new Error('빈 상태 안내가 없다');
-  expect(within(empty).getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
-});
-
-test('친구 궁합 순위가 있어도 목록 아래에 친구에게 공유가 있다', async () => {
-  writeSession(RESULT_ID);
-  getResultMock.mockResolvedValue({
-    ok: true,
-    data: {
-      ...stubResult,
-      compatibilities: [
-        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T02:00:00Z' },
-      ],
-    },
-  });
-
-  renderAt(`/reading/${RESULT_ID}`);
-
-  expect(await screen.findByText('친구1')).toBeInTheDocument();
-  const ranking = screen.getByRole('region', { name: '친구 궁합 순위' });
-  expect(within(ranking).getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
-  expect(within(ranking).queryByRole('status')).not.toBeInTheDocument();
 });
 
 test('없어진 인연카드 주소는 없는 경로 화면이다', async () => {

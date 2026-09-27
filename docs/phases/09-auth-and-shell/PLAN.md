@@ -69,7 +69,7 @@ QA(2026-09-27, Notion 「🩺 QA / 디자인」) — 홈·네비 항목을 원�
 
 - [x] T11. 카드 저장을 카드 안 아이콘으로 — Done when: 홈(SCR-04) 운명 카드 아래의 '카드 저장하기' 버튼이 없어지고, 카드 앞면 오른쪽 아래의 다운로드 아이콘(Figma `58:2523`, 24×24)을 누르면 지금과 같은 카드 이미지 저장(FR-5, Web Share 파일 → 저장 폴백 FR-16)이 일어나며, 카드 뒷면에서는 아이콘이 보이지 않고, 아이콘에 접근 가능한 이름('카드 저장하기')이 있다 · Touches: `src/features/share/card/`, `src/ui/DestinyCard.tsx`, `src/app/screens/HomeScreen.tsx` · Owner: 이정진 · FR: FR-5 (QA: 카드 저장하기 버튼 → 카드 내 아이콘으로) (commit c1f1ff0)
 
-- [ ] T12. 홈에서 친구 궁합 순위 제거 — Done when: 홈(SCR-04)에 친구 궁합 순위 영역(순위 3명·'지도 보기 >'·'친구에게 공유')이 보이지 않고 Figma `8:794` 처럼 운세 영역에서 끝나며, 순위와 공유는 궁합지도(`/me/map`)에서 그대로 쓸 수 있다. 홈에서 공유 입구가 사라지므로 PRD FR-4 의 결과 화면 공유 위치 문구는 spec 후속으로 고친다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx` · Owner: 이정진 · FR: FR-4, FR-19 (QA: 친구 궁합 순위 홈에서는 사라짐)
+- [x] T12. 홈에서 친구 궁합 순위 제거 — Done when: 홈(SCR-04)에 친구 궁합 순위 영역(순위 3명·'지도 보기 >'·'친구에게 공유')이 보이지 않고 Figma `8:794` 처럼 운세 영역에서 끝나며, 순위와 공유는 궁합지도(`/me/map`)에서 그대로 쓸 수 있다. 홈에서 공유 입구가 사라지므로 PRD FR-4 의 결과 화면 공유 위치 문구는 spec 후속으로 고친다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx` · Owner: 이정진 · FR: FR-4, FR-19 (QA: 친구 궁합 순위 홈에서는 사라짐) (commit 5bf7964)
 
 - [ ] T13. 홈에서 그랜드 오픈 사전신청 섹션 제거 — Done when: 홈 맨 아래의 'GRAND OPEN !! 09월 29일' 사전신청 섹션(`PreRegisterTeaser`, 873:4155)과 그 모달 진입이 홈에서 보이지 않는다. 더는 쓰이지 않는 사전신청 화면·폰트(Cafe24 PRO Slim Max)를 지울지는 이 Task 에서 정하고, PRD FR-9 는 spec 후속으로 V1 에서 뺀다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx`, `src/features/profile/`, `src/app/routes/` · Owner: 이정진 · FR: FR-9 (QA: 그랜드 오픈 없애기)
 
