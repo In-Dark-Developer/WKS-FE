@@ -104,6 +104,21 @@ test('(2/2) 연락 수단에 따라 전화번호·인스타그램 아이디 규�
   expect(instagram).toMatchObject({ success: true, data: { contactValue: 'moon.rabbit' } });
 });
 
+test('(2/2) 이메일은 @dgu.ac.kr 학교 메일만 받는다 — 대소문자는 가리지 않는다', () => {
+  expect(validateDetailsStep({ ...validDetails, email: 'chaewon@gmail.com' })).toMatchObject({
+    fieldErrors: { email: profileErrorMessages.emailDomain },
+  });
+  expect(
+    validateDetailsStep({ ...validDetails, email: 'chaewon@mail.dgu.ac.kr.evil.com' }),
+  ).toMatchObject({
+    fieldErrors: { email: profileErrorMessages.emailDomain },
+  });
+  expect(validateDetailsStep({ ...validDetails, email: ' Chaewon@DGU.AC.KR ' })).toMatchObject({
+    success: true,
+    data: { email: 'Chaewon@DGU.AC.KR' },
+  });
+});
+
 test('(2/2) 학과는 14자, 자기소개는 170자를 넘으면 막는다', () => {
   const result = validateDetailsStep({
     ...validDetails,

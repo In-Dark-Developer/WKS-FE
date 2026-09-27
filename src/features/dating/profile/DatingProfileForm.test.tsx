@@ -109,3 +109,44 @@ test('연결에 실패하면 입력값을 둔 채 안내를 보인다', () => {
   expect(screen.getByRole('alert')).toHaveTextContent('연결이 원활하지 않아요');
   expect(screen.getByRole('textbox', { name: '이름' })).toHaveValue('김채원');
 });
+
+test('학교 메일이 아니면 제출하지 않고 메일 칸에 도메인 오류를 보인다', () => {
+  const onSubmit = vi.fn();
+  render(
+    <StepHost
+      initialStep={2}
+      initialValues={{ saju: validSaju, details: { ...validDetails, email: 'me@gmail.com' } }}
+      onPhotoSelect={vi.fn()}
+      onSubmit={onSubmit}
+      photo={uploaded}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: '내 운명 찾아 떠나기' }));
+
+  expect(onSubmit).not.toHaveBeenCalled();
+  expect(screen.getByText(profileErrorMessages.emailDomain)).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '인증' })).toBeNull();
+});
+
+test('(이후 버전) 메일 인증 요청에는 (2/2) 의 지금 메일 값을 앞뒤 공백 없이 싣는다', () => {
+  const onSendCode = vi.fn();
+  const onVerifyCode = vi.fn();
+  render(
+    <StepHost
+      emailVerification={{ view: { status: 'sent' }, onSendCode, onVerifyCode }}
+      initialStep={2}
+      initialValues={{ saju: validSaju, details: { ...validDetails, email: ' me@dgu.ac.kr ' } }}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: '재발송' }));
+  fireEvent.change(screen.getByLabelText('인증 코드'), { target: { value: '654321' } });
+  fireEvent.click(screen.getByRole('button', { name: '확인' }));
+
+  expect(onSendCode).toHaveBeenCalledWith('me@dgu.ac.kr');
+  expect(onVerifyCode).toHaveBeenCalledWith('me@dgu.ac.kr', '654321');
+});
