@@ -21,21 +21,19 @@ T6. 협업 링크 실 지급
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. api: 로그인 응답의 `rewardGranted` 를 한 번만 꺼내 쓰는 보관소(`src/api/rewards.ts`) ←
-- 2. feature: 지급 모달(SCR-23 1.2) — 지급량·보유 수, 닫으면 다시 뜨지 않는다
-- 3. route: 소개팅 진입에서 대기 중인 지급이 있으면 띄운다 · 잔액은 `/wallet` 을 다시 읽는다
-- 4. test/typecheck/lint · 커밋 · `--ready`
+- 1~4 완료 (commit 102128c) — 보관소 · SCR-23 모달 · 소개팅 레이아웃에서 한 번만 · 검증
+- 5. `--ready` → PR ←
 - 보류: `ref` 를 로그인 요청에 싣는 일은 09/T2(features/auth, 이정진)가 넘긴다 — 지금은 `ref: null`
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`832b007`
+`102128c`
 
 ## Relevant Documents
 
@@ -50,4 +48,4 @@ IN_PROGRESS
 
 ## Next Action
 
-Progress 1 — 지급 보관소.
+`ai-end.sh --ready` 로 PR 초안.
