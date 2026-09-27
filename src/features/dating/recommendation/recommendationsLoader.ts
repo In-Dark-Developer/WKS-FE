@@ -13,8 +13,7 @@ import {
 } from './cardsView';
 
 // 리롤 비용(FR-27)은 서버가 판정한다 — 추천 응답의 `rerollCost` 가 0 이면 오늘 무료가 남은 것이고,
-// 아니면 그 값만큼 든다(WKS-BE §10.4, 하루 1회 무료 뒤 5실). 화면은 이 값을 옮기기만 한다.
-// PRD FR-27 은 '실 3' 이라고 적지만 확정값은 5 다 — 문구를 고치는 일은 spec 스트림 몫이다.
+// 아니면 그 값만큼 든다(WKS-BE §10.4, 하루 1회 무료 뒤 20실). 화면은 이 값을 옮기기만 한다.
 
 export type DatingCardsState =
   | { kind: 'ready'; view: DatingCardsView }

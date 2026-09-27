@@ -551,7 +551,7 @@ paths:
     post:
       operationId: rerollDatingRecommendations
       summary: (V1) 다른 인연 만나보기 — 카드 셋을 통째로 바꾼다 (FR-27)
-      description: "요청 바디가 없다. 지금 카드를 전부 내리고 한 번도 나온 적 없는 후보 중 점수 순으로 최대 3명을 새로 뽑는다 — 내려간 후보는 다시 추천되지 않고, 해금 상태와 보낸 요청은 그대로 남는다. **비용은 KST 하루 1회 무료, 이후 회당 5실**이고 무료분은 자정에 다시 생긴다. **서버가 연타를 막지 않으므로 요청 중에는 화면이 버튼을 막아야 한다.** WKS-BE api-spec.md §10.4.1 (dev 867c30f, 2026-09-27)."
+      description: "요청 바디가 없다. 지금 카드를 전부 내리고 한 번도 나온 적 없는 후보 중 점수 순으로 최대 3명을 새로 뽑는다 — 내려간 후보는 다시 추천되지 않고, 해금 상태와 보낸 요청은 그대로 남는다. **비용은 KST 하루 1회 무료, 이후 회당 20실**이고 무료분은 자정에 다시 생긴다. **서버가 연타를 막지 않으므로 요청 중에는 화면이 버튼을 막아야 한다.** WKS-BE api-spec.md §10.4.1 (dev 867c30f, 2026-09-27)."
       tags: [dating]
       security: [{ cookieAuth: [] }]
       responses:
@@ -571,7 +571,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
         "402":
-          description: "INSUFFICIENT_THREAD — 무료분을 썼고 잔액이 5 미만이다. 차감도 카드 변경도 없다"
+          description: "INSUFFICIENT_THREAD — 무료분을 썼고 잔액이 비용보다 적다. 차감도 카드 변경도 없다"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -1341,7 +1341,7 @@ components:
         rerollCost:
           type: integer
           minimum: 0
-          description: "지금 리롤하면 드는 실 — 오늘(KST) 무료가 남았으면 0, 다 썼으면 5. 버튼의 '무료'·'5실' 표시에 쓴다"
+          description: "지금 리롤하면 드는 실 — 오늘(KST) 무료가 남았으면 0, 다 썼으면 20(2026-09-28 확정). 화면은 이 값을 그대로 버튼에 넣는다 — 값을 박아 두지 않는다"
     DatingRerollResult:
       description: "리롤 결과 (WKS-BE §10.4.1). `rerollCost` 는 **다음** 리롤 비용이다"
       type: object
