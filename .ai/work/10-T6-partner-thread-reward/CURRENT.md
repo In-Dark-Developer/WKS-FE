@@ -26,8 +26,7 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1~4 완료 (commit 102128c) — 보관소 · SCR-23 모달 · 소개팅 레이아웃에서 한 번만 · 검증
-- 5. `--ready` → PR ←
+- 1~5 완료 (commit 102128c) — 보관소 · SCR-23 모달 · 소개팅 레이아웃 · 검증 · PR ←
 - 보류: `ref` 를 로그인 요청에 싣는 일은 09/T2(features/auth, 이정진)가 넘긴다 — 지금은 `ref: null`
 
 ## Last Checkpoint
