@@ -2,18 +2,18 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-28
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+세션 없는 로그인 사용자가 자기 계정 결과 주소(/reading/:id)로 들어오면 세션을 되살려 결과를 본다.
 
 ## Work Completed
 
-- 없음
+- requireSaju 를 async 로, 세션 없으면 restoreSessionFromAccount 후 판정 (ece0a8f)
 
 ## Work In Progress
 
@@ -21,23 +21,25 @@
 
 ## Files Changed
 
-- 없음
+- src/app/routes/guards.ts
+- src/app/routes/saju.routes.tsx
+- src/app/routes/index.test.tsx
 
 ## Decisions Made
 
-- 없음
+- 세션이 이미 있으면(다른 id 라도) 계정 결과로 덮지 않는다 — 이 브라우저 결과 보존
 
 ## Tests Executed
 
-- 없음
+- pnpm test · typecheck · lint
 
 ## Test Results
 
-- 없음
+- 633 통과
 
 ## Known Problems
 
-- 없음
+- /me/map 은 여전히 세션만 본다(requireMyResultId)
 
 ## Unverified Assumptions
 
