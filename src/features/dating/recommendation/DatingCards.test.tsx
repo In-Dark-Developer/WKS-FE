@@ -41,10 +41,10 @@ function renderCards(overrides: Partial<DatingCardsView> = {}) {
   return handlers;
 }
 
-test('상단에 실 잔액을 보이고 요청함을 연다', () => {
+test('상단에는 잔액을 두지 않고 요청함을 연다', () => {
   const { onOpenRequests } = renderCards();
 
-  expect(screen.getByLabelText('운명의 실 보유 12개')).toBeInTheDocument();
+  expect(screen.queryByText('12개')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '요청함' }));
 
   expect(onOpenRequests).toHaveBeenCalledTimes(1);
@@ -103,7 +103,7 @@ test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법
     />,
   );
 
-  fireEvent.click(screen.getByRole('button', { name: /획득 방법 보기/ }));
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 획득 방법 보기' }));
 
   const dialog = screen.getByRole('dialog', { name: '운명의 실 획득 방법' });
   expect(within(dialog).getByText('12개')).toBeInTheDocument();

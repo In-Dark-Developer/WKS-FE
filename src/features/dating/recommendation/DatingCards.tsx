@@ -60,7 +60,6 @@ export function DatingCards({
     <div className="flex flex-col gap-20">
       <DatingBackdrop />
       <DatingHeader
-        balance={view.balance}
         onOpenRequests={onOpenRequests}
         onOpenThreadGuide={() => setThreadGuideOpen(true)}
       />
