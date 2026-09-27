@@ -20,7 +20,7 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 
 - 소개팅 인트로와 로그인·프로필 게이트 (FR-24)
 - 프로필 2단계 등록: (1/2) 사주 정보, (2/2) 이름·사진·학교 정보 (FR-25)
-- 학교(DGU) 메일 도메인 검사 — `@dgu.ac.kr` 만 통과, V1 은 인증 메일·코드 없음(코드 인증 UI 는 이후 버전용으로 남김) (FR-25, 2026-09-27 결정)
+- 학교(DGU) 메일 코드 인증 — 발송·6자리 코드 입력·재발송·완료 (FR-25, PRD Q20)
 - 재화 '실' 잔액 표시·획득·소모 (FR-31)
 - 사주 궁합 기준 오늘의 인연 Top 3 카드 (FR-26)
 - 추천 리롤 — 하루 1회 무료, 이후 실 5개 (FR-27 — 백엔드 확정값 2026-09-27, PRD 의 '실 3개' 정정은 spec 후속)
@@ -38,13 +38,14 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 - 백엔드: 프로필 등록, Top 3 추천(궁합 점수 기준), 리롤, 실 원장 API. `docs/api/openapi.yaml` 갱신이 T1 착수의 전제다.
 - Figma: 확정 디자인이 나왔다(2026-09-23, 인트로·프로필 `76-3402` · 메인/카드 `76-3401`) — 화면은 T4 가
   API 없이 먼저 퍼블리싱한다.
-- 백엔드: V1 은 학교 메일을 도메인(`@dgu.ac.kr`)만 확인한다(2026-09-27 소유자 결정) — 코드 인증 API(BE api-spec §10.7)는
-  이후 버전용으로 남기고, 프로필 등록의 403 DATING_NOT_VERIFIED 요구를 없애는 변경은 WKS-BE 반영 대기다. 그 전에는 실제 서버에서
-  등록이 403 이다.
+- 백엔드: 학교 메일 인증은 매직링크를 폐기하고 코드 방식으로 확정됐다(BE api-spec 10.7, 2026-09-26) —
+  `POST /api/dating/email-codes` · `POST /api/dating/email-codes/verify`, 재발송 60초 쿨다운 · 10분 만료 · 24시간 10회.
+  `docs/api/openapi.yaml` 에는 아직 없다 — T1 이 연결 전에 동기화한다.
+  인증을 마치지 않으면 추천 API 가 403 이므로 T5 → T1 연결이 실제 서버 확인의 선행이다.
 
 ## Tasks
 
-- [ ] T1. 소개팅 진입과 프로필 등록 — Done when: 비로그인 사용자에게 로그인을, 프로필이 없는 로그인 사용자에게 프로필 등록을 안내하고, 사주 정보(1/2)와 이름·사진·학교 정보(2/2) 두 단계가 각각 검증·오류·연결 실패 상태를 가지며, 등록을 마치면 추천 화면으로 넘어간다 · Touches: `src/features/dating/`, `src/app/routes/`, `src/api/`, `docs/api/openapi.yaml` · After: T4, T5 · Owner: 이동건 · FR: FR-24, FR-25
+- [ ] T1. 소개팅 진입과 프로필 등록 — Done when: 비로그인 사용자에게 로그인을, 프로필이 없는 로그인 사용자에게 프로필 등록을 안내하고, 사주 정보(1/2)와 이름·사진·학교 정보(2/2) 두 단계가 각각 검증·오류·연결 실패 상태를 가지며, (2/2)의 학교 메일은 코드 인증(발송·입력·재발송·완료)을 마쳐야 등록되며, 등록을 마치면 추천 화면으로 넘어간다 · Touches: `src/features/dating/`, `src/app/routes/`, `src/api/`, `docs/api/openapi.yaml` · After: T4, T5 · Owner: 이동건 · FR: FR-24, FR-25
 
 - [ ] T2. 재화 '실' — Done when: 잔액이 소개팅 화면 상단에 보이고, 획득(가입 10 · 출석 5 · 친구 1명당 3 · 제휴)과 소모가 잔액에 반영되며, 잔액이 모자라면 소모 동작이 막히고 안내가 뜬다. 원장은 백엔드가 갖고 화면은 계산하지 않는다 · Touches: `src/features/dating/`, `src/api/` · After: T1 · Owner: 이동건 · FR: FR-31
 
@@ -52,7 +53,7 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 
 - [x] T4. 소개팅 화면 퍼블리싱 — Done when: 인트로·프로필(`76-3402`)의 Intro 1.1(비로그인)·2.1(로그인)·1.1.1(카카오 로그인 시트)·사주입력폼 (1/2)·(2/2), 메인/카드(`76-3401`)의 카드 앞면·뒷면·인연x·리롤 바텀시트(무료 o·x)·상단 실 잔액이 feature 가 정한 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, 새 표현 컴포넌트(`BottomSheet`·`ProfileCard`·`ThreadCount`·`Avatar`·`BlurredPhoto`)가 도메인 규칙 없이 `src/ui/` 에 있다. API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · Owner: 이정진 · UI: FR-20, FR-24, FR-25, FR-26, FR-27, FR-31 (commit eae83ad)
 
-- [x] T5. 학교 메일 도메인 검사 — Done when: 프로필 (2/2)의 이메일이 `@dgu.ac.kr` 로 끝나지 않으면(대소문자 무관) 제출이 막히고 그 칸에 학교 메일만 쓸 수 있다는 오류가 보이며 다른 입력값은 유지된다. 코드 인증 UI(인증 버튼·6자리 코드·재발송 타이머·완료 상태)는 이후 버전에서 다시 쓸 수 있게 뷰 모델 props 컴포넌트로 남기되 V1 화면에는 연결하지 않고 `/preview` 에서만 보인다 · Touches: `src/features/dating/`, `src/app/preview/screens/` · After: T4 · Owner: 이정진 · FR: FR-25 (commit 146612c)
+- [ ] T5. 학교 메일 코드 인증 퍼블리싱 — Done when: 프로필 (2/2)의 학교 메일 입력란 옆 '인증' 버튼, 6자리 코드 입력칸, 재발송 60초 타이머(대기 중 비활성), 코드 오류·만료·횟수 초과 안내, 인증 완료 상태가 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, 메일이 `@dgu.ac.kr` 로 끝나지 않으면(대소문자 무관) 제출 때 그 칸에 오류가 보인다. 디자인에 없는 상태이므로 기존 `src/ui/` 컴포넌트와 토큰으로 그린다. API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · After: T4 · Owner: 이정진 · UI: FR-25
 
 - [ ] T6. 협업 링크 실 지급 — Done when: 협업 링크로 들어와 로그인한 사용자에게 '운명의 실이 지급되었어요' 모달(SCR-23, Figma 「축사 연결」 `228:3318`)이 지급 뒤 보유 수와 함께 뜨고, 로그인 응답의 `rewardGranted` 가 `null` 이면 모달이 뜨지 않으며, 잔액 표시가 새로고침 없이 맞는다. 제휴 코드(`ref`)를 로그인 요청에 싣는 부분은 09/T2(`src/features/auth/`, 이정진)가 열어 넘긴다 · Touches: `src/features/dating/`, `src/api/`, `src/app/routes/` · After: T2 · Owner: 이동건 · FR: FR-32
 
@@ -60,9 +61,9 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 
 ## Relevant Specifications
 
-- `docs/prd/` — FR-24, FR-25, FR-26, FR-27, FR-31, FR-32 (FR-12 를 대체)
+- `docs/prd/` — FR-24, FR-25, FR-26, FR-27, FR-31, FR-32 (FR-12 를 대체), Q20(학교 메일 인증)
 - `docs/prd/20-screens.md` — SCR-15, SCR-16, SCR-17, SCR-23
-- `docs/api/openapi.yaml` — 프로필 · 학교 메일 코드 인증(V1 미사용) · 추천 · 리롤 · 실 원장
+- `docs/api/openapi.yaml` — 프로필 · 학교 메일 코드 인증 · 추천 · 리롤 · 실 원장
 - Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — 인트로·프로필 `76-3402`, 메인/카드 `76-3401`(main flow · reroll 바텀시트 · 운명의실 보내기). 와이어프레임 `65-3123` 은 참고용이며 어긋나면 디자인이 우선한다 — 와이어프레임의 '운명의 실 구매하기' 모달은 최종 디자인에 없다(현금 결제는 V1 범위 밖). FR-32 지급 모달은 「축사 연결」 `228:3318` 이다(SCR-23)
 
 ## Acceptance Criteria
