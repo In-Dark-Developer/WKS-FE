@@ -9,7 +9,7 @@ import { Toast } from '@/ui/Toast';
 import { SendThreadDialog, ThreadSentDialog } from '../thread/ThreadDialogs';
 import { UnlockDialog } from '../unlock/UnlockDialog';
 import { UnlockDoneDialog } from '../unlock/UnlockDoneDialog';
-import { toUnlockOptions, unlockItems } from '../unlock/unlockFlow';
+import { applyUnlockedValues, toUnlockOptions, unlockItems } from '../unlock/unlockFlow';
 import type { UnlockItem } from '../unlock/unlockView';
 import { DatingCards } from './DatingCards';
 import type { DatingCardsView } from './cardsView';
@@ -34,7 +34,26 @@ function rerollFailureMessage(error: ApiFailure): string {
 // SCR-17 오늘의 인연 Top 3 연결(FR-26 · FR-27). 잔액·잠금 비용은 백엔드 값을 그대로 보이고 화면은 계산하지 않는다.
 // 해금(FR-28, 11/T1): 카드의 '열람하기'·자물쇠 → 해금 모달(SCR-18) → 고른 항목을 하나씩 연다 → 완료 모달.
 // 운명의 실 보내기(FR-29, 11/T2): 열지 않은 항목이 남았으면 확인 모달 → 전송 → 보낸 뒤 모달('보러가기'는 요청함).
-export function DatingCardsScreen({ view }: Props) {
+// 해금 응답을 얹은 카드 — 얹은 때의 loader 값(base)이 바뀌면(재조회 완료·리롤) 버린다. 재조회 값이 원본이다.
+type UnlockPatch = {
+  base: DatingCardsView;
+  balance: number;
+  values: Readonly<Record<string, Partial<Record<UnlockItem, string>>>>;
+};
+
+function withPatch(view: DatingCardsView, patch: UnlockPatch | null): DatingCardsView {
+  if (patch === null || patch.base !== view) return view;
+  return {
+    ...view,
+    balance: patch.balance,
+    candidates: view.candidates.map((candidate) => {
+      const values = patch.values[candidate.id];
+      return values === undefined ? candidate : applyUnlockedValues(candidate, values);
+    }),
+  };
+}
+
+export function DatingCardsScreen({ view: loaded }: Props) {
   const revalidator = useRevalidator();
   const navigate = useNavigate();
   const [failedMessage, setFailedMessage] = useState<string | null>(null);
@@ -45,6 +64,8 @@ export function DatingCardsScreen({ view }: Props) {
   const [unlockingId, setUnlockingId] = useState<string | null>(null);
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [unlocked, setUnlocked] = useState<{ items: UnlockItem[]; balance: number } | null>(null);
+  const [patch, setPatch] = useState<UnlockPatch | null>(null);
+  const view = withPatch(loaded, patch);
   const unlockTarget = view.candidates.find((candidate) => candidate.id === unlockingId);
 
   async function sendThread(candidateId: string) {
@@ -84,8 +105,20 @@ export function DatingCardsScreen({ view }: Props) {
     const run = await unlockItems(candidateId, items);
     setIsUnlocking(false);
     if (run.opened.length > 0 && run.balance !== null) {
-      setUnlocked({ items: run.opened, balance: run.balance });
-      // 열린 값과 잔액을 카드에 다시 그린다 — 값은 추천 응답이 원본이다.
+      const balance = run.balance;
+      setUnlocked({ items: run.opened, balance });
+      // 응답 값으로 카드를 곧바로 다시 그리고, 추천을 다시 읽어 원본으로 맞춘다.
+      setPatch((previous) => ({
+        base: loaded,
+        balance,
+        values: {
+          ...(previous?.base === loaded ? previous.values : {}),
+          [candidateId]: {
+            ...(previous?.base === loaded ? previous.values[candidateId] : undefined),
+            ...run.values,
+          },
+        },
+      }));
       void revalidator.revalidate();
     }
     if (run.failure === 'short') setFailedMessage(UNLOCK_SHORT_MESSAGE);

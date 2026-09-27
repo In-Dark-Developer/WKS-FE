@@ -154,14 +154,21 @@ type BackRowProps = {
 
 function BackRow({ label, field, placeholder, isBlock = false, onUnlock }: BackRowProps) {
   const fake = <span className="font-medium text-neutral-0">{placeholder}</span>;
+  // 해금은 됐는데 값이 아직 없는 항목(궁합 까닭 생성 지연)은 비용 없이 다시 연다(WKS-BE §10.4).
+  const pillLabel = field.isLocked && field.cost === 0 ? `${label} 다시 열기` : null;
 
   return (
-    <div className={isBlock ? 'flex flex-col gap-8' : 'flex items-center gap-8'}>
+    <div className={isBlock ? 'flex flex-col gap-8' : 'relative flex items-center gap-8'}>
       <dt className="shrink-0 text-neutral-200">{label}</dt>
       {field.isLocked ? (
         onUnlock ? (
           <dd className="min-w-0 flex-1">
-            <LockedValue label={`${label} ${field.cost}개로 열기`} onUnlock={onUnlock}>
+            {/* 한 줄 항목의 알약은 글줄이 아니라 카드 가운데에 둔다 — 사진·궁합 이유 알약과 한 줄로(Figma 112:3241). */}
+            <LockedValue
+              className={isBlock ? undefined : 'static'}
+              label={pillLabel ?? `${label} ${field.cost}개로 열기`}
+              onUnlock={onUnlock}
+            >
               {fake}
             </LockedValue>
           </dd>
@@ -174,7 +181,10 @@ function BackRow({ label, field, placeholder, isBlock = false, onUnlock }: BackR
           </dd>
         )
       ) : (
-        <dd className="font-medium text-neutral-0">{field.value}</dd>
+        // 띄어쓰기 없는 긴 궁합 이유도 카드 폭 안에서 줄을 바꾼다(앞면 자기소개와 같다).
+        <dd className="min-w-0 font-medium wrap-anywhere break-keep text-neutral-0">
+          {field.value}
+        </dd>
       )}
     </div>
   );

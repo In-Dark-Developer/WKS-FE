@@ -45,7 +45,12 @@ test('고른 항목을 모달 순서대로 한 요청에 담아 열고 잔액을
   const run = await unlockItems('c1', ['reason', 'photo'], unlock);
 
   expect(unlock.mock.calls).toEqual([['c1', ['PHOTO', 'REASON']]]);
-  expect(run).toEqual({ opened: ['photo', 'reason'], balance: 10, failure: null });
+  expect(run).toEqual({
+    opened: ['photo', 'reason'],
+    values: { photo: '값', reason: '값' },
+    balance: 10,
+    failure: null,
+  });
 });
 
 test('잔액이 모자라면 아무것도 열지 않는다 — 해금은 전부 아니면 전무다', async () => {
@@ -57,7 +62,7 @@ test('잔액이 모자라면 아무것도 열지 않는다 — 해금은 전부 
   const run = await unlockItems('c1', ['name', 'department', 'reason'], unlock);
 
   expect(unlock).toHaveBeenCalledOnce();
-  expect(run).toEqual({ opened: [], balance: null, failure: 'short' });
+  expect(run).toEqual({ opened: [], values: {}, balance: null, failure: 'short' });
 });
 
 test('연결이 실패하면 원인을 콘솔에 남기고 아무것도 열지 않는다', async () => {
@@ -66,6 +71,6 @@ test('연결이 실패하면 원인을 콘솔에 남기고 아무것도 열지 �
 
   const run = await unlockItems('c1', ['photo'], unlock);
 
-  expect(run).toEqual({ opened: [], balance: null, failure: 'error' });
+  expect(run).toEqual({ opened: [], values: {}, balance: null, failure: 'error' });
   expect(error).toHaveBeenCalled();
 });
