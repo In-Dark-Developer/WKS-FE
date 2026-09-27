@@ -63,7 +63,7 @@ V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 
 
 - [x] T9. 공유 링크 신규 진입 초대 티저 — Done when: 이 브라우저에 사주가 없는 방문자가 `/s/:shareId` 로 들어오면 'OO님의 궁합지도에 초대됐어요' 초대 헤더와 링크 주인의 궁합 지도 아래 사주 입력 폼이 보이고(Figma v1.0 4.1 신규 티저 `30:5916`), 폼의 제목·부제·버튼('내 운명을 친구 궁합 지도에 꿰기')이 그 프레임 문구와 같으며, 기존 방문자가 '새로 작성하기'로 여는 폼(`30:6323`)도 같은 문구이고, 제출하면 지금처럼 결과·궁합을 만든다 · Touches: `src/features/friends/`, `src/features/saju/`, `src/app/screens/ShareInputScreen.tsx`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-15 (commit 1ba8c1e)
 
-- [ ] T10. 공유 궁합 결과와 자세히 보기 — Done when: 궁합을 만들면(신규 제출·'이전 정보 불러오기' 모두) 공유 궁합 결과(SCR-24 `/s/:shareId/result`, Figma v1.0 `15:1089`·`30:6570`)로 가서 주인 지도, 나와 주인의 궁합 한 줄, 그 궁합의 이유 세 문단(`GET /compatibilities/{id}/reason`, 생성 중 로딩)이 보이고, '전체 보기 >'는 주인의 전체 지도(SCR-13, `16:1827`)로 가며 그 화면 맨 위 '뒤로가기'가 SCR-24 로 돌아오고, 두 화면의 '내 사주 내용도 확인하기'는 자기 결과로 가며, 새로고침해도 같은 화면이 보인다 · Touches: `src/features/friends/`, `src/app/screens/`, `src/app/routes/share.routes.tsx` · After: T9 · Owner: 강근우 · FR: FR-6
+- [x] T10. 공유 궁합 결과와 자세히 보기 — Done when: 궁합을 만들면(신규 제출·'이전 정보 불러오기' 모두) 공유 궁합 결과(SCR-24 `/s/:shareId/result`, Figma v1.0 `15:1089`·`30:6570`)로 가서 주인 지도, 나와 주인의 궁합 한 줄, 그 궁합의 이유 세 문단(`GET /compatibilities/{id}/reason`, 생성 중 로딩)이 보이고, '전체 보기 >'는 주인의 전체 지도(SCR-13, `16:1827`)로 가며 그 화면 맨 위 '뒤로가기'가 SCR-24 로 돌아오고, 두 화면의 '내 사주 내용도 확인하기'는 자기 결과로 가며, 새로고침해도 같은 화면이 보인다 · Touches: `src/features/friends/`, `src/app/screens/`, `src/app/routes/share.routes.tsx` · After: T9 · Owner: 강근우 · FR: FR-6 (commit 9b56710)
 
 QA(2026-09-27, Notion 「🩺 QA / 디자인」) — 홈·네비 항목을 원래 만든 담당자에게 배정한다. 홈 기준 화면은 Figma v1.0 「사주 카드 화면」 `8:794` 다.
 
