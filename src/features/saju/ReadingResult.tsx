@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { Outlet } from 'react-router-dom';
 
 import { cn } from '@/lib/cn';
 import type { Grade } from '@/ui/DestinyCard';
@@ -26,15 +25,13 @@ type Props = {
   view: ReadingView;
   // 다른 feature 가 채우는 자리 — saju 는 share·friends·profile 을 import 하지 않고 app 이 조립한다.
   renderCard: (face: ReadingCardFace) => ReactNode; // 04 운명 카드(카드 뒤집기) + 카드 저장하기
-  teaser?: ReactNode; // 06 사전신청 티저
   elementMatchAction?: ReactNode; // 잘 맞는 오행 아래 'OO 기운의 사람 만나보기' — 소개팅 입구. 이동은 app 이 정한다
   back?: ReactNode; // 맨 위 '뒤로가기' — 친구의 궁합 지도에서 들어온 내 사주(Figma 720:3587)만 쓴다. 이동은 app 이 정한다
 };
 
 // SCR-04 사주 결과 — Figma v1.0 사주 카드 화면(8:794): 카드 → 오행 → 잘 맞는 오행 → 행운 → 운세에서 끝난다.
 // 친구 궁합 순위는 홈에 두지 않는다(2026-09-27 QA, 09/T12) — 궁합지도(/me/map)가 갖는다.
-// 하위 라우트(사전신청 모달)는 맨 아래 <Outlet /> 에 뜬다.
-export function ReadingResult({ view, renderCard, teaser, elementMatchAction, back }: Props) {
+export function ReadingResult({ view, renderCard, elementMatchAction, back }: Props) {
   const face: ReadingCardFace = {
     nickname: view.nickname,
     zodiac: view.zodiac,
@@ -56,8 +53,6 @@ export function ReadingResult({ view, renderCard, teaser, elementMatchAction, ba
       ) : null}
       <LuckySection item={view.luckyItem} place={view.luckyPlace} />
       <FortuneSection fortunes={view.fortunes} />
-      {teaser}
-      <Outlet />
     </div>
   );
 }

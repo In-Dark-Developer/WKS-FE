@@ -11,7 +11,7 @@ import { readingLoader, SajuForm, sajuAction, type ReadingView } from '@/feature
 import { goToKakaoLogin } from '@/features/auth';
 import { DATING_INTRO_PATH, LoginSheet } from '@/features/dating';
 import { IntroGate, MainTeaser } from '@/features/intro';
-import { PreRegisterModal, VerifyComplete, preRegisterAction } from '@/features/profile';
+import { VerifyComplete } from '@/features/profile';
 import { track } from '@/lib/analytics';
 
 // 화면 도착 이벤트는 loader 에서 보낸다 — 이동마다 한 번이라 StrictMode 의 이중 마운트에 겹치지 않는다(analytics).
@@ -30,16 +30,7 @@ function HomeRoute() {
   const view = useLoaderData<ReadingView>();
   const navigate = useNavigate();
   const fromSharedMap = fromSharedMapState.safeParse(useLocation().state).success;
-  return (
-    <HomeScreen
-      onBack={fromSharedMap ? () => void navigate(-1) : undefined}
-      onPreRegister={() => {
-        track('pre_register_opened', {});
-        void navigate('pre-register');
-      }}
-      view={view}
-    />
-  );
+  return <HomeScreen onBack={fromSharedMap ? () => void navigate(-1) : undefined} view={view} />;
 }
 
 // 사주 입력(SCR-02) 주소 — 티저(`/`)와 나눠 '내 사주 보기'가 기록을 쌓게 한다. 뒤로가기가 티저로 돌아온다(2026-09-26).
@@ -81,14 +72,8 @@ function MainTeaserRoute() {
   );
 }
 
-// SCR-09 사전신청 모달 — 결과 화면 하위 라우트라 결과 화면의 <Outlet /> 에 뜬다(FR-9).
-// 닫기(배경·ESC·완료의 '확인')는 부모 결과 화면으로 돌아간다.
-function PreRegisterModalRoute() {
-  const navigate = useNavigate();
-  return <PreRegisterModal onClose={() => void navigate('..', { relative: 'path' })} open />;
-}
-
-// 사주 입력과 사주 결과(= 홈). 사전신청(SCR-09·SCR-14)은 결과 화면에 붙어 있어 같은 파일에 둔다.
+// 사주 입력과 사주 결과(= 홈). 홈의 사전신청(SCR-09)은 없앴고(2026-09-27 QA, 09/T13) 이미 나간 인증 메일의
+// 도착지(SCR-14 `/verify`)만 남긴다.
 export const sajuRoutes: RouteObject[] = [
   // SCR-01 인트로·메인 티저 — 첫 방문이면 인트로 영상이 먼저 뜬다(FR-1). 사주가 없으면 이 티저가 홈이다(FR-19).
   {
@@ -113,14 +98,6 @@ export const sajuRoutes: RouteObject[] = [
     // 공유 Flow 에서 '내 사주 내용도 확인하기'로 들어와도 여기서부터 네비가 보인다(FR-19, Figma 4.1.3).
     handle: { backdrop: 'result', nav: 'home' },
     element: <HomeRoute />,
-    children: [
-      {
-        path: 'pre-register',
-        action: preRegisterAction,
-        handle: { backdrop: 'mist' },
-        element: <PreRegisterModalRoute />,
-      },
-    ],
   },
   // SCR-14 인증 완료 — 백엔드 매직링크(`GET /signups/verify`)가 인증 뒤 302 로 보내는 자리다.
   // 가드 없음: 메일을 연 기기에 '내 결과'가 없을 수 있다.

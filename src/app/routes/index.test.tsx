@@ -609,16 +609,21 @@ test('없는 공유 링크는 없는 경로 화면이다', async () => {
 });
 
 // 06/T4 조립 — 결과 화면 사전신청 섹션 → 모달 → 완료, 그리고 매직링크가 돌아오는 /verify.
-test('결과 화면의 사전 신청 버튼이 사전신청 모달을 연다', async () => {
+test('홈에는 그랜드 오픈 사전신청 섹션이 없고 그 모달 주소도 없다 (09/T13)', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  fireEvent.click(await screen.findByRole('button', { name: '사전 신청하고 알림 받기' }));
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('GRAND OPEN !!')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '사전 신청하고 알림 받기' })).not.toBeInTheDocument();
 
-  expect(await screen.findByRole('dialog', { name: '사전신청' })).toBeInTheDocument();
-  expect(screen.getByLabelText('이메일')).toBeInTheDocument();
+  cleanup();
+  renderAt(`/reading/${RESULT_ID}/pre-register`);
+  expect(await screen.findByRole('alert')).toHaveTextContent('찾는 점지가 없어요');
 });
 
 test('매직링크가 보내는 /verify 는 인증 완료를 알린다', async () => {

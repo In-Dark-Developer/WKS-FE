@@ -83,12 +83,6 @@ body:has([data-bottom-nav]) [data-toast] {
   pointer-events: none;
 }
 
-/* 결과 화면 맨 아래 사전신청 띠(Figma 873:1868)에는 리본이 없다 — 띠 윗변에서 리본을 끝낸다.
-   띠 아래로는 ReadingResult 의 pb-24(24px)와 콘텐츠 아래 여백(네비가 있으면 그만큼 더)이 있다. */
-[data-backdrop='result']:has([data-pre-register-teaser])::before {
-  bottom: calc(var(--pre-register-teaser-height) + 24px + var(--app-shell-content-bottom));
-}
-
 /* 공유 링크 대기 화면(Figma 1044:4150)에는 리본이 없다 — 그라데이션만 남긴다. */
 [data-backdrop='result']:has([data-share-join-loading])::before {
   content: none;
