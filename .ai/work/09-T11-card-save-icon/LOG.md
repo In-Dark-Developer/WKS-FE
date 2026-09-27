@@ -2,6 +2,15 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-27 · claude-code · 09/T11 · 카드 저장을 카드 안 아이콘으로
+
+- Commits: c1f1ff0
+- Done: 카드 아래 '카드 저장하기' 버튼 제거, ConnectionCard frontAction 으로 앞면 아이콘(44px 터치, 아이콘 24 · text-brand)
+- Not done: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Verification: test 625 · typecheck · lint · 브라우저 미리보기(아이콘 가운데 오른쪽 33·아래 31 = Figma)
+
 ## 2026-09-27 · ai-stream · 09/T11 · 스트림 열기
 
 - Commits: (open)
