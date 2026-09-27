@@ -7,6 +7,7 @@ import {
   signInMockAccount,
   signOutMockAccount,
 } from './me';
+import { rememberPendingReward } from './rewards';
 import { clearSession } from './session';
 import { kakaoLoginResultSchema, type KakaoLoginResult } from './schema/auth';
 
@@ -28,8 +29,12 @@ export type KakaoLoginInput = {
 export async function loginWithKakao(
   input: KakaoLoginInput,
 ): Promise<ApiOutcome<KakaoLoginResult>> {
-  if (isMockEnabled()) return mockLogin(input.resultId);
-  return request({ method: 'POST', path: '/auth/kakao', body: input }, kakaoLoginResultSchema);
+  const outcome = isMockEnabled()
+    ? mockLogin(input.resultId)
+    : await request({ method: 'POST', path: '/auth/kakao', body: input }, kakaoLoginResultSchema);
+  // 제휴 지급은 이 응답에서 한 번만 온다 — 로그인 왕복 뒤 도착한 화면이 모달로 알리도록 남긴다(FR-32).
+  if (outcome.ok) rememberPendingReward(outcome.data.rewardGranted);
+  return outcome;
 }
 
 // 백엔드 §9 연결·복원 규칙 — 계정 결과가 있으면 그것을 복원하고, 없을 때만 브라우저 결과를 계정에 연결한다.
