@@ -55,6 +55,15 @@
   right: 3.152%;
   bottom: 1.952%;
   z-index: 1;
+  /* Safari 는 z-index 로 따로 그려지는 이 칸에 부모의 backface-visibility 를 적용하지 않아 뒷면 왼쪽 아래에 거울처럼
+     비친다 — 칸 자신에도 걸고, 뒤집기 절반(0.3s)이 지나면 숨겨 브라우저와 상관없이 뒷면에서 보이지 않게 한다. */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: visibility 0s linear 0.3s;
+}
+
+[data-connection-card][data-face='back'] [data-connection-card-front-action] {
+  visibility: hidden;
 }
 
 /* 카드 뒤집기 — Figma 558:2788, 카드 아래에서 27px 위 (461px 기준). */
@@ -72,7 +81,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-connection-card-inner] {
+  [data-connection-card-inner],
+  [data-connection-card-front-action] {
     transition: none;
   }
 }
