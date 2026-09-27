@@ -52,16 +52,20 @@ function isRealDate(digits: string, calendarType: CalendarType): boolean {
   return date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
-function todayIso(now: Date): string {
+// 받을 수 있는 마지막 날은 **어제**다 — 백엔드가 오늘·미래 날짜를 400 INVALID_INPUT 으로 막는다
+// (2026-09-28 dev 확인: 오늘 400 · 어제 201). 백엔드 문서는 '오늘까지' 라고 적지만 구현이 이렇다.
+function lastAllowedIso(now: Date): string {
+  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
   const pad = (value: number) => String(value).padStart(2, '0');
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  return `${yesterday.getFullYear()}-${pad(yesterday.getMonth() + 1)}-${pad(yesterday.getDate())}`;
 }
 
 export const sajuErrorMessages = {
   gender: '성별을 선택해 주세요',
   birthDateFormat: '생년월일을 숫자 8자리로 작성해 주세요',
   birthDateReal: '실제로 있는 날짜로 작성해 주세요',
-  birthDateRange: '1950년 1월 1일부터 오늘까지의 날짜로 작성해 주세요',
+  birthDateRange:
+    '1950년 1월 1일부터 어제까지의 날짜로 작성해 주세요 (오늘·미래는 사주를 볼 수 없어요)',
   birthTime: "태어난 시간을 선택하거나 '태어난 시간을 몰라요'를 체크해 주세요",
   nickname: `닉네임을 1~${NICKNAME_MAX}자로 작성해 주세요`,
 } as const;
@@ -70,7 +74,7 @@ function birthDateError(values: SajuFormValues, now: Date): string | undefined {
   if (!/^\d{8}$/.test(values.birthDate)) return sajuErrorMessages.birthDateFormat;
   if (!isRealDate(values.birthDate, values.calendarType)) return sajuErrorMessages.birthDateReal;
   const iso = toIsoDate(values.birthDate);
-  if (iso < MIN_DATE || iso > todayIso(now)) return sajuErrorMessages.birthDateRange;
+  if (iso < MIN_DATE || iso > lastAllowedIso(now)) return sajuErrorMessages.birthDateRange;
   return undefined;
 }
 
