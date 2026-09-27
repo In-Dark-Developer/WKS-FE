@@ -2,18 +2,18 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-27
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+내 궁합 지도 맨 위에 뒤로가기가 없다.
 
 ## Work Completed
 
-- 없음
+- /me/map 뒤로가기 제거, 쓰이지 않게 된 back 슬롯·myResultId 정리
 
 ## Work In Progress
 
@@ -21,19 +21,19 @@
 
 ## Files Changed
 
-- 없음
+- `src/app/screens/MyMapScreen.tsx` · `src/app/routes/map.routes.tsx` · `src/features/friends/map/CompatibilityMapScreen.tsx` · 미리보기 2 · 테스트 3
 
 ## Decisions Made
 
-- 없음
+- 2026-09-27 소유자: 궁합지도 상단 뒤로가기 삭제(하단 네비로 오간다). 친구의 궁합 지도(SCR-13)는 원래 없다
 
 ## Tests Executed
 
-- 없음
+- `pnpm test` · `pnpm typecheck` · `pnpm lint` · 브라우저 미리보기
 
 ## Test Results
 
-- 없음
+- 620 passed, 경고 없음
 
 ## Known Problems
 
@@ -45,4 +45,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+없음
