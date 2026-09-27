@@ -17,7 +17,7 @@ vi.mock('@/api/dating', async (importOriginal) => {
 });
 vi.mock('@/api/unlocks', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/unlocks')>();
-  return { ...actual, unlockCandidateField: unlockMock };
+  return { ...actual, unlockCandidateFields: unlockMock };
 });
 
 import type { DatingCardsView, MatchCandidateView } from './cardsView';
@@ -152,7 +152,7 @@ function openUnlockDialog() {
 }
 
 test('고른 항목을 열고 남은 실과 연 항목을 완료 모달로 알린다', async () => {
-  unlockMock.mockResolvedValue({ ok: true, data: { field: 'NAME', value: '이서연', balance: 3 } });
+  unlockMock.mockResolvedValue({ ok: true, data: { values: { NAME: '이서연' }, balance: 3 } });
   renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
 
   openUnlockDialog();
@@ -160,7 +160,7 @@ test('고른 항목을 열고 남은 실과 연 항목을 완료 모달로 알�
   fireEvent.click(screen.getByRole('button', { name: '7개 사용하기' }));
 
   expect(await screen.findByRole('heading', { name: /정보를 열었어요/ })).toBeInTheDocument();
-  expect(unlockMock).toHaveBeenCalledWith('c1', 'NAME');
+  expect(unlockMock).toHaveBeenCalledWith('c1', ['NAME']);
   expect(screen.getAllByLabelText('운명의 실 보유 3개').length).toBeGreaterThan(0);
 });
 
