@@ -36,7 +36,9 @@ export async function loadSharedResult(shareId: string): Promise<SharedResult> {
 // 응답 순서(최근 순). 공유 링크 입력의 초대 지도와 친구의 궁합 지도가 함께 쓴다.
 export function toOwnerFriends(owner: SharedResult): Friend[] {
   return owner.compatibilities
-    .map(({ nickname, score, tier }) => ({ nickname, score, tier }))
+    .map(({ id, nickname, score, tier }) =>
+      id === undefined ? { nickname, score, tier } : { nickname, score, tier, compatibilityId: id },
+    )
     .sort((a, b) => b.score - a.score);
 }
 

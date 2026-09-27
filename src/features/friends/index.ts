@@ -1,3 +1,4 @@
+export { CompatibilityMap } from './map/CompatibilityMap';
 export { CompatibilityMapScreen } from './map/CompatibilityMapScreen';
 export { FriendRanking } from './map/FriendRanking';
 export { MapSaveCard } from './map/MapSaveCard';
@@ -15,3 +16,4 @@ export { ShareInvite } from './ShareInvite';
 export { ShareJoinLoading } from './ShareJoinLoading';
 export { shareInputLoader, type ShareInputView } from './shareInputLoader';
 export { shareMapLoader, type SharedMapView } from './shareMapLoader';
+export { shareResultLoader, type SharedResultView } from './shareResultLoader';

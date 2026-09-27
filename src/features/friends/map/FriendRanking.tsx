@@ -14,6 +14,10 @@ type Props = {
   headerAction?: ReactNode;
   // 줄을 눌러 궁합 이유를 연다(FR-22, Figma 3.2) — 궁합 ID 가 있는 줄만 버튼이 된다.
   onSelect?: (friend: Friend) => void;
+  // 제목 — 공유 궁합 결과(SCR-24)는 '나의 궁합 순위'다.
+  title?: string;
+  // 첫 줄의 순위 — 주인 지도 안에서 내 한 줄만 보일 때 그 순위(Figma 15:1089).
+  firstRank?: number;
 };
 
 const badgeText: Record<CompatibilityTier, string> = {
@@ -25,7 +29,15 @@ const badgeText: Record<CompatibilityTier, string> = {
 
 // Figma RankingList(80:614) — 사주 카드 화면 인스턴스(796:3828) 모양: 제목 줄 패딩 16, 목록은 좌우 8 안쪽.
 // friends 는 순위 순서다.
-export function FriendRanking({ friends, limit, shareAction, headerAction, onSelect }: Props) {
+export function FriendRanking({
+  friends,
+  limit,
+  shareAction,
+  headerAction,
+  onSelect,
+  title = '친구 궁합 순위',
+  firstRank = 1,
+}: Props) {
   const rows = limit === undefined ? friends : friends.slice(0, limit);
   const titleId = useId();
 
@@ -36,7 +48,7 @@ export function FriendRanking({ friends, limit, shareAction, headerAction, onSel
     >
       <div className="flex items-center justify-between gap-8 p-16">
         <h2 className="text-ui-18 font-semibold text-primary" id={titleId}>
-          친구 궁합 순위
+          {title}
         </h2>
         {headerAction}
       </div>
@@ -62,10 +74,10 @@ export function FriendRanking({ friends, limit, shareAction, headerAction, onSel
                     onClick={() => onSelect(friend)}
                     type="button"
                   >
-                    <RankingRow friend={friend} rank={index + 1} />
+                    <RankingRow friend={friend} rank={firstRank + index} />
                   </button>
                 ) : (
-                  <RankingRow friend={friend} rank={index + 1} />
+                  <RankingRow friend={friend} rank={firstRank + index} />
                 )}
               </li>
             ))}
