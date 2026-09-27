@@ -44,7 +44,6 @@ REVIEW
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
 - `src/features/dating/profile/profileSchema.ts:detailsStepSchema`
 - `src/features/dating/profile/EmailVerification.tsx:EmailVerification`
-- `src/features/dating/profile/DatingProfileForm.tsx:emailVerification`
 
 ## Next Action
 
