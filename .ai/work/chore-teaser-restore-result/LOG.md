@@ -2,6 +2,15 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-28 · claude-code · -/- · 티저에서 계정 결과 복원
+
+- Commits: 99caaa0
+- Done: 로그인·hasResult·세션 없음이면 티저 loader 가 GET /me/result 로 세션 복원
+- Not done: 로그인 중 새로 만든 사주의 계정 연결(BE 영역)
+- Upstream changes: 없음
+- Spec changes: 없음
+- Verification: test 623 · typecheck · lint
+
 ## 2026-09-28 · ai-stream · -/- · 스트림 열기
 
 - Commits: (open)
