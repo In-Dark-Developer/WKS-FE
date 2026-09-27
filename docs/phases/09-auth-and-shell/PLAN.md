@@ -71,7 +71,7 @@ QA(2026-09-27, Notion 「🩺 QA / 디자인」) — 홈·네비 항목을 원�
 
 - [x] T12. 홈에서 친구 궁합 순위 제거 — Done when: 홈(SCR-04)에 친구 궁합 순위 영역(순위 3명·'지도 보기 >'·'친구에게 공유')이 보이지 않고 Figma `8:794` 처럼 운세 영역에서 끝나며, 순위와 공유는 궁합지도(`/me/map`)에서 그대로 쓸 수 있다. 홈에서 공유 입구가 사라지므로 PRD FR-4 의 결과 화면 공유 위치 문구는 spec 후속으로 고친다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx` · Owner: 이정진 · FR: FR-4, FR-19 (QA: 친구 궁합 순위 홈에서는 사라짐) (commit 5bf7964)
 
-- [ ] T13. 홈에서 그랜드 오픈 사전신청 섹션 제거 — Done when: 홈 맨 아래의 'GRAND OPEN !! 09월 29일' 사전신청 섹션(`PreRegisterTeaser`, 873:4155)과 그 모달 진입이 홈에서 보이지 않는다. 더는 쓰이지 않는 사전신청 화면·폰트(Cafe24 PRO Slim Max)를 지울지는 이 Task 에서 정하고, PRD FR-9 는 spec 후속으로 V1 에서 뺀다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx`, `src/features/profile/`, `src/app/routes/` · Owner: 이정진 · FR: FR-9 (QA: 그랜드 오픈 없애기)
+- [x] T13. 홈에서 그랜드 오픈 사전신청 섹션 제거 — Done when: 홈 맨 아래의 'GRAND OPEN !! 09월 29일' 사전신청 섹션(`PreRegisterTeaser`, 873:4155)과 그 모달 진입이 홈에서 보이지 않는다. 더는 쓰이지 않는 사전신청 화면·폰트(Cafe24 PRO Slim Max)를 지울지는 이 Task 에서 정하고, PRD FR-9 는 spec 후속으로 V1 에서 뺀다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx`, `src/features/profile/`, `src/app/routes/` · Owner: 이정진 · FR: FR-9 (QA: 그랜드 오픈 없애기) (commit 0805a90)
 
 - [ ] T14. 소개팅 이동 시 하단 네비 위치 고정 — Done when: 홈·궁합지도·소개팅(인트로·Top 3·요청함) 사이를 네비로 오갈 때 네비의 가로·세로 위치가 1px 도 바뀌지 않음을 모바일(375)과 데스크톱 폭에서 확인하고, 원인(스크롤바 유무에 따른 가운데 정렬 흔들림 추정 · 화면별 여백 차이 등)을 적은 뒤 고친다 · Touches: `src/app/layout.css`, `src/app/screens/BottomNavBar.tsx`, `src/features/dating/` · Owner: 이정진 · FR: FR-19 (QA: 네브바, 소개팅으로 이동시 위치가 변경됨)
 
