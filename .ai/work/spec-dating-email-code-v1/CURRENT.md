@@ -21,7 +21,7 @@ V1 에 학교 메일 코드 인증 포함 — #245(도메인만) 되돌림
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
