@@ -61,6 +61,20 @@ const nameOnly: readonly MatchCandidateView[] = lockedCandidates.map((candidate,
   index === 0 ? { ...candidate, name: { isLocked: false, value: '차은호' } } : candidate,
 );
 
+// 궁합 이유만 연 카드 — 잠긴 이름·학과 알약이 위아래로 붙는다.
+const reasonOnly: readonly MatchCandidateView[] = lockedCandidates.map((candidate, index) =>
+  index === 0
+    ? {
+        ...candidate,
+        reason: {
+          isLocked: false,
+          value:
+            '두 분은 마음을 편안하게 채워주는 따뜻한 인연이에요. 서로에게 든든한 힘이 되어줘요.',
+        },
+      }
+    : candidate,
+);
+
 const allUnlocked: readonly MatchCandidateView[] = partlyUnlocked.map((candidate, index) =>
   index === 0
     ? {
@@ -116,6 +130,9 @@ export const preview: PreviewScreen = {
     '카드 뒷면(잠김)': () => <Cards face="back" />,
     '카드 뒷면(이름만 해금)': () => (
       <Cards face="back" view={{ ...cardsBase, candidates: nameOnly }} />
+    ),
+    '카드 뒷면(궁합 이유만 해금)': () => (
+      <Cards face="back" view={{ ...cardsBase, candidates: reasonOnly }} />
     ),
     '카드 뒷면(일부 해금)': () => (
       <Cards face="back" view={{ ...cardsBase, candidates: partlyUnlocked }} />
