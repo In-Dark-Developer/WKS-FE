@@ -55,7 +55,7 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 
 - [ ] T5. 학교 메일 코드 인증 퍼블리싱 — Done when: 프로필 (2/2)의 학교 메일 입력란 옆 '인증' 버튼, 6자리 코드 입력칸, 재발송 60초 타이머(대기 중 비활성), 코드 오류·만료·횟수 초과 안내, 인증 완료 상태가 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보인다. 디자인에 없는 상태이므로 기존 `src/ui/` 컴포넌트와 토큰으로 그린다. API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · After: T4 · Owner: 이정진 · UI: FR-25
 
-- [ ] T6. 협업 링크 실 지급 — Done when: 협업 링크로 들어와 로그인한 사용자에게 '운명의 실이 지급되었어요' 모달(SCR-23)이 지급 뒤 보유 수와 함께 뜨고, 로그인 응답의 `rewardGranted` 가 `null` 이면 모달이 뜨지 않으며, 잔액 표시가 새로고침 없이 맞는다. 제휴 코드(`ref`)를 로그인 요청에 싣는 부분은 09/T2(`src/features/auth/`, 이정진)가 열어 넘긴다 · Touches: `src/features/dating/`, `src/api/`, `src/app/routes/` · After: T2 · Owner: 이동건 · FR: FR-32
+- [ ] T6. 협업 링크 실 지급 — Done when: 협업 링크로 들어와 로그인한 사용자에게 '운명의 실이 지급되었어요' 모달(SCR-23, Figma 「축사 연결」 `228:3318`)이 지급 뒤 보유 수와 함께 뜨고, 로그인 응답의 `rewardGranted` 가 `null` 이면 모달이 뜨지 않으며, 잔액 표시가 새로고침 없이 맞는다. 제휴 코드(`ref`)를 로그인 요청에 싣는 부분은 09/T2(`src/features/auth/`, 이정진)가 열어 넘긴다 · Touches: `src/features/dating/`, `src/api/`, `src/app/routes/` · After: T2 · Owner: 이동건 · FR: FR-32
 
 퍼블리싱 먼저(2026-09-24): 화면은 T4 가 props 뷰 모델로만 그리고 `/preview` 에서 가짜 데이터로 확인한다. 데이터 연결(action·loader·응답→뷰 모델 변환)은 T1·T2·T3 이 한다 — 03/T5·T7 과 같은 분담이다.
 
@@ -64,7 +64,7 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 - `docs/prd/` — FR-24, FR-25, FR-26, FR-27, FR-31, FR-32 (FR-12 를 대체), Q20(학교 메일 인증)
 - `docs/prd/20-screens.md` — SCR-15, SCR-16, SCR-17, SCR-23
 - `docs/api/openapi.yaml` — 프로필 · 학교 메일 코드 인증 · 추천 · 리롤 · 실 원장
-- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — 인트로·프로필 `76-3402`, 메인/카드 `76-3401`(main flow · reroll 바텀시트 · 운명의실 보내기). 와이어프레임 `65-3123` 은 참고용이며 어긋나면 디자인이 우선한다 — 와이어프레임의 '운명의 실 구매하기' 모달은 최종 디자인에 없다(현금 결제는 V1 범위 밖). FR-32 지급 모달은 메인/카드 `76-3401` 에서 확인한다
+- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — 인트로·프로필 `76-3402`, 메인/카드 `76-3401`(main flow · reroll 바텀시트 · 운명의실 보내기). 와이어프레임 `65-3123` 은 참고용이며 어긋나면 디자인이 우선한다 — 와이어프레임의 '운명의 실 구매하기' 모달은 최종 디자인에 없다(현금 결제는 V1 범위 밖). FR-32 지급 모달은 「축사 연결」 `228:3318` 이다(SCR-23)
 
 ## Acceptance Criteria
 
