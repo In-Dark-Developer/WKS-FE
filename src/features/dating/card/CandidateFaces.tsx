@@ -80,7 +80,8 @@ export function CandidateFront({
           ) : null}
         </p>
       </div>
-      <p className="text-ui-12 break-keep text-neutral-0">{bio}</p>
+      {/* 띄어쓰기 없는 긴 글도 카드 폭 안에서 줄을 바꾼다 — 낱말 단위 줄바꿈(break-keep)은 그대로 두고 넘칠 때만 끊는다. */}
+      <p className="text-ui-12 wrap-anywhere break-keep text-neutral-0">{bio}</p>
       {footer ? <div className="flex justify-center gap-16">{footer}</div> : null}
     </div>
   );
