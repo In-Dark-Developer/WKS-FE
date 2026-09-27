@@ -9,7 +9,7 @@ import type { ProfileCardFace } from '@/ui/ProfileCard';
 
 import { DatingBackdrop } from '../DatingBackdrop';
 import { CandidateCard } from './CandidateCard';
-import type { DatingCardsView } from './cardsView';
+import type { DatingCardsView, MatchCandidateView } from './cardsView';
 import { DatingHeader } from './DatingHeader';
 import { ThreadGuideDialog } from '../wallet/ThreadGuideDialog';
 import { RerollSheet } from './RerollSheet';
@@ -47,6 +47,7 @@ export function DatingCards({
   const [isThreadGuideOpen, setThreadGuideOpen] = useState(initialThreadGuideOpen);
   const trackRef = useRef<HTMLUListElement>(null);
   const active = view.candidates[activeIndex];
+  const slots = toCardSlots(view.candidates);
 
   function handleScroll(event: UIEvent<HTMLUListElement>) {
     const { scrollLeft, clientWidth } = event.currentTarget;
@@ -93,28 +94,28 @@ export function DatingCards({
               onScroll={handleScroll}
               ref={trackRef}
             >
-              {view.candidates.map((candidate) => (
-                <li className="w-full shrink-0 snap-center" key={candidate.id}>
-                  <CandidateCard
-                    candidate={candidate}
-                    initialFace={initialCardFace}
-                    onOpenUnlock={
-                      candidate.isThreadSent || candidate.isThreadReceived
-                        ? undefined
-                        : onOpenUnlock
-                    }
-                  />
+              {slots.map((slot) => (
+                <li className="w-full shrink-0 snap-center" key={slot.id}>
+                  {slot.candidate ? (
+                    <CandidateCard
+                      candidate={slot.candidate}
+                      initialFace={initialCardFace}
+                      onOpenUnlock={
+                        slot.candidate.isThreadSent || slot.candidate.isThreadReceived
+                          ? undefined
+                          : onOpenUnlock
+                      }
+                    />
+                  ) : (
+                    <EmptyCard />
+                  )}
                 </li>
               ))}
             </ul>
           )}
           <Indicator
             activeIndex={activeIndex}
-            ids={
-              view.candidates.length > 0
-                ? view.candidates.map((candidate) => candidate.id)
-                : emptyIndicatorIds
-            }
+            ids={view.candidates.length > 0 ? slots.map((slot) => slot.id) : emptyIndicatorIds}
             isInteractive={view.candidates.length > 0}
             onSelect={showCandidate}
           />
@@ -185,7 +186,19 @@ function EmptyCard() {
   );
 }
 
+const CARD_SLOTS = 3;
 const emptyIndicatorIds = ['empty-1', 'empty-2', 'empty-3'] as const;
+
+// 카드 자리는 늘 세 개다 — 추천이 1~2명이면 남은 자리를 빈 카드로 채워 'Top 3' 가 세 장으로 보인다
+// (2026-09-28 결정, Figma 인연x 134:2248). 0명이면 넘기기 없이 빈 카드 하나만 보인다(FR-26).
+type CardSlot = { id: string; candidate?: MatchCandidateView };
+
+function toCardSlots(candidates: readonly MatchCandidateView[]): CardSlot[] {
+  return Array.from({ length: CARD_SLOTS }, (_, index) => {
+    const candidate = candidates[index];
+    return candidate ? { id: candidate.id, candidate } : { id: `empty-${index + 1}` };
+  });
+}
 
 type IndicatorProps = {
   ids: readonly string[];
