@@ -181,8 +181,8 @@ function BackRow({ label, field, placeholder, isBlock = false, onUnlock }: BackR
           </dd>
         )
       ) : (
-        // 띄어쓰기 없는 긴 궁합 이유도 카드 폭 안에서 줄을 바꾼다(앞면 자기소개와 같다).
-        <dd className="min-w-0 font-medium wrap-anywhere break-keep text-neutral-0">
+        // 띄어쓰기 없는 긴 궁합 이유도 카드 폭 안에서 줄을 바꾸고(앞면 자기소개와 같다), 백엔드 문장의 줄바꿈은 그대로 둔다.
+        <dd className="min-w-0 font-medium wrap-anywhere break-keep whitespace-pre-line text-neutral-0">
           {field.value}
         </dd>
       )}
