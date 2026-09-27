@@ -21,7 +21,7 @@ T13. 홈에서 그랜드 오픈 사전신청 섹션 제거
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
