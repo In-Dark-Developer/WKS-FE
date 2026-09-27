@@ -2,18 +2,18 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-28
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+띄어쓰기 없는 자기소개도 소개팅 카드 폭 안에서 줄을 바꾼다.
 
 ## Work Completed
 
-- 없음
+- 자기소개 p 에 wrap-anywhere (652eeaf)
 
 ## Work In Progress
 
@@ -21,7 +21,8 @@
 
 ## Files Changed
 
-- 없음
+- src/features/dating/card/CandidateFaces.tsx
+- src/app/preview/screens/dating-cards.tsx
 
 ## Decisions Made
 
@@ -29,15 +30,15 @@
 
 ## Tests Executed
 
-- 없음
+- pnpm test · typecheck · lint, 미리보기 375px 에서 문단 폭 301px·카드 안 측정
 
 ## Test Results
 
-- 없음
+- 통과 (jsdom 은 레이아웃을 재지 못해 단위 테스트 대신 미리보기로 확인)
 
 ## Known Problems
 
-- 없음
+- BE 는 bio 를 500자까지 받는다(FE 는 170) — 170자를 넘는 기존 데이터는 카드 아래로 넘칠 수 있다
 
 ## Unverified Assumptions
 
