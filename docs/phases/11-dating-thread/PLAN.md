@@ -45,11 +45,11 @@
 
 QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 원래 그 FR 을 만든 사람이다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
 
-- [ ] T4. 해금 뒤 카드 버튼 정렬 — Done when: 항목을 해금하기 전과 뒤에 카드 뒷면의 '열람하기'·잠금 알약·버튼의 정렬이 바뀌지 않고(Figma 뒷면 `103:2533`), 일부·전체 해금 상태 모두 같은 줄에 선다 · Touches: `src/features/dating/card/CandidateFaces.tsx` · Owner: 강근우 · FR: FR-28 (QA: 해금 시 버튼 정렬 바뀜)
+- [x] T4. 해금 뒤 카드 버튼 정렬 — Done when: 항목을 해금하기 전과 뒤에 카드 뒷면의 '열람하기'·잠금 알약·버튼의 정렬이 바뀌지 않고(Figma 뒷면 `103:2533`), 일부·전체 해금 상태 모두 같은 줄에 선다 · Touches: `src/features/dating/card/CandidateFaces.tsx` · Owner: 강근우 · FR: FR-28 (QA: 해금 시 버튼 정렬 바뀜) (commit c3dd065, PR #275 — 이름·학과 알약을 카드 가운데로)
 
-- [ ] T5. 해금 즉시 카드 갱신 — Done when: 해금 완료 모달을 닫으면 새로고침 없이 그 카드에 연 항목(사진·이름·학과·궁합 까닭)이 보이고, 잔액도 함께 맞는다 · Touches: `src/features/dating/recommendation/DatingCardsScreen.tsx`, `src/features/dating/unlock/` · Owner: 강근우 · FR: FR-28 (QA 기능: 해금 시 새로고침 바로 안 됨)
+- [x] T5. 해금 즉시 카드 갱신 — Done when: 해금 완료 모달을 닫으면 새로고침 없이 그 카드에 연 항목(사진·이름·학과·궁합 까닭)이 보이고, 잔액도 함께 맞는다 · Touches: `src/features/dating/recommendation/DatingCardsScreen.tsx`, `src/features/dating/unlock/` · Owner: 강근우 · FR: FR-28 (QA 기능: 해금 시 새로고침 바로 안 됨) (commit c3dd065, PR #275 — 해금 응답 값을 재조회 전 카드·잔액에 얹는다)
 
-- [ ] T6. 궁합 까닭 줄바꿈 — Done when: 카드 뒷면과 요청함 상세의 궁합 까닭 문장이 카드 폭 안에서 줄을 바꾸고, 백엔드 문장에 들어 있는 줄바꿈도 그대로 보인다 · Touches: `src/features/dating/card/CandidateFaces.tsx`, `src/features/dating/requests/RequestDetail.tsx` · Owner: 강근우 · FR: FR-28 (QA: 궁합사유 줄 바꿈이 안된다)
+- [x] T6. 궁합 까닭 줄바꿈 — Done when: 카드 뒷면과 요청함 상세의 궁합 까닭 문장이 카드 폭 안에서 줄을 바꾸고, 백엔드 문장에 들어 있는 줄바꿈도 그대로 보인다 · Touches: `src/features/dating/card/CandidateFaces.tsx`, `src/features/dating/requests/RequestDetail.tsx` · Owner: 강근우 · FR: FR-28 (QA: 궁합사유 줄 바꿈이 안된다) (commit 416da49 — 긴 글 줄바꿈은 #275)
 
 - [ ] T7. 운명의 실 모달 상단 간격 — Done when: '운명의 실 보내기' 확인 모달과 보낸 뒤 모달의 위쪽 여백이 Figma 운명의 실 모달 1·2 와 같다 · Touches: `src/features/dating/thread/ThreadDialogs.tsx`, `src/features/dating/DatingDialog.tsx` · Owner: 강근우 · FR: FR-29 (QA: 운명의 실 모달 상단 간격)
 
