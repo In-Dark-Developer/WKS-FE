@@ -180,6 +180,7 @@ export function DetailsStep({
             <Select
               {...control}
               appearance="soft"
+              className="bg-surface-default"
               onChange={(mbti) => onChange({ mbti })}
               options={mbtiOptions}
               placeholder="유형을 선택해 주세요"
