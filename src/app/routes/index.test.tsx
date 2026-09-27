@@ -270,6 +270,47 @@ test('세션 없이 결과 화면에 들어오면 입력 화면으로 보낸다'
   expect(router.state.location.pathname).toBe('/');
 });
 
+test('세션 없이 로그인 계정의 결과 주소로 들어오면 세션을 되살리고 결과 화면에 머문다', async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  // 실제 getMyResult 는 받은 resultId 를 세션에 보관한다 — 목도 같게 둔다.
+  getMyResultMock.mockImplementation(() => {
+    writeSession(RESULT_ID);
+    return Promise.resolve({ ok: true, data: stubResult });
+  });
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
+test('세션 없이 계정 결과가 아닌 주소로 들어오면 티저로 보낸다', async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  getMyResultMock.mockImplementation(() => {
+    writeSession(OTHER_RESULT_ID);
+    return Promise.resolve({ ok: true, data: { ...stubResult, resultId: OTHER_RESULT_ID } });
+  });
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+});
+
+test('세션이 다른 결과면 계정 결과를 부르지 않고 티저로 보낸다', async () => {
+  writeSession(OTHER_RESULT_ID);
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+  expect(getMyResultMock).not.toHaveBeenCalled();
+});
+
 test('이 브라우저가 만든 결과면 결과 화면에 머문다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
