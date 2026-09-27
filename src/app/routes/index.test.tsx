@@ -902,7 +902,8 @@ test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린
   expect(
     await screen.findByRole('heading', { name: '나와 잘 맞는 인연 TOP 3' }),
   ).toBeInTheDocument();
-  expect(screen.getByLabelText('운명의 실 보유 12개')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 획득 방법 보기' }));
+  expect(screen.getByText('12개')).toBeInTheDocument();
   expect(screen.getByText('영화 보러 다니는 걸 좋아해요.')).toBeInTheDocument();
 });
 

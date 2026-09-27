@@ -145,8 +145,10 @@ test('리롤 요청 중에 다시 눌러도 한 번만 부른다 (FR-27)', async
 test('잔액과 빈 카드를 그린다 (FR-26)', () => {
   renderScreen({ balance: 7, candidates: [], reroll: { kind: 'free' } });
 
-  expect(screen.getByLabelText('운명의 실 보유 7개')).toBeInTheDocument();
   expect(screen.getByText('운명의 인연을 기다리고 있어요')).toBeInTheDocument();
+  // 잔액은 상단 운명의 실을 눌러 연 재화 안내에서만 보인다.
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 획득 방법 보기' }));
+  expect(screen.getByText('7개')).toBeInTheDocument();
 });
 
 // 11/T1 해금 — 카드 뒷면의 '열람하기' → 해금 모달 → 고른 항목을 열고 완료 모달 (FR-28).
