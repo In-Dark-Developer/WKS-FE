@@ -2,7 +2,7 @@ import { getRecommendations, type DatingCandidate } from '@/api/dating';
 import { listDatingRequests, type DatingRequestListItem } from '@/api/matchRequests';
 
 import { relationLabelByRank, type CandidateRank } from '../recommendation/cardsView';
-import { toBirthYearLabel, toLockable, toPhoto } from '../recommendation/recommendationsLoader';
+import { toLockable, toPhoto } from '../recommendation/recommendationsLoader';
 import type {
   ContactView,
   ReceivedRequestView,
@@ -28,7 +28,7 @@ function toProfile(
     score: counterpart.score,
     relationLabel: rank === null ? relationLabel : relationLabelByRank[rank],
     mbti: counterpart.mbti,
-    birthYear: toBirthYearLabel(counterpart.age),
+    birthYear: counterpart.age ?? null,
     bio: counterpart.bio,
     photo: toPhoto(counterpart.fields.photo, counterpart.blurredPhotoUrl ?? null),
     name: toLockable(counterpart.fields.name),

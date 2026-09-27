@@ -75,7 +75,7 @@ const mockCandidateSeeds = [
   {
     score: 98,
     mbti: 'ENTP',
-    age: '2003-05-17',
+    age: '03년생',
     bio: '영화와 전시 보러 다니는 걸 좋아해요. 축제 공연도 같이 볼 사람을 찾아요.',
     name: '이서연',
     department: '영화영상학과',
@@ -83,7 +83,7 @@ const mockCandidateSeeds = [
   {
     score: 87,
     mbti: 'INFJ',
-    age: '2002-03-14',
+    age: '02년생',
     bio: '조용한 카페에서 책 읽는 걸 좋아해요.',
     name: '박지훈',
     department: '국어국문학과',
@@ -91,7 +91,7 @@ const mockCandidateSeeds = [
   {
     score: 68,
     mbti: 'ISFP',
-    age: '2004-11-02',
+    age: '04년생',
     bio: '운동하고 맛집 다니는 걸 좋아합니다.',
     name: '최유나',
     department: '체육교육과',
