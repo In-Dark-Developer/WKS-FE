@@ -172,7 +172,8 @@ export function DatingCards({
 // 인연x — 추천할 상대가 없을 때(Figma 134:2248).
 function EmptyCard() {
   return (
-    <div className="relative flex h-[433px] w-full items-center justify-center overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800">
+    // 카드 자리와 같은 규격이어야 나란히 놓였을 때 높이가 맞는다(ProfileCard 와 같은 비율).
+    <div className="relative flex aspect-[343/433] w-full items-center justify-center overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800">
       <img
         alt=""
         className="absolute size-[178px] opacity-20"
