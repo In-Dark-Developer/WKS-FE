@@ -76,6 +76,7 @@ const allUnlocked: readonly MatchCandidateView[] = partlyUnlocked.map((candidate
 
 export const cardsBase: DatingCardsView = {
   balance: 12,
+  checkedInToday: true,
   candidates: lockedCandidates,
   reroll: { kind: 'paid', cost: 3, canAfford: true },
 };
@@ -85,15 +86,18 @@ export function Cards({
   view = cardsBase,
   face,
   isRerollOpen = false,
+  isThreadGuideOpen = false,
 }: {
   view?: DatingCardsView;
   face?: 'front' | 'back';
   isRerollOpen?: boolean;
+  isThreadGuideOpen?: boolean;
 }) {
   return (
     <DatingCards
       initialCardFace={face}
       initialRerollOpen={isRerollOpen}
+      initialThreadGuideOpen={isThreadGuideOpen}
       onOpenRequests={noop}
       onOpenUnlock={noop}
       onReroll={noop}
@@ -128,6 +132,10 @@ export const preview: PreviewScreen = {
         isRerollOpen
         view={{ ...cardsBase, balance: 2, reroll: { kind: 'paid', cost: 3, canAfford: false } }}
       />
+    ),
+    '재화 안내(출석 받음)': () => <Cards isThreadGuideOpen />,
+    '재화 안내(출석 전)': () => (
+      <Cards isThreadGuideOpen view={{ ...cardsBase, checkedInToday: false }} />
     ),
   },
 };

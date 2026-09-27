@@ -8,7 +8,7 @@ vi.mock('./client', async (importOriginal) => {
 
 import { resetMockAccount, signInMockAccount } from './me';
 import { walletCheckInSchema, walletSchema } from './schema/wallet';
-import { checkInWallet, getWallet } from './wallet';
+import { checkInWallet, ensureDailyCheckIn, getWallet, resetDailyCheckIn } from './wallet';
 
 beforeEach(() => {
   vi.stubEnv('VITE_API_MOCK', 'false');
@@ -18,6 +18,7 @@ afterEach(() => {
   requestMock.mockReset();
   vi.unstubAllEnvs();
   resetMockAccount();
+  resetDailyCheckIn();
   localStorage.clear();
 });
 
@@ -71,4 +72,31 @@ test('목 모드 출석은 하루 한 번만 5 를 준다', async () => {
     ok: true,
     data: { balance: 15, canCheckInToday: false },
   });
+});
+
+test('접속 출석은 페이지를 연 동안 한 번만 부른다', async () => {
+  requestMock.mockResolvedValue({ ok: true, data: { checkedIn: true, balance: 15 } });
+
+  await Promise.all([ensureDailyCheckIn(), ensureDailyCheckIn()]);
+  await ensureDailyCheckIn();
+
+  expect(requestMock).toHaveBeenCalledOnce();
+  expect(requestMock).toHaveBeenCalledWith(
+    { method: 'POST', path: '/wallet/check-in' },
+    walletCheckInSchema,
+  );
+});
+
+test('비로그인(401)으로 실패하면 다음 호출에서 다시 출석한다 — 로그인 뒤 받을 수 있게', async () => {
+  requestMock
+    .mockResolvedValueOnce({
+      ok: false,
+      error: { kind: 'api', code: 'UNAUTHENTICATED', message: '로그인이 필요합니다.' },
+    })
+    .mockResolvedValueOnce({ ok: true, data: { checkedIn: true, balance: 15 } });
+
+  await ensureDailyCheckIn();
+  await ensureDailyCheckIn();
+
+  expect(requestMock).toHaveBeenCalledTimes(2);
 });

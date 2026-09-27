@@ -11,6 +11,7 @@ import { DatingBackdrop } from '../DatingBackdrop';
 import { CandidateCard } from './CandidateCard';
 import type { DatingCardsView } from './cardsView';
 import { DatingHeader } from './DatingHeader';
+import { ThreadGuideDialog } from '../wallet/ThreadGuideDialog';
 import { RerollSheet } from './RerollSheet';
 
 type Props = {
@@ -24,6 +25,7 @@ type Props = {
   // 미리보기용 시작 상태.
   initialCardFace?: ProfileCardFace;
   initialRerollOpen?: boolean;
+  initialThreadGuideOpen?: boolean;
 };
 
 // SCR-17 오늘의 인연 Top 3 — Figma 카드 앞면(91:1641) · 뒷면(103:2533) · 인연x(134:2320) · 리롤 시트.
@@ -35,9 +37,11 @@ export function DatingCards({
   onOpenRequests,
   initialCardFace,
   initialRerollOpen = false,
+  initialThreadGuideOpen = false,
 }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isRerollOpen, setRerollOpen] = useState(initialRerollOpen);
+  const [isThreadGuideOpen, setThreadGuideOpen] = useState(initialThreadGuideOpen);
   const trackRef = useRef<HTMLUListElement>(null);
   const active = view.candidates[activeIndex];
 
@@ -55,7 +59,17 @@ export function DatingCards({
   return (
     <div className="flex flex-col gap-20">
       <DatingBackdrop />
-      <DatingHeader balance={view.balance} onOpenRequests={onOpenRequests} />
+      <DatingHeader
+        balance={view.balance}
+        onOpenRequests={onOpenRequests}
+        onOpenThreadGuide={() => setThreadGuideOpen(true)}
+      />
+      <ThreadGuideDialog
+        balance={view.balance}
+        checkedInToday={view.checkedInToday}
+        onClose={() => setThreadGuideOpen(false)}
+        open={isThreadGuideOpen}
+      />
 
       <section className="flex flex-col gap-32">
         <header className="flex flex-col gap-4">

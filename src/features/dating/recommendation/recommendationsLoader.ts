@@ -1,6 +1,6 @@
 import { getRecommendations, type DatingCandidate, type DatingLockableField } from '@/api/dating';
 import { listDatingRequests } from '@/api/matchRequests';
-import { getWallet } from '@/api/wallet';
+import { ensureDailyCheckIn, getWallet } from '@/api/wallet';
 
 import {
   type CandidatePhoto,
@@ -63,7 +63,8 @@ export function toRerollView(rerollCost: number, balance: number): RerollView {
 // requireDatingProfile 이 먼저 로그인·프로필을 확인하므로 여기서는 인증을 다시 판단하지 않는다.
 export async function datingCardsLoader(): Promise<DatingCardsState> {
   const [wallet, recommendations, sent] = await Promise.all([
-    getWallet(),
+    // 접속 출석이 끝난 뒤 읽어야 잔액과 '지급 완료'가 맞는다.
+    ensureDailyCheckIn().then(getWallet),
     getRecommendations(),
     listDatingRequests('sent'),
   ]);
@@ -97,6 +98,7 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
     kind: 'ready',
     view: {
       balance,
+      checkedInToday: wallet.ok && !wallet.data.canCheckInToday,
       candidates: recommendations.data.candidates.map((candidate) => ({
         ...toCandidateView(candidate),
         isThreadSent: sentIds.has(candidate.candidateId),
