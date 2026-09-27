@@ -13,33 +13,40 @@
 
 ## Work Completed
 
-- 없음
+- openapi: `POST /dating/recommendations/reroll` · `DatingRecommendations.rerollCost` · `DatingRerollResult` · `DATING_NO_MORE_CANDIDATES`
+- `api/dating.ts`: `rerollRecommendations` 를 실제 호출로. 목도 같은 규칙(하루 1회 무료 → 5실, 잔액 부족이면 402)
+- 무료·유료 판정을 서버 `rerollCost` 로 바꿈 — '항상 무료' 가정과 비용 3(PRD 값) 을 걷어냈다
+- 요청 중 재호출 차단(`isRerolling`) — 서버가 연타를 막지 않아 두 번 차감될 수 있었다
+- 실패를 셋으로 갈라 안내: 잔액 부족(402)·후보 소진(409)·그 밖. 셋 다 카드는 그대로다
 
 ## Work In Progress
 
-- CURRENT Progress 1~5. 2026-09-27 백엔드가 리롤을 확정·구현했다(TBD-6 종료).
+- 없음 (PR 대기)
 
 ## Files Changed
 
-- 없음
+- `docs/api/openapi.yaml` · `src/api/{dating,schema/dating,schema/envelope}.ts` (+테스트)
+- `src/features/dating/recommendation/{recommendationsLoader,DatingCardsScreen}.tsx|ts` (+테스트)
 
 ## Decisions Made
 
-- 없음
+- 비용·무료 여부를 화면이 계산하지 않는다 — 추천 응답 `rerollCost` 를 그대로 옮긴다(자정 초기화는 서버 KST 판정)
+- 연타는 화면 상태로 막는다 — 확인 시트(`RerollSheet`)는 퍼블리싱 소유라 버튼 disabled 를 새로 넣지 않았다
+- **PRD FR-27 의 '실 3' 은 확정값 5 와 다르다** — PRD 문구 수정은 spec 스트림 몫이라 이 PR 에 넣지 않았다
 
 ## Tests Executed
 
-- 없음
+- `pnpm test` · `pnpm typecheck` · `pnpm lint` · `npx @redocly/cli lint docs/api/openapi.yaml`
 
 ## Test Results
 
-- 없음
+- 106 files / 583 passed · typecheck·lint 경고 0 · redocly 새 문제 없음(기존 7건)
 
 ## Known Problems
 
-- **지금 코드에 실제 오류가 있다**: 리롤 비용을 3 으로 두었는데 확정값은 **5** 이고, 무료 여부를 '항상 무료'로 가정했다. 서버 `rerollCost` 로 바꾼다
-- **연타를 서버가 막지 않는다**(§10.4.1) — 두 번 누르면 두 번 차감된다. 프론트가 막아야 한다
-- 학교 이메일 인증이 매직링크에서 **코드 6자리 방식**으로 바뀌었다(§10.7, 2026-09-26) — FR-25 프로필 폼에 붙는 일이라 이 스트림 밖이다. 디자인 확인 뒤 별도 Task 가 필요하다
+- **PRD FR-27 이 '실 3' 이라고 적는다** — 백엔드 확정값은 5 다. spec 스트림으로 고쳐야 한다
+- **학교 이메일 인증이 코드 6자리 방식으로 바뀌었다**(§10.7, 2026-09-26, 매직링크는 폐기 예정) — FR-25 프로필 폼에 인증 버튼·코드 입력이 붙어야 한다. 디자인 확인 뒤 Task 가 필요하다(Q20)
+- 실제 모드 확인은 아직이다 — 추천·리롤이 학교 메일 인증을 마친 계정을 요구한다
 
 ## Unverified Assumptions
 
@@ -47,4 +54,4 @@
 
 ## Exact Next Action
 
-CURRENT Progress 1 — openapi.yaml 에 `POST /dating/recommendations/reroll` 과 `rerollCost` 를 넣는다.
+`scripts/ai-end.sh --ready` 로 PR. 다음은 FR-27 PRD 문구(spec)와 §10.7 이메일 코드 인증 Task 제안.

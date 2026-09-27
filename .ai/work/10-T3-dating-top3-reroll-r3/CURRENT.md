@@ -21,21 +21,18 @@ T3. Top 3 추천과 리롤
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. openapi: `POST /dating/recommendations/reroll` · 추천 응답 `rerollCost` · `DATING_NO_MORE_CANDIDATES` ←
-- 2. api: `rerollRecommendations` 를 실제 호출로 (목도 같은 규칙: 무료 1회 → 5실)
-- 3. feature: `rerollCost` 로 무료·유료 판정(가정 제거), 비용 3 → 5 정정
-- 4. 연타 차단 — 요청 중에는 확인 버튼을 막는다(서버가 안 막는다)
-- 5. 후보 소진(409)·잔액 부족(402) 안내 · test/typecheck/lint · 커밋 · `--ready`
+- 1~5 완료 (commit 2351d49) — openapi §10.4.1 · 실제 리롤 호출 · 서버 rerollCost · 연타 차단 · 402/409 안내
+- 6. `--ready` → PR ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`9700deb`
+`2351d49`
 
 ## Relevant Documents
 
@@ -50,4 +47,4 @@ IN_PROGRESS
 
 ## Next Action
 
-Progress 1 — openapi 에 §10.4.1 반영.
+`ai-end.sh --ready` 로 PR 초안.
