@@ -66,7 +66,7 @@ export function DatingCardsScreen({ view }: Props) {
   function handleSendThread(candidateId: string) {
     if (isSending) return;
     const candidate = view.candidates.find((each) => each.id === candidateId);
-    if (candidate === undefined || candidate.isThreadSent) return;
+    if (candidate === undefined || candidate.isThreadSent || candidate.isThreadReceived) return;
     const hasLocked = [
       candidate.photo,
       candidate.name,
@@ -116,6 +116,7 @@ export function DatingCardsScreen({ view }: Props) {
   return (
     <>
       <DatingCards
+        onOpenReceived={() => void navigate('/dating/requests?tab=received')}
         onOpenRequests={() => void navigate('/dating/requests')}
         onOpenUnlock={(candidateId) => {
           // 여는 중에는 다시 열지 않는다 — 같은 항목을 두 번 부르는 일을 막는다(차감은 백엔드가 한 번만 한다).

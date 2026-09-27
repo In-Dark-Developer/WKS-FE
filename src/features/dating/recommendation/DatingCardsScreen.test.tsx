@@ -49,10 +49,12 @@ function renderScreen(view: Omit<DatingCardsView, 'checkedInToday'>) {
         path: '/dating/cards',
         element: <DatingCardsScreen view={{ ...view, checkedInToday: false }} />,
       },
+      { path: '/dating/requests', element: <p>요청함</p> },
     ],
     { initialEntries: ['/dating/cards'] },
   );
   render(<RouterProvider router={router} />);
+  return router;
 }
 
 function openRerollSheet() {
@@ -238,4 +240,22 @@ test('이미 보낸 상대는 다시 보낼 수 없고 더 열 수도 없다', (
   expect(screen.getByRole('button', { name: '운명의 실을 보냈어요' })).toBeDisabled();
   fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
   expect(screen.queryByRole('button', { name: '열람하기' })).not.toBeInTheDocument();
+});
+
+test('상대가 먼저 실을 보냈으면 보내기 대신 받은 신청 탭으로 안내하고 더 열 수 없다', async () => {
+  const router = renderScreen({
+    balance: 10,
+    candidates: [{ ...candidate, isThreadReceived: true }],
+    reroll: { kind: 'free' },
+  });
+
+  expect(screen.queryByRole('button', { name: '운명의 실 보내기' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  expect(screen.queryByRole('button', { name: '열람하기' })).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: '상대가 보낸 운명의 실 확인하기' }));
+
+  expect(await screen.findByText('요청함')).toBeInTheDocument();
+  expect(router.state.location.search).toBe('?tab=received');
+  expect(sendMock).not.toHaveBeenCalled();
 });

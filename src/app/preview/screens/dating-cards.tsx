@@ -115,6 +115,7 @@ export function Cards({
       initialCardFace={face}
       initialRerollOpen={isRerollOpen}
       initialThreadGuideOpen={isThreadGuideOpen}
+      onOpenReceived={noop}
       onOpenRequests={noop}
       onOpenUnlock={noop}
       onReroll={noop}
@@ -145,6 +146,16 @@ export const preview: PreviewScreen = {
       <Cards face="back" view={{ ...cardsBase, candidates: allUnlocked }} />
     ),
     '인연 없음': () => <Cards view={{ ...cardsBase, candidates: [] }} />,
+    '상대가 먼저 실을 보냄': () => (
+      <Cards
+        view={{
+          ...cardsBase,
+          candidates: lockedCandidates.map((candidate, index) =>
+            index === 0 ? { ...candidate, isThreadReceived: true } : candidate,
+          ),
+        }}
+      />
+    ),
     '리롤 무료 o': () => <Cards isRerollOpen view={{ ...cardsBase, reroll: { kind: 'free' } }} />,
     '리롤 무료 x': () => <Cards isRerollOpen />,
     '리롤 잔액 부족': () => (
