@@ -21,7 +21,7 @@ T5. 학교 메일 코드 인증 퍼블리싱
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
