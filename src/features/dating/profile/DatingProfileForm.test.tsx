@@ -126,10 +126,9 @@ test('학교 메일이 아니면 제출하지 않고 메일 칸에 도메인 오
 
   expect(onSubmit).not.toHaveBeenCalled();
   expect(screen.getByText(profileErrorMessages.emailDomain)).toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: '인증' })).toBeNull();
 });
 
-test('(이후 버전) 메일 인증 요청에는 (2/2) 의 지금 메일 값을 앞뒤 공백 없이 싣는다', () => {
+test('메일 인증 요청에는 (2/2) 의 지금 메일 값을 앞뒤 공백 없이 싣는다', () => {
   const onSendCode = vi.fn();
   const onVerifyCode = vi.fn();
   render(

@@ -74,8 +74,7 @@ function SendButton({ resendAvailableAt, hasSent, disabled, loading, onClick }: 
   );
 }
 
-// 학교(DGU) 메일 코드 인증 — '인증' → 6자리 코드 메일 → 같은 화면에서 입력(BE api-spec §10.7).
-// V1 화면에는 연결하지 않는다(2026-09-27 결정) — 이후 버전용이며 지금은 /preview 에서만 보인다.
+// 학교(DGU) 메일 코드 인증 — '인증' → 6자리 코드 메일 → 같은 화면에서 입력(FR-25, BE api-spec §10.7).
 // 디자인에 없는 상태라 기존 Field·TextField·Button 으로 그린다.
 export function EmailVerification({
   email,

@@ -1,6 +1,5 @@
-// 학교 메일 코드 인증 뷰 모델 — V1 은 쓰지 않는다(도메인만 확인, `SCHOOL_EMAIL_DOMAIN`). 이후 버전에서 인증을 켤 때
-// DatingProfileForm 의 `emailVerification` 으로 넘긴다. 발송·확인 요청과 응답 해석은 부르는 쪽이 한다.
-// 계약은 `docs/api/openapi.yaml` 의 `/dating/email-codes`·`/dating/email-codes/verify`(V1 미사용).
+// 학교 메일 코드 인증 뷰 모델 — 발송·확인 요청과 응답 해석은 연동 Task(10/T1)가 하고 화면은 상태만 그린다(FR-25).
+// 계약은 `docs/api/openapi.yaml` 의 `/dating/email-codes`·`/dating/email-codes/verify`.
 export type EmailVerificationStatus = 'idle' | 'sending' | 'sent' | 'verifying' | 'verified';
 
 // 오류 코드 → 화면 오류: INVALID_EMAIL_DOMAIN → invalid-domain · DATING_PROFILE_CONFLICT → conflict ·

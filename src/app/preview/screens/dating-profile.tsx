@@ -36,7 +36,6 @@ type Props = {
   initialStep?: 1 | 2;
   isFilled?: boolean;
   showErrorsInitially?: boolean;
-  // 넘기면 이후 버전용 메일 코드 인증을 켠다 — V1 화면은 넘기지 않는다.
   verification?: EmailVerificationView;
 };
 
@@ -46,7 +45,7 @@ function FakeProfileForm({
   initialStep = 1,
   isFilled = false,
   showErrorsInitially = false,
-  verification,
+  verification = { status: 'idle' },
 }: Props) {
   const [photo, setPhoto] = useState<DatingPhotoView>(
     isFilled ? { status: 'uploaded', previewUrl: fakePhoto } : { status: 'empty' },
@@ -91,13 +90,11 @@ function FakeProfileForm({
 
   return (
     <DatingProfileForm
-      emailVerification={
-        emailView && {
-          view: emailView,
-          onSendCode: handleSendCode,
-          onVerifyCode: handleVerifyCode,
-        }
-      }
+      emailVerification={{
+        view: emailView,
+        onSendCode: handleSendCode,
+        onVerifyCode: handleVerifyCode,
+      }}
       initialValues={isFilled ? { saju, details } : undefined}
       onBack={() => setStep(1)}
       onPhotoSelect={handlePhotoSelect}
@@ -111,7 +108,7 @@ function FakeProfileForm({
   );
 }
 
-// SCR-16 소개팅 프로필 등록 — 10/T4 퍼블리싱. '(이후 버전)' 상태는 V1 에서 쓰지 않는 메일 코드 인증(10/T5). 실제 업로드·등록은 연동 Task(10/T1).
+// SCR-16 소개팅 프로필 등록 — 10/T4 퍼블리싱. 학교 메일 코드 인증은 10/T5. 실제 업로드·등록은 연동 Task(10/T1).
 export const preview: PreviewScreen = {
   title: 'SCR-16 소개팅 프로필 등록',
   order: 11,
@@ -121,24 +118,28 @@ export const preview: PreviewScreen = {
     '(2/2) 기본': () => <FakeProfileForm initialStep={2} />,
     '(2/2) 오류': () => <FakeProfileForm initialStep={2} showErrorsInitially />,
     '(2/2) 채움 → 연결 실패': () => <FakeProfileForm initialStep={2} isFilled />,
-    '(이후 버전) 메일 코드 인증': () => (
-      <FakeProfileForm initialStep={2} isFilled verification={{ status: 'idle' }} />
+    '(2/2) 메일 인증 코드 발송됨': () => (
+      <FakeProfileForm
+        initialStep={2}
+        isFilled
+        verification={{ status: 'sent', resendAvailableAt: Date.now() + RESEND_COOLDOWN_MS }}
+      />
     ),
-    '(이후 버전) 코드 오류': () => (
+    '(2/2) 메일 인증 코드 오류': () => (
       <FakeProfileForm
         initialStep={2}
         isFilled
         verification={{ status: 'sent', error: 'invalid-code' }}
       />
     ),
-    '(이후 버전) 발송 제한': () => (
+    '(2/2) 메일 인증 발송 제한': () => (
       <FakeProfileForm
         initialStep={2}
         isFilled
         verification={{ status: 'idle', error: 'rate-limited' }}
       />
     ),
-    '(이후 버전) 인증 완료': () => (
+    '(2/2) 메일 인증 완료': () => (
       <FakeProfileForm initialStep={2} isFilled verification={{ status: 'verified' }} />
     ),
   },
