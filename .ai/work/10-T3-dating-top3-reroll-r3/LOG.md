@@ -7,7 +7,7 @@
 - Commits: f1abf50 (start), 2351d49 (feat)
 - Done: POST /recommendations/reroll 연결, 서버 rerollCost 로 무료·유료 판정, 연타 차단, 402·409 안내
 - Not done: 실제 모드 확인(학교 메일 인증 계정 필요) · PRD FR-27 '실 3' 문구 수정(spec 몫)
-- Developer changes: 없음 · Upstream changes: 11/T2·09 수정들이 내 파일을 고침 — 충돌 없음
+- Upstream changes: 11/T2·09 수정이 내 파일을 고침(충돌 없음) · 공지 dating-request-cancelled 확인 — CANCELLED enum·'이미 보냄' 제외는 11/T2 가 이미 반영
 - Spec changes: docs/api/openapi.yaml (Touches 안, WKS-BE dev 867c30f 대조)
 - Needs your attention: 리롤 비용이 3 이 아니라 5 다 · 이메일 인증이 코드 방식으로 바뀌어 FR-25 에 Task 가 필요하다
 - Verification: test 583 passed · typecheck · lint 0 경고
