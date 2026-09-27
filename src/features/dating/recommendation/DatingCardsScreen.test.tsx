@@ -173,6 +173,18 @@ test('고른 항목을 열고 남은 실과 연 항목을 완료 모달로 알�
   expect(screen.getAllByLabelText('운명의 실 보유 3개').length).toBeGreaterThan(0);
 });
 
+test('연 값은 추천을 다시 읽기 전에도 카드에 곧바로 보인다', async () => {
+  unlockMock.mockResolvedValue({ ok: true, data: { values: { NAME: '이서연' }, balance: 3 } });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openUnlockDialog();
+  fireEvent.click(await screen.findByRole('button', { name: /이름/ }));
+  fireEvent.click(screen.getByRole('button', { name: '7개 사용하기' }));
+
+  // 이 테스트의 loader 값(view)은 바뀌지 않는다 — 카드에 보이는 이름은 해금 응답에서 왔다.
+  expect(await screen.findByText('이서연')).toBeInTheDocument();
+});
+
 test('잔액이 모자라 백엔드가 거절하면 열지 않고 알린다', async () => {
   unlockMock.mockResolvedValue({
     ok: false,
