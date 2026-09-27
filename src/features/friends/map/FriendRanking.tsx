@@ -16,8 +16,10 @@ type Props = {
   onSelect?: (friend: Friend) => void;
   // 제목 — 공유 궁합 결과(SCR-24)는 '나의 궁합 순위'다.
   title?: string;
-  // 첫 줄의 순위 — 주인 지도 안에서 내 한 줄만 보일 때 그 순위(Figma 15:1089).
+  // 첫 줄의 순위 — 주인 지도 안에서 내 줄과 그 앞뒤만 보일 때 첫 줄의 순위(Figma 15:1089).
   firstRank?: number;
+  // 등급 색으로 칠할 줄(rows 안 위치) — 공유 궁합 결과의 '나'(Figma 15:1301).
+  highlightIndex?: number;
 };
 
 const badgeText: Record<CompatibilityTier, string> = {
@@ -37,6 +39,7 @@ export function FriendRanking({
   onSelect,
   title = '친구 궁합 순위',
   firstRank = 1,
+  highlightIndex,
 }: Props) {
   const rows = limit === undefined ? friends : friends.slice(0, limit);
   const titleId = useId();
@@ -74,10 +77,18 @@ export function FriendRanking({
                     onClick={() => onSelect(friend)}
                     type="button"
                   >
-                    <RankingRow friend={friend} rank={firstRank + index} />
+                    <RankingRow
+                      friend={friend}
+                      highlighted={index === highlightIndex}
+                      rank={firstRank + index}
+                    />
                   </button>
                 ) : (
-                  <RankingRow friend={friend} rank={firstRank + index} />
+                  <RankingRow
+                    friend={friend}
+                    highlighted={index === highlightIndex}
+                    rank={firstRank + index}
+                  />
                 )}
               </li>
             ))}
@@ -98,7 +109,7 @@ const highlightTone: Record<CompatibilityTier, string> = {
   SEUCHIM: 'bg-neutral-300',
 };
 
-// Figma RankingRow — 순위·닉네임·등급 배지·점수. highlighted 는 궁합 이유 시트 맨 위의 선택한 줄이다.
+// Figma RankingRow — 순위·닉네임·등급 배지·점수. highlighted 는 궁합 이유 시트 맨 위의 선택한 줄·공유 궁합 결과의 나다.
 export function RankingRow({
   friend,
   rank,

@@ -1,6 +1,7 @@
 import type { PreviewScreen } from '@/app/preview/previewScreen';
 import { MyMapScreen } from '@/app/screens/MyMapScreen';
 import { SharedMapScreen } from '@/app/screens/SharedMapScreen';
+import { SharedResultScreen } from '@/app/screens/SharedResultScreen';
 import type { Friend } from '@/features/friends';
 
 const friends: Friend[] = [
@@ -54,6 +55,18 @@ export const preview: PreviewScreen = {
     ),
     'SCR-13 친구의 궁합 지도 · 친구 없음': () => (
       <SharedMapScreen friends={[]} nickname="달빛토끼" onViewMyReading={noop} />
+    ),
+    // SCR-24 공유 궁합 결과 — 나(찰떡 2등)를 가운데, 앞뒤 순위와 함께(Figma 15:1089).
+    'SCR-24 공유 궁합 결과': () => (
+      <SharedResultScreen
+        friends={friends.slice(0, 5)}
+        mine={friends[1] as Friend}
+        myRank={2}
+        onViewAll={noop}
+        onViewMyReading={noop}
+        ownerNickname="달빛토끼"
+        reason={null}
+      />
     ),
   },
 };
