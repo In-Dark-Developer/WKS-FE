@@ -405,6 +405,14 @@ test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 
   expect(getResultMock).not.toHaveBeenCalled();
 });
 
+test('공유 링크 입력 화면은 새벽 하늘 배경이다 (Figma 4.2)', async () => {
+  getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+
+  renderAt('/s/11111111-1111-4111-8111-111111111111');
+
+  expect(await screen.findByRole('main')).toHaveAttribute('data-backdrop', 'dawn');
+});
+
 // 공유 링크 궁합 대기 화면(Figma 1044:4150) — '이전 정보 불러오기'를 누르면 궁합이 만들어질 때까지 보인다(FR-23).
 
 test('공유 링크 첫 진입은 궁합을 만들지 않아 궁합 지도를 만드는 중 안내가 뜨지 않는다', () => {

@@ -101,3 +101,18 @@
 [data-accept-button] {
   background: #f6868f;
 }
+
+/* 운명의 실 획득 방법 줄·개수 — Figma 운명의실 재화 모달(295:3281) 의 원본 분홍·그라데이션·글자색. Figma 에 변수가 없다. */
+[data-earn-row] {
+  background: #f9ede9;
+}
+
+[data-earn-amount] {
+  background: linear-gradient(
+    256.97deg,
+    rgb(252 244 242 / 50%) 20.07%,
+    rgb(248 173 173 / 50%) 49.42%,
+    rgb(242 191 177 / 50%) 100.22%
+  );
+  color: #e96143;
+}

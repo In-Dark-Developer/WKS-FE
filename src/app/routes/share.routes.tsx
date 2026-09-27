@@ -225,11 +225,12 @@ function ShareEntryFallback() {
 
 export const shareRoutes: RouteObject[] = [
   // SCR-06 공유 링크 입력 — 가드 없음(FR-18). 내 결과가 있으면 이전 정보로 할지 새로 쓸지 고르게 한다 (FR-23).
+  // 배경은 입력 화면과 같은 새벽 하늘이다(Figma 4.2).
   {
     path: 's/:shareId',
     loader: shareInputLoader,
     action: shareSajuAction,
-    handle: { backdrop: 'result' },
+    handle: { backdrop: 'dawn' },
     hydrateFallbackElement: <ShareInputFallback />,
     element: <ShareInputRoute />,
   },
