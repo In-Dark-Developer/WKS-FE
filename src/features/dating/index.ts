@@ -17,6 +17,8 @@ export type {
   DatingProfileInput,
   DatingSajuInput,
 } from './profile/profileSchema';
+export { PendingRewardDialog } from './reward/PendingRewardDialog';
+export { RewardGrantedDialog } from './reward/RewardGrantedDialog';
 export { DatingCards } from './recommendation/DatingCards';
 export { DatingCardsScreen } from './recommendation/DatingCardsScreen';
 export { NotVerifiedNotice } from './recommendation/NotVerifiedNotice';

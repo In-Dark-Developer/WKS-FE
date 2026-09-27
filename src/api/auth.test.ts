@@ -9,8 +9,9 @@ vi.mock('./client', async (importOriginal) => {
 
 import { loginWithKakao, logout } from './auth';
 import { getMe, isUnauthenticated, resetMockAccount } from './me';
-import { readSession, writeSession } from './session';
+import { takePendingReward } from './rewards';
 import { kakaoLoginResultSchema } from './schema/auth';
+import { readSession, writeSession } from './session';
 
 const INPUT = {
   code: 'auth-code',
@@ -27,6 +28,7 @@ afterEach(() => {
   requestMock.mockReset();
   vi.unstubAllEnvs();
   resetMockAccount();
+  sessionStorage.clear();
 });
 
 test('loginWithKakao 는 POST /auth/kakao 에 코드·resultId 를 보내고 토큰 없는 응답을 검증한다', async () => {
@@ -109,4 +111,27 @@ test('목 로그인은 백엔드 규칙대로 계정이 비었을 때만 연결�
     ok: true,
     data: { restoredResultId: INPUT.resultId },
   });
+});
+
+test('로그인 응답의 제휴 지급을 남겨 도착한 화면이 알리게 한다 (FR-32)', async () => {
+  const granted = { partnerName: '축사', amount: 10 };
+  requestMock.mockResolvedValue({
+    ok: true,
+    data: { isNewUser: true, restoredResultId: null, rewardGranted: granted },
+  });
+
+  await loginWithKakao(INPUT);
+
+  expect(takePendingReward()).toEqual(granted);
+});
+
+test('지급이 없으면 남기지 않는다', async () => {
+  requestMock.mockResolvedValue({
+    ok: true,
+    data: { isNewUser: false, restoredResultId: null, rewardGranted: null },
+  });
+
+  await loginWithKakao(INPUT);
+
+  expect(takePendingReward()).toBeNull();
 });
