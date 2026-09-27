@@ -44,13 +44,16 @@ function renderInbox() {
   return handlers;
 }
 
-test('보낸 신청 목록이 먼저 보이고, 받은 신청 탭에는 궁합 점수가 없다', () => {
+test('목록 줄은 궁합 점수 대신 요청 상태를 보인다 (Figma 390:2842)', () => {
   renderInbox();
 
-  expect(screen.getByRole('button', { name: /차은호/ })).toHaveTextContent('98점');
+  const pending = screen.getByRole('button', { name: /차은호/ });
+  expect(pending).toHaveTextContent('신청중');
+  expect(pending).not.toHaveTextContent('98');
+  expect(screen.getByRole('button', { name: /김채원/ })).toHaveTextContent('거절됨');
   fireEvent.click(screen.getByRole('tab', { name: '받은 신청' }));
 
-  expect(screen.getByRole('button', { name: /이도윤/ })).not.toHaveTextContent('점');
+  expect(screen.getByRole('button', { name: /이도윤/ })).toHaveTextContent('신청중');
 });
 
 test('기다리는 보낸 신청은 카드에서 취소하고, 뒷면에서 더 열 수 없다', () => {

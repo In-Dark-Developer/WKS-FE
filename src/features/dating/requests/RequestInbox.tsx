@@ -7,7 +7,12 @@ import { Tabs } from '@/ui/Tabs';
 
 import { DatingBackdrop } from '../DatingBackdrop';
 import { RequestDetail } from './RequestDetail';
-import type { RequestInboxView, RequestProfileView, RequestTab } from './requestsView';
+import type {
+  ReceivedRequestView,
+  RequestInboxView,
+  RequestTab,
+  SentRequestView,
+} from './requestsView';
 
 type Props = {
   view: RequestInboxView;
@@ -38,7 +43,8 @@ export function RequestInbox({
 }: Props) {
   const [tab, setTab] = useState<RequestTab>(initialTab);
   const [openId, setOpenId] = useState(initialOpenId);
-  const rows: readonly RequestProfileView[] = tab === 'sent' ? view.sent : view.received;
+  const rows: readonly (SentRequestView | ReceivedRequestView)[] =
+    tab === 'sent' ? view.sent : view.received;
   const sentOpen = tab === 'sent' ? view.sent.find((each) => each.id === openId) : undefined;
   const receivedOpen =
     tab === 'received' ? view.received.find((each) => each.id === openId) : undefined;
@@ -102,9 +108,30 @@ export function RequestInbox({
   );
 }
 
-// 목록 한 줄 — Figma Card/순위(109:1871). 누르면 상대 카드를 띄운다.
-function RequestRow({ request, onOpen }: { request: RequestProfileView; onOpen: () => void }) {
-  const { photo, name, score } = request;
+type PillTone = 'pending' | 'matched' | 'declined';
+
+// 요청 상태 알약 — 기다림은 '신청중', 성립은 '수락됨', 실패·거절은 '거절됨'(Figma 보관함/내가보낸사람 390:2842).
+// 받은 신청의 응답 전(상태 없음 포함)도 '신청중'이다.
+const pillByStatus: Record<
+  NonNullable<ReceivedRequestView['status']> | SentRequestView['status'],
+  { tone: PillTone; label: string }
+> = {
+  PENDING: { tone: 'pending', label: '신청중' },
+  MATCHED: { tone: 'matched', label: '수락됨' },
+  FAILED: { tone: 'declined', label: '거절됨' },
+  DECLINED: { tone: 'declined', label: '거절됨' },
+};
+
+// 목록 한 줄 — Figma Card/순위(109:1871). 오른쪽은 궁합 점수가 아니라 요청 상태다(390:2842). 누르면 상대 카드를 띄운다.
+function RequestRow({
+  request,
+  onOpen,
+}: {
+  request: SentRequestView | ReceivedRequestView;
+  onOpen: () => void;
+}) {
+  const { photo, name } = request;
+  const pill = pillByStatus[request.status ?? 'PENDING'];
   const photoSrc = photo.isLocked ? photo.thumbnailUrl : photo.url;
 
   return (
@@ -135,17 +162,12 @@ function RequestRow({ request, onOpen }: { request: RequestProfileView; onOpen: 
           <span className="truncate text-ui-16 font-semibold text-primary">{name.value}</span>
         )}
       </span>
-      {score === null ? null : (
-        <span className="flex shrink-0 items-center gap-12">
-          <span className="font-display text-ui-12 text-primary">궁합점수</span>
-          <span
-            className="flex h-[28px] w-[60px] items-center justify-center rounded-999 border border-primary-50 font-display text-ui-12 shadow-sm"
-            data-score-pill=""
-          >
-            {score}점
-          </span>
-        </span>
-      )}
+      <span
+        className="flex h-[28px] w-[60px] shrink-0 items-center justify-center rounded-999 border border-primary-50 font-display text-ui-12 shadow-sm"
+        data-status-pill={pill.tone}
+      >
+        {pill.label}
+      </span>
     </button>
   );
 }
