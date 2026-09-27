@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-28 · claude-code · -/- · 요청함 목록 줄 상태 알약(Figma 390:2842)
+
+- Commits: 이 PR
+- Done: 요청함 목록 줄 상태 알약(Figma 390:2842)
+- Not done: 없음
+- Developer changes: 없음 · Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: 없음
+- Verification: test · typecheck · lint · 목 모드 미리보기
+
 ## 2026-09-28 · ai-stream · -/- · 스트림 열기
 
 - Commits: (open)
