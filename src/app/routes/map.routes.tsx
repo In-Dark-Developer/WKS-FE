@@ -25,10 +25,9 @@ import {
 import { readingLoader, type ReadingView } from '@/features/saju';
 import { track } from '@/lib/analytics';
 
-type MyMapView = ReadingView & { myResultId: string; isSignedIn: boolean };
+type MyMapView = ReadingView & { isSignedIn: boolean };
 
 // SCR-08 궁합 지도(05/T3) — 주소에 id 가 없어 보관된 '내 결과'로 결과 loader 를 다시 쓴다(친구 목록이 그 안에 있다).
-// 뒤로가기가 돌아갈 곳이 주소에 없으므로 그 resultId 를 화면에 함께 넘긴다.
 // 로그인 여부(GET /me)로 저장 유도 카드를 정한다(FR-20) — 조회가 실패해도 지도는 그대로 보이고 비로그인으로 본다.
 async function protectedMapLoader(args: LoaderFunctionArgs): Promise<MyMapView> {
   const resultId = requireMyResultId();
@@ -37,7 +36,7 @@ async function protectedMapLoader(args: LoaderFunctionArgs): Promise<MyMapView> 
     getMe(),
   ]);
   track('map_viewed', { variant: 'own', friendCount: view.friends?.length ?? 0 });
-  return { ...view, myResultId: resultId, isSignedIn: me.ok };
+  return { ...view, isSignedIn: me.ok };
 }
 
 function CompatibilityMapRoute() {
@@ -48,7 +47,6 @@ function CompatibilityMapRoute() {
       <MyMapScreen
         friends={view.friends ?? []}
         nickname={view.nickname}
-        onBack={() => void navigate(`/reading/${view.myResultId}`)}
         onKakaoLogin={view.isSignedIn ? undefined : () => goToKakaoLogin('/me/map')}
         onSelectFriend={(friend) => {
           if (friend.compatibilityId !== undefined) void navigate(String(friend.compatibilityId));

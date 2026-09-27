@@ -23,13 +23,7 @@ function Sheet({ index, state }: { index: number; state: ReasonState }) {
   const friend = friends[index] ?? friends[0];
   return (
     <>
-      <MyMapScreen
-        friends={friends}
-        nickname="달빛토끼"
-        onBack={noop}
-        onSelectFriend={noop}
-        shareId="s"
-      />
+      <MyMapScreen friends={friends} nickname="달빛토끼" onSelectFriend={noop} shareId="s" />
       <CompatibilityReasonSheet friend={friend} onClose={noop} rank={index + 1}>
         <ReasonAnswers onRetry={noop} state={state} tier={friend.tier} />
       </CompatibilityReasonSheet>
