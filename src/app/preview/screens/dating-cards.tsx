@@ -146,6 +146,17 @@ export const preview: PreviewScreen = {
       <Cards face="back" view={{ ...cardsBase, candidates: allUnlocked }} />
     ),
     '인연 없음': () => <Cards view={{ ...cardsBase, candidates: [] }} />,
+    // 자기소개 최대 170자(BIO_MAX)를 띄어쓰기 없이 채운 카드 — 카드 폭 안에서 줄을 바꿔야 한다.
+    '자기소개 170자(띄어쓰기 없음)': () => (
+      <Cards
+        view={{
+          ...cardsBase,
+          candidates: lockedCandidates.map((candidate, index) =>
+            index === 0 ? { ...candidate, bio: '안녕하세요'.repeat(34) } : candidate,
+          ),
+        }}
+      />
+    ),
     '상대가 먼저 실을 보냄': () => (
       <Cards
         view={{
