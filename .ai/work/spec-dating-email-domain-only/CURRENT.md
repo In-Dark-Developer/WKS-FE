@@ -21,7 +21,7 @@ V1 학교 메일은 @dgu.ac.kr 도메인만 확인 — spec 반영(코드 인증
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
