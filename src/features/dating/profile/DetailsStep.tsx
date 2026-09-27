@@ -25,7 +25,7 @@ type Props = {
   onSubmit: () => void;
   isSubmitting: boolean;
   hasSubmitFailed: boolean;
-  // 학교 메일 코드 인증 — V1 은 넘기지 않아 도메인만 검사하는 메일 입력칸이 보인다(이후 버전용).
+  // 학교 메일 코드 인증 — 연동(10/T1) 전에는 넘기지 않아 인증 없는 메일 입력칸만 보인다.
   emailVerification?: {
     view: EmailVerificationView;
     onSendCode: () => void;

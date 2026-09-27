@@ -35,8 +35,7 @@ type Props = {
     details?: Partial<Omit<DetailsStepValues, 'isPhotoReady'>>;
   };
   showErrorsInitially?: boolean;
-  // 학교 메일 코드 인증 — V1 은 넘기지 않는다(도메인만 확인, 2026-09-27). 이후 버전에서 인증을 켤 때
-  // 넘기면 (2/2) 의 메일 칸이 인증 버튼·코드 입력으로 바뀐다. 요청은 부르는 쪽이 지금 메일 값으로 한다.
+  // 학교 메일 코드 인증(10/T5 퍼블리싱) — 연동(10/T1)이 넘긴다. 요청은 부르는 쪽이 (2/2) 의 지금 메일 값으로 한다.
   emailVerification?: {
     view: EmailVerificationView;
     onSendCode: (email: string) => void;

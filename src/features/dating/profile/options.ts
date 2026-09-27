@@ -66,8 +66,7 @@ export const mbtiOptions: readonly SelectOption<Mbti>[] = mbtiTypes.map((type) =
   label: type,
 }));
 
-// V1 은 학교 메일을 이 도메인으로만 확인한다 — 인증 메일·코드는 쓰지 않는다(2026-09-27 결정, PRD FR-25).
-// 코드 인증은 이후 버전용으로 EmailVerification 에 남겨 두었다.
+// 학교 메일 도메인 — 제출 전에 여기서 먼저 막는다. 소속 확인은 이 메일로 받는 6자리 코드 인증이 한다(PRD FR-25).
 export const SCHOOL_EMAIL_DOMAIN = 'dgu.ac.kr';
 
 export const NICKNAME_MAX = 8;
