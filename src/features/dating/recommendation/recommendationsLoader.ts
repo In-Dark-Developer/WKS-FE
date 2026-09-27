@@ -11,9 +11,9 @@ import {
   type RerollView,
 } from './cardsView';
 
-// 리롤 비용(FR-27). 백엔드에 리롤 경로가 없어 무료 1회 여부도 응답으로 오지 않는다 —
-// 지금은 '무료가 남아 있다'로 두고, 실제 판정(서버 자정 초기화)은 API 가 서면 그 값으로 바꾼다.
-export const REROLL_COST = 3;
+// 리롤 비용(FR-27)은 서버가 판정한다 — 추천 응답의 `rerollCost` 가 0 이면 오늘 무료가 남은 것이고,
+// 아니면 그 값만큼 든다(WKS-BE §10.4, 하루 1회 무료 뒤 5실). 화면은 이 값을 옮기기만 한다.
+// PRD FR-27 은 '실 3' 이라고 적지만 확정값은 5 다 — 문구를 고치는 일은 spec 스트림 몫이다.
 
 export type DatingCardsState =
   | { kind: 'ready'; view: DatingCardsView }
@@ -53,9 +53,9 @@ export function toCandidateView(candidate: DatingCandidate): MatchCandidateView 
   };
 }
 
-export function toRerollView(hasFreeReroll: boolean, balance: number): RerollView {
-  if (hasFreeReroll) return { kind: 'free' };
-  return { kind: 'paid', cost: REROLL_COST, canAfford: balance >= REROLL_COST };
+export function toRerollView(rerollCost: number, balance: number): RerollView {
+  if (rerollCost === 0) return { kind: 'free' };
+  return { kind: 'paid', cost: rerollCost, canAfford: balance >= rerollCost };
 }
 
 // `/dating/cards` loader — 잔액과 후보를 함께 읽는다. 잔액의 단일 출처는 `GET /wallet`(원장)이고
@@ -101,7 +101,7 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
         ...toCandidateView(candidate),
         isThreadSent: sentIds.has(candidate.candidateId),
       })),
-      reroll: toRerollView(true, balance),
+      reroll: toRerollView(recommendations.data.rerollCost, balance),
     },
   };
 }

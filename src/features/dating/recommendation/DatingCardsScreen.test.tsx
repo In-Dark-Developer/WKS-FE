@@ -24,6 +24,8 @@ import type { DatingCardsView, MatchCandidateView } from './cardsView';
 import {
   DatingCardsScreen,
   REROLL_FAILED_MESSAGE,
+  REROLL_NO_MORE_MESSAGE,
+  REROLL_SHORT_MESSAGE,
   THREAD_FAILED_MESSAGE,
   UNLOCK_SHORT_MESSAGE,
 } from './DatingCardsScreen';
@@ -86,6 +88,53 @@ test('리롤이 실패하면 추천을 그대로 두고 알린다 (FR-27)', asyn
 
   expect(await screen.findByRole('status')).toHaveTextContent(REROLL_FAILED_MESSAGE);
   expect(screen.getByText('영화 보러 다니는 걸 좋아해요.')).toBeInTheDocument();
+});
+
+test.each([
+  {
+    label: '잔액 부족(402)',
+    error: { kind: 'api', code: 'INSUFFICIENT_THREAD', message: '운명의 실이 부족해요.' },
+    message: REROLL_SHORT_MESSAGE,
+  },
+  {
+    label: '후보 소진(409)',
+    error: {
+      kind: 'api',
+      code: 'DATING_NO_MORE_CANDIDATES',
+      message: '새로 소개할 인연이 없어요.',
+    },
+    message: REROLL_NO_MORE_MESSAGE,
+  },
+])('리롤 $label 은 그 상황에 맞게 알린다 (FR-27 · FR-31)', async ({ error, message }) => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  rerollMock.mockResolvedValue({ ok: false, error });
+  renderScreen({ balance: 1, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openRerollSheet();
+  fireEvent.click(await screen.findByRole('button', { name: '무료 점지권으로 변경하기' }));
+
+  expect(await screen.findByRole('status')).toHaveTextContent(message);
+  expect(screen.getByText('영화 보러 다니는 걸 좋아해요.')).toBeInTheDocument();
+});
+
+// 서버가 연타를 막지 않는다 — 두 번 부르면 두 번 차감된다(WKS-BE §10.4.1).
+test('리롤 요청 중에 다시 눌러도 한 번만 부른다 (FR-27)', async () => {
+  let settle = (): void => {};
+  rerollMock.mockReturnValue(
+    new Promise((resolve) => {
+      settle = () =>
+        resolve({ ok: true, data: { candidates: [], rerollCost: 5, threadBalance: 5 } });
+    }),
+  );
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openRerollSheet();
+  fireEvent.click(await screen.findByRole('button', { name: '무료 점지권으로 변경하기' }));
+  openRerollSheet();
+  fireEvent.click(await screen.findByRole('button', { name: '무료 점지권으로 변경하기' }));
+
+  expect(rerollMock).toHaveBeenCalledTimes(1);
+  settle();
 });
 
 test('잔액과 빈 카드를 그린다 (FR-26)', () => {
