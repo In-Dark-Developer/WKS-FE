@@ -30,11 +30,12 @@ export type ReadingView = {
   }[];
 };
 
-// 카드 스탬프와 운세 카드의 순서·이름 — 백엔드 fortunes 순서(MARRIAGE → CHILDREN → LOVE)와 같다.
+// 카드 스탬프와 운세 카드의 순서·이름 — 화면이 정한다(Figma 사주 카드 화면 8:794 · PRD FR-3 의 연애·결혼·자녀).
+// 백엔드 응답 순서(MARRIAGE → CHILDREN → LOVE)를 따르지 않는다 — QA 2026-09-28 로 바로잡았다.
 export const fortuneOrder: readonly { key: FortuneKey; label: string }[] = [
+  { key: 'love', label: '연애운' },
   { key: 'marriage', label: '결혼운' },
   { key: 'children', label: '자녀운' },
-  { key: 'love', label: '연애운' },
 ];
 
 // 오행 카드 순서·이름 — Figma 결과 화면(982:3446)의 목 → 화 → 토 → 금 → 수.
