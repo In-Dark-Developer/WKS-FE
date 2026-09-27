@@ -54,6 +54,8 @@ export const datingCandidateSchema = z.object({
   candidateId: z.string().uuid(),
   score: z.number().int().min(0).max(100),
   mbti: z.string(),
+  // 생년월일(`2002-03-14`) — WKS-BE 반영 중(2026-09-27)이라 없을 수 있다. 카드는 '02년생'으로 보인다.
+  age: z.iso.date().nullish(),
   bio: z.string(),
   // 흐리게 보여줄 썸네일의 임시 조회 주소 — 원본 사진 권한은 주지 않는다(WKS-BE §10.4, dev 51d5ec2).
   // 사진이 없는 후보를 위해 없을 수도 있는 값으로 받는다.

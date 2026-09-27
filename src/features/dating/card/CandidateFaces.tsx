@@ -28,6 +28,8 @@ type FrontProps = {
   rank: number | null;
   relationLabel: string;
   mbti: string;
+  // 나이 — '02년생'. 없으면 칸을 그리지 않는다.
+  birthYear?: string | null;
   // 궁합 점수 — 보이지 않기로 한 카드(받은 신청, Q17 미정)는 null.
   score: number | null;
   bio: string;
@@ -35,12 +37,20 @@ type FrontProps = {
   footer?: ReactNode;
 };
 
-// 앞면 — 순위·관계 유형·MBTI·점수·자기소개(Figma 96:1876).
-export function CandidateFront({ rank, relationLabel, mbti, score, bio, footer }: FrontProps) {
+// 앞면 — 순위·관계 유형·MBTI·나이·점수·자기소개(Figma 96:1876 · 나이 추가 448:2759).
+export function CandidateFront({
+  rank,
+  relationLabel,
+  mbti,
+  birthYear,
+  score,
+  bio,
+  footer,
+}: FrontProps) {
   return (
     <div className="flex flex-col gap-16">
-      <div className="flex items-center gap-12">
-        <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-end gap-16">
           <div className="flex flex-col items-start gap-8">
             {rank === null ? null : (
               <span className="rounded-999 bg-neutral-700 px-16 text-ui-12 text-neutral-100">
@@ -49,19 +59,25 @@ export function CandidateFront({ rank, relationLabel, mbti, score, bio, footer }
             )}
             <p className="font-sungkok text-display-24 text-neutral-0">{relationLabel}</p>
           </div>
-          <p className="flex items-center gap-12">
-            <span className="text-ui-12 text-neutral-200">MBTI</span>
-            <span className="font-sungkok text-ui-14 text-neutral-0">{mbti}</span>
-          </p>
+          {score === null ? null : (
+            <p
+              aria-label={`궁합 점수 ${score}점`}
+              className="flex size-48 items-center justify-center rounded-999 border border-neutral-300 font-display text-display-32 text-neutral-0"
+            >
+              {score}
+            </p>
+          )}
         </div>
-        {score === null ? null : (
-          <p
-            aria-label={`궁합 점수 ${score}점`}
-            className="flex size-48 items-center justify-center rounded-999 border border-neutral-300 font-display text-display-32 text-neutral-0"
-          >
-            {score}
-          </p>
-        )}
+        <p className="flex items-center gap-12">
+          <span className="text-ui-12 text-neutral-200">MBTI</span>
+          <span className="font-sungkok text-ui-14 text-neutral-0">{mbti}</span>
+          {birthYear ? (
+            <>
+              <span className="text-ui-12 text-neutral-200">나이</span>
+              <span className="font-sungkok text-ui-14 text-neutral-0">{birthYear}</span>
+            </>
+          ) : null}
+        </p>
       </div>
       <p className="text-ui-12 break-keep text-neutral-0">{bio}</p>
       {footer ? <div className="flex justify-center gap-16">{footer}</div> : null}

@@ -23,6 +23,8 @@ export type MatchCandidateView = {
   score: number;
   // 프로필 등록에서 필수라 항상 온다(WKS-BE DatingProfileRequest).
   mbti: string;
+  // 나이 — '02년생'. 생년월일이 오지 않은 카드는 칸을 숨긴다.
+  birthYear?: string | null;
   bio: string;
   photo: CandidatePhoto;
   name: LockableField<string>;
