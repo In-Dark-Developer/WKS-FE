@@ -841,13 +841,12 @@ test('사주 없는 로그인 사용자는 프로필 (1/2) 사주 정보부터 �
   expect(await screen.findByRole('button', { name: '다음으로' })).toBeInTheDocument();
 });
 
-test('프로필까지 등록한 사용자는 입력 없이 Top 3 로 간다', async () => {
+test('프로필까지 등록한 사용자는 소개팅 탭에서 인트로 없이 Top 3 로 간다', async () => {
   getMeMock.mockResolvedValue(member({ hasResult: true, hasDatingProfile: true }));
   const router = renderAt('/dating');
 
-  fireEvent.click(await screen.findByRole('button', { name: '내 운명 찾아 떠나기' }));
-
   await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating/cards'));
+  expect(screen.queryByRole('button', { name: '내 운명 찾아 떠나기' })).not.toBeInTheDocument();
 });
 
 test('비로그인으로 프로필 등록 주소에 오면 소개팅 인트로로 돌려보낸다', async () => {
