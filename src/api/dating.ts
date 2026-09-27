@@ -155,10 +155,10 @@ function buildMockCandidates(): DatingCandidate[] {
 
 // 목 모드에서만 쓰는 추천 보관 — 리롤해야 바뀐다(실제 모드는 백엔드가 같은 규칙을 갖는다).
 let mockCandidates: DatingCandidate[] | null = null;
-// 목 리롤 — 하루 1회 무료, 그 뒤 5실(백엔드 §10.4.1 과 같은 규칙). 날짜는 기기 시각으로 흉내 낸다.
+// 목 리롤 — 하루 1회 무료, 그 뒤 20실(백엔드 §10.4.1 과 같은 규칙). 날짜는 기기 시각으로 흉내 낸다.
 let mockFreeRerollDate: string | null = null;
 
-export const REROLL_PAID_COST = 5;
+export const REROLL_PAID_COST = 20;
 
 export function resetMockRecommendations(): void {
   mockCandidates = null;
@@ -184,7 +184,7 @@ export async function getRecommendations(): Promise<ApiOutcome<DatingRecommendat
 }
 
 // POST /dating/recommendations/reroll — 카드 셋을 통째로 바꾼다(FR-27, WKS-BE §10.4.1).
-// 하루 1회 무료(KST), 그 뒤 5실이고 판정·차감은 백엔드가 한다. 새 후보가 없으면 409
+// 하루 1회 무료(KST), 그 뒤 20실이고 판정·차감은 백엔드가 한다. 새 후보가 없으면 409
 // DATING_NO_MORE_CANDIDATES, 잔액이 모자라면 402 INSUFFICIENT_THREAD 이며 둘 다 카드는 그대로다.
 // **서버가 연타를 막지 않으므로 부르는 쪽이 요청 중 버튼을 막아야 한다.**
 export async function rerollRecommendations(): Promise<ApiOutcome<DatingRerollResult>> {
