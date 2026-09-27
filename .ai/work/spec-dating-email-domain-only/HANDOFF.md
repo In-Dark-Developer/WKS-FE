@@ -2,18 +2,18 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-27
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+spec 이 "V1 은 @dgu.ac.kr 도메인만 확인, 코드 인증은 이후 버전용" 결정과 맞는다.
 
 ## Work Completed
 
-- 없음
+- PRD FR-25 문구·Q20 삭제, openapi 프로필 등록 403 삭제·400 INVALID_EMAIL_DOMAIN, email-codes 를 V1 미사용 표시, PLAN T5 재정의
 
 ## Work In Progress
 
@@ -21,23 +21,23 @@
 
 ## Files Changed
 
-- 없음
+- `docs/prd/30-functional-requirements.md` · `docs/prd/50-scope.md` · `docs/api/openapi.yaml` · `docs/phases/10-dating-onboarding/PLAN.md`
 
 ## Decisions Made
 
-- 없음
+- 2026-09-27 소유자: V1 은 도메인만 확인, 코드 인증 로직은 이후 버전용으로 남긴다, 백엔드도 403 요구를 없앤다
 
 ## Tests Executed
 
-- 없음
+- `redocly lint docs/api/openapi.yaml`
 
 ## Test Results
 
-- 없음
+- 기존 1 error·6 warning 그대로, 새 문제 없음
 
 ## Known Problems
 
-- 없음
+- WKS-BE 가 아직 프로필 등록에 코드 인증을 요구한다(403 DATING_NOT_VERIFIED) — 백엔드 반영 전 실제 서버 등록 불가
 
 ## Unverified Assumptions
 
@@ -45,4 +45,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+없음
