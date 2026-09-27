@@ -36,11 +36,9 @@ function renderAt(path: string) {
                 {face.grades.map((g) => `${g.label}${g.grade}`).join(' ')}
               </p>
             )}
-            teaser={<p>티저 자리</p>}
             view={view}
           />
         ),
-        children: [{ path: 'pre-register', element: <p>하위 화면</p> }],
       },
     ],
     { initialEntries: [path] },
@@ -71,13 +69,6 @@ test('카드 자리에 뷰 모델의 앞면 값을 넘기고 행운·운세 세 
     screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent),
   ).toEqual(['연애운', '결혼운', '자녀운']);
   expect(screen.getByText('연애 풀이')).toBeInTheDocument();
-});
-
-test('다른 Phase 의 슬롯과 하위 라우트를 제자리에 그린다', () => {
-  renderAt('/reading/abc/pre-register');
-
-  expect(screen.getByText('티저 자리')).toBeInTheDocument();
-  expect(screen.getByText('하위 화면')).toBeInTheDocument();
 });
 
 test('뒤로가기 자리에 받은 버튼을 카드 위에 둔다', () => {

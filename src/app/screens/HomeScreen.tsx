@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 
-import { PreRegisterTeaser } from '@/features/profile';
 import { ReadingResult, type ReadingView } from '@/features/saju';
 import { ResultCard } from '@/features/share';
 
@@ -8,16 +7,14 @@ import { BackRow } from './BackRow';
 
 type Props = {
   view: ReadingView;
-  // 사전신청 티저를 눌렀을 때 — 이동은 라우트가 정한다.
-  onPreRegister: () => void;
   // 친구의 궁합 지도에서 들어왔을 때만 맨 위 '뒤로가기'가 있다(Figma 720:3587, FR-6).
   onBack?: () => void;
 };
 
-// SCR-04 사주 결과 = 홈 — saju 의 결과 화면에 share(카드)·profile(사전신청 티저)을 잇는다.
+// SCR-04 사주 결과 = 홈 — saju 의 결과 화면에 share(카드)를 잇는다. 사전신청(GRAND OPEN) 섹션은 없다(2026-09-27 QA, 09/T13).
 // features 는 서로를 import 하지 않으므로 조립은 app 이 한다(ARCHITECTURE Module Boundaries).
 // 친구 궁합 순위와 '친구에게 공유'는 홈에 두지 않는다(2026-09-27 QA, 09/T12) — 궁합지도(/me/map)에 있다.
-export function HomeScreen({ view, onPreRegister, onBack }: Props) {
+export function HomeScreen({ view, onBack }: Props) {
   return (
     <ReadingResult
       back={onBack ? <BackRow onBack={onBack} /> : null}
@@ -30,7 +27,6 @@ export function HomeScreen({ view, onPreRegister, onBack }: Props) {
         ) : undefined
       }
       renderCard={(face) => <ResultCard {...face} />}
-      teaser={<PreRegisterTeaser onApply={onPreRegister} />}
       view={view}
     />
   );

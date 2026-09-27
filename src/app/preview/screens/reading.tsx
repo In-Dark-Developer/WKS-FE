@@ -67,18 +67,13 @@ export const preview: PreviewScreen = {
   order: 1,
   backdrop: 'result',
   states: {
-    결과: () => <HomeScreen onPreRegister={noop} view={view} />,
-    '인연 없음': () => <HomeScreen onPreRegister={noop} view={{ ...view, friends: [] }} />,
+    결과: () => <HomeScreen view={view} />,
+    '인연 없음': () => <HomeScreen view={{ ...view, friends: [] }} />,
     // 이유가 없는 옛 결과(V14 이전 약 905건) — 잘 맞는 오행 영역만 없다(FR-3 V1).
-    '옛 결과(잘 맞는 오행 없음)': () => (
-      <HomeScreen onPreRegister={noop} view={{ ...view, elementMatch: null }} />
-    ),
-    '친구의 궁합 지도에서 옴(뒤로가기)': () => (
-      <HomeScreen onBack={noop} onPreRegister={noop} view={view} />
-    ),
+    '옛 결과(잘 맞는 오행 없음)': () => <HomeScreen view={{ ...view, elementMatch: null }} />,
+    '친구의 궁합 지도에서 옴(뒤로가기)': () => <HomeScreen onBack={noop} view={view} />,
     '긴 제목': () => (
       <HomeScreen
-        onPreRegister={noop}
         view={{
           ...view,
           nickname: '여덟글자닉네임',
