@@ -68,12 +68,21 @@ export const datingCandidateSchema = z.object({
 
 export type DatingCandidate = z.infer<typeof datingCandidateSchema>;
 
-// 최대 3명. 후보가 없으면 빈 배열이다.
+// 최대 3명. 후보가 없으면 빈 배열이다. `rerollCost` 는 지금 리롤하면 드는 실이다 —
+// 오늘(KST) 무료가 남았으면 0, 다 썼으면 5(WKS-BE §10.4, 2026-09-27). 판정은 서버가 한다.
 export const datingRecommendationsSchema = z.object({
   candidates: z.array(datingCandidateSchema).max(3),
+  rerollCost: z.number().int().nonnegative(),
 });
 
 export type DatingRecommendations = z.infer<typeof datingRecommendationsSchema>;
+
+// 리롤 결과(§10.4.1) — `rerollCost` 는 **다음** 리롤 비용이고 `threadBalance` 는 차감 후 잔액이다.
+export const datingRerollResultSchema = datingRecommendationsSchema.extend({
+  threadBalance: z.number().int().nonnegative(),
+});
+
+export type DatingRerollResult = z.infer<typeof datingRerollResultSchema>;
 
 // 해금 항목(§10.5) — 비용 PHOTO 10 · NAME 7 · DEPARTMENT 5 · REASON 3.
 export const datingUnlockFieldSchema = z.enum(['PHOTO', 'NAME', 'DEPARTMENT', 'REASON']);

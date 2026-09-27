@@ -20,12 +20,7 @@ vi.mock('@/api/dating', async (importOriginal) => {
 
 import type { DatingCandidate } from '@/api/dating';
 
-import {
-  REROLL_COST,
-  datingCardsLoader,
-  toCandidateView,
-  toRerollView,
-} from './recommendationsLoader';
+import { datingCardsLoader, toCandidateView, toRerollView } from './recommendationsLoader';
 
 const CANDIDATE_ID = '3f2a9c1e-0000-4000-8000-000000000001';
 
@@ -92,19 +87,19 @@ test('해금한 항목은 값을 옮긴다', () => {
   expect(view.name).toEqual({ isLocked: false, value: '김채원' });
 });
 
-test('리롤은 무료가 남으면 free, 아니면 잔액으로 가능 여부를 가른다 (FR-27 · FR-31)', () => {
-  expect(toRerollView(true, 0)).toEqual({ kind: 'free' });
-  expect(toRerollView(false, REROLL_COST)).toEqual({
-    kind: 'paid',
-    cost: REROLL_COST,
-    canAfford: true,
-  });
-  expect(toRerollView(false, REROLL_COST - 1)).toMatchObject({ canAfford: false });
+// 비용 판정은 서버가 한다 — 추천 응답의 rerollCost 가 0 이면 오늘 무료가 남은 것이다(WKS-BE §10.4).
+test('리롤 비용 0 은 무료, 그 밖에는 잔액으로 가능 여부를 가른다 (FR-27 · FR-31)', () => {
+  expect(toRerollView(0, 0)).toEqual({ kind: 'free' });
+  expect(toRerollView(5, 5)).toEqual({ kind: 'paid', cost: 5, canAfford: true });
+  expect(toRerollView(5, 4)).toMatchObject({ kind: 'paid', cost: 5, canAfford: false });
 });
 
 test('loader 는 잔액과 후보를 함께 싣는다', async () => {
   getWalletMock.mockResolvedValue(wallet(12));
-  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
 
   const state = await datingCardsLoader();
 
@@ -114,7 +109,7 @@ test('loader 는 잔액과 후보를 함께 싣는다', async () => {
 
 test('후보가 0명이면 빈 목록으로 그린다 (FR-26)', async () => {
   getWalletMock.mockResolvedValue(wallet(0));
-  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [], rerollCost: 0 } });
 
   const state = await datingCardsLoader();
 
@@ -160,7 +155,10 @@ test('열렸는데 값이 아직 없는 항목은 비용 0 잠금으로 두어 �
 
 test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는다 (FR-29)', async () => {
   getWalletMock.mockResolvedValue(wallet(10));
-  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
   listRequestsMock.mockResolvedValue({
     ok: true,
     data: [
@@ -184,7 +182,10 @@ test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는�
 
 test('취소한 신청의 상대 카드는 보내지 않은 것으로 보여 다시 보낼 수 있다', async () => {
   getWalletMock.mockResolvedValue(wallet(10));
-  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
   listRequestsMock.mockResolvedValue({
     ok: true,
     data: [
@@ -208,7 +209,10 @@ test('취소한 신청의 상대 카드는 보내지 않은 것으로 보여 다
 test('잔액을 못 읽으면 0 으로 두고 소모를 막는다 (FR-31)', async () => {
   vi.spyOn(console, 'error').mockImplementation(() => {});
   getWalletMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
-  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
 
   const state = await datingCardsLoader();
 

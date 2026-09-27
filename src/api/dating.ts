@@ -1,14 +1,22 @@
 import { request, type ApiOutcome } from './client';
-import { linkMockAccountResult, markMockDatingProfile, readMockAccountResultId } from './me';
+import {
+  linkMockAccountResult,
+  markMockDatingProfile,
+  readMockAccountResultId,
+  readMockBalance,
+  spendMockThread,
+} from './me';
 import { readSession } from './session';
 import {
   datingProfileRequestSchema,
   datingProfileSchema,
   datingRecommendationsSchema,
+  datingRerollResultSchema,
   type DatingCandidate,
   type DatingProfile,
   type DatingProfileRequest,
   type DatingRecommendations,
+  type DatingRerollResult,
 } from './schema/dating';
 
 export type {
@@ -17,6 +25,7 @@ export type {
   DatingProfile,
   DatingProfileRequest,
   DatingRecommendations,
+  DatingRerollResult,
 } from './schema/dating';
 
 // 소개팅(`/api/dating/**`) 호출 — 인증 필요. `VITE_API_MOCK=true` 면 요청 없이 목 응답을 돌려준다
@@ -142,9 +151,22 @@ function buildMockCandidates(): DatingCandidate[] {
 
 // 목 모드에서만 쓰는 추천 보관 — 리롤해야 바뀐다(실제 모드는 백엔드가 같은 규칙을 갖는다).
 let mockCandidates: DatingCandidate[] | null = null;
+// 목 리롤 — 하루 1회 무료, 그 뒤 5실(백엔드 §10.4.1 과 같은 규칙). 날짜는 기기 시각으로 흉내 낸다.
+let mockFreeRerollDate: string | null = null;
+
+export const REROLL_PAID_COST = 5;
 
 export function resetMockRecommendations(): void {
   mockCandidates = null;
+  mockFreeRerollDate = null;
+}
+
+function mockToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function mockRerollCost(): number {
+  return mockFreeRerollDate === mockToday() ? REROLL_PAID_COST : 0;
 }
 
 // GET /dating/recommendations — 오늘의 인연 Top 3(FR-26). 학교 메일 인증 전에는 403 DATING_NOT_VERIFIED,
@@ -152,21 +174,36 @@ export function resetMockRecommendations(): void {
 export async function getRecommendations(): Promise<ApiOutcome<DatingRecommendations>> {
   if (isMockEnabled()) {
     mockCandidates ??= buildMockCandidates();
-    return { ok: true, data: { candidates: mockCandidates } };
+    return { ok: true, data: { candidates: mockCandidates, rerollCost: mockRerollCost() } };
   }
   return request({ method: 'GET', path: '/dating/recommendations' }, datingRecommendationsSchema);
 }
 
-// 리롤(FR-27) — 백엔드에 아직 경로가 없다(api-spec.md §10 '#84 구현 상태'). 목 모드에서만 새 세 명을 만들고,
-// 실제 모드는 요청 없이 실패로 돌려준다 — 화면은 추천을 그대로 두고 안내만 띄운다.
-export async function rerollRecommendations(): Promise<ApiOutcome<DatingRecommendations>> {
+// POST /dating/recommendations/reroll — 카드 셋을 통째로 바꾼다(FR-27, WKS-BE §10.4.1).
+// 하루 1회 무료(KST), 그 뒤 5실이고 판정·차감은 백엔드가 한다. 새 후보가 없으면 409
+// DATING_NO_MORE_CANDIDATES, 잔액이 모자라면 402 INSUFFICIENT_THREAD 이며 둘 다 카드는 그대로다.
+// **서버가 연타를 막지 않으므로 부르는 쪽이 요청 중 버튼을 막아야 한다.**
+export async function rerollRecommendations(): Promise<ApiOutcome<DatingRerollResult>> {
   if (!isMockEnabled()) {
+    return request(
+      { method: 'POST', path: '/dating/recommendations/reroll' },
+      datingRerollResultSchema,
+    );
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, MOCK_SAVE_DELAY_MS));
+  const cost = mockRerollCost();
+  const balance = cost === 0 ? readMockBalance().balance : spendMockThread(cost);
+  if (balance === null) {
     return {
       ok: false,
-      error: { kind: 'api', code: 'NOT_FOUND', message: '다시 점지하기는 아직 준비 중이에요.' },
+      error: { kind: 'api', code: 'INSUFFICIENT_THREAD', message: '운명의 실이 부족해요.' },
     };
   }
-  await new Promise((resolve) => setTimeout(resolve, MOCK_SAVE_DELAY_MS));
+  mockFreeRerollDate = mockToday();
   mockCandidates = buildMockCandidates();
-  return { ok: true, data: { candidates: mockCandidates } };
+  return {
+    ok: true,
+    data: { candidates: mockCandidates, rerollCost: REROLL_PAID_COST, threadBalance: balance },
+  };
 }
