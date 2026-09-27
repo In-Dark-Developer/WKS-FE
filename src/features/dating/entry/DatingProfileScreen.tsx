@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { createDatingProfile } from '@/api/dating';
+import { sendDatingEmailCode, verifyDatingEmailCode } from '@/api/emailCodes';
 import { createResult } from '@/api/results';
 import { uploadDatingPhoto } from '@/api/uploads';
 
 import { DatingProfileForm, type ProfileSubmitState } from '../profile/DatingProfileForm';
+import type { EmailVerificationView } from '../profile/emailVerificationView';
 import type { DatingPhotoView } from '../profile/photoView';
 import type { DatingProfileInput } from '../profile/profileSchema';
+import { toEmailVerificationError, toResendAt } from './emailVerification';
 import { DATING_CARDS_PATH, DATING_INTRO_PATH } from './datingEntry';
 import type { DatingProfileStart } from './profileLoader';
 
@@ -35,6 +38,11 @@ export function DatingProfileScreen({ start }: Props) {
   const [submitState, setSubmitState] = useState<ProfileSubmitState>('idle');
   // 사주를 한 번 만들었으면 프로필 저장만 다시 시도한다 — 재시도마다 새 결과가 생기지 않게.
   const [resultId, setResultId] = useState(start.resultId);
+  // 학교 메일 코드 인증(FR-25) — 인증을 마친 주소를 기억해, 메일을 고치면 처음 상태로 돌아간다.
+  const [emailVerification, setEmailVerification] = useState<EmailVerificationView>({
+    status: 'idle',
+  });
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
 
   // 미리보기 주소는 사진을 바꾸거나 화면을 떠날 때 놓는다.
   const previewUrl = photo.previewUrl;
@@ -79,8 +87,51 @@ export function DatingProfileScreen({ start }: Props) {
     return created.data.resultId;
   }
 
+  async function handleSendCode(email: string) {
+    if (emailVerification.status === 'sending') return;
+    setEmailVerification((current) => ({ ...current, status: 'sending', error: undefined }));
+    const outcome = await sendDatingEmailCode(email);
+    if (!outcome.ok) {
+      console.error('POST /dating/email-codes 실패', outcome.error);
+      setEmailVerification({ status: 'idle', error: toEmailVerificationError(outcome.error) });
+      return;
+    }
+    // 다시 보내면 백엔드가 이전 코드와 인증 상태를 무효로 한다 — 화면도 인증 전으로 되돌린다.
+    setVerifiedEmail(null);
+    setEmailVerification({
+      status: 'sent',
+      resendAvailableAt: toResendAt(outcome.data.resendAvailableAt),
+    });
+  }
+
+  async function handleVerifyCode(email: string, code: string) {
+    if (emailVerification.status === 'verifying') return;
+    setEmailVerification((current) => ({ ...current, status: 'verifying', error: undefined }));
+    const outcome = await verifyDatingEmailCode(email, code);
+    if (!outcome.ok) {
+      console.error('POST /dating/email-codes/verify 실패', outcome.error);
+      setEmailVerification((current) => ({
+        ...current,
+        status: 'sent',
+        error: toEmailVerificationError(outcome.error),
+      }));
+      return;
+    }
+    setVerifiedEmail(outcome.data.email);
+    setEmailVerification({ status: 'verified' });
+  }
+
   async function handleSubmit(input: DatingProfileInput) {
     if (submitState === 'submitting' || photo.photoId === undefined) return;
+    // 인증을 마친 주소로만 등록한다(FR-25) — 인증 뒤 메일을 고쳤으면 그 주소로 다시 받아야 한다.
+    if (input.details.email !== verifiedEmail) {
+      setEmailVerification((current) => ({
+        ...current,
+        status: current.status === 'verified' ? 'idle' : current.status,
+        error: 'invalid-code',
+      }));
+      return;
+    }
     setSubmitState('submitting');
 
     if ((await ensureResultId(input)) === null) {
@@ -99,6 +150,11 @@ export function DatingProfileScreen({ start }: Props) {
 
   return (
     <DatingProfileForm
+      emailVerification={{
+        onSendCode: (email) => void handleSendCode(email),
+        onVerifyCode: (email, code) => void handleVerifyCode(email, code),
+        view: emailVerification,
+      }}
       initialValues={{ saju: start.saju }}
       onBack={handleBack}
       onPhotoSelect={(file) => void handlePhotoSelect(file)}
