@@ -3,6 +3,7 @@ import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
 import { getMe } from '@/api/me';
+import { getMyResult } from '@/api/results';
 import { readSession } from '@/api/session';
 import { HomeScreen } from '@/app/screens/HomeScreen';
 import { requireSaju } from '@/app/routes/guards';
@@ -42,10 +43,16 @@ export const SAJU_INPUT_PATH = '/saju';
 // '이미 아이디가 있어요'는 로그인 시트만 띄운다 — 로그인 뒤 계정 기록을 불러와 이 티저로 돌아온다(FR-21).
 // 이미 로그인했으면 그 링크를 그리지 않는다. 로그인 여부는 GET /me 로만 판단하고, 조회가 실패하면 로그인하지 않은
 // 것으로 본다 — 링크가 한 번 더 보이는 편이 로그인할 길을 막는 것보다 낫다.
+// 로그인했는데 이 브라우저에 결과가 없으면(저장소 삭제 등) 계정 결과를 불러와 세션에 둔다(GET /me/result, FR-21) —
+// 복원은 로그인 순간에만 일어나므로 여기서 한 번 더 잡아 '내 사주 보기'가 입력으로 새지 않게 한다. 실패해도 티저는 뜬다.
 type MainTeaserView = { isSignedIn: boolean };
 
 async function mainTeaserLoader(): Promise<MainTeaserView> {
   const me = await getMe();
+  if (me.ok && me.data.hasResult && readSession() === null) {
+    const mine = await getMyResult();
+    if (!mine.ok) console.error('GET /me/result 실패', mine.error);
+  }
   return { isSignedIn: me.ok };
 }
 
