@@ -46,9 +46,13 @@ export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Pr
 
   return (
     <DatingDialog className="gap-12" labelledBy={titleId} onClose={onClose} open={open}>
-      <div className="-mt-20 -mr-8 -mb-4 flex w-full justify-end">
-        <IconButton icon={closeIcon} label="닫기" onClick={onClose} />
-      </div>
+      {/* 닫기는 판 모서리에 띄운다 — 실타래 그림이 닫기 줄 아래로 밀리지 않고 판 위쪽에서 시작한다(Figma 295:3281). */}
+      <IconButton
+        className="absolute top-20 right-16"
+        icon={closeIcon}
+        label="닫기"
+        onClick={onClose}
+      />
 
       <div className="flex w-full flex-col gap-12">
         <img
@@ -83,7 +87,7 @@ export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Pr
 // 받은 방법은 개수 대신 '지급 완료'만 보인다(Figma 445:2701).
 function EarnRow({ way, isDone }: { way: EarnWay; isDone: boolean }) {
   return (
-    <li className="flex h-[82px] items-center justify-between rounded-12 bg-rose-100 p-12">
+    <li className="flex h-[82px] items-center justify-between rounded-12 p-12" data-earn-row="">
       <div className="flex h-full items-center gap-12">
         <img alt="" className="size-[58px] object-contain" draggable={false} src={way.icon} />
         <div className="flex flex-col gap-4">
@@ -94,7 +98,7 @@ function EarnRow({ way, isDone }: { way: EarnWay; isDone: boolean }) {
       {isDone ? (
         <span className="rounded-8 bg-rose-50 px-8 text-ui-12 text-muted">지급 완료</span>
       ) : (
-        <span className="flex items-center gap-4 rounded-8 bg-rose-200 px-8 py-[2px] text-rose-700">
+        <span className="flex items-center gap-4 rounded-8 px-8 py-[2px]" data-earn-amount="">
           <span className="text-ui-12">+</span>
           <span className="text-ui-16 font-semibold">{way.amount}</span>
         </span>
