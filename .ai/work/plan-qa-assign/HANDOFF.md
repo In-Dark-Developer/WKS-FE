@@ -2,18 +2,18 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-28
 - Phase / Task: qa/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+Notion QA 미완료 항목이 담당자가 정해진 Phase Task 로 PLAN 에 있다.
 
 ## Work Completed
 
-- 없음
+- 09 T15–T20 · 10 T7–T13 · 11 T4–T9 추가, phases 표 갱신
 
 ## Work In Progress
 
@@ -21,23 +21,25 @@
 
 ## Files Changed
 
-- 없음
+- docs/phases/{09,10,11}/PLAN.md · docs/phases/README.md
 
 ## Decisions Made
 
-- 없음
+- 홈·공유·네비 → 09, 프로필·카드·리롤·상단 바 → 10, 해금·실·요청함 → 11
+- 담당자는 Notion 담당자 칸(= PRD FR 담당자)
 
 ## Tests Executed
 
-- 없음
+- ai-stream.sh phases · ai-end.sh --ci
 
 ## Test Results
 
-- 없음
+- 통과
 
 ## Known Problems
 
-- 없음
+- 09/T14 는 PR #273 에서 따로 닫는다(여기서 건드리지 않음)
+- Notion "그랜드 오픈 없애기" 완료 체크가 풀려 있다 — 09/T13 은 이미 병합됨
 
 ## Unverified Assumptions
 
