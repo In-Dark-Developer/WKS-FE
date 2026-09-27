@@ -149,3 +149,35 @@ test('메일 인증 요청에는 (2/2) 의 지금 메일 값을 앞뒤 공백 �
   expect(onSendCode).toHaveBeenCalledWith('me@dgu.ac.kr');
   expect(onVerifyCode).toHaveBeenCalledWith('me@dgu.ac.kr', '654321');
 });
+
+test('(2/2) 사진 칸은 JPG·PNG 만 고르게 하고 올릴 수 있는 조건을 안내한다', () => {
+  const { container } = render(
+    <StepHost
+      initialStep={2}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={{ status: 'empty' }}
+    />,
+  );
+
+  expect(container.querySelector('input[type="file"]')).toHaveAttribute(
+    'accept',
+    'image/jpeg,image/png',
+  );
+  expect(screen.getByText(/JPG·PNG, 10MB 이하 사진을 올려 주세요/)).toBeInTheDocument();
+});
+
+test('사진을 올리지 못하면 확인할 조건을 함께 알린다', () => {
+  render(
+    <StepHost
+      initialStep={2}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={{ status: 'error' }}
+    />,
+  );
+
+  expect(
+    screen.getByText('JPG·PNG, 10MB 이하 사진인지 확인하고 다시 시도해 주세요.'),
+  ).toBeInTheDocument();
+});

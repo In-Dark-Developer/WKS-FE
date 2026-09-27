@@ -7,7 +7,7 @@ vi.mock('./client', async (importOriginal) => {
 });
 
 import { datingPhotoUploadSchema } from './schema/dating';
-import { uploadDatingPhoto } from './uploads';
+import { DATING_PHOTO_MAX_BYTES, uploadDatingPhoto } from './uploads';
 
 const photo = new File(['bytes'], 'me.jpg', { type: 'image/jpeg' });
 const issued = {
@@ -30,6 +30,30 @@ test('허용하지 않는 형식은 요청 없이 거절한다', async () => {
   const outcome = await uploadDatingPhoto(new File(['x'], 'me.gif', { type: 'image/gif' }));
 
   expect(outcome).toMatchObject({ ok: false, error: { kind: 'api', code: 'INVALID_INPUT' } });
+  expect(requestMock).not.toHaveBeenCalled();
+});
+
+test('WEBP 는 소개팅 사진으로 받지 않아 요청 없이 거절한다', async () => {
+  const outcome = await uploadDatingPhoto(new File(['x'], 'me.webp', { type: 'image/webp' }));
+
+  expect(outcome).toMatchObject({
+    ok: false,
+    error: { kind: 'api', code: 'INVALID_INPUT', message: 'JPG·PNG 사진만 올릴 수 있어요.' },
+  });
+  expect(requestMock).not.toHaveBeenCalled();
+});
+
+test('10MB 를 넘는 사진은 요청 없이 거절한다', async () => {
+  const big = new File([new Uint8Array(DATING_PHOTO_MAX_BYTES + 1)], 'big.png', {
+    type: 'image/png',
+  });
+
+  const outcome = await uploadDatingPhoto(big);
+
+  expect(outcome).toMatchObject({
+    ok: false,
+    error: { kind: 'api', code: 'INVALID_INPUT', message: '10MB 이하 사진만 올릴 수 있어요.' },
+  });
   expect(requestMock).not.toHaveBeenCalled();
 });
 

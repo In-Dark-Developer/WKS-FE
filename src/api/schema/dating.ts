@@ -27,9 +27,13 @@ export const datingProfileSchema = datingProfileRequestSchema.extend({
 export type DatingProfile = z.infer<typeof datingProfileSchema>;
 
 // 사진 업로드 준비(§10.1) — uploadUrl 은 만료되는 업로드 전용 주소이고 조회 URL 이 아니다.
-export const datingPhotoContentTypeSchema = z.enum(['image/jpeg', 'image/png', 'image/webp']);
+// 소개팅 사진은 JPG·PNG 만 받는다(WKS-BE api-spec §10.1) — 사전신청 사진(`/signups/photo-upload-url`)과 달리 WEBP 는 400 이다.
+export const datingPhotoContentTypeSchema = z.enum(['image/jpeg', 'image/png']);
 
 export type DatingPhotoContentType = z.infer<typeof datingPhotoContentTypeSchema>;
+
+// 파일 선택 창에서 고를 수 있는 형식 — 위 목록과 같다.
+export const DATING_PHOTO_ACCEPT = datingPhotoContentTypeSchema.options.join(',');
 
 export const datingPhotoUploadSchema = z.object({
   uploadUrl: z.url(),
