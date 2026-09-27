@@ -376,11 +376,12 @@ test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·카드 �
 
   // 들어오면 카드 뒷면부터 보인다 (PRD FR-5).
   expect(await screen.findByRole('img', { name: '운명도 꿰어야 사랑이다' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '카드 저장하기' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: '인연카드 보기' })).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
   expect(screen.getByRole('region', { name: '달빛토끼님의 운명 카드' })).toBeInTheDocument();
+  // 카드 저장은 앞면 오른쪽 아래 아이콘이다(09/T11).
+  expect(screen.getByRole('button', { name: '카드 저장하기' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'SS 등급' })).toBeInTheDocument();
 });
 
