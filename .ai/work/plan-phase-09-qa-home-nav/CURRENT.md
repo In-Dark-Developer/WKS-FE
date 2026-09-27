@@ -21,7 +21,7 @@ Notion QA(디자인) 4건을 Phase 09 T11~T14 로 연다 — 원래 담당자(�
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
