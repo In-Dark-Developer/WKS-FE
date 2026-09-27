@@ -22,6 +22,8 @@ type Props = {
   // 리롤 확인 시트에서 변경을 고른 뒤. 차감·새 추천은 부르는 쪽이 한다.
   onReroll: () => void;
   onOpenRequests: () => void;
+  // 상대가 먼저 실을 보낸 카드에서 — 받은 신청 탭을 연다.
+  onOpenReceived: () => void;
   // 미리보기용 시작 상태.
   initialCardFace?: ProfileCardFace;
   initialRerollOpen?: boolean;
@@ -35,6 +37,7 @@ export function DatingCards({
   onOpenUnlock,
   onReroll,
   onOpenRequests,
+  onOpenReceived,
   initialCardFace,
   initialRerollOpen = false,
   initialThreadGuideOpen = false,
@@ -95,7 +98,11 @@ export function DatingCards({
                   <CandidateCard
                     candidate={candidate}
                     initialFace={initialCardFace}
-                    onOpenUnlock={candidate.isThreadSent ? undefined : onOpenUnlock}
+                    onOpenUnlock={
+                      candidate.isThreadSent || candidate.isThreadReceived
+                        ? undefined
+                        : onOpenUnlock
+                    }
                   />
                 </li>
               ))}
@@ -114,15 +121,21 @@ export function DatingCards({
         </div>
 
         <div className="flex flex-col gap-12">
-          <Button
-            disabled={!active || active.isThreadSent === true}
-            onClick={() => {
-              if (active) onSendThread(active.id);
-            }}
-            size="m"
-          >
-            {active?.isThreadSent ? '운명의 실을 보냈어요' : '운명의 실 보내기'}
-          </Button>
+          {active?.isThreadReceived ? (
+            <Button onClick={onOpenReceived} size="m">
+              상대가 보낸 운명의 실 확인하기
+            </Button>
+          ) : (
+            <Button
+              disabled={!active || active.isThreadSent === true}
+              onClick={() => {
+                if (active) onSendThread(active.id);
+              }}
+              size="m"
+            >
+              {active?.isThreadSent ? '운명의 실을 보냈어요' : '운명의 실 보내기'}
+            </Button>
+          )}
           <div className="flex flex-col items-center gap-8">
             <Button
               className="w-full"

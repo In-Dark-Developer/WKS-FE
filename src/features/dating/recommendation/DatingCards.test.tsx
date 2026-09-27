@@ -35,6 +35,7 @@ function renderCards(overrides: Partial<DatingCardsView> = {}) {
     onSendThread: vi.fn(),
     onOpenUnlock: vi.fn(),
     onReroll: vi.fn(),
+    onOpenReceived: vi.fn(),
     onOpenRequests: vi.fn(),
   };
   render(<DatingCards view={{ ...view, ...overrides }} {...handlers} />);
@@ -95,6 +96,7 @@ test('유료 리롤은 비용을 보이고, 잔액이 모자라면 막는다', (
 test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법은 지급 완료로 보인다', () => {
   render(
     <DatingCards
+      onOpenReceived={vi.fn()}
       onOpenRequests={vi.fn()}
       onOpenUnlock={vi.fn()}
       onReroll={vi.fn()}

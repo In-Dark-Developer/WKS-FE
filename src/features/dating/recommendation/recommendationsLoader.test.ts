@@ -42,6 +42,18 @@ const locked: DatingCandidate = {
   },
 };
 
+function request(status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED') {
+  return {
+    requestId: '312f3185-f114-4db0-a2fb-54d0669b7e33',
+    candidateId: CANDIDATE_ID,
+    status,
+    createdAt: '2026-09-24T12:00:00Z',
+    respondedAt: null,
+    contactMethod: null,
+    contactValue: null,
+  };
+}
+
 // 잔액의 단일 출처는 원장(`GET /wallet`)이다 — `/me` 의 threadBalance 는 쓰지 않는다(FR-31).
 function wallet(balance: number) {
   return { ok: true, data: { balance, canCheckInToday: true } };
@@ -160,25 +172,51 @@ test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는�
     ok: true,
     data: { candidates: [locked], rerollCost: 0 },
   });
-  listRequestsMock.mockResolvedValue({
-    ok: true,
-    data: [
-      {
-        requestId: '312f3185-f114-4db0-a2fb-54d0669b7e33',
-        candidateId: CANDIDATE_ID,
-        status: 'PENDING',
-        createdAt: '2026-09-24T12:00:00Z',
-        respondedAt: null,
-        contactMethod: null,
-        contactValue: null,
-      },
-    ],
-  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'sent' ? [request('PENDING')] : [] }),
+  );
 
   const state = await datingCardsLoader();
 
   expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(true);
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadReceived).toBe(false);
   expect(listRequestsMock).toHaveBeenCalledWith('sent');
+});
+
+// 백엔드는 취소되지 않은 요청이 있는 두 사람 사이의 요청을 방향과 무관하게 막는다(409) — 받은 쪽 카드에서 안내한다.
+test('상대가 먼저 실을 보낸 카드에는 받았다는 표시가 붙는다', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'received' ? [request('REJECTED')] : [] }),
+  );
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadReceived).toBe(true);
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(false);
+  expect(listRequestsMock).toHaveBeenCalledWith('received');
+});
+
+test('받은 신청을 못 읽어도 카드는 그대로 보인다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve(
+      box === 'received' ? { ok: false, error: { kind: 'network' } } : { ok: true, data: [] },
+    ),
+  );
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadReceived).toBe(false);
 });
 
 test('취소한 신청의 상대 카드는 보내지 않은 것으로 보여 다시 보낼 수 있다', async () => {

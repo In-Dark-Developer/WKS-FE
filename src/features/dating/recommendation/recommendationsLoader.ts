@@ -1,5 +1,6 @@
 import { getRecommendations, type DatingCandidate, type DatingLockableField } from '@/api/dating';
-import { listDatingRequests } from '@/api/matchRequests';
+import type { ApiOutcome } from '@/api/client';
+import { listDatingRequests, type DatingRequestListItem } from '@/api/matchRequests';
 import { ensureDailyCheckIn, getWallet } from '@/api/wallet';
 
 import {
@@ -64,11 +65,12 @@ export function toRerollView(rerollCost: number, balance: number): RerollView {
 // 화면은 계산하지 않는다(FR-31). `/me` 의 threadBalance 는 진입 게이트용 요약이라 여기서 쓰지 않는다.
 // requireDatingProfile 이 먼저 로그인·프로필을 확인하므로 여기서는 인증을 다시 판단하지 않는다.
 export async function datingCardsLoader(): Promise<DatingCardsState> {
-  const [wallet, recommendations, sent] = await Promise.all([
+  const [wallet, recommendations, sent, received] = await Promise.all([
     // 접속 출석이 끝난 뒤 읽어야 잔액과 '지급 완료'가 맞는다.
     ensureDailyCheckIn().then(getWallet),
     getRecommendations(),
     listDatingRequests('sent'),
+    listDatingRequests('received'),
   ]);
 
   if (!recommendations.ok) {
@@ -88,13 +90,11 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
   // 보낸 신청을 못 읽으면 모두 안 보낸 것으로 둔다 — 다시 보내면 백엔드가 409 로 막는다.
   // 취소한 신청은 보내지 않은 것으로 본다 — 카드에 있는 상대면 다시 보낼 수 있다(WKS-BE §11.2).
   if (!sent.ok) console.error('GET /dating/requests?box=sent 실패', sent.error);
-  const sentIds = new Set(
-    sent.ok
-      ? sent.data
-          .filter((request) => request.status !== 'CANCELLED')
-          .map((request) => request.candidateId)
-      : [],
-  );
+  const sentIds = activeCounterpartIds(sent);
+  // 받은 신청도 같은 규칙이다 — 취소되지 않은 요청이 있으면 백엔드가 방향과 무관하게 다시 보내기를 막는다(WKS-BE §11.2).
+  // 못 읽으면 받은 것이 없는 것으로 두고, 보내면 409 로 막힌다.
+  if (!received.ok) console.error('GET /dating/requests?box=received 실패', received.error);
+  const receivedIds = activeCounterpartIds(received);
 
   return {
     kind: 'ready',
@@ -104,8 +104,19 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
       candidates: recommendations.data.candidates.map((candidate) => ({
         ...toCandidateView(candidate),
         isThreadSent: sentIds.has(candidate.candidateId),
+        isThreadReceived: receivedIds.has(candidate.candidateId),
       })),
       reroll: toRerollView(recommendations.data.rerollCost, balance),
     },
   };
+}
+
+// 취소되지 않은 요청의 상대 프로필 id — `candidateId` 는 조회한 사람 기준 상대라 추천 후보 id 와 같다.
+function activeCounterpartIds(outcome: ApiOutcome<DatingRequestListItem[]>): Set<string> {
+  if (!outcome.ok) return new Set();
+  return new Set(
+    outcome.data
+      .filter((request) => request.status !== 'CANCELLED')
+      .map((request) => request.candidateId),
+  );
 }
