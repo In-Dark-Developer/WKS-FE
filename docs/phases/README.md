@@ -15,7 +15,7 @@
 | 04 | [share-and-card](04-share-and-card/PLAN.md) | @gn00py48 | 03 | DONE | 8/8 | [RESULT](04-share-and-card/RESULT.md) |
 | 05 | [friend-score](05-friend-score/PLAN.md) | @nicerjs23 | 04 | DONE | 9/9 | [RESULT](05-friend-score/RESULT.md) |
 | 06 | [dating-gate](06-dating-gate/PLAN.md) | @gn00py48 | 03 | DONE | 4/4 | [RESULT](06-dating-gate/RESULT.md) |
-| 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | PLANNED | 0/1 | — |
+| 07 | [matching-thread](07-matching-thread/PLAN.md) | @nicerjs23 | 06 | CANCELLED | 0/1 | [RESULT](07-matching-thread/RESULT.md) |
 | 08 | [launch-readiness](08-launch-readiness/PLAN.md) | @jjjung0921 | 05, 07 | PLANNED | 5/6 | [RESULT](08-launch-readiness/RESULT.md) |
 | 09 | [auth-and-shell](09-auth-and-shell/PLAN.md) | @jjjung0921 | 03 | PLANNED | 8/10 | — |
 | 10 | [dating-onboarding](10-dating-onboarding/PLAN.md) | @jjjung0921 | 09 | PLANNED | 2/6 | — |
