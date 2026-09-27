@@ -116,3 +116,26 @@ test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법
   fireEvent.click(within(dialog).getByRole('button', { name: '닫기' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
+
+// QA(2026-09-28): 'Top 3' 인데 후보가 모자라면 카드가 한두 장만 보였다 — 남은 자리를 빈 카드로 채운다.
+test.each([
+  { count: 3, label: '세 명' },
+  { count: 2, label: '두 명' },
+  { count: 1, label: '한 명' },
+])('후보가 $label 이어도 카드 자리와 인디케이터는 세 개다 (FR-26)', ({ count }) => {
+  renderCards({ candidates: view.candidates.slice(0, count) });
+
+  const list = screen.getByRole('list', { name: '오늘의 인연' });
+  expect(within(list).getAllByRole('listitem')).toHaveLength(3);
+  expect(screen.getAllByRole('button', { name: /번째 인연 보기/ })).toHaveLength(3);
+  // 채운 자리는 인연x 빈 카드다 — 세 명이면 채울 자리가 없다.
+  expect(screen.queryAllByText('운명의 인연을 기다리고 있어요')).toHaveLength(3 - count);
+});
+
+test('후보가 0명이면 넘기기 없이 빈 카드 하나만 보인다 (FR-26)', () => {
+  renderCards({ candidates: [] });
+
+  expect(screen.queryByRole('list', { name: '오늘의 인연' })).not.toBeInTheDocument();
+  expect(screen.getAllByText('운명의 인연을 기다리고 있어요')).toHaveLength(1);
+  expect(screen.queryByRole('button', { name: /번째 인연 보기/ })).not.toBeInTheDocument();
+});
