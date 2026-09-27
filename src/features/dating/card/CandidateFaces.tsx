@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { cn } from '@/lib/cn';
 import { BlurredPhoto } from '@/ui/BlurredPhoto';
 import { LockedValue } from '@/ui/LockedValue';
 
@@ -125,7 +126,8 @@ export function CandidateBack({ photo, name, department, reason, onUnlock }: Bac
           </button>
         </div>
       ) : null}
-      <dl className="flex flex-col gap-8 text-ui-12">
+      {/* 자물쇠 알약(28px)이 글줄(18px)보다 높아 잠긴 줄이 붙으면 겹친다 — 알약이 있을 때만 줄 간격을 넓힌다. */}
+      <dl className={cn('flex flex-col text-ui-12', rowUnlock ? 'gap-16' : 'gap-8')}>
         <BackRow field={name} label="이름" onUnlock={rowUnlock} placeholder="○○○" />
         <BackRow field={department} label="학과" onUnlock={rowUnlock} placeholder="○○○○○○학과" />
         <BackRow
