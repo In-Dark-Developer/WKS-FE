@@ -8,7 +8,7 @@
 - Done: Notion QA 미완료 20건을 Phase 09·10·11 Task 로 추가(담당자 포함)
 - Not done: 없음
 - Upstream changes: 없음
-- Spec changes: 없음
+- Spec changes: PRD FR-26 1–2명 추천은 빈 카드로 채워 세 장(Q21 닫힘) · FR-30 보낸 신청은 상태, 받은 신청은 점수(Q17 닫힘) — 50-scope·README 갱신
 - Verification: phases 표 · ai-end --ci
 
 ## 2026-09-28 · ai-stream · qa/- · 스트림 열기

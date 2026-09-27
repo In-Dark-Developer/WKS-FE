@@ -69,7 +69,7 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 - [ ] T10. 소개팅 카드 뒤집기 애니메이션 — Done when: '카드 뒤집기'가 홈 운명 카드(`DestinyCard`)와 같은 뒤집기 애니메이션으로 앞·뒷면을 바꾸고, 동작 줄이기 설정(`prefers-reduced-motion`)에서는 애니메이션 없이 바뀐다 · Touches: `src/ui/ProfileCard.tsx` · Owner: 이동건 · FR: FR-26 (QA: 소개팅 카드도 사주 카드처럼 애니메이션)
 
-- [ ] T11. Top 3 카드 세 장 모두 보이기 — Done when: 추천이 세 명이면 세 카드 모두 넘겨 볼 수 있고 인디케이터 점 세 개가 각각 그 카드를 가리키며, 안 보이는 카드가 생기는 조건(목록 길이·스크롤 위치 등)을 재현해 적은 뒤 고친다 · Touches: `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA 기능: 탑3 카드가 다 떠야함)
+- [ ] T11. Top 3 카드는 늘 세 장 — Done when: 추천이 몇 명이든 카드는 늘 세 장이고, 후보가 1–2명이면 남은 자리를 빈 카드(Figma 인연x `134:2248`)로 채우며(FR-26, 2026-09-28 결정), 세 장 모두 넘겨 볼 수 있고 인디케이터 점 세 개가 각각 그 카드를 가리킨다. 빈 카드에서는 '운명의 실 보내기'·해금이 동작하지 않는다. 지금 세 장이 다 보이지 않는 조건도 재현해 적은 뒤 고친다 · Touches: `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA 기능: 탑3 카드가 다 떠야함)
 
 - [ ] T12. 소개팅 상단 바 아이콘 — Done when: Top 3 상단의 '운명의 실'·'요청함' 아이콘과 글자가 Figma `top_nav`(`91:1790`)와 같은 간격·크기·아이콘으로 보인다 · Touches: `src/features/dating/recommendation/DatingHeader.tsx` · Owner: 이동건 · FR: FR-31 (QA: top bar 아이콘 간 간격 및 디자인)
 
