@@ -85,8 +85,8 @@ test('유료 리롤은 비용을 보이고, 잔액이 모자라면 막는다', (
   expect(screen.getByText('다음 무료 점지는 오늘 자정이에요.')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '다른 인연 만나보기' }));
 
-  expect(screen.getByRole('alert')).toHaveTextContent('운명의 실이 부족해요');
-  expect(screen.getByRole('button', { name: '3실로 지금 변경하기' })).toBeDisabled();
+  expect(screen.getByRole('alert')).toHaveTextContent('운명의 실 3개가 필요해요');
+  expect(screen.getByRole('button', { name: '실 3개로 지금 변경하기' })).toBeDisabled();
   fireEvent.click(screen.getByRole('button', { name: '자정까지 기다릴게요' }));
 
   expect(onReroll).not.toHaveBeenCalled();
