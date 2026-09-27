@@ -39,12 +39,18 @@ export function toPhoto(
   return { isLocked: false, url: field.value };
 }
 
+// 생년월일(`2002-03-14`) → '02년생' — 카드의 나이 칸(Figma 448:2786). 없으면 null 로 칸을 숨긴다.
+export function toBirthYearLabel(age: string | null | undefined): string | null {
+  return age ? `${age.slice(2, 4)}년생` : null;
+}
+
 export function toCandidateView(candidate: DatingCandidate): MatchCandidateView {
   return {
     id: candidate.candidateId,
     rank: candidate.rank as CandidateRank,
     score: candidate.score,
     mbti: candidate.mbti,
+    birthYear: toBirthYearLabel(candidate.age),
     bio: candidate.bio,
     photo: toPhoto(candidate.fields.photo, candidate.blurredPhotoUrl ?? null),
     name: toLockable(candidate.fields.name),

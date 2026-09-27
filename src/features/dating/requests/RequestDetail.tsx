@@ -46,6 +46,7 @@ export function RequestDetail(props: Props) {
         front={
           <CandidateFront
             bio={request.bio}
+            birthYear={request.birthYear}
             footer={<Actions {...props} />}
             mbti={request.mbti}
             rank={request.rank}

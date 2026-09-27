@@ -75,6 +75,7 @@ const mockCandidateSeeds = [
   {
     score: 98,
     mbti: 'ENTP',
+    age: '2003-05-17',
     bio: '영화와 전시 보러 다니는 걸 좋아해요. 축제 공연도 같이 볼 사람을 찾아요.',
     name: '이서연',
     department: '영화영상학과',
@@ -82,6 +83,7 @@ const mockCandidateSeeds = [
   {
     score: 87,
     mbti: 'INFJ',
+    age: '2002-03-14',
     bio: '조용한 카페에서 책 읽는 걸 좋아해요.',
     name: '박지훈',
     department: '국어국문학과',
@@ -89,6 +91,7 @@ const mockCandidateSeeds = [
   {
     score: 68,
     mbti: 'ISFP',
+    age: '2004-11-02',
     bio: '운동하고 맛집 다니는 걸 좋아합니다.',
     name: '최유나',
     department: '체육교육과',
@@ -139,6 +142,7 @@ function buildMockCandidates(): DatingCandidate[] {
     candidateId: crypto.randomUUID(),
     score: seed.score,
     mbti: seed.mbti,
+    age: seed.age,
     bio: seed.bio,
     fields: {
       photo: { locked: true, cost: 10 },

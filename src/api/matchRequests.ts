@@ -28,6 +28,7 @@ let mockReceived: DatingRequestListItem[] | null = null;
 const mockSentCounterpart: DatingRequestListItem['counterpart'] = {
   score: 88,
   mbti: 'ENFP',
+  age: '2003-08-21',
   bio: '축제에서 만나요!',
   blurredPhotoUrl: null,
   fields: {
@@ -50,6 +51,7 @@ function seedReceived(): DatingRequestListItem[] {
       counterpart: {
         score: 92,
         mbti: 'ISTJ',
+        age: '2001-01-09',
         bio: '같이 부스 구경해요.',
         blurredPhotoUrl: null,
         fields: {
