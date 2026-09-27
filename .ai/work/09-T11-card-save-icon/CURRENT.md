@@ -21,7 +21,7 @@ T11. 카드 저장을 카드 안 아이콘으로
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
