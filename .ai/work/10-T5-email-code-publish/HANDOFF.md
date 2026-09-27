@@ -9,12 +9,12 @@
 
 ## Goal
 
-V1 프로필 (2/2) 은 @dgu.ac.kr 메일만 받고, 코드 인증 UI 는 이후 버전용으로 연결 없이 남아 있다.
+프로필 (2/2) 의 학교 메일 코드 인증 UI 가 props 뷰 모델로 그려지고, @dgu.ac.kr 이 아닌 메일은 제출이 막힌다.
 
 ## Work Completed
 
 - 도메인 검사(대소문자 무관)와 오류 문구 `emailDomain`
-- `EmailVerification`·`emailVerificationView` — 인증 버튼·6자리 코드·재발송 타이머·완료, V1 미연결
+- `EmailVerification`·`emailVerificationView` — 인증 버튼·6자리 코드·재발송 타이머·완료, DatingProfileForm `emailVerification` prop(10/T1 이 넘긴다)
 
 ## Work In Progress
 
@@ -27,7 +27,7 @@ V1 프로필 (2/2) 은 @dgu.ac.kr 메일만 받고, 코드 인증 UI 는 이후 
 
 ## Decisions Made
 
-- 2026-09-27 소유자: V1 은 도메인만, 코드 인증 로직은 이후 버전 재사용용으로 남김
+- 2026-09-27 소유자: V1 에 이메일 코드 인증 포함(도메인만 확인 결정 철회, spec #248). 도메인 검사는 유지
 - 재발송 타이머는 `resendAvailableAt` 을 key 로 다시 마운트 — 응답이 늦어도 60초부터 센다
 
 ## Tests Executed
@@ -41,7 +41,7 @@ V1 프로필 (2/2) 은 @dgu.ac.kr 메일만 받고, 코드 인증 UI 는 이후 
 
 ## Known Problems
 
-- WKS-BE 가 아직 프로필 등록에 코드 인증을 요구한다(403) — 백엔드 반영 전 실제 서버 등록 불가
+- 없음
 
 ## Unverified Assumptions
 
@@ -49,4 +49,4 @@ V1 프로필 (2/2) 은 @dgu.ac.kr 메일만 받고, 코드 인증 UI 는 이후 
 
 ## Exact Next Action
 
-없음 — 병합 후 10/T1 은 emailVerification 을 넘기지 않는다.
+병합 후 10/T1 이 `emailVerification` 에 발송·확인 API 를 연결한다.
