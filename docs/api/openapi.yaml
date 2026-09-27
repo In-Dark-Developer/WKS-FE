@@ -334,7 +334,7 @@ paths:
               type: object
               required: [contentType]
               properties:
-                contentType: { type: string, enum: [image/jpeg, image/png, image/webp] }
+                contentType: { type: string, enum: [image/jpeg, image/png] }
       responses:
         "200":
           description: 발급됨

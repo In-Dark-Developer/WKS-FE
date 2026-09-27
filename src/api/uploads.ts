@@ -9,12 +9,22 @@ const MOCK_UPLOAD_DELAY_MS = 500;
 
 export type PhotoUpload = { photoId: string };
 
+// 백엔드는 10MB 를 넘는 사진을 업로드 때가 아니라 프로필 저장 때 거절한다(WKS-BE DatingPhotoService) —
+// 입력을 다 마친 뒤에 막히지 않도록 고르는 순간 거른다.
+export const DATING_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+
 export async function uploadDatingPhoto(file: File): Promise<ApiOutcome<PhotoUpload>> {
   const contentType = datingPhotoContentTypeSchema.safeParse(file.type);
   if (!contentType.success) {
     return {
       ok: false,
-      error: { kind: 'api', code: 'INVALID_INPUT', message: 'JPG·PNG·WEBP 사진만 올릴 수 있어요.' },
+      error: { kind: 'api', code: 'INVALID_INPUT', message: 'JPG·PNG 사진만 올릴 수 있어요.' },
+    };
+  }
+  if (file.size > DATING_PHOTO_MAX_BYTES) {
+    return {
+      ok: false,
+      error: { kind: 'api', code: 'INVALID_INPUT', message: '10MB 이하 사진만 올릴 수 있어요.' },
     };
   }
 
