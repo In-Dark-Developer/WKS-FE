@@ -13,9 +13,10 @@ import { track } from '@/lib/analytics';
 export async function joinShare(shareId: string, resultId: string): Promise<string | null> {
   const outcome = await createCompatibility(shareId, resultId);
   if (outcome.ok) {
-    markShareJoined(shareId);
+    markShareJoined(shareId, outcome.data.id ?? null);
     track('compatibility_created', {});
-    return `/s/${encodeURIComponent(shareId)}/map`;
+    // 공유 궁합 결과(SCR-24)로 — 궁합 id 를 못 받았으면 결과 loader 가 전체 지도로 물러난다(09/T10).
+    return `/s/${encodeURIComponent(shareId)}/result`;
   }
 
   const { error } = outcome;

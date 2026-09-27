@@ -108,8 +108,8 @@ test('초대 지도의 구슬은 링크 주인의 궁합을 점수 높은 순으
   const view = await shareInputLoader(args());
 
   expect(view.ownerFriends).toEqual([
-    { nickname: '민지', score: 95, tier: 'GUIIN' },
-    { nickname: '서연', score: 70, tier: 'BEOT' },
+    { nickname: '민지', score: 95, tier: 'GUIIN', compatibilityId: 2 },
+    { nickname: '서연', score: 70, tier: 'BEOT', compatibilityId: 1 },
   ]);
 });
 

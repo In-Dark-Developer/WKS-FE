@@ -514,6 +514,49 @@ test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로
   expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
 });
 
+// 09/T10 — 궁합을 만들면 공유 궁합 결과(SCR-24)로 가고, '전체 보기 >'의 지도에서 뒤로가기로 돌아온다.
+test('궁합 id 를 받으면 공유 궁합 결과에서 내 궁합 한 줄과 이유를 보이고, 전체 지도에 갔다 돌아온다', async () => {
+  const owner = {
+    ...sharedOwner,
+    compatibilities: [
+      ...sharedOwner.compatibilities,
+      {
+        id: 5,
+        nickname: '보살',
+        score: 80,
+        tier: 'CHALTTEOK' as const,
+        createdAt: '2026-09-27T01:00:00Z',
+      },
+    ],
+  };
+  getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
+  createResultMock.mockImplementation(() => {
+    writeSession(RESULT_ID);
+    return Promise.resolve({ ok: true, data: stubResult });
+  });
+  createCompatibilityMock.mockResolvedValue({ ok: true, data: { ...compatibility.data, id: 5 } });
+  getCompatibilityReasonMock.mockResolvedValue({
+    ok: true,
+    data: { why: '서로를 채워 줘요', together: '함께 웃어요', conflict: '금방 풀어요' },
+  });
+
+  const router = renderAt(`/s/${SHARE_ID}`);
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
+  fillValidSaju();
+  fireEvent.click(screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }));
+
+  expect(await screen.findByRole('heading', { name: '나의 궁합 순위' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}/result`);
+  expect(await screen.findByText('서로를 채워 줘요')).toBeInTheDocument();
+  expect(getCompatibilityReasonMock).toHaveBeenCalledWith(5);
+
+  fireEvent.click(screen.getByRole('button', { name: '전체 보기 >' }));
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  expect(await screen.findByRole('heading', { name: '나의 궁합 순위' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}/result`);
+});
+
 test(
   '내 결과가 있으면 링크로 들어올 때 이전 정보와 새로 작성을 고르게 하고, 이전 정보로 만든 지도에서 내 사주의 뒤로가기는 지도로 돌아온다',
   { timeout: 10000 },
