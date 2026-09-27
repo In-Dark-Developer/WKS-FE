@@ -21,7 +21,7 @@ openapi 에 학교 메일 코드 인증(WKS-BE §10.7) 동기화
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
