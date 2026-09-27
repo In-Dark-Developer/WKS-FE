@@ -44,6 +44,19 @@
   object-fit: cover;
 }
 
+[data-connection-card-front] {
+  position: relative;
+}
+
+/* 앞면 동작(카드 저장 아이콘) — Figma 58:2523: 24px 아이콘이 카드(349×461) 오른쪽 21 · 아래 19 에 있다.
+   누르는 칸은 44px 이라 아이콘 가운데가 같은 자리에 오도록 오른쪽 11 · 아래 9 에 둔다(비율로 옮김). */
+[data-connection-card-front-action] {
+  position: absolute;
+  right: 3.152%;
+  bottom: 1.952%;
+  z-index: 1;
+}
+
 /* 카드 뒤집기 — Figma 558:2788, 카드 아래에서 27px 위 (461px 기준). */
 [data-connection-card-flip] {
   position: absolute;
