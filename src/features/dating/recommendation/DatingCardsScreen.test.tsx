@@ -77,10 +77,10 @@ test('잔액이 모자라면 변경 버튼이 막히고 알린다 (FR-31)', asyn
   });
 
   openRerollSheet();
-  const confirm = await screen.findByRole('button', { name: '3실로 지금 변경하기' });
+  const confirm = await screen.findByRole('button', { name: '실 3개로 지금 변경하기' });
 
   expect(confirm).toBeDisabled();
-  expect(screen.getByRole('alert')).toHaveTextContent('운명의 실이 부족해요');
+  expect(screen.getByRole('alert')).toHaveTextContent('운명의 실 3개가 필요해요');
   fireEvent.click(confirm);
   expect(rerollMock).not.toHaveBeenCalled();
 });

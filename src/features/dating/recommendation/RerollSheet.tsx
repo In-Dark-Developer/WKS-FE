@@ -11,8 +11,10 @@ type Props = {
   onConfirm: () => void;
 };
 
-// 다른 인연 만나보기 확인 시트 — Figma 리롤 무료 o(112:3734) · 무료 x(112:3622).
+// 다른 인연 만나보기 확인 시트 — Figma 리롤 무료 o(112:3773) · 무료 x(112:3675).
 // 바꾸면 지금 세 명을 다시 볼 수 없음을 알린다(FR-27). 잔액 부족 모습은 디자인에 없어 문구 한 줄로 막는다(FR-31).
+// 유료 버튼 문구는 Figma 어순('실 N개로 지금 변경하기')을 쓰고 개수는 서버가 준 `rerollCost` 를 넣는다 —
+// 비용이 바뀌어도 화면이 따라간다. 확정값은 20 이다(2026-09-28 소유자 확인, 백엔드 반영 예정).
 export function RerollSheet({ open, reroll, onClose, onConfirm }: Props) {
   const isBlocked = reroll.kind === 'paid' && !reroll.canAfford;
 
@@ -45,11 +47,13 @@ export function RerollSheet({ open, reroll, onClose, onConfirm }: Props) {
             className="text-center text-ui-14 font-medium text-status-error-foreground"
             role="alert"
           >
-            운명의 실이 부족해요. 자정에 무료 점지권이 다시 생겨요.
+            {`운명의 실 ${reroll.kind === 'paid' ? reroll.cost : 0}개가 필요해요. 자정에 무료 점지권이 다시 생겨요.`}
           </p>
         ) : null}
         <Button disabled={isBlocked} onClick={onConfirm} size="m">
-          {reroll.kind === 'free' ? '무료 점지권으로 변경하기' : `${reroll.cost}실로 지금 변경하기`}
+          {reroll.kind === 'free'
+            ? '무료 점지권으로 변경하기'
+            : `실 ${reroll.cost}개로 지금 변경하기`}
         </Button>
         <Button onClick={onClose} size="m" variant="secondary">
           자정까지 기다릴게요

@@ -14,13 +14,7 @@ import {
   resetMockRecommendations,
   type DatingProfileRequest,
 } from './dating';
-import {
-  getMe,
-  linkMockAccountResult,
-  resetMockAccount,
-  signInMockAccount,
-  spendMockThread,
-} from './me';
+import { getMe, linkMockAccountResult, resetMockAccount, signInMockAccount } from './me';
 import { datingProfileSchema, datingRerollResultSchema } from './schema/dating';
 import { clearSession, writeSession } from './session';
 
@@ -115,7 +109,7 @@ test('리롤은 POST /dating/recommendations/reroll 을 부른다', async () => 
   );
 });
 
-test('목 리롤은 하루 한 번 무료고 그 뒤에는 5 실을 쓴다 (WKS-BE §10.4.1)', async () => {
+test('목 리롤은 하루 한 번 무료이고 그 뒤 비용을 알려준다 (WKS-BE §10.4.1)', async () => {
   vi.stubEnv('VITE_API_MOCK', 'true');
   vi.useFakeTimers();
   signInMockAccount(); // 가입 지급 10
@@ -128,26 +122,27 @@ test('목 리롤은 하루 한 번 무료고 그 뒤에는 5 실을 쓴다 (WKS-
 
   const free = rerollRecommendations();
   await vi.runAllTimersAsync();
+  // 무료로 바꿨으니 잔액은 그대로고, 다음 비용을 알려준다.
   await expect(free).resolves.toMatchObject({
     ok: true,
     data: { rerollCost: REROLL_PAID_COST, threadBalance: 10 },
   });
-
-  const paid = rerollRecommendations();
-  await vi.runAllTimersAsync();
-  await expect(paid).resolves.toMatchObject({ ok: true, data: { threadBalance: 5 } });
+  await expect(getRecommendations()).resolves.toMatchObject({
+    ok: true,
+    data: { rerollCost: REROLL_PAID_COST },
+  });
   expect(requestMock).not.toHaveBeenCalled();
 });
 
+// 목 계정이 받는 실(가입 10 · 출석 5)은 리롤 비용(20)보다 적다 — 목에서 유료 리롤은 늘 막힌다.
 test('목 리롤은 잔액이 모자라면 402 로 막고 카드를 두 번 바꾸지 않는다', async () => {
   vi.stubEnv('VITE_API_MOCK', 'true');
   vi.useFakeTimers();
   signInMockAccount();
-  // 무료 한 번을 쓰고, 남은 잔액을 5 미만으로 만든다.
+  // 무료 한 번을 쓴 뒤에는 유료라 잔액(10)이 비용(20)에 모자란다.
   const free = rerollRecommendations();
   await vi.runAllTimersAsync();
   await free;
-  spendMockThread(7);
 
   const blocked = rerollRecommendations();
   await vi.runAllTimersAsync();
