@@ -21,7 +21,7 @@ Safari 에서 카드 뒷면 왼쪽 아래에 저장 아이콘이 비치는 문�
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
