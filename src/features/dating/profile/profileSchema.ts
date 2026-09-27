@@ -5,6 +5,7 @@ import {
   DEPARTMENT_MAX,
   NAME_MAX,
   NICKNAME_MAX,
+  SCHOOL_EMAIL_DOMAIN,
   type BirthTime,
   type CalendarType,
   type ContactMethod,
@@ -71,6 +72,7 @@ export const profileErrorMessages = {
   name: `이름을 1~${NAME_MAX}자로 입력해 주세요`,
   photo: '본인 사진을 한 장 올려 주세요',
   email: '이메일 주소를 확인해 주세요',
+  emailDomain: `학교 메일(@${SCHOOL_EMAIL_DOMAIN})만 쓸 수 있어요`,
   phone: '전화번호를 숫자 10~11자리로 입력해 주세요',
   instagram: '인스타그램 아이디를 확인해 주세요',
   department: `학과를 1~${DEPARTMENT_MAX}자로 입력해 주세요`,
@@ -159,7 +161,10 @@ const detailsStepSchema = z
     email: z
       .string()
       .trim()
-      .pipe(z.email({ error: profileErrorMessages.email })),
+      .pipe(z.email({ error: profileErrorMessages.email }))
+      .refine((email) => email.toLowerCase().endsWith(`@${SCHOOL_EMAIL_DOMAIN}`), {
+        error: profileErrorMessages.emailDomain,
+      }),
     contactMethod: z.enum(['PHONE', 'INSTAGRAM']),
     contactValue: z.string(),
     department: lengthBetween(DEPARTMENT_MAX, profileErrorMessages.department),

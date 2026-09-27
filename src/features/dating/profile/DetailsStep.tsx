@@ -8,6 +8,8 @@ import { Select } from '@/ui/Select';
 import { TextArea } from '@/ui/TextArea';
 import { TextField } from '@/ui/TextField';
 
+import { EmailVerification } from './EmailVerification';
+import type { EmailVerificationView } from './emailVerificationView';
 import { BIO_MAX, DEPARTMENT_MAX, NAME_MAX, contactMethodOptions, mbtiOptions } from './options';
 import type { DatingPhotoView } from './photoView';
 import type { DetailsField, DetailsStepValues } from './profileSchema';
@@ -23,6 +25,12 @@ type Props = {
   onSubmit: () => void;
   isSubmitting: boolean;
   hasSubmitFailed: boolean;
+  // 학교 메일 코드 인증 — V1 은 넘기지 않아 도메인만 검사하는 메일 입력칸이 보인다(이후 버전용).
+  emailVerification?: {
+    view: EmailVerificationView;
+    onSendCode: () => void;
+    onVerifyCode: (code: string) => void;
+  };
 };
 
 const contactPlaceholder = {
@@ -44,6 +52,7 @@ export function DetailsStep({
   onSubmit,
   isSubmitting,
   hasSubmitFailed,
+  emailVerification,
 }: Props) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -84,21 +93,36 @@ export function DetailsStep({
           )}
         </Field>
 
-        <Field error={errors.email} help="소속 확인을 위해 dgu 메일을 작성해주세요." label="이메일">
-          {(control) => (
-            <TextField
-              {...control}
-              appearance="soft"
-              autoComplete="email"
-              className="bg-surface-default"
-              inputMode="email"
-              onChange={(event) => onChange({ email: event.target.value })}
-              placeholder="example@domain.com"
-              type="email"
-              value={values.email}
-            />
-          )}
-        </Field>
+        {emailVerification ? (
+          <EmailVerification
+            email={values.email}
+            emailError={errors.email}
+            onEmailChange={(email) => onChange({ email })}
+            onSendCode={emailVerification.onSendCode}
+            onVerifyCode={emailVerification.onVerifyCode}
+            view={emailVerification.view}
+          />
+        ) : (
+          <Field
+            error={errors.email}
+            help="소속 확인을 위해 dgu 메일을 작성해주세요."
+            label="이메일"
+          >
+            {(control) => (
+              <TextField
+                {...control}
+                appearance="soft"
+                autoComplete="email"
+                className="bg-surface-default"
+                inputMode="email"
+                onChange={(event) => onChange({ email: event.target.value })}
+                placeholder="example@domain.com"
+                type="email"
+                value={values.email}
+              />
+            )}
+          </Field>
+        )}
 
         <Field
           error={errors.contactValue}

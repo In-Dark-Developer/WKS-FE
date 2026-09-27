@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { DatingBackdrop } from '../DatingBackdrop';
 import { DetailsStep } from './DetailsStep';
+import type { EmailVerificationView } from './emailVerificationView';
 import type { DatingPhotoView } from './photoView';
 import {
   initialDetailsStepValues,
@@ -34,6 +35,13 @@ type Props = {
     details?: Partial<Omit<DetailsStepValues, 'isPhotoReady'>>;
   };
   showErrorsInitially?: boolean;
+  // 학교 메일 코드 인증 — V1 은 넘기지 않는다(도메인만 확인, 2026-09-27). 이후 버전에서 인증을 켤 때
+  // 넘기면 (2/2) 의 메일 칸이 인증 버튼·코드 입력으로 바뀐다. 요청은 부르는 쪽이 지금 메일 값으로 한다.
+  emailVerification?: {
+    view: EmailVerificationView;
+    onSendCode: (email: string) => void;
+    onVerifyCode: (email: string, code: string) => void;
+  };
 };
 
 // SCR-16 소개팅 프로필 등록 — (1/2) 사주 정보 → (2/2) 이름·사진·학교 정보(FR-25).
@@ -47,6 +55,7 @@ export function DatingProfileForm({
   onBack,
   initialValues,
   showErrorsInitially = false,
+  emailVerification,
 }: Props) {
   const [saju, setSaju] = useState<SajuStepValues>({
     ...initialSajuStepValues,
@@ -97,6 +106,13 @@ export function DatingProfileForm({
         />
       ) : (
         <DetailsStep
+          emailVerification={
+            emailVerification && {
+              view: emailVerification.view,
+              onSendCode: () => emailVerification.onSendCode(details.email.trim()),
+              onVerifyCode: (code) => emailVerification.onVerifyCode(details.email.trim(), code),
+            }
+          }
           errors={detailsErrors}
           hasSubmitFailed={submitState === 'failed'}
           isSubmitting={submitState === 'submitting'}

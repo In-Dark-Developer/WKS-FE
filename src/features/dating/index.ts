@@ -11,6 +11,7 @@ export { DatingIntro, type DatingIntroView } from './intro/DatingIntro';
 export { LoginSheet } from './intro/LoginSheet';
 export { DatingProfileForm, type ProfileSubmitState } from './profile/DatingProfileForm';
 export type { DatingPhotoView } from './profile/photoView';
+export type { EmailVerificationView } from './profile/emailVerificationView';
 export type {
   DatingDetailsInput,
   DatingProfileInput,
