@@ -7,9 +7,9 @@
 - Branch: ws/10-T3-dating-top3-reroll-r3
 - Task: 10/T3
 - Issue: none
-- Touches: src/features/dating/, src/ui/, src/api/, src/app/routes/, docs/api/openapi.yaml
+- Touches: src/features/dating/, src/ui/, src/api/, docs/api/openapi.yaml, src/api/, src/app/routes/, docs/api/openapi.yaml
 - Supersedes: 10-T3-dating-top3-reroll
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-backend-contract-r2, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-opacity-tokens, 2026-09-13-planning-feedback, 2026-09-13-publishing-first, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-module-owner, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-ci-sync-warn, 2026-09-24-dating-publishing-split, 2026-09-24-prd-completion-fields, 2026-09-25-cookie-auth-contract
 
 ## Current Phase
 
@@ -21,12 +21,16 @@ T3. Top 3 추천과 리롤
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. openapi: `POST /dating/recommendations/reroll` · 추천 응답 `rerollCost` · `DATING_NO_MORE_CANDIDATES` ←
+- 2. api: `rerollRecommendations` 를 실제 호출로 (목도 같은 규칙: 무료 1회 → 5실)
+- 3. feature: `rerollCost` 로 무료·유료 판정(가정 제거), 비용 3 → 5 정정
+- 4. 연타 차단 — 요청 중에는 확인 버튼을 막는다(서버가 안 막는다)
+- 5. 후보 소진(409)·잔액 부족(402) 안내 · test/typecheck/lint · 커밋 · `--ready`
 
 ## Last Checkpoint
 
@@ -35,13 +39,15 @@ TODO
 
 ## Relevant Documents
 
-- `docs/phases/10-dating-onboarding/PLAN.md`
+- `docs/phases/10-dating-onboarding/PLAN.md` T3 · `docs/prd/30-functional-requirements.md` FR-27
+- WKS-BE `docs/api-spec.md` §10.4·§10.4.1 (dev 867c30f, 2026-09-27) — 리롤 확정
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/api/dating.ts:rerollRecommendations,getRecommendations` · `schema/dating.ts` · `schema/envelope.ts`
+- `src/features/dating/recommendation/recommendationsLoader.ts:toRerollView` · `DatingCardsScreen.tsx:handleReroll`
 
 ## Next Action
 
-`docs/phases/10-dating-onboarding/PLAN.md`에서 10/T3의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+Progress 1 — openapi 에 §10.4.1 반영.
