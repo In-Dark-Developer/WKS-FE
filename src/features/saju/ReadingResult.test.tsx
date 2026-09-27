@@ -30,7 +30,6 @@ function renderAt(path: string) {
         path: '/reading/:id',
         element: (
           <ReadingResult
-            ranking={<p>순위 자리</p>}
             renderCard={(face) => (
               <p>
                 카드 자리 {face.nickname} {face.title}{' '}
@@ -77,7 +76,6 @@ test('카드 자리에 뷰 모델의 앞면 값을 넘기고 행운·운세 세 
 test('다른 Phase 의 슬롯과 하위 라우트를 제자리에 그린다', () => {
   renderAt('/reading/abc/pre-register');
 
-  expect(screen.getByText('순위 자리')).toBeInTheDocument();
   expect(screen.getByText('티저 자리')).toBeInTheDocument();
   expect(screen.getByText('하위 화면')).toBeInTheDocument();
 });
