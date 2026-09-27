@@ -33,8 +33,8 @@ function toProfile(
     photo: toPhoto(counterpart.fields.photo, counterpart.blurredPhotoUrl ?? null),
     name: toLockable(counterpart.fields.name),
     department: toLockable(counterpart.fields.department),
-    reason:
-      candidate === undefined ? { isLocked: true, cost: 0 } : toLockable(candidate.fields.reason),
+    // 까닭을 모르는 상대는 흐리게 가리지 않고 없음 안내를 보인다 — 받은 신청은 해금 없이 열려 있어야 한다(FR-30).
+    reason: candidate === undefined ? null : toLockable(candidate.fields.reason),
   };
 }
 

@@ -91,7 +91,8 @@ type BackProps = {
   photo: CandidatePhoto;
   name: LockableField<string>;
   department: LockableField<string>;
-  reason: LockableField<string>;
+  // 궁합 까닭 — 요청함에서 까닭을 모르는 상대는 null(흐림 대신 없음 안내).
+  reason: LockableField<string> | null;
   // 해금 모달을 연다. 없으면(운명의 실을 보낸 뒤, FR-29) 잠긴 항목은 흐리게만 보인다.
   onUnlock?: () => void;
 };
@@ -99,7 +100,9 @@ type BackProps = {
 // 뒷면 — 이름·학과·궁합 이유(Figma 103:2543).
 // 아무것도 열지 않았으면 '열람하기' 하나(103:2533), 일부를 열었으면 잠긴 항목마다 자물쇠 알약(112:3241)을 둔다.
 export function CandidateBack({ photo, name, department, reason, onUnlock }: BackProps) {
-  const isNothingOpened = [photo, name, department, reason].every((field) => field.isLocked);
+  const isNothingOpened = [photo, name, department, reason].every(
+    (field) => field === null || field.isLocked,
+  );
   const rowUnlock = onUnlock && !isNothingOpened ? onUnlock : undefined;
 
   return (
@@ -131,13 +134,20 @@ export function CandidateBack({ photo, name, department, reason, onUnlock }: Bac
       <dl className={cn('flex flex-col text-ui-12', rowUnlock ? 'gap-16' : 'gap-8')}>
         <BackRow field={name} label="이름" onUnlock={rowUnlock} placeholder="○○○" />
         <BackRow field={department} label="학과" onUnlock={rowUnlock} placeholder="○○○○○○학과" />
-        <BackRow
-          field={reason}
-          isBlock
-          label="궁합 이유"
-          onUnlock={rowUnlock}
-          placeholder="두 사람의 사주가 서로를 채워 주는 까닭이 여기에 적혀 있어요. 운명의 실로 열어 보세요."
-        />
+        {reason === null ? (
+          <div className="flex flex-col gap-8">
+            <dt className="text-neutral-200">궁합 이유</dt>
+            <dd className="text-neutral-200">궁합 이유는 오늘의 인연 카드에서만 볼 수 있어요.</dd>
+          </div>
+        ) : (
+          <BackRow
+            field={reason}
+            isBlock
+            label="궁합 이유"
+            onUnlock={rowUnlock}
+            placeholder="두 사람의 사주가 서로를 채워 주는 까닭이 여기에 적혀 있어요. 운명의 실로 열어 보세요."
+          />
+        )}
       </dl>
     </div>
   );

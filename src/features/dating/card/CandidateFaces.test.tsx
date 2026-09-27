@@ -52,3 +52,17 @@ test('궁합 이유는 백엔드 문장의 줄바꿈을 그대로 두고 긴 글
   expect(reason.textContent).toBe('첫 문장이에요.\n둘째 문장이에요.');
   expect(reason).toHaveClass('whitespace-pre-line', 'wrap-anywhere');
 });
+
+test('궁합 이유를 모르는 상대는 흐리게 가리지 않고 없음 안내를 보인다 (11/T9)', () => {
+  render(
+    <CandidateBack
+      department={{ isLocked: false, value: '경영학과' }}
+      name={{ isLocked: false, value: '이서연' }}
+      photo={photo}
+      reason={null}
+    />,
+  );
+
+  expect(screen.getByText('궁합 이유는 오늘의 인연 카드에서만 볼 수 있어요.')).toBeInTheDocument();
+  expect(screen.queryByText(/잠겨 있어요/)).not.toBeInTheDocument();
+});
