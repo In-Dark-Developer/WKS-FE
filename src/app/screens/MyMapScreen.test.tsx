@@ -9,7 +9,6 @@ const props = {
   nickname: '달빛토끼',
   shareId: 'b2c3d4e5-2222-4222-8222-222222222222',
   friends: [],
-  onBack: () => undefined,
 };
 
 test('비로그인이면 저장 유도 카드가 궁합지도 저장 시트를 띄우고 카카오 로그인을 시작한다', () => {

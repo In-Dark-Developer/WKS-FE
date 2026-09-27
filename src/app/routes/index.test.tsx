@@ -297,17 +297,16 @@ test('궁합 지도에는 친구가 점수 높은 순으로 보인다', async ()
   ).toBeInTheDocument();
 });
 
-test('궁합 지도의 뒤로가기는 내 사주 결과로 돌아간다 — 직접 주소로 들어와도 된다', async () => {
+test('내 궁합 지도에는 맨 위 뒤로가기가 없다 — 직접 주소로 들어와도 지도가 보인다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
 
-  const router = renderAt('/me/map');
-  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+  renderAt('/me/map');
 
   expect(
-    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
   ).toBeInTheDocument();
-  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+  expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
 });
 
 test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 보낸다', async () => {

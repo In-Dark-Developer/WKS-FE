@@ -35,7 +35,7 @@ const SHARE_ID = '9f0d3f1e-0000-4000-8000-000000000001';
 const noop = () => undefined;
 
 function MyMap({ friends: list }: { friends: readonly Friend[] }) {
-  return <MyMapScreen friends={list} nickname="달빛토끼" onBack={noop} shareId={SHARE_ID} />;
+  return <MyMapScreen friends={list} nickname="달빛토끼" shareId={SHARE_ID} />;
 }
 
 // SCR-08 궁합 지도 — 05/T2. SCR-13 친구의 궁합 지도(링크 주인의 지도) — 05/T5·T10.
