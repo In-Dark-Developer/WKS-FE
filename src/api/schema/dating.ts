@@ -89,10 +89,9 @@ export const datingUnlockFieldSchema = z.enum(['PHOTO', 'NAME', 'DEPARTMENT', 'R
 
 export type DatingUnlockField = z.infer<typeof datingUnlockFieldSchema>;
 
-// 해금 응답 — 열린 값과 차감 뒤 잔액. 사진은 원본의 서명된 임시 URL 이다.
+// 해금 응답(§10.5, 2026-09-27 배열로 변경) — 요청한 항목 → 열린 값, 차감 뒤 잔액. 사진은 원본의 서명된 임시 URL 이다.
 export const datingUnlockResultSchema = z.object({
-  field: datingUnlockFieldSchema,
-  value: z.string().nullable(),
+  values: z.partialRecord(datingUnlockFieldSchema, z.string().nullable()),
   balance: z.number().int().nonnegative(),
 });
 

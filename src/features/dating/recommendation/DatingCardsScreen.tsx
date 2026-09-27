@@ -21,7 +21,6 @@ export const REROLL_SHORT_MESSAGE = '운명의 실이 부족해 바꾸지 못했
 export const REROLL_NO_MORE_MESSAGE = '지금은 새로 소개할 인연이 없어요. 인연은 그대로예요.';
 export const UNLOCK_SHORT_MESSAGE = '운명의 실이 부족해 열지 못했어요.';
 export const UNLOCK_FAILED_MESSAGE = '정보를 열지 못했어요. 실은 쓰이지 않았어요.';
-export const UNLOCK_PARTIAL_MESSAGE = '나머지 정보는 열지 못했어요. 다시 시도해 주세요.';
 export const THREAD_FAILED_MESSAGE = '운명의 실을 보내지 못했어요. 요청함에 넣지 않았어요.';
 
 // 리롤 실패는 셋으로 갈린다 — 잔액 부족(402)·후보 소진(409)·그 밖. 셋 다 카드는 그대로다.
@@ -91,7 +90,9 @@ export function DatingCardsScreen({ view }: Props) {
     }
     if (run.failure === 'short') setFailedMessage(UNLOCK_SHORT_MESSAGE);
     else if (run.failure === 'error') {
-      setFailedMessage(run.opened.length > 0 ? UNLOCK_PARTIAL_MESSAGE : UNLOCK_FAILED_MESSAGE);
+      setFailedMessage(UNLOCK_FAILED_MESSAGE);
+      // 궁합 까닭 생성 실패(503)는 차감·해금이 이미 끝난 뒤다(§10.5) — 열린 항목과 잔액을 다시 읽는다.
+      void revalidator.revalidate();
     }
   }
 

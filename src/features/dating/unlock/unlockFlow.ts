@@ -1,4 +1,4 @@
-import { unlockCandidateField, type DatingUnlockField } from '@/api/unlocks';
+import { unlockCandidateFields, type DatingUnlockField } from '@/api/unlocks';
 
 import type { MatchCandidateView } from '../recommendation/cardsView';
 import type { UnlockItem, UnlockOptionView } from './unlockView';
@@ -28,32 +28,29 @@ export function toUnlockOptions(candidate: MatchCandidateView): UnlockOptionView
 }
 
 export type UnlockRun = {
-  // 열린 항목 — 모달 순서대로.
+  // 열린 항목 — 모달 순서대로. 해금은 전부 아니면 전무라 실패하면 비어 있다.
   opened: UnlockItem[];
-  // 마지막으로 성공한 해금 뒤 잔액(백엔드 값). 하나도 못 열었으면 null.
+  // 해금 뒤 잔액(백엔드 값). 실패하면 null.
   balance: number | null;
-  // 멈춘 이유 — 잔액 부족(402)이거나 그 밖의 실패. 다 열었으면 null.
+  // 실패 이유 — 잔액 부족(402)이거나 그 밖의 실패. 열었으면 null.
   failure: 'short' | 'error' | null;
 };
 
-// 모달에서 고른 항목을 하나씩 연다 — 백엔드 해금은 한 번에 한 항목이다(§10.5). 실패하면 거기서 멈춘다:
-// 그 항목은 차감되지 않고 잠긴 채이며(FR-28), 앞서 연 항목은 이미 열렸다.
+// 모달에서 고른 항목을 한 요청으로 연다(§10.5). 실패하면 아무것도 차감·해금되지 않는다(FR-28).
 export async function unlockItems(
   candidateId: string,
   items: readonly UnlockItem[],
-  unlock = unlockCandidateField,
+  unlock = unlockCandidateFields,
 ): Promise<UnlockRun> {
-  const run: UnlockRun = { opened: [], balance: null, failure: null };
-  for (const item of itemOrder.filter((each) => items.includes(each))) {
-    const outcome = await unlock(candidateId, fieldByItem[item]);
-    if (!outcome.ok) {
-      const isShort = outcome.error.kind === 'api' && outcome.error.code === 'INSUFFICIENT_THREAD';
-      if (!isShort) console.error('POST /dating/candidates/{id}/unlock 실패', outcome.error);
-      run.failure = isShort ? 'short' : 'error';
-      return run;
-    }
-    run.opened.push(item);
-    run.balance = outcome.data.balance;
+  const ordered = itemOrder.filter((each) => items.includes(each));
+  const outcome = await unlock(
+    candidateId,
+    ordered.map((item) => fieldByItem[item]),
+  );
+  if (!outcome.ok) {
+    const isShort = outcome.error.kind === 'api' && outcome.error.code === 'INSUFFICIENT_THREAD';
+    if (!isShort) console.error('POST /dating/candidates/{id}/unlock 실패', outcome.error);
+    return { opened: [], balance: null, failure: isShort ? 'short' : 'error' };
   }
-  return run;
+  return { opened: ordered, balance: outcome.data.balance, failure: null };
 }
