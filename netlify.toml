@@ -11,6 +11,11 @@
 [build.environment]
   VITE_API_BASE_URL = "https://api.threadoffate.site/api"
 
+# 운영 배포(threadoffate.site)만 오픈 시각 전에 오픈 대기 화면을 보인다(src/features/intro/openingGate.ts).
+# dev 브랜치 배포·PR 미리보기에는 두지 않는다 — 오픈 전에도 QA 가 계속 돌아야 한다.
+[context.production.environment]
+  VITE_OPEN_AT = "2026-09-29T09:00:00+09:00"
+
 # SPA — 새로고침·공유 링크(/s/:shareId) 직접 진입도 index.html 이 받아 라우터가 그린다.
 [[redirects]]
   from = "/*"
