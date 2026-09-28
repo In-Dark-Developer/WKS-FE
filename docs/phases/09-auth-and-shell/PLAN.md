@@ -77,7 +77,7 @@ QA(2026-09-27, Notion 「🩺 QA / 디자인」) — 홈·네비 항목을 원�
 
 QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `담당자` 칸과 같고, 원래 그 FR 을 만든 사람이다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
 
-- [ ] T15. 하단 네비 간격 조정 — Done when: 디자인이 정한 새 간격(탭 사이 40px · 좌우 여백 48px · 바닥 20px 중 무엇을 얼마로)을 Figma nav `30:5661` 에 먼저 반영하고, 네비가 그 값으로 그려진다. 값이 정해지기 전에는 시작하지 않는다 · Touches: `src/ui/BottomNav.tsx`, `src/app/layout.css` · Owner: 이정진 · FR: FR-19 (QA: 네브바 거리가 너무 먼 듯)
+- [x] T15. 하단 네비 간격 조정 — Done when: 디자인이 정한 새 간격(탭 사이 40px · 좌우 여백 48px · 바닥 20px 중 무엇을 얼마로)을 Figma nav `30:5661` 에 먼저 반영하고, 네비가 그 값으로 그려진다. 값이 정해지기 전에는 시작하지 않는다 · Touches: `src/ui/BottomNav.tsx`, `src/app/layout.css` · Owner: 이동건 · FR: FR-19 (QA: 네브바 거리가 너무 먼 듯) (수정 없음 — 2026-09-28 디자인 확인 결과 QA 지적이 착오였고 현재 값을 유지한다: 탭 사이 40px · 좌우 48px · 바닥 20px + safe area)
 
 - [x] T16. 홈 운세 표시 순서 — Done when: 홈(SCR-04)의 운세 등급(결혼운·자녀운·연애운 등)이 Figma `8:794` 와 같은 순서로 보이고, 순서는 백엔드 응답 순서가 아니라 화면이 정한 순서를 따른다 · Touches: `src/features/saju/` · Owner: 이동건 · FR: FR-3 (QA: 내 사주에서 운 보여주는 순서 변경) (commit 19c59e3, PR #283)
 
