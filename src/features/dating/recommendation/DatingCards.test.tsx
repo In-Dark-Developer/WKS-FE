@@ -139,3 +139,12 @@ test('후보가 0명이면 넘기기 없이 빈 카드 하나만 보인다 (FR-2
   expect(screen.getAllByText('운명의 인연을 기다리고 있어요')).toHaveLength(1);
   expect(screen.queryByRole('button', { name: /번째 인연 보기/ })).not.toBeInTheDocument();
 });
+
+// 빈 카드도 같은 규격이어야 후보가 모자랄 때 카드 높이가 들쭉날쭉하지 않는다.
+test('빈 카드도 카드와 같은 비율을 갖는다 (Figma 134:2248)', () => {
+  renderCards({ candidates: [] });
+
+  const empty = screen.getByText('운명의 인연을 기다리고 있어요').closest('div');
+
+  expect(empty).toHaveClass('aspect-[343/433]', 'w-full');
+});

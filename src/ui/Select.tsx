@@ -8,6 +8,7 @@ import { Icon } from '@/ui/Icon';
 // Figma 디자인시스템 C08 SelectTrigger + C09 OptionRow — 트리거 아래로 옵션 목록이 펼쳐진다.
 // 옵션 데이터(12시진·MBTI 등)는 쓰는 화면이 props 로 넘긴다.
 // appearance 'soft' 는 화면(수정본) 모습 — Surface/Subtle 배경·Border/Default 테두리, 고른 옵션은 Action/Teal.
+// `className` 은 여는 칸(트리거 버튼)에 붙는다 — TextField 와 같은 자리라 폼이 배경을 맞출 수 있다.
 export type SelectOption<T extends string> = { value: T; label: string };
 
 type Props<T extends string> = {
@@ -98,7 +99,7 @@ export function Select<T extends string>({
   }
 
   return (
-    <div className={cn('relative', className)}>
+    <div className="relative">
       {name ? <input name={name} type="hidden" value={value ?? ''} /> : null}
       <button
         aria-activedescendant={open && activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined}
@@ -122,6 +123,8 @@ export function Select<T extends string>({
             : readOnly || appearance === 'soft'
               ? 'bg-surface-subtle text-primary'
               : 'bg-surface-default text-primary',
+          // 여는 칸(버튼)에 얹는다 — 옆 TextField 처럼 배경·테두리를 폼에서 덮어쓸 수 있어야 한다.
+          className,
         )}
         disabled={disabled}
         id={triggerId}
