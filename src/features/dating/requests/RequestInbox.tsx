@@ -78,7 +78,7 @@ export function RequestInbox({
           <ul className="flex flex-col gap-8">
             {rows.map((request) => (
               <li key={request.id}>
-                <RequestRow onOpen={() => setOpenId(request.id)} request={request} />
+                <RequestRow onOpen={() => setOpenId(request.id)} request={request} tab={tab} />
               </li>
             ))}
           </ul>
@@ -122,15 +122,19 @@ const pillByStatus: Record<
   DECLINED: { tone: 'declined', label: '거절됨' },
 };
 
-// 목록 한 줄 — Figma Card/순위(109:1871). 오른쪽은 궁합 점수가 아니라 요청 상태다(390:2842). 누르면 상대 카드를 띄운다.
+// 목록 한 줄 — Figma Card/순위(109:1871). 누르면 상대 카드를 띄운다.
+// 오른쪽 알약은 탭마다 다르다(2026-09-28 결정) — 보낸 신청은 요청 상태(보관함/내가보낸사람 390:2842),
+// 받은 신청은 궁합 점수(보관함/나에게보낸사람 109:2251)다.
 function RequestRow({
   request,
+  tab,
   onOpen,
 }: {
   request: SentRequestView | ReceivedRequestView;
+  tab: RequestTab;
   onOpen: () => void;
 }) {
-  const { photo, name } = request;
+  const { photo, name, score } = request;
   const pill = pillByStatus[request.status ?? 'PENDING'];
   const photoSrc = photo.isLocked ? photo.thumbnailUrl : photo.url;
 
@@ -162,12 +166,24 @@ function RequestRow({
           <span className="truncate text-ui-16 font-semibold text-primary">{name.value}</span>
         )}
       </span>
-      <span
-        className="flex h-[28px] w-[60px] shrink-0 items-center justify-center rounded-999 border border-primary-50 font-display text-ui-12 shadow-sm"
-        data-status-pill={pill.tone}
-      >
-        {pill.label}
-      </span>
+      {tab === 'received' && score !== null ? (
+        <span className="flex shrink-0 items-center gap-12">
+          <span className="font-display text-ui-12 text-primary">궁합점수</span>
+          <span
+            className="flex h-[28px] w-[60px] items-center justify-center rounded-999 border border-primary-50 font-display text-ui-12 shadow-sm"
+            data-score-pill=""
+          >
+            {score}점
+          </span>
+        </span>
+      ) : (
+        <span
+          className="flex h-[28px] w-[60px] shrink-0 items-center justify-center rounded-999 border border-primary-50 font-display text-ui-12 shadow-sm"
+          data-status-pill={pill.tone}
+        >
+          {pill.label}
+        </span>
+      )}
     </button>
   );
 }

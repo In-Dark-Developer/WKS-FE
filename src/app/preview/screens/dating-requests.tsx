@@ -61,12 +61,12 @@ const sent: readonly SentRequestView[] = [
   },
 ];
 
-// 받은 신청 — 해금 없이 전부 열려 오고, 궁합 점수는 보이지 않는다(Q17 미정).
+// 받은 신청 — 해금 없이 전부 열려 오고, 목록 줄 오른쪽에는 요청 상태가 아니라 궁합 점수가 보인다(Figma 109:2251, 2026-09-28).
 const received: readonly RequestProfileView[] = [
   {
     id: 'r1',
     rank: null,
-    score: null,
+    score: 92,
     relationLabel: '천생연분',
     mbti: 'ENTP',
     birthYear: '03년생',
@@ -82,7 +82,7 @@ const received: readonly RequestProfileView[] = [
   {
     id: 'r2',
     rank: null,
-    score: null,
+    score: 78,
     relationLabel: '찰떡궁합',
     mbti: 'ISTJ',
     birthYear: '01년생',

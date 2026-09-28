@@ -76,6 +76,11 @@
   color: rgb(0 0 0 / 85%);
 }
 
+/* 요청함 궁합 점수 알약 — Figma 보관함/나에게보낸사람(109:2251) 의 원본 그라데이션. Figma 에 변수가 없다. */
+[data-score-pill] {
+  background: linear-gradient(110.76deg, #fcaaa7 9.74%, #fff 90.76%, #91bdc8 171.79%);
+}
+
 /* 요청함 상태 알약 — Figma 보관함/내가보낸사람(390:2842) 의 원본 그라데이션·글자색. 첫 색만 상태마다 다르고
    (신청중 primary-200 · 수락됨 분홍 · 거절됨 neutral-200) 분홍과 글자색은 Figma 에 변수가 없다. */
 [data-status-pill] {
