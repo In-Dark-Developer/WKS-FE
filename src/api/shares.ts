@@ -46,8 +46,11 @@ function mockScore(shareId: string, guestResultId: string): number {
   return hash % 101;
 }
 
+// 목 모드에서 만든 궁합 — 주인 지도에 쌓이고 id 로 궁합 결과(SCR-24)·이유를 찾는다. 새로고침하면 비워진다.
+let mockCompatibilities: SharedResult['compatibilities'] = [];
+
 function mockGetSharedResult(): ApiOutcome<SharedResult> {
-  return { ok: true, data: mockOwner };
+  return { ok: true, data: { ...mockOwner, compatibilities: mockCompatibilities } };
 }
 
 function mockCreateCompatibility(
@@ -65,9 +68,28 @@ function mockCreateCompatibility(
     };
   }
   const score = mockScore(shareId, guestResultId);
+  // 같은 조합은 같은 궁합(백엔드 200) — 방문자 결과마다 한 줄이다.
+  const index = mockCompatibilities.findIndex(
+    (each) => each.nickname === guestResultId.slice(0, 8),
+  );
+  const id =
+    index >= 0 ? (mockCompatibilities[index]?.id ?? index + 1) : mockCompatibilities.length + 1;
+  if (index < 0) {
+    mockCompatibilities = [
+      {
+        id,
+        nickname: guestResultId.slice(0, 8),
+        score,
+        tier: mockTier(score),
+        createdAt: new Date().toISOString(),
+      },
+      ...mockCompatibilities,
+    ];
+  }
   return {
     ok: true,
     data: {
+      id,
       score,
       tier: mockTier(score),
       originNickname: mockOwner.nickname,

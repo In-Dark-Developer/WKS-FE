@@ -1,10 +1,10 @@
 import type { ActionFunctionArgs } from 'react-router-dom';
 
 import { forgetSession, readSession } from '@/api/session';
-import { createSignup } from '@/api/signups';
+import { createSignup, resendSignupMail } from '@/api/signups';
 import { track } from '@/lib/analytics';
 
-import type { PreRegisterActionData, PreRegisterInput } from './formSchema';
+import type { PreRegisterActionData, PreRegisterInput, ResendActionData } from './formSchema';
 
 // PreRegisterForm 이 `encType: 'application/json'` 으로 보내는 PreRegisterInput 을 계약 모양으로 좁힌다.
 // 같은 화면이 방금 검증한 값이라 필드 존재는 신뢰하되, 요청 본문은 런타임 경계라 타입은 확인한다
@@ -40,13 +40,36 @@ function toPreRegisterInput(value: unknown): PreRegisterInput {
   };
 }
 
+// 인증 메일 재발송 요청(`{ intent: 'resend', email }`) — ResendMail 의 fetcher 가 보낸다.
+function readResendEmail(value: unknown): string | null {
+  if (typeof value !== 'object' || value === null) return null;
+  // 위에서 object 임을 확인했으니 필드를 읽기 위해 인덱스로 읽는다.
+  const { intent, email } = value as Record<string, unknown>;
+  return intent === 'resend' && typeof email === 'string' ? email : null;
+}
+
+async function resendAction(email: string): Promise<ResendActionData> {
+  const outcome = await resendSignupMail(email);
+  if (outcome.ok) return { resend: outcome.data.mailSent ? 'sent' : 'failed' };
+  // 이 화면들은 신청 내역이 있는 이메일만 보내므로 400 INVALID_INPUT 은 '이미 인증'이다.
+  if (outcome.error.kind === 'api' && outcome.error.code === 'INVALID_INPUT') {
+    return { resend: 'verified' };
+  }
+  console.error('POST /signups/resend 실패', outcome.error);
+  return { resend: 'failed' };
+}
+
 // SCR-09 `/reading/:id/pre-register` action — 검증·동의를 마친 입력만 여기로 온다(FR-17).
 // 보관된 '내 결과'를 함께 보내 신청과 사주를 잇고, 그 결과를 백엔드가 모르면(404) 비운 뒤 한 번만 사주 없이 다시 보낸다 —
 // 죽은 resultId 때문에 신청 자체가 막히지 않게 한다.
 export async function preRegisterAction({
   request,
-}: ActionFunctionArgs): Promise<PreRegisterActionData> {
-  const input = toPreRegisterInput(await request.json());
+}: ActionFunctionArgs): Promise<PreRegisterActionData | ResendActionData> {
+  const body: unknown = await request.json();
+  const resendEmail = readResendEmail(body);
+  if (resendEmail !== null) return resendAction(resendEmail);
+
+  const input = toPreRegisterInput(body);
   const resultId = readSession()?.resultId ?? null;
 
   let outcome = await createSignup({ ...input, resultId });

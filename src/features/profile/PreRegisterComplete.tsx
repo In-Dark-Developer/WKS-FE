@@ -1,11 +1,15 @@
 import { Button } from '@/ui/Button';
 
+import { ResendMail } from './ResendMail';
+
 import './PreRegisterComplete.css';
 
-type Props = { onDone?: () => void };
+// `mailSent` 가 false 면 신청은 됐지만 인증 메일이 안 갔다 — 백엔드가 그 사실을 응답으로 알려 준다.
+// 그때 실패 문구 없이 `email` 로 재발송 버튼만 띄운다.
+type Props = { onDone?: () => void; mailSent?: boolean; email?: string };
 
 // SCR-09 완료 상태 — Figma 수정본 사전신청 모달 완료(695:2654).
-export function PreRegisterComplete({ onDone }: Props) {
+export function PreRegisterComplete({ onDone, mailSent = true, email }: Props) {
   return (
     <section
       aria-labelledby="pre-register-complete-title"
@@ -23,6 +27,7 @@ export function PreRegisterComplete({ onDone }: Props) {
         <p className="font-display text-ui-12 whitespace-pre-line text-muted">
           함께할 새로운 인연을 기다려 주세요.
         </p>
+        {!mailSent && email ? <ResendMail email={email} /> : null}
       </div>
       <Button onClick={onDone} size="l" variant="accent">
         확인

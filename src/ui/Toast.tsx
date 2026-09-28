@@ -23,7 +23,10 @@ export function Toast({ open, message, onClose, duration = 3000, className }: Pr
   if (!open) return null;
 
   return createPortal(
-    <div className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex justify-center px-16">
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex justify-center px-16"
+      data-toast=""
+    >
       <div
         aria-live="polite"
         className={cn(

@@ -1,5 +1,19 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { act, cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+
+// 티저 loader 의 GET /me 는 경계에서 대체한다 — 실제 요청을 보내지 않고 비로그인(401)으로 둔다.
+vi.mock('@/api/me', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/me')>();
+  return {
+    ...actual,
+    getMe: vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        error: { kind: 'api', code: 'UNAUTHENTICATED', message: '로그인이 필요해요.' },
+      }),
+    ),
+  };
+});
 
 import { App } from '@/app/App';
 
@@ -14,13 +28,14 @@ afterEach(() => {
   window.history.pushState({}, '', '/');
 });
 
-test('루트 경로 콘텐츠를 앱 셸 안에 렌더한다', () => {
+test('루트 경로 콘텐츠를 앱 셸 안에 렌더한다', async () => {
   render(<App />);
 
-  const shell = screen.getByRole('main');
+  // 티저는 loader(GET /me)가 끝난 뒤 그려진다.
+  const shell = await screen.findByRole('main');
 
   expect(
-    within(shell).getByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+    await within(shell).findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
   ).toBeInTheDocument();
 });
 
@@ -41,4 +56,35 @@ test('개발 서버에서는 /preview 가 퍼블리싱 확인 목록을 보여 �
     'href',
     '/preview/saju',
   );
+});
+
+test('오픈 시각 전에는 어떤 주소로 들어와도 오픈 대기 화면만 보이고, 그 시각이 되면 서비스가 열린다', async () => {
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  const openAt = Date.now() + 3_000;
+  window.history.pushState({}, '', '/s/9f0d3f1e-0000-4000-8000-000000000001');
+
+  render(<App openAt={openAt} />);
+
+  expect(screen.getByText('GRAND OPEN')).toBeInTheDocument();
+  expect(screen.getByRole('timer')).toHaveTextContent('00:00:03');
+
+  window.history.pushState({}, '', '/');
+  for (let second = 0; second < 3; second += 1) {
+    await act(() => vi.advanceTimersByTimeAsync(1_000));
+  }
+  vi.useRealTimers();
+
+  expect(screen.queryByText('GRAND OPEN')).not.toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
+});
+
+test('오픈 시각이 지났으면 대기 화면 없이 바로 연다', async () => {
+  render(<App openAt={Date.now() - 1_000} />);
+
+  expect(screen.queryByText('GRAND OPEN')).not.toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
 });

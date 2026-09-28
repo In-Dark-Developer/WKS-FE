@@ -1,6 +1,6 @@
 import type { CompatibilityTier, Friend } from './tiers';
 
-// 등급별 궤도 — 궤도 선 에셋(compatibility-orbit-*.svg)의 중심과 반지름(패널 323 × 439px 기준). 선 색이 구슬 색과 같은
+// 등급별 궤도 — 궤도 선 에셋(compatibility-orbit-*.webp)의 중심과 반지름(패널 323 × 439px 기준). 선 색이 구슬 색과 같은
 // 궤도다: 귀인 #91BDC8 · 찰떡 #E9947D · 벗 #F9CB85 · 스침 #C3C6C9. 찰떡 궤도는 -87.74° 기울어진 거의 원(208.66 × 209.2)이라
 // 원으로 본다.
 export const tierOrbits: Record<

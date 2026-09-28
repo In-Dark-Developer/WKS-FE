@@ -1,6 +1,6 @@
 # Phase 07 — matching-thread
 
-- Status: PLANNED
+- Status: CANCELLED
 - Lead: @nicerjs23
 - Depends on: 06
 - Start: TBD · End: 2026-09-17 (MVP 마감 — PRD Constraints)
@@ -10,6 +10,9 @@
 소개팅 후보를 점지 카드로 열람하고 운명의 실을 주고받아 성립 시 연락처가 공개된다. 소개팅 화면은 축제 당일(2026-09-29)부터 열린다.
 
 ## Motivation
+
+<!-- 2026-09-27: 이 Phase 는 취소됐다(RESULT.md). V1 기획 개정으로 Phase 10·11 이 같은 요구사항을 덮는다 —
+     FR-12 → FR-26·27·28, FR-13 → FR-29·30. 아래 내용은 취소 시점의 계획 그대로 남긴다. -->
 
 상세 계획은 선행 Phase가 끝난 뒤 계획 스트림(`scripts/ai-stream.sh open plan 07-matching-thread`)에서 작성한다. 지금은 Phase 그래프의 자리와 덮는 요구사항만 고정한다.
 

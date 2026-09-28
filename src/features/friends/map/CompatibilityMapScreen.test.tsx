@@ -1,5 +1,5 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, expect, test } from 'vitest';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { afterEach, expect, test, vi } from 'vitest';
 
 import { CompatibilityMap } from './CompatibilityMap';
 import { CompatibilityMapScreen } from './CompatibilityMapScreen';
@@ -36,18 +36,32 @@ test('친구가 없으면 지도에 구슬 없이 안내한다', () => {
   expect(screen.queryAllByRole('listitem')).toHaveLength(0);
 });
 
-test('친구가 2명 이하면 궤도 선만, 3명 이상이면 궤도 선과 구슬이 함께 도는 지도다', () => {
+test('구슬 1개 이하면 궤도 선만, 3명 이상이면 구슬만 돈다 — 둘이 함께 돌지 않는다', () => {
   const { rerender } = render(
-    <CompatibilityMap friends={friends.slice(0, 2)} nickname="달빛토끼" />,
+    <CompatibilityMap friends={friends.slice(0, 1)} nickname="달빛토끼" />,
   );
   const map = screen.getByRole('region', { name: '달빛토끼님의 궁합 지도' });
   expect(map).toHaveAttribute('data-motion', 'orbits');
 
-  rerender(<CompatibilityMap friends={friends.slice(0, 3)} nickname="달빛토끼" />);
-  expect(map).toHaveAttribute('data-motion', 'orbs');
-
   rerender(<CompatibilityMap friends={[]} nickname="달빛토끼" />);
   expect(map).toHaveAttribute('data-motion', 'orbits');
+
+  // 구슬 2개 — 구슬은 아직 흐르지 않고(3명부터) 선도 서 있다.
+  rerender(<CompatibilityMap friends={friends.slice(0, 2)} nickname="달빛토끼" />);
+  expect(map).toHaveAttribute('data-motion', 'none');
+
+  rerender(<CompatibilityMap friends={friends.slice(0, 3)} nickname="달빛토끼" />);
+  expect(map).toHaveAttribute('data-motion', 'orbs');
+});
+
+test('궤도 선·달은 미리 구운 래스터다 — 필터 SVG 를 폰이 그리느라 새로 연 지도에서 선·달이 비지 않는다', () => {
+  const { container } = render(<CompatibilityMap friends={friends} nickname="달빛토끼" />);
+
+  const layers = container.querySelectorAll(
+    '[data-compatibility-map-orbit], [data-compatibility-map-moon]',
+  );
+  expect(layers).toHaveLength(5);
+  for (const layer of layers) expect(layer.getAttribute('src')).toMatch(/\.webp$/);
 });
 
 test('등급별 인원을 네 칸에 센다', () => {
@@ -78,7 +92,7 @@ test('인연이 없으면 안내와 버튼 자리를 보인다', () => {
   expect(screen.getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
 });
 
-test('맨 아래 공유 자리에 받은 버튼을 그린다', () => {
+test('내 지도는 공유 버튼을 지도 바로 아래, 순위보다 위에 그린다', () => {
   render(
     <CompatibilityMapScreen
       friends={friends}
@@ -90,9 +104,11 @@ test('맨 아래 공유 자리에 받은 버튼을 그린다', () => {
   expect(
     screen.getByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
   ).toBeInTheDocument();
-  expect(
-    screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' }),
-  ).toBeInTheDocument();
+  const share = screen.getByRole('button', { name: '친구에게 공유하고 궁합 지도 넓히기' });
+  const map = screen.getByRole('region', { name: '달빛토끼님의 궁합 지도' });
+  const ranking = screen.getByRole('heading', { name: '친구 궁합 순위' });
+  expect(map.compareDocumentPosition(share) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(share.compareDocumentPosition(ranking) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
 
 test('방문자 지도는 링크 주인의 지도와 부제를 보이고 버튼 자리에 받은 버튼을 그린다', () => {
@@ -126,26 +142,6 @@ test('제목 줄 오른쪽에 받은 링크를 둔다', () => {
   expect(screen.getByRole('link', { name: '지도 보기 >' })).toHaveAttribute('href', '/me/map');
 });
 
-test('뒤로가기 자리에 받은 버튼을 지도 위에 둔다', () => {
-  render(
-    <CompatibilityMapScreen
-      back={<button type="button">뒤로가기</button>}
-      friends={friends}
-      nickname="달빛토끼"
-    />,
-  );
-
-  const back = screen.getByRole('button', { name: '뒤로가기' });
-  const heading = screen.getByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' });
-  expect(back.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-});
-
-test('뒤로가기를 주지 않으면 그 줄이 없다', () => {
-  render(<CompatibilityMapScreen friends={friends} nickname="달빛토끼" />);
-
-  expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
-});
-
 test('인연이 있으면 공유 버튼을 목록 아래에 그린다', () => {
   render(
     <FriendRanking
@@ -158,4 +154,34 @@ test('인연이 있으면 공유 버튼을 목록 아래에 그린다', () => {
   const list = screen.getByRole('list');
   const button = screen.getByRole('button', { name: '친구에게 공유' });
   expect(list.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+test('궁합 ID 가 있는 친구 줄만 눌러 궁합 이유를 열 수 있고, 그때 안내 문구가 보인다', () => {
+  const onSelectFriend = vi.fn();
+  render(
+    <CompatibilityMapScreen
+      friends={[
+        { nickname: '영채', score: 94, tier: 'GUIIN', compatibilityId: 7 },
+        { nickname: '진희', score: 83, tier: 'CHALTTEOK' },
+      ]}
+      nickname="달빛토끼"
+      onSelectFriend={onSelectFriend}
+    />,
+  );
+
+  expect(screen.getByText('친구 이름을 눌러 자세한 정보를 확인해보세요.')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '영채님과의 궁합 이유 보기' }));
+  expect(onSelectFriend).toHaveBeenCalledWith(expect.objectContaining({ compatibilityId: 7 }));
+  // ID 가 없는 줄(V1 이전 백엔드)은 버튼이 아니다.
+  expect(
+    screen.queryByRole('button', { name: '진희님과의 궁합 이유 보기' }),
+  ).not.toBeInTheDocument();
+});
+
+test('줄을 고를 수 없으면 안내 문구가 없다', () => {
+  render(<CompatibilityMapScreen friends={friends} nickname="달빛토끼" />);
+
+  expect(
+    screen.queryByText('친구 이름을 눌러 자세한 정보를 확인해보세요.'),
+  ).not.toBeInTheDocument();
 });

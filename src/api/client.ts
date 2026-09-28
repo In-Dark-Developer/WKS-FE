@@ -2,8 +2,9 @@ import type { z } from 'zod';
 
 import { envelopeSchema, type ErrorCode } from './schema/envelope';
 
-// 백엔드 호출 한 곳 — GET 재시도·응답 봉투 검증을 여기서만 한다. 백엔드에 인증이 없어 인증 헤더는 싣지 않는다
-// (ADR-20260913-server-state-and-session-storage · ADR-20260914-result-ownership-in-browser).
+// 백엔드 호출 한 곳 — GET 재시도·응답 봉투 검증을 여기서만 한다. 인증 헤더는 싣지 않는다 — 로그인 세션은 백엔드가 심는
+// HttpOnly 쿠키이고, 모든 요청을 `credentials: 'include'` 로 보내 브라우저가 싣게 한다. 사주·궁합 API 는 쿠키를 무시한다
+// (ADR-20260914-result-ownership-in-browser · ADR-20260923-v1-account-and-kakao-login · openapi cookieAuth).
 // Base URL 은 `VITE_` 접두 환경변수로만 주입한다. 로컬 dev 백엔드 CORS 는 프론트 localhost:3000 만
 // 허용하므로 vite.config.ts server.port 를 3000 으로 맞춘다(같은 Task Touches).
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api';
@@ -29,6 +30,7 @@ async function requestOnce<TData>(
   try {
     response = await fetch(`${BASE_URL}${input.path}`, {
       method: input.method,
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: input.body === undefined ? undefined : JSON.stringify(input.body),
     });

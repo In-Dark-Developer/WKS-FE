@@ -15,7 +15,8 @@
 
 ## Not Completed
 
-- T5 ~ T6 — 시작 전
+- T5 — CI 크기 검사 + LCP 줄이는 변경(포스터·preload, gtag·Amplitude load 뒤로). 운영 재측정은 배포 뒤 (아래 T5 절)
+- T6 — 시작 전
 
 ## Deviations from Plan
 
@@ -23,6 +24,79 @@
 - 도메인 표기가 `threatoffate.site` 로 잘못 적혀 있었다 — 실제 도메인은 `threadoffate.site`(thread of fate). 2026-09-14 저장소 설정·문서를 고쳤다(대체된 ADR·지난 공지 본문은 그대로)
 
 ## Validation Results
+
+### T6 출시 점검 — iPhone 부분 **통과** · 2026-09-27 (iOS Safari · `https://dev.threadoffate.site`)
+
+소유자(@nicerjs23)가 iPhone 한 대로 dev 배포(백엔드 dev 서버)에서 확인했다. **Android Chrome 과 기기 두 대가 필요한 절차는 실행하지 않았다.**
+
+| 항목 | 절차 | 결과 |
+|------|------|------|
+| SC-1 전체 흐름 | 시크릿 탭 → 인트로·티저 → 사주 입력 → 결과 → 인연카드 공유 | ✅ 막히는 화면 없음 |
+| SC-2 30초 | 입력 시작 → 결과 화면 | ✅ 기준 안에 들어옴 |
+| 소개팅 흐름 (SC-8 일부) | 카카오 로그인 → 학교 메일 코드 인증 → 프로필 → Top 3 → 해금·리롤 | ✅ 코드 메일 수신·인증·해금·리롤 차감까지 동작 |
+| SC-5 연락처 비노출 | 매칭 성립 전 화면에 상대 연락처가 보이지 않는지 | ✅ 화면 확인 (네트워크 응답은 미확인 — 아래) |
+| 가로 스크롤 0 (NFR-1) | 사주·결과·카드·지도·소개팅 화면을 좌우로 밀어 봄 | ✅ 없음 |
+| 키보드 폼 (NFR-5) | 입력칸 포커스 시 가림·숫자 키패드 | ✅ 문제 없음 |
+| 본문 대비 (NFR-5) | 읽기 어려운 영역 | ✅ 없음 |
+| 새로고침·뒤로가기 (NFR-6) | 각 화면 | ✅ 정상 |
+
+**미실행 — 기기·환경이 더 필요한 절차**
+
+| 항목 | 왜 | 언제 |
+|------|-----|------|
+| Android Chrome 전체(NFR-6) | 기기 없음 | 축제 전 확보되면 |
+| SC-3 두 기기 궁합 | 기기 두 대 필요 | 〃 (Phase 05 AC3 과 같은 절차) |
+| SC-6 Android 카카오톡 미리보기 | 〃 (iOS·인스타·iMessage 는 T4 에서 확인) | 〃 |
+| 인앱 브라우저 외부 전환(NFR-8) | 카카오톡·인스타 인앱 진입 | 〃 |
+| SC-5 네트워크 응답 | 폰에서 응답 본문을 보기 어렵다 | 코드로 확인 — 추천 응답에 연락처 필드가 없고(WKS-BE §10.4) 수락한 요청에서만 온다(§11). 자동 테스트가 잠긴 값 부재를 단언한다(`recommendationsLoader.test.ts`) |
+| SC-4 | V1 에서 사전신청 모달이 소개팅으로 대체됐다 | 해당 없음 |
+
+**Phase 05 의 미룬 검증**: AC6(인트로 카운트다운)은 이 점검의 SC-1 흐름에서 함께 확인했다. **AC3(두 기기 궁합)·AC8(지도 애니메이션 실기기)은 여전히 미실행**이다.
+
+**2026-09-28 이관 — 남은 절차는 @jjjung0921 이 맡는다.** @nicerjs23 이 안드로이드 기기와 두 번째 기기를 구하지 못해 더 진행할 수 없다.
+대상은 `https://dev.threadoffate.site`(백엔드 dev)이고, 각 항목을 확인한 사람·날짜·기기를 이 표에 채운 뒤 T6 을 `[x]` 로 바꾼다.
+
+| # | 해야 할 것 | 어떻게 | 통과 기준 |
+|---|-----------|--------|-----------|
+| 1 | Android Chrome 전체 흐름 (NFR-6) | 안드로이드 1대에서 사주 입력 → 결과 → 공유 → 소개팅까지 | 화면마다 새로고침·뒤로가기가 정상, 가로 스크롤 0 |
+| 2 | 360·390·430px 가로 스크롤 (NFR-1) | 안드로이드에서 1 과 함께 | 어느 폭에서도 좌우로 밀리지 않는다 |
+| 3 | SC-3 두 기기 궁합 (Phase 05 AC3) | 서로 다른 기기 2대로 각자 사주를 보고 한쪽 공유 링크로 궁합 | 양쪽에 같은 점수가 나온다 |
+| 4 | Phase 05 AC8 지도 애니메이션 | 실기기에서 `/me/map` · `/s/<id>/map` | 궤도·구슬이 끊기지 않는다 |
+| 5 | SC-6 Android 카카오톡 미리보기 | 안드로이드 카톡에 공유 링크를 붙인다 | 제목·설명·썸네일이 보인다 (iOS·인스타·iMessage 는 T4 에서 확인됨) |
+| 6 | 인앱 브라우저 외부 전환 (NFR-8) | 카카오톡·인스타 인앱 브라우저로 링크 진입 | 외부 브라우저로 열 수 있고 카카오 로그인이 완주된다 |
+
+6 은 09/T2(카카오 로그인, @jjjung0921)가 목 모드에 머물러 있어 실제 로그인이 끝나야 확인할 수 있다.
+
+
+### T5 성능 예산 — 1차 측정 **LCP 초과** · 2026-09-24 (운영 `https://threadoffate.site/`, 첫 방문)
+
+Lighthouse 12.8.2 · 모바일 · simulate(느린 4G: RTT 150ms · 1.6Mbps · CPU ×4) · 새 프로필(= 첫 방문, 인트로 영상이 뜬다) · `npx lighthouse@12 … --only-categories=performance`
+
+| 회차 | Perf | LCP | FCP | TBT | CLS | 전송량 |
+|------|------|-----|-----|-----|-----|--------|
+| 1 | 71 | 4.77s | 3.72s | 53ms | 0 | 1.62MB |
+| 2 | 72 | 4.70s | 3.65s | 60ms | 0 | 1.62MB |
+| 3 | 68 | 5.60s | 3.63s | 57ms | 0 | 1.62MB |
+| **중앙값** | 71 | **4.77s ❌ (예산 2.5s)** | 3.65s | 57ms | 0 | |
+
+- 초기 JS: **161.4KB gzip ✅ (예산 250KB)** — `pnpm build` 산출물의 entry 하나(`scripts/check-bundle-size.mjs`). 운영 전송 153KB.
+- LCP 요소는 **인트로 영상**(`<video src=intro-*.mp4>`, FR-1). 전송량의 66% 가 이 영상 1.07MB 이고 첫 화면 JS 와 같은 대역폭을 나눠 쓴다.
+- 그 밖에 첫 화면에 받는 것: gtag.js 176KB(외부, async — 미사용 70KB) · Amplitude 청크 `esm-*.js` 61KB(시작 직후 동적 import — 미사용 35KB) · 메인 번들 미사용 80KB(소개팅 등 다른 화면 코드).
+- 원인 후보(효과 큰 순): ① 인트로 영상 — 포스터 없음·용량 ② gtag·Amplitude 가 첫 화면 대역폭·메인 스레드를 쓴다 ③ 라우트 단위 코드 분할 없음. 줄이는 변경은 T5 Touches(`src/` 없음) 밖이라 제안 후 진행한다.
+
+### T5 성능 예산 — 2차 **줄이는 변경** · 2026-09-24 (로컬 `vite preview`, 같은 빌드 전·후 비교)
+
+변경: ① 인트로 영상 `poster`(첫 프레임 webp 7KB, `public/intro-poster.webp`) + `index.html` preload ② gtag.js 를 window `load` 뒤에 받기(호출은 dataLayer 에 먼저 쌓임) ③ Amplitude SDK 를 `load` 뒤 idle 에 받기(`src/lib/analytics.ts`, 그 사이 이벤트는 pending).
+
+| 조건 (각 3회 중앙값) | 전 LCP | 후 LCP | 전 FCP | 후 FCP |
+|------|------|------|------|------|
+| Lighthouse devtools 스로틀(실제 느린 4G 대역폭) | 5.03s | **2.52s** | 3.27s | 2.52s |
+| Lighthouse simulate(모델 추정) | 4.11s | 4.23s | 2.95s | 2.79s |
+
+- devtools(실제로 대역폭을 나눠 받는 조건)에서 LCP −50%, 이제 LCP = FCP — 첫 화면이 뜨는 순간 포스터가 함께 그려진다.
+- simulate 는 `<video>` LCP 를 영상 요청 기준으로 모델링해 변화가 없다(LCP 요소 = 인트로 영상). 로컬은 TTFB 가 운영보다 ~0.3s 짧다.
+- 남은 병목은 FCP 자체 — 메인 번들 161KB gzip(첫 화면에 쓰지 않는 80KB 포함)의 파싱·실행. 2.5s 안으로 확실히 넣으려면 라우트 단위 코드 분할(`src/app/routes/`, Lead 영역)이 필요하다 → 별도 Task 제안.
+- 운영 재측정(Lighthouse 모바일 3회)은 dev → main 릴리스 배포 뒤 이 절에 덧붙인다.
 
 ### T4 공유 링크 미리보기 — 2차 검증 **통과** · 2026-09-17 (iPhone 13 · iOS 26.3.1 · 운영)
 
@@ -76,6 +150,8 @@
 | CORS | `OPTIONS http://api.threadoffate.site/api/results`, `Origin: https://effulgent-torrone-699094.netlify.app` | ❌ 403 — 이 origin 이 허용 목록에 없다 |
 
 ## Known Issues
+
+- T6 은 iPhone 한 대로만 확인했다 — Android Chrome·두 기기 절차·인앱 브라우저가 남아 있다(위 표)
 
 - 운영 문서 `docs/deploy/netlify-fork.md` 가 옛 사이트 이름 `effulgent-torrone-699094.netlify.app` 을 적고 있다
 - 운영 배포는 개인 계정(fork·Netlify·토큰)에 묶여 있다 (ADR-20260914-netlify-personal-fork)

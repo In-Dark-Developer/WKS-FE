@@ -6,7 +6,9 @@ import { Icon } from '@/ui/Icon';
 
 // Figma 디자인시스템 C01 Button/Primary·Accent·Secondary·Ghost (M 48 · L 56).
 // apricot 은 화면(수정본) 주 버튼 — Action/Accent(Apricot) 토큰을 쓴다.
-type Variant = 'primary' | 'accent' | 'secondary' | 'ghost' | 'apricot';
+// rose 는 사주입력폼 (2/2) 의 '사진 추가' 처럼 Figma 가 Secondary 에 Rose/300 채움을 덮어쓴 자리다
+// (`134:3639`). SegmentedControl 의 선택 칸과 같은 색이다.
+type Variant = 'primary' | 'accent' | 'secondary' | 'ghost' | 'apricot' | 'rose';
 type Size = 'm' | 'l';
 
 type Props = ComponentPropsWithoutRef<'button'> & {
@@ -28,6 +30,7 @@ const variantClass: Record<Variant, string> = {
   ghost: 'text-brand hover:bg-surface-selected active:bg-surface-selected',
   apricot:
     'bg-action-accent-default text-primary hover:bg-action-accent-hover active:bg-action-accent-pressed',
+  rose: 'bg-rose-300 text-inverse hover:bg-rose-400 active:bg-rose-500',
 };
 
 const disabledClass: Record<Variant, string> = {
@@ -37,6 +40,7 @@ const disabledClass: Record<Variant, string> = {
     'disabled:border-secondary-disabled disabled:bg-action-disabled-background disabled:text-action-disabled-foreground',
   ghost: 'disabled:bg-transparent disabled:text-action-disabled-foreground',
   apricot: 'disabled:bg-action-disabled-background disabled:text-action-disabled-foreground',
+  rose: 'disabled:bg-action-disabled-background disabled:text-action-disabled-foreground',
 };
 
 export function Button({

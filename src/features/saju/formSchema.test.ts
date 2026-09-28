@@ -57,10 +57,25 @@ describe('validateSajuForm', () => {
     ['없는 날이면', '20020230', sajuErrorMessages.birthDateReal],
     ['1950년 이전이면', '19491231', sajuErrorMessages.birthDateRange],
     ['미래면', '20260914', sajuErrorMessages.birthDateRange],
+    // QA(2026-09-28): 오늘 날짜를 넣으면 백엔드가 400 으로 막는데 폼이 통과시켜 엉뚱한 안내가 떴다.
+    ['오늘이면', '20260913', sajuErrorMessages.birthDateRange],
   ])('생년월일이 %s 에러', (_, birthDate, message) => {
     const result = validateSajuForm({ ...valid, birthDate }, now);
 
     expect(result.success ? undefined : result.fieldErrors.birthDate).toBe(message);
+  });
+
+  // 소개팅 프로필 (1/2) 이 같은 문장을 쓴다(`profileSchema.test.ts` 가 같은 문장을 단언한다).
+  test('생년월일 범위 문구가 소개팅 프로필과 같은 문장이다', () => {
+    expect(sajuErrorMessages.birthDateRange).toBe(
+      '1950년 1월 1일부터 어제까지의 날짜로 작성해 주세요 (오늘·미래는 사주를 볼 수 없어요)',
+    );
+  });
+
+  test('어제까지는 받는다', () => {
+    const result = validateSajuForm({ ...valid, birthDate: '20260912' }, now);
+
+    expect(result.success).toBe(true);
   });
 
   test('음력은 30일까지 받는다', () => {

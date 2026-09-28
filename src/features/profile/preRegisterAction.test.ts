@@ -1,7 +1,13 @@
 import { afterEach, expect, test, vi } from 'vitest';
 
-const { createSignupMock } = vi.hoisted(() => ({ createSignupMock: vi.fn() }));
-vi.mock('@/api/signups', () => ({ createSignup: createSignupMock }));
+const { createSignupMock, resendSignupMailMock } = vi.hoisted(() => ({
+  createSignupMock: vi.fn(),
+  resendSignupMailMock: vi.fn(),
+}));
+vi.mock('@/api/signups', () => ({
+  createSignup: createSignupMock,
+  resendSignupMail: resendSignupMailMock,
+}));
 
 import { readSession, writeSession } from '@/api/session';
 
@@ -39,6 +45,7 @@ function args(body: unknown): ActionFunctionArgs {
 
 afterEach(() => {
   createSignupMock.mockReset();
+  resendSignupMailMock.mockReset();
   localStorage.clear();
   vi.restoreAllMocks();
 });
@@ -100,4 +107,21 @@ test('이미 신청한 이메일·학교 메일 아님·연결 실패를 구분�
 
     expect(await preRegisterAction(args(input))).toEqual({ formError });
   }
+});
+
+test('재발송 요청은 신청 없이 재발송만 하고 결과를 구분해 돌려준다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  const body = { intent: 'resend', email: 'wks@dongguk.edu' };
+  for (const [outcome, resend] of [
+    [{ ok: true, data: { mailSent: true, message: '' } }, 'sent'],
+    [{ ok: true, data: { mailSent: false, message: '' } }, 'failed'],
+    [{ ok: false, error: { kind: 'api', code: 'INVALID_INPUT', message: '' } }, 'verified'],
+    [{ ok: false, error: { kind: 'network' } }, 'failed'],
+  ] as const) {
+    resendSignupMailMock.mockResolvedValue(outcome);
+
+    expect(await preRegisterAction(args(body))).toEqual({ resend });
+  }
+  expect(resendSignupMailMock).toHaveBeenCalledWith('wks@dongguk.edu');
+  expect(createSignupMock).not.toHaveBeenCalled();
 });

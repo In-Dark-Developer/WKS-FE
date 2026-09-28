@@ -5,6 +5,10 @@ import introVideo from '@/ui/assets/video/intro.mp4';
 
 import './IntroVideo.css';
 
+// 영상 첫 프레임(406×720 webp 7KB) — 1MB 영상이 도착하기 전에 같은 그림을 먼저 그린다. index.html 이 해시 없는
+// 이 주소를 preload 해 JS 가 뜨자마자 그려지고, 첫 방문의 LCP 가 이 그림이 된다(08/T5, NFR-2).
+const introPoster = '/intro-poster.webp';
+
 // 건너뛰기까지 남은 초 — 칸에 2 → 1 을 보인 뒤 버튼이 된다(FR-1).
 const SKIP_AFTER_SECONDS = 2;
 
@@ -43,6 +47,7 @@ export function IntroVideo({ onFinish }: Props) {
             onEnded={onFinish}
             onError={onFinish}
             playsInline
+            poster={introPoster}
             src={introVideo}
           />
           {/* 건너뛰기 칸은 영상 속 로고를 처음부터 가린다 — 2초 전에는 같은 크기의 칸에 남은 초를 보인다.

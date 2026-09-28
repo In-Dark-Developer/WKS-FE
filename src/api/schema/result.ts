@@ -27,6 +27,12 @@ export const resultRequestSchema = z.object({
 
 export type ResultRequestInput = z.infer<typeof resultRequestSchema>;
 
+// GET /results/{resultId}/input 응답 — 결과를 만들 때 넣은 값 그대로(음력이면 음력 날짜). 백엔드 api.md §2
+// (2026-09-24). 재입력 폼 자동 채움용이며 생년월일·성별이 들어 있어 resultId 를 화면·주소에 내지 않는다.
+export const resultInputSchema = resultRequestSchema.extend({ isLeapMonth: z.boolean() });
+
+export type ResultInput = z.infer<typeof resultInputSchema>;
+
 export const zodiacSchema = z.enum([
   'RAT',
   'OX',
@@ -63,7 +69,10 @@ export const compatibilityTierSchema = z.enum(['GUIIN', 'CHALTTEOK', 'BEOT', 'SE
 // 결과·공유 조회의 궁합 한 건(openapi CompatibilitySummary). `nickname` 은 조회한 결과 기준의 상대 닉네임이다.
 // 운영 Swagger 는 CompatibilityResponse(두 닉네임)라고 적지만 실제 응답은 이 모양이다(2026-09-15 운영 호출 대조).
 // 궁합 생성 응답은 모양이 달라 share.ts 의 compatibilitySchema 가 따로 갖는다.
+// `id` 는 궁합 이유(GET /compatibilities/{id}/reason)를 여는 열쇠다 — V1 이전 백엔드(운영 V0.5)는 보내지 않아
+// optional 로 받고, 없으면 화면이 그 줄을 누를 수 없게 둔다.
 export const compatibilitySummarySchema = z.object({
+  id: z.number().int().optional(),
   nickname: z.string(),
   score: z.number().int().min(0).max(100),
   tier: compatibilityTierSchema,
@@ -83,6 +92,16 @@ export const elementsSchema = z.object({
 
 export type Elements = z.infer<typeof elementsSchema>;
 
+// 나와 잘 맞는 오행 + 이유(openapi ElementMatch, FR-3 V1). 이유가 없는 옛 결과는 null 이고,
+// V1 이전 백엔드(운영 V0.5)는 키 자체가 없어 둘 다 '없음'으로 받는다 — 화면은 영역을 그리지 않는다.
+export const elementMatchSchema = z.object({
+  element: z.enum(['WOOD', 'FIRE', 'EARTH', 'METAL', 'WATER']),
+  korean: z.string(),
+  reason: z.string(),
+});
+
+export type ElementMatch = z.infer<typeof elementMatchSchema>;
+
 // POST /results · GET /results/{resultId} 가 공통으로 쓰는 응답 모양(openapi Result).
 // 생성 직후엔 compatibilities 가 빈 배열이고, 조회 시엔 누적된다(createdAt 내림차순).
 export const resultSchema = z.object({
@@ -96,6 +115,7 @@ export const resultSchema = z.object({
   luckyItem: z.string(),
   luckyPlace: z.string(),
   compatibilities: z.array(compatibilitySummarySchema),
+  elementMatch: elementMatchSchema.nullish(),
 });
 
 export type Result = z.infer<typeof resultSchema>;

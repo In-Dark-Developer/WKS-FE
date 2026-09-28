@@ -18,16 +18,24 @@ export type ReadingView = {
   luckyItem: string;
   // 공유 링크·인연카드 진입에 쓰는 공개 UUID(FR-4·FR-5) — 조립(04/T6)이 share feature 에 넘긴다.
   shareId: string;
+  // 나와 잘 맞는 오행 + 이유(FR-3 V1) — 옛 결과는 null 이고 화면은 그 영역을 그리지 않는다.
+  elementMatch: { element: ElementKey; korean: string; reason: string } | null;
   // 친구 궁합 순위(FR-8) — 상대 닉네임·점수·등급, 점수 높은 순. 결과 화면 순위 요약과 궁합 지도(05/T3)가 쓴다.
   // saju 는 friends feature 를 import 하지 않으므로 모양만 같게 둔다(friends 의 Friend).
-  friends?: readonly { nickname: string; score: number; tier: CompatibilitySummary['tier'] }[];
+  friends?: readonly {
+    nickname: string;
+    score: number;
+    tier: CompatibilitySummary['tier'];
+    compatibilityId?: number;
+  }[];
 };
 
-// 카드 스탬프와 운세 카드의 순서·이름 — 백엔드 fortunes 순서(MARRIAGE → CHILDREN → LOVE)와 같다.
+// 카드 스탬프와 운세 카드의 순서·이름 — 화면이 정한다(Figma 사주 카드 화면 8:794 · PRD FR-3 의 연애·결혼·자녀).
+// 백엔드 응답 순서(MARRIAGE → CHILDREN → LOVE)를 따르지 않는다 — QA 2026-09-28 로 바로잡았다.
 export const fortuneOrder: readonly { key: FortuneKey; label: string }[] = [
+  { key: 'love', label: '연애운' },
   { key: 'marriage', label: '결혼운' },
   { key: 'children', label: '자녀운' },
-  { key: 'love', label: '연애운' },
 ];
 
 // 오행 카드 순서·이름 — Figma 결과 화면(982:3446)의 목 → 화 → 토 → 금 → 수.

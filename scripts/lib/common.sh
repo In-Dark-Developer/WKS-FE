@@ -19,7 +19,7 @@ FAILED=0
 say()  { printf '%s\n' "$*"; }
 ok()   { printf '  [ok]   %s\n' "$*"; }
 warn() { printf '  [warn] %s\n' "$*"; }
-fail() { printf '  [FAIL] %s\n' "$*"; FAILED=1; }
+fail() { printf '  [FAIL] %s\n' "$*" >&2; FAILED=1; }
 die()  { printf 'error: %s\n' "$*" >&2; exit 1; }
 
 have_origin()    { git remote get-url origin >/dev/null 2>&1; }

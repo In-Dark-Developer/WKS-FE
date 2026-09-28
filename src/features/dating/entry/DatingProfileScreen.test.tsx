@@ -1,0 +1,289 @@
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+
+// 네트워크는 src/api/ 경계에서 대체한다(CONVENTIONS 8장).
+const { createResultMock, createDatingProfileMock, uploadDatingPhotoMock } = vi.hoisted(() => ({
+  createResultMock: vi.fn(),
+  createDatingProfileMock: vi.fn(),
+  uploadDatingPhotoMock: vi.fn(),
+}));
+vi.mock('@/api/results', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/results')>();
+  return { ...actual, createResult: createResultMock };
+});
+vi.mock('@/api/dating', () => ({ createDatingProfile: createDatingProfileMock }));
+vi.mock('@/api/uploads', () => ({ uploadDatingPhoto: uploadDatingPhotoMock }));
+const { sendCodeMock, verifyCodeMock } = vi.hoisted(() => ({
+  sendCodeMock: vi.fn(),
+  verifyCodeMock: vi.fn(),
+}));
+vi.mock('@/api/emailCodes', () => ({
+  sendDatingEmailCode: sendCodeMock,
+  verifyDatingEmailCode: verifyCodeMock,
+}));
+
+import { DatingProfileScreen } from './DatingProfileScreen';
+import type { DatingProfileStart } from './profileLoader';
+
+const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
+const NEW_RESULT_ID = '7b91d26f-2222-4222-8222-222222222222';
+const PHOTO_ID = 'f1c4832a-0000-4000-8000-000000000002';
+
+const filledSaju = {
+  gender: 'FEMALE',
+  calendarType: 'SOLAR',
+  isLeapMonth: false,
+  birthDate: '20030517',
+  birthTime: null,
+  birthTimeUnknown: true,
+  nickname: '달빛토끼',
+} as const;
+
+beforeEach(() => {
+  // jsdom 에는 미리보기 주소 API 가 없다.
+  URL.createObjectURL = vi.fn(() => 'blob:preview');
+  URL.revokeObjectURL = vi.fn();
+  uploadDatingPhotoMock.mockResolvedValue({ ok: true, data: { photoId: PHOTO_ID } });
+  sendCodeMock.mockResolvedValue({
+    ok: true,
+    data: {
+      expiresAt: new Date(Date.now() + 600_000).toISOString(),
+      resendAvailableAt: new Date(Date.now() + 60_000).toISOString(),
+    },
+  });
+  verifyCodeMock.mockResolvedValue({
+    ok: true,
+    data: { email: 'chaewon@dgu.ac.kr', verified: true },
+  });
+  createDatingProfileMock.mockResolvedValue({ ok: true, data: null });
+  createResultMock.mockResolvedValue({ ok: true, data: { resultId: NEW_RESULT_ID } });
+});
+
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+  vi.restoreAllMocks();
+});
+
+// entries 는 이 화면까지 쌓인 방문 기록이다 — 기본은 주소로 바로 연 첫 방문.
+function renderScreen(start: DatingProfileStart, entries: string[] = ['/dating/profile']) {
+  const router = createMemoryRouter(
+    [
+      { path: '/dating', element: <p>인트로</p> },
+      { path: '/dating/profile', element: <DatingProfileScreen start={start} /> },
+      { path: '/dating/cards', element: <p>Top 3</p> },
+    ],
+    { initialEntries: entries, initialIndex: entries.length - 1 },
+  );
+  render(<RouterProvider router={router} />);
+  return router;
+}
+
+// 학교 메일은 코드 인증을 마쳐야 등록된다(FR-25) — 발송 → 코드 입력 → 확인.
+async function verifyEmail() {
+  fireEvent.click(screen.getByRole('button', { name: '인증' }));
+  const codeInput = await screen.findByRole('textbox', { name: '인증 코드' });
+  fireEvent.change(codeInput, { target: { value: '123456' } });
+  fireEvent.click(screen.getByRole('button', { name: '확인' }));
+  await screen.findByText('학교 메일 인증을 마쳤어요');
+}
+
+async function fillDetails() {
+  fireEvent.change(screen.getByLabelText('사진 추가'), {
+    target: { files: [new File(['x'], 'me.jpg', { type: 'image/jpeg' })] },
+  });
+  await screen.findByRole('img', { name: '내 소개팅 사진' });
+  fireEvent.change(screen.getByRole('textbox', { name: '이름' }), { target: { value: '김채원' } });
+  fireEvent.change(screen.getByRole('textbox', { name: '이메일' }), {
+    target: { value: 'chaewon@dgu.ac.kr' },
+  });
+  await verifyEmail();
+  fireEvent.change(screen.getByRole('textbox', { name: '연락처' }), {
+    target: { value: '01012345678' },
+  });
+  fireEvent.change(screen.getByRole('textbox', { name: '학과' }), {
+    target: { value: '컴퓨터공학과' },
+  });
+  fireEvent.click(screen.getByRole('combobox', { name: 'MBTI' }));
+  fireEvent.click(screen.getByRole('option', { name: 'ENTP' }));
+  fireEvent.change(screen.getByRole('textbox', { name: '자기소개' }), {
+    target: { value: '영화와 전시를 좋아해요.' },
+  });
+}
+
+const expectedDetails = {
+  name: '김채원',
+  email: 'chaewon@dgu.ac.kr',
+  contactMethod: 'PHONE',
+  contactValue: '01012345678',
+  department: '컴퓨터공학과',
+  mbti: 'ENTP',
+  bio: '영화와 전시를 좋아해요.',
+};
+
+test('사주가 있으면 (2/2) 만 받아 그 사주로 저장하고 Top 3 로 간다', async () => {
+  const router = renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju });
+
+  await fillDetails();
+  fireEvent.click(screen.getByRole('button', { name: '내 운명 찾아 떠나기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating/cards'));
+  expect(createResultMock).not.toHaveBeenCalled();
+  expect(createDatingProfileMock).toHaveBeenCalledWith({ photoId: PHOTO_ID, ...expectedDetails });
+});
+
+test('저장이 실패하면 입력값을 둔 채 안내하고, 다시 저장할 때 사주를 새로 만들지 않는다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  createDatingProfileMock.mockResolvedValueOnce({ ok: false, error: { kind: 'network' } });
+  const router = renderScreen({ initialStep: 2, resultId: null, saju: filledSaju });
+
+  await fillDetails();
+  fireEvent.click(screen.getByRole('button', { name: '내 운명 찾아 떠나기' }));
+
+  expect(await screen.findByRole('alert')).toBeInTheDocument();
+  expect(screen.getByRole('textbox', { name: '이름' })).toHaveValue('김채원');
+  expect(router.state.location.pathname).toBe('/dating/profile');
+
+  fireEvent.click(screen.getByRole('button', { name: '내 운명 찾아 떠나기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating/cards'));
+  // 사주는 한 번만 만든다 — 재시도가 새 결과를 만들면 계정에 붙는 사주가 흔들린다.
+  expect(createResultMock).toHaveBeenCalledTimes(1);
+  expect(createDatingProfileMock).toHaveBeenCalledTimes(2);
+});
+
+test('사진 업로드가 실패하면 사진 칸에 알리고 저장하지 않는다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  uploadDatingPhotoMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju });
+
+  fireEvent.change(screen.getByLabelText('사진 추가'), {
+    target: { files: [new File(['x'], 'me.jpg', { type: 'image/jpeg' })] },
+  });
+  await vi.waitFor(() => expect(uploadDatingPhotoMock).toHaveBeenCalled());
+  fireEvent.click(screen.getByRole('button', { name: '내 운명 찾아 떠나기' }));
+
+  expect(await screen.findByText('본인 사진을 한 장 올려 주세요')).toBeInTheDocument();
+  expect(createDatingProfileMock).not.toHaveBeenCalled();
+});
+
+test('(1/2) 를 거쳐 온 (2/2) 의 뒤로가기는 (1/2) 로 돌아간다', async () => {
+  const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '다음으로' }));
+  await screen.findByRole('progressbar', { name: '프로필 등록 2/2 단계' });
+  expect(router.state.location.search).toBe('?step=2');
+
+  fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+
+  expect(
+    await screen.findByRole('progressbar', { name: '프로필 등록 1/2 단계' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/dating/profile');
+});
+
+test('브라우저 뒤로가기도 (2/2) 에서 (1/2) 로 돌아간다', async () => {
+  const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '다음으로' }));
+  await screen.findByRole('progressbar', { name: '프로필 등록 2/2 단계' });
+  await act(() => router.navigate(-1));
+
+  expect(
+    await screen.findByRole('progressbar', { name: '프로필 등록 1/2 단계' }),
+  ).toBeInTheDocument();
+});
+
+test('사주가 있어 인트로에서 곧장 온 (2/2) 의 뒤로가기는 인트로로 돌아간다', async () => {
+  const router = renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+});
+
+test('돌아갈 기록이 없는 (2/2) 의 뒤로가기는 인트로로 간다', async () => {
+  const router = renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju });
+
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+});
+
+test('인증하지 않은 메일로는 등록하지 않는다 (FR-25)', async () => {
+  renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju });
+
+  // 인증만 건너뛰고 나머지를 채운다.
+  fireEvent.change(screen.getByLabelText('사진 추가'), {
+    target: { files: [new File(['x'], 'me.jpg', { type: 'image/jpeg' })] },
+  });
+  await screen.findByRole('img', { name: '내 소개팅 사진' });
+  fireEvent.change(screen.getByRole('textbox', { name: '이름' }), { target: { value: '김채원' } });
+  fireEvent.change(screen.getByRole('textbox', { name: '이메일' }), {
+    target: { value: 'chaewon@dgu.ac.kr' },
+  });
+  fireEvent.change(screen.getByRole('textbox', { name: '연락처' }), {
+    target: { value: '01012345678' },
+  });
+  fireEvent.change(screen.getByRole('textbox', { name: '학과' }), {
+    target: { value: '컴퓨터공학과' },
+  });
+  fireEvent.click(screen.getByRole('combobox', { name: 'MBTI' }));
+  fireEvent.click(screen.getByRole('option', { name: 'ENTP' }));
+  fireEvent.change(screen.getByRole('textbox', { name: '자기소개' }), {
+    target: { value: '영화와 전시를 좋아해요.' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: '내 운명 찾아 떠나기' }));
+
+  expect(createDatingProfileMock).not.toHaveBeenCalled();
+});
+
+test('코드가 틀리면 안내하고 인증을 마치지 않는다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  verifyCodeMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'INVALID_EMAIL_CODE', message: '코드가 맞지 않아요.' },
+  });
+  renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju });
+
+  fireEvent.change(screen.getByRole('textbox', { name: '이메일' }), {
+    target: { value: 'chaewon@dgu.ac.kr' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: '인증' }));
+  fireEvent.change(await screen.findByRole('textbox', { name: '인증 코드' }), {
+    target: { value: '000000' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: '확인' }));
+
+  expect(
+    await screen.findByText('코드가 맞지 않거나 만료됐어요. 다시 확인하거나 새 코드를 받아 주세요'),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('학교 메일 인증을 마쳤어요')).not.toBeInTheDocument();
+});
+
+test('학교 메일이 아니면 발송 단계에서 알린다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  sendCodeMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'INVALID_EMAIL_DOMAIN', message: '학교 메일이 아니에요.' },
+  });
+  renderScreen({ initialStep: 2, resultId: RESULT_ID, saju: filledSaju });
+
+  fireEvent.change(screen.getByRole('textbox', { name: '이메일' }), {
+    target: { value: 'chaewon@gmail.com' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: '인증' }));
+
+  expect(await screen.findByText('dgu 메일만 인증할 수 있어요')).toBeInTheDocument();
+  expect(screen.queryByRole('textbox', { name: '인증 코드' })).not.toBeInTheDocument();
+});

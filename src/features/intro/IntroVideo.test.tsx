@@ -61,3 +61,12 @@ test('영상을 불러오지 못하면 끝낸다', () => {
 
   expect(onFinish).toHaveBeenCalledOnce();
 });
+
+test('영상이 오기 전 첫 프레임 포스터를 먼저 보인다', () => {
+  render(<IntroVideo onFinish={() => {}} />);
+
+  expect(screen.getByLabelText('인트로 영상')).toHaveAttribute(
+    'poster',
+    expect.stringContaining('intro-poster'),
+  );
+});

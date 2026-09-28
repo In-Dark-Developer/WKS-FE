@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 # notion-index-sync.sh — 저장소 문서를 Notion 색인 DB 에 복사한다 (git → Notion 단방향, dev push 마다 CI 가 돌린다).
 #
-#   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--dry-run]
-#     --prd      docs/prd/*.md 의 FR·NFR 표 → 🙋 요구사항 색인 (PRD)   (ID 로 upsert)
+#   scripts/notion-index-sync.sh [--prd] [--adr] [--phases] [--check-owners] [--dry-run]
+#     --prd      docs/prd/*.md 의 FR·NFR 표 → ⚔️ PRD DB   (ID 로 upsert, 추적 열은 건드리지 않는다)
+#                `UI 완료`·`기능 완료` 는 docs/phases/*/PLAN.md Task 줄의 `UI:`·`FR:` 에서 이끌어낸다
 #     --adr      docs/decisions/ADR-*.md → 🏛️ ADR 색인               (번호 로 upsert)
 #     --phases   docs/phases/README.md 표 → 📅 Phase 색인             (번호 로 upsert)
-#     전부 생략하면 셋 다. --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
+#     --check-owners  ⚔️ PRD DB 의 `담당자`(원본)와 저장소 `담당` 열(사본)을 대조한다 — 읽기만 하고
+#                아무것도 쓰지 않는다. 어긋나면 실패하고 사람이 보드에서 고친 뒤 저장소를 맞춘다.
+#     --check-owners 만 주면 대조만 하고, 넷을 전부 생략하면 동기화 셋을 돈다.
+#     --dry-run 은 Notion 을 부르지 않고 보낼 속성만 출력한다 (토큰 불필요).
 #
 # env: NOTION_TOKEN(필수, Actions secret) · NOTION_PRD_DB · NOTION_ADR_DB · NOTION_PHASE_DB · NOTION_TASK_DB(Task 보드 — Phase 행의 `Task 보드` 관계용, 없으면 관계 생략) (database id) · REPO_URL(GitHub 링크, 기본 origin)
 # 색인은 사본이다 — 원본은 docs/ 이고 여기서 고친 값은 다음 push 에 덮어써진다. 사람이 채우는 열(ADR 색인의 `영역`)만 건드리지 않는다.
@@ -16,19 +20,19 @@ set -eo pipefail
 . "$(cd "$(dirname "$0")" && pwd)/lib/common.sh"
 . "$(cd "$(dirname "$0")" && pwd)/lib/notion.sh"
 
-do_prd=0; do_adr=0; do_ph=0; dry=0
+do_prd=0; do_adr=0; do_ph=0; do_owners=0; dry=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --prd) do_prd=1;; --adr) do_adr=1;; --phases) do_ph=1;; --dry-run) dry=1;;
-    -h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+    --prd) do_prd=1;; --adr) do_adr=1;; --phases) do_ph=1;; --check-owners) do_owners=1;; --dry-run) dry=1;;
+    -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     *) die "알 수 없는 옵션 $1";;
   esac; shift
 done
-[ "$do_prd" -eq 0 ] && [ "$do_adr" -eq 0 ] && [ "$do_ph" -eq 0 ] && do_prd=1 && do_adr=1 && do_ph=1
+[ "$do_prd" -eq 0 ] && [ "$do_adr" -eq 0 ] && [ "$do_ph" -eq 0 ] && [ "$do_owners" -eq 0 ] && do_prd=1 && do_adr=1 && do_ph=1
 command -v jq >/dev/null || die "jq 가 필요하다"
 if [ "$dry" -eq 0 ]; then
   [ -n "${NOTION_TOKEN:-}" ] || { warn "NOTION_TOKEN 이 없다 — 동기화 생략"; exit 0; }
-  [ "$do_prd" -eq 0 ] || [ -n "${NOTION_PRD_DB:-}" ] || die "NOTION_PRD_DB 를 지정한다"
+  { [ "$do_prd" -eq 0 ] && [ "$do_owners" -eq 0 ]; } || [ -n "${NOTION_PRD_DB:-}" ] || die "NOTION_PRD_DB 를 지정한다"
   [ "$do_adr" -eq 0 ] || [ -n "${NOTION_ADR_DB:-}" ] || die "NOTION_ADR_DB 를 지정한다"
   [ "$do_ph" -eq 0 ] || [ -n "${NOTION_PHASE_DB:-}" ] || die "NOTION_PHASE_DB 를 지정한다"
 fi
@@ -41,48 +45,145 @@ send() { # send <db> <find_prop> <find_value> <props_json>
 }
 
 # ---------------------------------------------------------------- PRD
-phase_status() { # phase_status <NN> → PLANNED|IN_PROGRESS|DONE|…
-  sed -n "s/^| $1 | [^|]* | [^|]* | [^|]* | \([A-Z_]*\) |.*/\1/p" docs/phases/README.md | head -n1
-}
-phases_of() { # phases_of <FR-n> → "03 05" (PLAN.md 본문에서 그 ID 를 언급하는 Phase, 공백 구분 — 멀티바이트 구분자는 sed/tr 이 로케일을 탄다)
-  local f nn out=""
-  for f in docs/phases/[0-9][0-9]-*/PLAN.md; do
-    grep -qE "(^|[^A-Za-z0-9-])$1([^0-9]|$)" "$f" || continue
-    nn=${f#docs/phases/}; nn=${nn%%-*}; out="${out:+$out }$nn"
-  done
-  printf '%s' "$out"
-}
-status_of() { # status_of "03 05" → 계획|구현중|완료
-  [ -n "$1" ] || { echo 계획; return; }
-  local nn st all_done=1 any_active=0
-  for nn in $1; do
-    st=$(phase_status "$nn")
-    case "$st" in DONE|CLOSED) ;; IN_PROGRESS|REVIEW) any_active=1; all_done=0;; *) all_done=0;; esac
-  done
-  if [ "$all_done" -eq 1 ]; then echo 완료; elif [ "$any_active" -eq 1 ]; then echo 구현중; else echo 계획; fi
-}
-prd_props() { # prd_props <ID> <구분> <요구사항> <우선순위|""> <Phase> <상태>
-  jq -n --arg id "$1" --arg kind "$2" --arg req "$3" --arg pri "$4" --arg ph "$5" --arg st "$6" '
+# ⚔️ PRD DB 로 보내는 속성. 저장소가 원천인 열만 쓴다 — 추적 열(상태·담당자·FE·BE·비고·수용 기준)은
+# 사람이 Notion 에서 관리하므로 여기서 보내지 않는다 (ADR-20260923-prd-single-notion-db).
+# 우선순위는 저장소 표기(Must/Should/Could)를 보드 표기(P0/P1/P2)로 옮긴다.
+# `UI 완료`·`기능 완료` 는 plan_completion 이 값을 낸 FR 에만 보낸다 — 어느 Task 도 가리키지 않는 FR 은 손대지 않는다
+# (ADR-20260924-prd-completion-from-plans).
+prd_props() { # prd_props <ID> <구분> <요구사항> <우선순위|""> <UI 완료 yes|no|""> <기능 완료 yes|no|"">
+  jq -n --arg id "$1" --arg kind "$2" --arg req "$3" --arg pri "$4" --arg ui "${5:-}" --arg fn "${6:-}" '
     def text($v): { rich_text: [ { text: { content: $v } } ] };
-      { "요구사항": { title: [ { text: { content: $req } } ] }, "ID": text($id), "구분": { select: { name: $kind } }, "Phase": text($ph), "상태": { select: { name: $st } } }
-    + (if $pri == "" then {} else { "우선순위": { select: { name: $pri } } } end)'
+    def board($p): if $p == "Must" then "P0" elif $p == "Should" then "P1" elif $p == "Could" then "P2" else "" end;
+      { "이름": { title: [ { text: { content: $req } } ] }, "ID": text($id), "구분": { select: { name: $kind } } }
+    + (if board($pri) == "" then {} else { "우선순위": { select: { name: board($pri) } } } end)
+    + (if $ui == "" then {} else { "UI 완료": { checkbox: ($ui == "yes") } } end)
+    + (if $fn == "" then {} else { "기능 완료": { checkbox: ($fn == "yes") } } end)'
 }
+
+# PLAN Task 줄의 `· UI: FR-…` 는 그 FR 의 화면을 만드는 Task(퍼블리싱), `· FR: FR-…` 는 그 FR 을 동작하게 만드는
+# Task 다. FR 마다 가리키는 Task 가 모두 [x] 면 완료다. UI Task 가 없는 FR 은 기능 Task 가 화면까지 만든 것으로 보고
+# `UI 완료` 를 `기능 완료` 와 같게 둔다. → "<ID>	<UI yes|no|>	<기능 yes|no|>"
+plan_completion() {
+  awk '
+    /^- \[[ x]\] T[0-9]+\. / {
+      done = ($0 ~ /^- \[x\]/)
+      for (k = 1; k <= 2; k++) {
+        key = (k == 1) ? "UI" : "FR"
+        if (!match($0, " · " key ": [^·(]*")) continue
+        part = substr($0, RSTART, RLENGTH)
+        while (match(part, /FR-[0-9]+/)) {
+          id = substr(part, RSTART, RLENGTH); part = substr(part, RSTART + RLENGTH)
+          ids[id] = 1; total[key, id]++; if (done) finished[key, id]++
+        }
+      }
+    }
+    function state(key, id) { return total[key, id] ? (finished[key, id] == total[key, id] ? "yes" : "no") : "" }
+    END {
+      for (id in ids) {
+        fn = state("FR", id); ui = state("UI", id); if (ui == "") ui = fn
+        printf "%s\t%s\t%s\n", id, ui, fn
+      }
+    }' docs/phases/*/PLAN.md
+}
+# FR 표: | ID | Requirement | Area | Priority | Related |   NFR 표: | ID | Requirement | Target | 확인 방법 |
+# 구분(Area)은 FR 표가 갖고, NFR 은 모두 '비기능' 이다.
 sync_prd() {
-  local n=0 line id req pri target kind ph st
+  local n=0 line id req pri target kind done_map ui fn
+  done_map=$(plan_completion)
   while IFS= read -r line; do
     id=$(trim "$(printf '%s' "$line" | cut -d'|' -f2)")
     req=$(trim "$(printf '%s' "$line" | cut -d'|' -f3)")
     case "$id" in
-      FR-*)  kind=FR;  pri=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)");;
-      NFR-*) kind=NFR; pri=""; target=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); [ -n "$target" ] && req="$req — $target";;
+      FR-*)  kind=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); pri=$(trim "$(printf '%s' "$line" | cut -d'|' -f5)");;
+      NFR-*) kind=비기능; pri=""; target=$(trim "$(printf '%s' "$line" | cut -d'|' -f4)"); [ -n "$target" ] && req="$req — $target";;
       *) continue;;
     esac
-    ph=$(phases_of "$id"); st=$(status_of "$ph")
-    send "${NOTION_PRD_DB:-}" ID "$id" "$(prd_props "$id" "$kind" "$req" "$pri" "${ph// /·}" "$st")" && n=$((n + 1))
+    ui=$(printf '%s\n' "$done_map" | awk -F'\t' -v k="$id" '$1 == k { print $2 }')
+    fn=$(printf '%s\n' "$done_map" | awk -F'\t' -v k="$id" '$1 == k { print $3 }')
+    send "${NOTION_PRD_DB:-}" ID "$id" "$(prd_props "$id" "$kind" "$req" "$pri" "$ui" "$fn")" && n=$((n + 1))
   done <<EOF
 $(grep -hE '^\| N?FR-[0-9]+ ' docs/prd/*.md)
 EOF
   say "PRD: ${n}행"
+}
+
+# ---------------------------------------------------------------- 담당 대조
+# ⚔️ PRD DB 의 `담당자` 가 원본이고 저장소 FR·NFR 표의 `담당` 열은 사본이다
+# (ADR-20260923-prd-single-notion-db). 사본만 고치고 보드를 잊는 일을 이 검사가 잡는다.
+# 읽기 전용이다 — 어긋나도 고치지 않고 어디가 다른지만 말한다.
+# 보드에 없는 SC-* 는 대조하지 않는다.
+repo_owners() { # → "<ID>\t<담당>" (미배정은 빈 값)
+  local line id owner
+  while IFS= read -r line; do
+    id=$(trim "$(printf '%s' "$line" | cut -d'|' -f2)")
+    owner=$(trim "$(printf '%s' "$line" | sed 's/|[[:space:]]*$//' | awk -F'|' '{ print $NF }')")
+    [ "$owner" = "—" ] && owner=""
+    printf '%s\t%s\n' "$id" "$owner"
+  done <<EOF
+$(grep -hE '^\| N?FR-[0-9]+ ' docs/prd/*.md)
+EOF
+}
+
+board_owners() { # → "<ID>\t<담당자 이름들>\t<사람 수>"
+  local cursor=""
+  while :; do
+    notion_query_page "${NOTION_PRD_DB:-}" "$cursor" || return 1
+    printf '%s' "$body" | jq -r '
+      .results[]
+      | [ (.properties.ID.rich_text[0].plain_text // ""),
+          ((.properties."담당자".people // []) | map(.name // empty) | join(", ")),
+          ((.properties."담당자".people // []) | length | tostring) ]
+      | @tsv'
+    cursor=$(printf '%s' "$body" | jq -r '.next_cursor // empty')
+    [ -n "$cursor" ] || break
+  done
+}
+
+# 보드 표시 이름 → 저장소 표기. 표에 없으면 빈 값을 돌려주고 호출부가 실패시킨다.
+alias_file() { printf '%s' "$(cd "$(dirname "$0")" && pwd)/lib/notion-owners.tsv"; }
+alias_of() { awk -F'\t' -v k="$1" '$0 !~ /^#/ && $1 == k { print $2; exit }' "$(alias_file)"; }
+# "표시 이름, 표시 이름" → "저장소 표기, 저장소 표기". 대응표는 두 표기가 다를 때만 쓰고
+# (`정진 이` → `이정진`), 표에 없는 이름은 그대로 쓴다 — 같은 이름까지 적게 하면 표가 늘기만 한다.
+map_owners() {
+  local raw out="" one mapped
+  raw=$1
+  [ -n "$raw" ] || { printf ''; return 0; }
+  while IFS= read -r one; do
+    one=$(trim "$one"); [ -n "$one" ] || continue
+    mapped=$(alias_of "$one"); [ -n "$mapped" ] || mapped=$one
+    out="${out:+$out, }$mapped"
+  done <<EOF
+$(printf '%s' "$raw" | tr ',' '\n')
+EOF
+  printf '%s' "$out"
+}
+
+check_owners() {
+  local tmp_board tmp_repo id board repo count mapped n=0 bad=0 nameless=0
+  tmp_board=$(mktemp); tmp_repo=$(mktemp)
+  trap 'rm -f "$tmp_board" "$tmp_repo"' RETURN
+  board_owners > "$tmp_board" || { rm -f "$tmp_board" "$tmp_repo"; return 1; }
+  repo_owners > "$tmp_repo"
+  while IFS="$(printf '\t')" read -r id repo; do
+    [ -n "$id" ] || continue
+    n=$((n + 1))
+    board=$(awk -F'\t' -v k="$id" '$1 == k { print $2 }' "$tmp_board")
+    count=$(awk -F'\t' -v k="$id" '$1 == k { print $3 }' "$tmp_board")
+    if [ -z "$count" ]; then
+      fail "$id — 보드에 행이 없다 (동기화가 아직 안 돌았나)"; bad=$((bad + 1)); continue
+    fi
+    if [ "$count" != "0" ] && [ -z "$board" ]; then
+      nameless=$((nameless + 1)); continue
+    fi
+    mapped=$(map_owners "$board")
+    [ "$mapped" = "$repo" ] && continue
+    fail "$id — 보드 '${mapped:-—}' ≠ 저장소 '${repo:-—}'"; bad=$((bad + 1))
+  done < "$tmp_repo"
+  if [ "$nameless" -gt 0 ]; then
+    die "담당자 이름을 읽지 못했다 (${nameless}행) — Notion 통합에 '사용자 정보 읽기' 권한을 켜야 대조할 수 있다"
+  fi
+  [ "$bad" -eq 0 ] || die "담당 ${bad}건이 어긋난다 (${n}행 대조) — 보드에서 고친 뒤 저장소 표를 맞춘다"
+  ok "담당 대조: ${n}행 일치"
 }
 
 # ---------------------------------------------------------------- ADR
@@ -161,6 +262,7 @@ EOF
   say "Phases: ${n}행"
 }
 
+[ "$do_owners" -eq 1 ] && check_owners
 [ "$do_prd" -eq 1 ] && sync_prd
 [ "$do_adr" -eq 1 ] && sync_adr
 [ "$do_ph" -eq 1 ] && sync_phases

@@ -1,0 +1,24 @@
+/* 인연 카드 뒤집기 — 앞뒷면을 같은 자리에 겹쳐 두고 Y축으로 돌린다(10/T10). 겹친 면을 가리는 일은
+   Tailwind 의 `backface-hidden` 만으로는 모자란다. */
+
+[data-profile-card-face] {
+  /* WebKit(iOS Safari·카카오톡 인앱)은 접두사 붙은 속성만 본다 — Tailwind 는 접두사 없는 쪽만 낸다.
+     이게 없으면 뒤집은 뒤에도 앞면 사진이 뒷면에 거울처럼 비친다(QA 2026-09-28 '소개팅 사진 좌우반전').
+     홈 운명 카드가 ConnectionCard.css 에서 같은 이유로 접두사를 붙였다. */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* 접두사를 붙여도 겹친 면을 놓치는 브라우저가 있어, 뒤집기 절반(0.25s = 0.5s 의 절반)이 지나면
+     지금 보이지 않는 면을 아예 숨긴다. 절반 전에는 그대로 있어 돌아가는 모습이 끊기지 않는다. */
+  transition: visibility 0s linear 0.25s;
+}
+
+[data-profile-card-face][aria-hidden='true'] {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 돌아가는 모습이 없으면 기다릴 절반도 없다 — 곧바로 바뀐다(NFR-5). */
+  [data-profile-card-face] {
+    transition: none;
+  }
+}

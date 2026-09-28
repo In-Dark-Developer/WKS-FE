@@ -7,7 +7,12 @@ import { compatibilityTierSchema, resultSchema } from './result';
 // GET /shares/{shareId} — 링크 주인의 공개 결과(SharedResultResponse). 결과 조회와 같은 모양에서
 // `resultId`·`shareId` 만 빠진다. 주인의 사주 요약도 오지만 화면은 보여주지 않는다(FR-15) — 그 판단은
 // 이 스키마가 아니라 화면 뷰 모델이 한다.
-export const sharedResultSchema = resultSchema.omit({ resultId: true, shareId: true });
+// 공유 응답에는 결과 ID 와 잘 맞는 오행이 없다(openapi SharedResult).
+export const sharedResultSchema = resultSchema.omit({
+  resultId: true,
+  shareId: true,
+  elementMatch: true,
+});
 
 export type SharedResult = z.infer<typeof sharedResultSchema>;
 
@@ -20,6 +25,7 @@ export const compatibilityRequestSchema = z.object({
 // 같은 요청의 응답(openapi CompatibilityResult · Swagger CompatibilityResponse) — 두 닉네임이 온다.
 // 조회의 `compatibilities[]` 항목(`nickname`·`createdAt`)과는 모양이 다르다(2026-09-15 운영 호출 대조).
 export const compatibilitySchema = z.object({
+  id: z.number().int().optional(),
   score: z.number().int().min(0).max(100),
   tier: compatibilityTierSchema,
   originNickname: z.string(),

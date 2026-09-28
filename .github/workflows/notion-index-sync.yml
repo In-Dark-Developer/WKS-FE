@@ -1,26 +1,46 @@
 name: notion-index-sync
 
-# docs/prd/*.md 의 FR·NFR, docs/decisions/ADR-*.md, docs/phases/README.md 표를 Notion 색인 DB 에 복사한다. 단방향 — 색인을 고쳐도 저장소는 바뀌지 않는다.
+# docs/prd/*.md 의 FR·NFR 표를 ⚔️ PRD DB 에 복사한다. 단방향 — 보드를 고쳐도 저장소는 바뀌지 않는다.
+# `UI 완료`·`기능 완료` 는 PLAN Task 의 [x] 에서 오므로 PLAN 이 바뀌어도 돈다 — push 만. PR 의 담당 대조는
+# PLAN 과 무관해 Task PR 마다 돌리지 않는다(ADR-20260924-prd-completion-from-plans).
+# ADR·Phase 색인은 옛 워크스페이스에 있었고 지금 통합은 거기 접근 권한이 없다 — ⚔️ PRD 한 곳만 쓴다
+# (ADR-20260923-prd-single-notion-db).
 on:
   push:
     branches: [dev]
-    paths: ['docs/prd/**', 'docs/decisions/**', 'docs/phases/**']
+    paths: ['docs/prd/**', 'docs/phases/*/PLAN.md']
+  pull_request:
+    paths: ['docs/prd/**']
   workflow_dispatch:
 
 concurrency:
-  group: notion-index-sync
+  # PR 의 대조와 dev 의 동기화가 서로를 취소하지 않게 이벤트별로 나눈다.
+  group: notion-index-sync-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  owner-drift:
+    # 보드의 `담당자` 가 원본이고 저장소 `담당` 열은 사본이다 — 사본만 고치고 보드를 잊는 일을 잡는다.
+    # 읽기만 한다. fork PR 에는 secrets 가 없어 스크립트가 경고만 내고 통과한다.
+    if: ${{ github.event_name != 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: notion-index-sync.sh --check-owners
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PRD_DB: 3dffb10f-6501-8042-8dd9-c7a0d162aceb
+        run: bash scripts/notion-index-sync.sh --check-owners
+
   sync:
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: notion-index-sync.sh
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_PRD_DB: c46fef81-e47b-4299-a30d-89b6f4feac5c
-          NOTION_ADR_DB: 96bba6ec-55a7-4a1a-9474-298648f637a9
-          NOTION_PHASE_DB: 6585b534-8238-4856-bf1e-e121dc272c7f
-          NOTION_TASK_DB: 10aa90e7-c6d1-4051-a227-8acec2d4fa44
-        run: bash scripts/notion-index-sync.sh
+          # ⚔️ PRD 의 database id 다 — 보드 URL 에 보이는 id(…80c9…)는 data source id 라
+          # Notion-Version 2022-06-28 의 /v1/databases/{id} 가 404 를 낸다.
+          NOTION_PRD_DB: 3dffb10f-6501-8042-8dd9-c7a0d162aceb
+        run: bash scripts/notion-index-sync.sh --prd

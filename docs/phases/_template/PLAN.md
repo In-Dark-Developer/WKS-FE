@@ -34,8 +34,10 @@ Task는 한 스트림(한 세션~몇 세션, PR 하나)에 끝나고 독립적�
 
 ## Tasks
 
-<!-- 형식: `- [ ] Tk. <작업> — Done when: <조건> · Touches: <경로 접두, spec 조각> · After: <Tk, Tk>(선택) · Owner: <email|미정>`
+<!-- 형식: `- [ ] Tk. <작업> — Done when: <조건> · Touches: <경로 접두, spec 조각> · After: <Tk, Tk>(선택) · Owner: <email|미정> · FR: <FR-n, …>(또는 UI: <FR-n, …>)`
 Touches 는 ai-stream.sh open 이 CURRENT.md 로 복사하고 겹침 경고에 쓴다. After 는 같은 Phase 안의 선행 Task — ai-stream.sh open 이 main 에서 [x] 가 아니면 경고하고(막지는 않는다) Notion Task 보드의 `선행 Task` 관계로 복사된다. Owner 는 사전 배정(선택) — 실제 소유는 스트림의 존재로 표현된다.
+FR 은 이 Task 가 동작하게 만드는 요구, UI 는 이 Task 가 화면만 만드는 요구(퍼블리싱)다 — Owner 뒤에 둔다. 가리킨 Task 가 모두 [x] 가 되면
+dev push 때 Notion ⚔️ PRD 의 `기능 완료`·`UI 완료` 가 켜진다(UI Task 가 없는 FR 은 `UI 완료` 도 `기능 완료` 를 따른다).
 완료 시 [x]로 바꾸고 완료 커밋 SHA와 PR 번호를 끝에 적는다: `(commit abc1234, PR #42)` -->
 
 - [ ] T1. <작업> — Done when: <검증 가능한 완료 조건> · Touches: `src/<path>/`, `docs/api/openapi.yaml#/<path>` · Owner: 미정

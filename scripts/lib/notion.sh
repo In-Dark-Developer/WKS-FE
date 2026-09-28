@@ -19,6 +19,11 @@ notion_find() { # notion_find <db_id> <rich_text 속성> <값> → page_id ("" �
   printf '%s' "$body" | jq -r '.results[0].id // empty'
 }
 
+notion_query_page() { # notion_query_page <db_id> [start_cursor] → 결과는 $body
+  notion_api POST "databases/$1/query" \
+    "$(jq -n --arg c "${2:-}" '{ page_size: 100 } + (if $c == "" then {} else { start_cursor: $c } end)')"
+}
+
 notion_upsert() { # notion_upsert <db_id> <find 속성> <find 값> <properties_json> → "created"|"updated"
   local id; id=$(notion_find "$1" "$2" "$3") || return 1
   if [ -n "$id" ]; then

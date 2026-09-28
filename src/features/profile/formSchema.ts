@@ -117,3 +117,9 @@ export const preRegisterActionDataSchema = z.union([
 ]);
 
 export type PreRegisterActionData = z.infer<typeof preRegisterActionDataSchema>;
+
+// 같은 action 에 `{ intent: 'resend', email }` 으로 보낸 인증 메일 재발송의 결과 — ResendMail 이 fetcher 로 받는다.
+// 'sent' 재발송함 · 'failed' 백엔드가 또 못 보냈거나 연결 실패 · 'verified' 이미 인증을 마친 이메일(400 INVALID_INPUT).
+export const resendActionDataSchema = z.object({ resend: z.enum(['sent', 'failed', 'verified']) });
+
+export type ResendActionData = z.infer<typeof resendActionDataSchema>;

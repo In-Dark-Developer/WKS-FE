@@ -4,28 +4,12 @@ import { tierLooks, tierOrder, type CompatibilityTier, type Friend } from './tie
 
 type Props = { friends: readonly Friend[] };
 
-// Figma RelationStat(79:430) × 4 — 등급별 색은 지도 최종 v2(558:2659~2674).
-const tone: Record<CompatibilityTier, { card: string; orb: string; count: string }> = {
-  GUIIN: {
-    card: 'border-strong bg-opacity-card-primary-50-50',
-    orb: 'bg-primary-200',
-    count: 'text-primary-900',
-  },
-  CHALTTEOK: {
-    card: 'border-rose bg-opacity-card-rose-50-50',
-    orb: 'bg-rose-200',
-    count: 'text-rose-800',
-  },
-  BEOT: {
-    card: 'border-apricot-300 bg-opacity-card-apricot-50-50',
-    orb: 'bg-apricot-200',
-    count: 'text-apricot-900',
-  },
-  SEUCHIM: {
-    card: 'border-secondary-default bg-opacity-card-neutral-100-50',
-    orb: 'bg-neutral-300',
-    count: 'text-neutral-900',
-  },
+// Figma v1.0 RelationStat(8:71 — 16:1979~1982) × 4 — 판은 등급 표면색 50% + 등급 테두리, 원은 표면색(스침만 흰색).
+const tone: Record<CompatibilityTier, { card: string; orb: string }> = {
+  GUIIN: { card: 'border-strong bg-opacity-card-primary-50-50', orb: 'bg-primary-50' },
+  CHALTTEOK: { card: 'border-rose bg-opacity-card-rose-50-50', orb: 'bg-rose-50' },
+  BEOT: { card: 'border-apricot-300 bg-opacity-card-apricot-50-50', orb: 'bg-apricot-50' },
+  SEUCHIM: { card: 'border-secondary-default bg-opacity-card-neutral-100-50', orb: 'bg-neutral-0' },
 };
 
 export function RelationStats({ friends }: Props) {
@@ -40,11 +24,11 @@ export function RelationStats({ friends }: Props) {
           key={tier}
         >
           <dt className="text-ui-12 font-medium text-on-accent">{tierLooks[tier].label}</dt>
+          {/* 원 44px 은 Space 토큰에 없어 값으로 둔다. 숫자는 UI/20/700 검정(Text/Neutral). */}
           <dd
             className={cn(
-              'flex size-40 items-center justify-center rounded-999 font-sungkok text-ui-20 leading-none',
+              'flex size-[44px] items-center justify-center rounded-999 text-ui-20 font-bold text-primary',
               tone[tier].orb,
-              tone[tier].count,
             )}
           >
             {friends.filter((friend) => friend.tier === tier).length}

@@ -5,7 +5,15 @@
 <!-- announcements:begin -->
 | 공지 | Required | Applies to | Until |
 |------|----------|------------|-------|
+| [2026-09-27-dating-request-cancelled](announcements/2026-09-27-dating-request-cancelled.md) | yes | touches:src/features/dating/ | Phase 11 종료 |
+| [2026-09-25-cookie-auth-contract](announcements/2026-09-25-cookie-auth-contract.md) | yes | all | 백엔드 쿠키 전환 반영 (Phase 09 종료) |
+| [2026-09-24-prd-completion-fields](announcements/2026-09-24-prd-completion-fields.md) | yes | all | Phase 11 종료 |
+| [2026-09-24-dating-publishing-split](announcements/2026-09-24-dating-publishing-split.md) | yes | touches:src/features/dating/ | Phase 11 종료 |
+| [2026-09-24-ci-sync-warn](announcements/2026-09-24-ci-sync-warn.md) | no | all | Phase 10 종료 |
+| [2026-09-23-v1-architecture](announcements/2026-09-23-v1-architecture.md) | yes | all | Phase 11 종료 |
 | [2026-09-23-prd-split](announcements/2026-09-23-prd-split.md) | yes | all | Phase 08 종료 |
+| [2026-09-23-prd-owner-drift](announcements/2026-09-23-prd-owner-drift.md) | yes | all | V1 종료 |
+| [2026-09-23-prd-notion-db](announcements/2026-09-23-prd-notion-db.md) | yes | all | Phase 08 종료 |
 | [2026-09-23-dev-default-branch](announcements/2026-09-23-dev-default-branch.md) | yes | all | Phase 08 종료 |
 | [2026-09-22-netlify-org-repo](announcements/2026-09-22-netlify-org-repo.md) | yes | all | Phase 08 종료 |
 | [2026-09-14-result-ownership](announcements/2026-09-14-result-ownership.md) | yes | all | Phase 08 종료 |

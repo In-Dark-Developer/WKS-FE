@@ -1,0 +1,119 @@
+# Phase 09 — auth-and-shell
+
+- Status: PLANNED
+- Lead: @jjjung0921
+- Depends on: 03
+- Start: 2026-09-24 · End: <YYYY-MM-DD>
+
+## Goal
+
+로그인한 사용자가 어느 기기에서나 자기 궁합지도를 열고, 하단 네비게이션으로 홈·궁합지도·소개팅을 오간다.
+
+## Motivation
+
+V1 기획 개정(2026-09-22)이 사주 결과를 홈으로 삼고 세 영역을 하단 네비로 잇는다. 지금은 브라우저
+`localStorage` 가 유일한 저장소라 기기를 바꾸거나 데이터를 지우면 궁합지도를 잃는다(US-7). 카카오 로그인과
+계정 저장·복원이 그 구멍을 막고, 동시에 Phase 10·11 의 소개팅이 설 기반이 된다 — V1 의 거의 모든 요구가
+`FR-20` 뒤에 줄을 선다.
+
+## Scope
+
+- 하단 네비게이션과 홈 분기 (FR-19)
+- 카카오 로그인, JWT 쿠키 세션, 인앱 브라우저 동작 (FR-20 · NFR-7 · NFR-8)
+- 로그인 시 계정 기록 우선 복원과 비로그인 기록 보존 (FR-21)
+- 친구 궁합 이유 상세 화면 (FR-22)
+- 공유 링크 진입의 '이전 정보 불러오기 / 새로 작성하기' 분기 (FR-23)
+- 결과(= 홈)의 잘 맞는 오행과 소개팅 입구 (FR-3 V1)
+- 첫 방문 메인 티저와 세 진입 (FR-1 V1)
+- 공유 링크 흐름 v1.0 — 신규 진입 초대 티저, 공유 궁합 결과·자세히 보기 (FR-6 V1 · FR-15 V1)
+
+## Out of Scope
+
+- 소개팅 화면 일체 — Phase 10·11 이 맡는다. 이 Phase 는 소개팅 탭을 네비에 노출하되 인트로까지만 연결한다.
+- 재화 '실' (FR-31) — Phase 10/T2.
+- 카카오 동의항목 수집 — 회원번호만 식별자로 쓴다(FR-20).
+- 백엔드 구현 — `docs/api/openapi.yaml` 의 로그인·복원 계약이 먼저 확정되어야 한다(Dependencies).
+
+## Dependencies
+
+- Phase 03 (saju-reading) — 사주 결과·궁합지도가 이미 동작한다.
+- 백엔드: 카카오 로그인 콜백, 계정-결과 연결, 궁합 이유 생성 API 계약. 2026-09-22 BE 회의록 기준이며
+  `docs/api/openapi.yaml` 갱신이 T2 착수의 전제다. 2026-09-25 에 백엔드 §9 초안을 쿠키로 바꾼 **FE 가정 계약**을 넣고
+  T2·T3 를 목 모드(`VITE_API_MOCK=true`)로 먼저 진행한다 — 백엔드 쿠키 전환(Set-Cookie·CORS 자격 증명·쿠키 인증) 전에는
+  실제 모드 검증이 남으므로 T2·T3 는 부분 전달로 병합하고, 전환 뒤 실제 모드로 확인해 체크한다.
+- 운영·개발 서버 분리(NFR-10)와 Redirect URI 발급 — 백엔드 담당.
+
+## Tasks
+
+- [x] T1. 하단 네비게이션과 홈 분기 — Done when: 홈·궁합지도·소개팅 세 탭이 viewport 하단에 고정되고, 홈 탭이 사주 데이터 유무로 결과 또는 입력으로 분기하며, 공유 Flow(`/s/**`) 에서는 네비가 보이지 않고 '내 사주 내용도 확인하기' 이후에만 보인다 · Touches: `src/app/`, `src/ui/`, `docs/prd/30-functional-requirements.md` · Owner: 이정진 · FR: FR-19 (commit 54d23a0, 03286e9)
+
+- [ ] T2. 카카오 로그인과 쿠키 세션 — Done when: 카카오 로그인으로 JWT 쿠키(만료 15일)가 발급되고 새로고침·재방문에 세션이 유지되며, 카카오톡·인스타그램 인앱 브라우저에서도 로그인이 완주되고, 사주 보기·공유·친구 궁합은 비로그인으로 끝까지 동작한다 · Touches: `src/features/auth/`, `src/api/`, `docs/api/openapi.yaml` · Owner: 이정진 · FR: FR-20 (제휴 `ref` 전달 commit bd7658d — 남은 것: 인앱 브라우저 로그인 완주 실기기 확인, 08/T6 RESULT 6번)
+
+- [x] T3. 궁합지도 계정 저장·복원 — Done when: 로그인 시 계정 기록이 우선 복원되고, 계정이 비어 있을 때만 현재 브라우저 결과를 계정에 연결하며, 로그인을 시작한 화면으로 복귀하고, 취소·실패해도 현재 지도와 비로그인 기록이 남는다 · Touches: `src/features/auth/`, `src/features/friends/`, `src/app/routes/` · After: T2 · Owner: 이정진 · FR: FR-21 (commit cce986c, PR #207 — 실제 모드 확인 2026-09-26 dev.threadoffate.site ↔ api-dev)
+
+- [x] T4. 친구 궁합 이유 상세 — Done when: 친구 궁합 Row 를 누르면 세 문단('왜 나에게 귀인일까요?' · '둘이 만나게 된다면?' · '둘이 싸우게 된다면?')이 보이고, 최초 열람에만 생성이 일어나며 그 동안 로딩 상태를 보여주고, 두 번째 열람은 저장값을 즉시 그린다 · Touches: `src/features/friends/map/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 · FR: FR-22 (commit d40bab0)
+
+- [x] T5. 공유 진입 분기 — Done when: 공유 링크로 들어온 사용자에게 브라우저에 쓸 수 있는 사주가 있으면 '이전 정보 불러오기'와 '새로 작성하기'를 고르게 하고, 이전 정보를 고르면 재입력 없이 궁합이 만들어지며, 새로 작성해도 기존 데이터가 지워지지 않는다 · Touches: `src/features/share/`, `src/features/friends/`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-23 (commit 3684631)
+
+- [x] T6. 잘 맞는 오행과 소개팅 입구 — Done when: 결과(= 홈) 화면의 운세 영역에 `elementMatch`(잘 맞는 오행·이유, Figma `Card/Shell` 39:2481)가 보이고 그 아래 'OO 기운의 사람 만나보기'가 소개팅(`/dating`)으로 가며, `elementMatch` 가 null 인 옛 결과(약 905건)는 그 영역을 그리지 않고 다른 영역은 그대로 보이며, 공유 Flow 뒤 '내 사주 내용도 확인하기'로 들어온 결과에도 같은 컴포넌트가 쓰인다 · Touches: `src/features/saju/`, `src/api/schema/`, `src/app/preview/screens/` · Owner: 이정진 · FR: FR-3 (commit e826117)
+
+- [x] T7. 메인 티저 — Done when: 첫 방문의 `/` 에서 인트로 영상이 끝나거나 건너뛰면 메인 티저(「0. 메인 진입 티저」)가 보이고 하단 네비는 보이지 않으며, 첫 방문인지 판단할 수 없으면 티저를 보이고, '내 사주 보기'는 사주 입력으로 가되 이 브라우저에 사주 결과가 있으면 로그인 없이 홈(결과)으로 가며, '새로운 인연 찾기'는 `/dating` 으로, '이미 아이디가 있어요'는 '카카오로 시작하기' 로그인 시트를 띄우고 로그인 뒤 계정 기록을 불러와 티저로 돌아온다 · Touches: `src/features/intro/`, `src/app/routes/`, `src/app/screens/`, `src/features/dating/index.ts`, `src/ui/assets/teaser/` · After: T2 · Owner: 이정진 · FR: FR-1 (commit 588ddea)
+
+- [x] T8. 궁합지도 로그인 저장 유도 — Done when: 비로그인 사용자의 내 궁합지도(`/me/map`) 맨 아래에 '이 인연들을 계속 간직할까요?' 카드(Figma v1.0 `23:4901`)가 보이고 로그인 사용자에게는 보이지 않으며, '로그인하고 저장하기 →'가 '궁합지도 저장하기' 카카오 로그인 시트를 띄우고, 로그인 뒤 궁합지도로 돌아와 카드가 사라진다(친구의 궁합 지도 `/s/:shareId/map` 에는 두지 않는다) · Touches: `src/features/friends/map/`, `src/features/dating/intro/LoginSheet.tsx`, `src/app/screens/MyMapScreen.tsx`, `src/app/routes/map.routes.tsx`, `src/ui/assets/friends/` · After: T2 · Owner: 이정진 · FR: FR-20 (commit c2bcf5e·06beb5c, PR #209·#217 — 실제 모드 확인 2026-09-26)
+
+- [x] T9. 공유 링크 신규 진입 초대 티저 — Done when: 이 브라우저에 사주가 없는 방문자가 `/s/:shareId` 로 들어오면 'OO님의 궁합지도에 초대됐어요' 초대 헤더와 링크 주인의 궁합 지도 아래 사주 입력 폼이 보이고(Figma v1.0 4.1 신규 티저 `30:5916`), 폼의 제목·부제·버튼('내 운명을 친구 궁합 지도에 꿰기')이 그 프레임 문구와 같으며, 기존 방문자가 '새로 작성하기'로 여는 폼(`30:6323`)도 같은 문구이고, 제출하면 지금처럼 결과·궁합을 만든다 · Touches: `src/features/friends/`, `src/features/saju/`, `src/app/screens/ShareInputScreen.tsx`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-15 (commit 1ba8c1e)
+
+- [x] T10. 공유 궁합 결과와 자세히 보기 — Done when: 궁합을 만들면(신규 제출·'이전 정보 불러오기' 모두) 공유 궁합 결과(SCR-24 `/s/:shareId/result`, Figma v1.0 `15:1089`·`30:6570`)로 가서 주인 지도, 나와 주인의 궁합 한 줄, 그 궁합의 이유 세 문단(`GET /compatibilities/{id}/reason`, 생성 중 로딩)이 보이고, '전체 보기 >'는 주인의 전체 지도(SCR-13, `16:1827`)로 가며 그 화면 맨 위 '뒤로가기'가 SCR-24 로 돌아오고, 두 화면의 '내 사주 내용도 확인하기'는 자기 결과로 가며, 새로고침해도 같은 화면이 보인다 · Touches: `src/features/friends/`, `src/app/screens/`, `src/app/routes/share.routes.tsx` · After: T9 · Owner: 강근우 · FR: FR-6 (commit 9b56710)
+
+QA(2026-09-27, Notion 「🩺 QA / 디자인」) — 홈·네비 항목을 원래 만든 담당자에게 배정한다. 홈 기준 화면은 Figma v1.0 「사주 카드 화면」 `8:794` 다.
+
+- [x] T11. 카드 저장을 카드 안 아이콘으로 — Done when: 홈(SCR-04) 운명 카드 아래의 '카드 저장하기' 버튼이 없어지고, 카드 앞면 오른쪽 아래의 다운로드 아이콘(Figma `58:2523`, 24×24)을 누르면 지금과 같은 카드 이미지 저장(FR-5, Web Share 파일 → 저장 폴백 FR-16)이 일어나며, 카드 뒷면에서는 아이콘이 보이지 않고, 아이콘에 접근 가능한 이름('카드 저장하기')이 있다 · Touches: `src/features/share/card/`, `src/ui/DestinyCard.tsx`, `src/app/screens/HomeScreen.tsx` · Owner: 이정진 · FR: FR-5 (QA: 카드 저장하기 버튼 → 카드 내 아이콘으로) (commit c1f1ff0)
+
+- [x] T12. 홈에서 친구 궁합 순위 제거 — Done when: 홈(SCR-04)에 친구 궁합 순위 영역(순위 3명·'지도 보기 >'·'친구에게 공유')이 보이지 않고 Figma `8:794` 처럼 운세 영역에서 끝나며, 순위와 공유는 궁합지도(`/me/map`)에서 그대로 쓸 수 있다. 홈에서 공유 입구가 사라지므로 PRD FR-4 의 결과 화면 공유 위치 문구는 spec 후속으로 고친다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx` · Owner: 이정진 · FR: FR-4, FR-19 (QA: 친구 궁합 순위 홈에서는 사라짐) (commit 5bf7964)
+
+- [x] T13. 홈에서 그랜드 오픈 사전신청 섹션 제거 — Done when: 홈 맨 아래의 'GRAND OPEN !! 09월 29일' 사전신청 섹션(`PreRegisterTeaser`, 873:4155)과 그 모달 진입이 홈에서 보이지 않는다. 더는 쓰이지 않는 사전신청 화면·폰트(Cafe24 PRO Slim Max)를 지울지는 이 Task 에서 정하고, PRD FR-9 는 spec 후속으로 V1 에서 뺀다 · Touches: `src/app/screens/HomeScreen.tsx`, `src/features/saju/ReadingResult.tsx`, `src/features/profile/`, `src/app/routes/` · Owner: 이정진 · FR: FR-9 (QA: 그랜드 오픈 없애기) (commit 0805a90)
+
+- [x] T14. 소개팅 이동 시 하단 네비 위치 고정 — Done when: 홈·궁합지도·소개팅(인트로·Top 3·요청함) 사이를 네비로 오갈 때 네비의 가로·세로 위치가 1px 도 바뀌지 않음을 모바일(375)과 데스크톱 폭에서 확인하고, 원인(스크롤바 유무에 따른 가운데 정렬 흔들림 추정 · 화면별 여백 차이 등)을 적은 뒤 고친다 · Touches: `src/app/layout.css`, `src/app/screens/BottomNavBar.tsx`, `src/features/dating/` · Owner: 이정진 · FR: FR-19 (QA: 네브바, 소개팅으로 이동시 위치가 변경됨) (commit e9f6ee2 — 원인: 상시 스크롤바 환경에서 스크롤 없는 화면(요청함)으로 가면 스크롤바가 사라져 셸·네비가 7.5px 이동. `:root` scrollbar-gutter: stable. 375px 는 네 화면 x·y 동일 확인. 상시 스크롤바 1024px(Linux Chromium, 2026-09-28): 수정 전 홈·궁합지도 368.5 → 소개팅 인트로 376, 수정 후 모두 368.5)
+
+QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `담당자` 칸과 같고, 원래 그 FR 을 만든 사람이다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
+
+- [x] T15. 하단 네비 간격 조정 — Done when: 디자인이 정한 새 간격(탭 사이 40px · 좌우 여백 48px · 바닥 20px 중 무엇을 얼마로)을 Figma nav `30:5661` 에 먼저 반영하고, 네비가 그 값으로 그려진다. 값이 정해지기 전에는 시작하지 않는다 · Touches: `src/ui/BottomNav.tsx`, `src/app/layout.css` · Owner: 이동건 · FR: FR-19 (QA: 네브바 거리가 너무 먼 듯) (수정 없음 — 2026-09-28 디자인 확인 결과 QA 지적이 착오였고 현재 값을 유지한다: 탭 사이 40px · 좌우 48px · 바닥 20px + safe area)
+
+- [x] T16. 홈 운세 표시 순서 — Done when: 홈(SCR-04)의 운세 등급(결혼운·자녀운·연애운 등)이 Figma `8:794` 와 같은 순서로 보이고, 순서는 백엔드 응답 순서가 아니라 화면이 정한 순서를 따른다 · Touches: `src/features/saju/` · Owner: 이동건 · FR: FR-3 (QA: 내 사주에서 운 보여주는 순서 변경) (commit 19c59e3, PR #283)
+
+- [x] T17. 생년월일 오늘 입력 안내 — Done when: 생년월일에 오늘(또는 미래) 날짜를 넣으면 제출이 막히는 이유를 그 칸 오류 문구로 알리고(지금은 안내가 맞지 않다), 사주 입력(SCR-02)·공유 입력(SCR-06)·소개팅 (1/2) 이 같은 규칙과 문구를 쓴다 · Touches: `src/features/saju/`, `src/features/dating/profile/` · Owner: 이동건 · FR: FR-2 (QA: 생일 오늘로 하면 안 넣어짐 → 안내 수정) (commit b5c553b, PR #280)
+
+- [x] T18. 공유 링크 진입 화면 맞추기 — Done when: `/s/:shareId` 로 들어온 신규·기존 방문자 화면이 Figma `30:5916`(신규 티저)·`4.2 기존 티저 (링크 진입 화면)` 와 같은 구성·문구로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/ShareInputScreen.tsx`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-15, FR-23 (QA: 링크타고 들어왔을 때 화면 다름) (commit 1884b44 — 초대 지도 구슬이 흐르며 숨던 것을 멈춤, 배경은 #278)
+
+- [x] T19. 공유 링크 진입 화면 배경 — Done when: 공유 Flow(`/s/**`) 화면의 배경이 Figma 링크 진입 화면과 같은 배경(사진·그라데이션)으로 보이고, 새로고침·뒤로가기 뒤에도 같다 · Touches: `src/app/routes/share.routes.tsx`, `src/app/layout.css` · Owner: 강근우 · FR: FR-15 (QA: 링크 진입 화면 배경이 다름) (commit d9d298b — 입력 화면 dawn 은 #278, 결과 화면 상단 Primary-500 그라데이션은 이 커밋)
+
+- [x] T20. 공유 링크 진입 뒤 궁합 지도 디자인 — Done when: 공유 링크로 들어와 궁합을 만든 뒤 보이는 주인의 궁합 지도(SCR-24·SCR-13)가 Figma `15:1089`·`16:1827` 과 같은 배치·색으로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/` · Owner: 강근우 · FR: FR-6, FR-14 (QA: 공유링크 타고 진입 후 지도 디자인 이상) (commit 18f7e28 내 줄 가운데 · e2d6209 궤도 선 정지 — 회전이 선을 패널 밖으로 밀어내 안 보이던 QA)
+
+QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 그 화면·코드를 마지막으로 만든 사람이 이어서 맡는다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
+
+- [x] T21. 공유 링크 문구 — Done when: '친구에게 공유'로 보내는 문구(`shareLinkMessages.shareText`)가 QA 가 정한 문구('부처님이 우리를 어떻게 이어놨는지 궁금하면 지금 등록해봐!')로 바뀌고, 링크는 지금처럼 문구 다음 줄에 붙는다 · Touches: `src/features/share/link/` · Owner: 이정진 · FR: FR-4 (QA: 링크 공유 시 멘트 변경) (commit c660176 — 새 문구에 닉네임이 없어 `ShareLinkButton` 의 `nickname` prop 을 뺐다)
+
+- [x] T22. 궁합 지도 궤도 선·달이 사라짐 — Done when: 로그인 복귀처럼 새로 연 궁합 지도에서도 궤도 선·달이 곧바로 보이고 움직임이 멈추지 않는다 · Touches: `src/features/friends/map/`, `src/ui/assets/friends/` · Owner: 강근우 · FR: FR-8 (QA: 지도 페이지 선이랑 달이 사라짐) (commit ecfab0d, PR #304 — 원인: 필터 SVG 5장을 폰에서 그리는 데 합 약 11초. WebP 로 바꿈)
+
+- [ ] T23. 궁합 이유 상세 로딩 — Done when: 궁합 지도에서 친구 Row 를 눌러 여는 궁합 이유(FR-22)가 느린 원인(생성 요청 대기 · 저장값 재조회 · 화면 쪽 대기 중 무엇인지)을 재현해 적고, 화면 쪽 원인이면 고치며, 백엔드 생성 시간이 원인이면 수치를 적어 WKS-BE 에 넘긴다 · Touches: `src/features/friends/reason/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 · FR: FR-22, NFR-9 (QA 기능: 지도 페이지 상세한 정보 로딩이 느림)
+
+## Relevant Specifications
+
+- `docs/prd/` — FR-1(V1), FR-3(V1), FR-4, FR-5, FR-9, FR-19, FR-20, FR-21, FR-22, FR-23, NFR-7, NFR-8
+- `docs/prd/20-screens.md` — SCR-01, SCR-15, SCR-21, SCR-22
+- `docs/api/openapi.yaml` — 궁합 이유 `GET /compatibilities/{id}/reason` · 결과의 `elementMatch`(2026-09-24 반영) · 로그인 콜백 · 계정-결과 연결(쿠키 방식 확정 대기)
+- Figma `imSnlOGTqwtPhGyzhA8yc9`(v1.0) — `0. 메인 진입 티저`, `nav`, `3.1 궁합 지도 - 로그인 x`, `3.1.1 로그인`, `3.1 궁합 지도 - 로그인 o`, `3.2 친구 궁합 리스트 이유`, `4.2 기존 티저 (링크 진입 화면)`, `4.2 새로 작성하기 버튼 누를 시`
+
+## Acceptance Criteria
+
+- [ ] AC1. 기기 A 에서 궁합 3건을 만들고 로그인한 뒤, 기기 B 에서 로그인하면 같은 지도가 보인다 (SC-7)
+- [ ] AC2. 비로그인 상태로 사주 입력 → 결과 → 공유 → 친구 궁합까지 막히는 화면 없이 끝난다
+- [ ] AC3. 카카오톡·인스타그램 인앱 브라우저에서 로그인 후 궁합지도 저장까지 완주한다 (NFR-8)
+- [ ] AC4. 하단 네비가 세 영역을 잇고, 공유 Flow 진행 중에는 보이지 않는다
+- [ ] AC5. 같은 친구의 궁합 이유를 두 번 열면 두 번째에는 생성 요청이 0건이다 (NFR-9 의 화면 쪽 조건)
+
+## Validation Plan
+
+- 자동: 라우팅 가드·네비 노출 조건은 `src/app/routes/*.test.tsx` 가 덮는다(AC4). 세션 복원 분기(계정 비어 있음 / 기록 있음 / 취소)는 `src/features/auth/*.test.ts` 로 세 갈래를 모두 덮는다(AC1).
+- 수동: 실기기 iOS Safari · Android Chrome 각 1대에서 AC2·AC3 을 끝까지 수행한다. 인앱은 카카오톡 대화방과 인스타그램 DM 에 링크를 붙여 넣어 연다.
+- 관측: AC5 는 궁합 이유를 두 번 열며 네트워크 탭에서 생성 요청 수를 센다.

@@ -1,5 +1,7 @@
 import { useId, type ReactNode } from 'react';
 
+import { cn } from '@/lib/cn';
+
 import { tierLooks, type CompatibilityTier, type Friend } from './tiers';
 
 type Props = {
@@ -10,6 +12,14 @@ type Props = {
   shareAction?: ReactNode;
   // 제목 줄 오른쪽 — 결과 화면의 '지도 보기 >'(Figma 798:3138).
   headerAction?: ReactNode;
+  // 줄을 눌러 궁합 이유를 연다(FR-22, Figma 3.2) — 궁합 ID 가 있는 줄만 버튼이 된다.
+  onSelect?: (friend: Friend) => void;
+  // 제목 — 공유 궁합 결과(SCR-24)는 '나의 궁합 순위'다.
+  title?: string;
+  // 첫 줄의 순위 — 주인 지도 안에서 내 줄과 그 앞뒤만 보일 때 첫 줄의 순위(Figma 15:1089).
+  firstRank?: number;
+  // 등급 색으로 칠할 줄(rows 안 위치) — 공유 궁합 결과의 '나'(Figma 15:1301).
+  highlightIndex?: number;
 };
 
 const badgeText: Record<CompatibilityTier, string> = {
@@ -19,20 +29,29 @@ const badgeText: Record<CompatibilityTier, string> = {
   SEUCHIM: 'text-neutral-900',
 };
 
-// Figma RankingList(80:614) — 사주 카드 화면 인스턴스(796:3828) 모양: 제목 줄 패딩 16, 목록은 좌우 8 안쪽.
+// Figma v1.0 RankingList(8:384 — 15:1292·57:2721·30:5790) — 흰 판 50%, 제목 줄 위 16 아래 8, 목록은 좌우 8 안쪽.
 // friends 는 순위 순서다.
-export function FriendRanking({ friends, limit, shareAction, headerAction }: Props) {
+export function FriendRanking({
+  friends,
+  limit,
+  shareAction,
+  headerAction,
+  onSelect,
+  title = '친구 궁합 순위',
+  firstRank = 1,
+  highlightIndex,
+}: Props) {
   const rows = limit === undefined ? friends : friends.slice(0, limit);
   const titleId = useId();
 
   return (
     <section
       aria-labelledby={titleId}
-      className="flex flex-col gap-8 rounded-16 border border-neutral bg-opacity-card-neutral-0-80 pb-8 backdrop-blur-md"
+      className="flex flex-col gap-8 rounded-16 border border-neutral bg-opacity-card-neutral-0-50 pb-8 backdrop-blur-md"
     >
-      <div className="flex items-center justify-between gap-8 p-16">
+      <div className="flex items-center justify-between gap-8 px-16 pt-16 pb-8">
         <h2 className="text-ui-18 font-semibold text-primary" id={titleId}>
-          친구 궁합 순위
+          {title}
         </h2>
         {headerAction}
       </div>
@@ -50,30 +69,27 @@ export function FriendRanking({ friends, limit, shareAction, headerAction }: Pro
         ) : (
           <ol className="flex flex-col gap-8">
             {rows.map((friend, index) => (
-              <li
-                className="flex items-center gap-12 rounded-12 bg-opacity-card-neutral-0-70 px-16 py-8"
-                key={friend.nickname}
-              >
-                <span className="w-24 font-display text-display-20 text-primary">{index + 1}</span>
-                <span className="min-w-0 flex-1 truncate text-ui-14 font-medium text-primary">
-                  {friend.nickname}
-                </span>
-                <span className="relative flex size-40 shrink-0 items-center justify-center">
-                  <img
-                    alt=""
-                    className="absolute inset-0 size-full scale-135"
-                    src={tierLooks[friend.tier].badge}
-                  />
-                  <span
-                    className={`relative font-display text-ui-12 leading-none tracking-tighter ${badgeText[friend.tier]}`}
+              <li key={friend.nickname}>
+                {onSelect && friend.compatibilityId !== undefined ? (
+                  <button
+                    aria-label={`${friend.nickname}님과의 궁합 이유 보기`}
+                    className="w-full rounded-12 text-left"
+                    onClick={() => onSelect(friend)}
+                    type="button"
                   >
-                    {tierLooks[friend.tier].label}
-                  </span>
-                </span>
-                <span className="w-40 text-center text-ui-16 font-semibold text-primary">
-                  {friend.score}
-                  <span className="sr-only">점</span>
-                </span>
+                    <RankingRow
+                      friend={friend}
+                      highlighted={index === highlightIndex}
+                      rank={firstRank + index}
+                    />
+                  </button>
+                ) : (
+                  <RankingRow
+                    friend={friend}
+                    highlighted={index === highlightIndex}
+                    rank={firstRank + index}
+                  />
+                )}
               </li>
             ))}
           </ol>
@@ -82,5 +98,54 @@ export function FriendRanking({ friends, limit, shareAction, headerAction }: Pro
       {/* 목록이 있을 때 — Figma 796:3885 목록 아래 8, 좌우가 목록보다 조금 안쪽(285/343). */}
       {rows.length > 0 && shareAction ? <div className="px-20">{shareAction}</div> : null}
     </section>
+  );
+}
+
+// 선택한 줄의 바탕 — Figma 30:5799 '궁합에 따른 색'. 등급 카드(RelationStat) 테두리 색과 같다.
+const highlightTone: Record<CompatibilityTier, string> = {
+  GUIIN: 'bg-primary-300',
+  CHALTTEOK: 'bg-rose-300',
+  BEOT: 'bg-apricot-300',
+  SEUCHIM: 'bg-neutral-300',
+};
+
+// Figma RankingRow — 순위·닉네임·등급 배지·점수. highlighted 는 궁합 이유 시트 맨 위의 선택한 줄·공유 궁합 결과의 나다.
+export function RankingRow({
+  friend,
+  rank,
+  highlighted = false,
+}: {
+  friend: Friend;
+  rank: number;
+  highlighted?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-12 rounded-12 px-16 py-8',
+        highlighted ? highlightTone[friend.tier] : 'bg-opacity-card-neutral-0-70',
+      )}
+    >
+      <span className="w-24 font-display text-display-20 text-primary">{rank}</span>
+      <span className="min-w-0 flex-1 truncate text-ui-14 font-medium text-primary">
+        {friend.nickname}
+      </span>
+      <span className="relative flex size-40 shrink-0 items-center justify-center">
+        <img
+          alt=""
+          className="absolute inset-0 size-full scale-135"
+          src={tierLooks[friend.tier].badge}
+        />
+        <span
+          className={`relative font-display text-ui-12 leading-none tracking-tighter ${badgeText[friend.tier]}`}
+        >
+          {tierLooks[friend.tier].label}
+        </span>
+      </span>
+      <span className="w-40 text-center text-ui-16 font-semibold text-primary">
+        {friend.score}
+        <span className="sr-only">점</span>
+      </span>
+    </div>
   );
 }

@@ -94,3 +94,20 @@ test.each([
 
   expect(trigger).toHaveAttribute('aria-expanded', 'false');
 });
+
+// QA(2026-09-28): 폼이 배경을 맞출 수 있어야 한다 — 옆 TextField 는 className 이 칸에 붙는데
+// Select 는 감싸는 요소에 붙어 배경이 달라 보였다.
+test('className 은 여는 칸에 붙는다', () => {
+  render(
+    <Select
+      appearance="soft"
+      className="bg-surface-default"
+      onChange={() => {}}
+      options={options}
+      placeholder="골라 주세요"
+      value={null}
+    />,
+  );
+
+  expect(screen.getByRole('combobox')).toHaveClass('bg-surface-default');
+});

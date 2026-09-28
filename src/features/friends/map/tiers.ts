@@ -12,7 +12,13 @@ import orbSeuchim from '@/ui/assets/orbs/orb-seuchim.png';
 // 백엔드 CompatibilityTier 값 그대로 (docs/api/openapi.yaml) — 등급은 백엔드가 정하고 화면은 계산하지 않는다(FR-7).
 export type CompatibilityTier = 'GUIIN' | 'CHALTTEOK' | 'BEOT' | 'SEUCHIM';
 
-export type Friend = { nickname: string; score: number; tier: CompatibilityTier };
+// compatibilityId 는 궁합 이유(FR-22)를 여는 열쇠 — V1 이전 백엔드는 주지 않아 없으면 그 줄을 누를 수 없다.
+export type Friend = {
+  nickname: string;
+  score: number;
+  tier: CompatibilityTier;
+  compatibilityId?: number;
+};
 
 export const tierOrder: readonly CompatibilityTier[] = ['GUIIN', 'CHALTTEOK', 'BEOT', 'SEUCHIM'];
 

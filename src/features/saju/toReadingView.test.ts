@@ -37,8 +37,24 @@ test('fortunes 배열을 카테고리별 key 로 바꾼다', () => {
     elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
     luckyItem: '책',
     shareId: 's1',
+    elementMatch: null,
     friends: [],
   });
+});
+
+test('잘 맞는 오행을 오행 key 로 바꾸고, 옛 결과(null·키 없음)는 null 로 둔다', () => {
+  const withMatch: Result = {
+    ...result,
+    elementMatch: { element: 'EARTH', korean: '토', reason: '흙의 기운이 당신을 살려요.' },
+  };
+
+  expect(toReadingView(withMatch).elementMatch).toEqual({
+    element: 'earth',
+    korean: '토',
+    reason: '흙의 기운이 당신을 살려요.',
+  });
+  expect(toReadingView({ ...result, elementMatch: null }).elementMatch).toBeNull();
+  expect(toReadingView(result).elementMatch).toBeNull();
 });
 
 test('궁합을 상대 닉네임의 친구 목록으로 바꾸고 점수 높은 순으로 둔다', () => {
@@ -69,4 +85,19 @@ test('카테고리가 계약과 다르면(누락) 던진다', () => {
   const broken: Result = { ...result, fortunes: [marriage, marriage] };
 
   expect(() => toReadingView(broken)).toThrow();
+});
+
+test('궁합 ID 가 오면 친구의 compatibilityId 로 옮기고, 없으면(V1 이전 백엔드) 비워 둔다', () => {
+  const view = toReadingView({
+    ...result,
+    compatibilities: [
+      { id: 12, nickname: '서연', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T02:00:00Z' },
+      { nickname: '민수', score: 61, tier: 'BEOT', createdAt: '2026-09-15T01:00:00Z' },
+    ],
+  });
+
+  expect(view.friends).toEqual([
+    { nickname: '서연', score: 92, tier: 'GUIIN', compatibilityId: 12 },
+    { nickname: '민수', score: 61, tier: 'BEOT' },
+  ]);
 });
