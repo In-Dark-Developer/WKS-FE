@@ -2,18 +2,18 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-29
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+변경 파일이 300개를 넘는 PR(dev → main 릴리스)에서도 commands 검사가 돈다.
 
 ## Work Completed
 
-- 없음
+- 릴리스 PR #313 에서 `gh pr diff` 가 HTTP 406(too_large)으로 실패해 commands 가 빨갛게 끝났다 — 실패하면 코드 변경이 있는 것으로 보고 전체를 검사한다
 
 ## Work In Progress
 
@@ -21,7 +21,7 @@
 
 ## Files Changed
 
-- 없음
+- `.github/workflows/ci.yml` (commands · does this touch code?)
 
 ## Decisions Made
 
@@ -29,11 +29,11 @@
 
 ## Tests Executed
 
-- 없음
+- YAML 파싱 · 이 PR 의 CI
 
 ## Test Results
 
-- 없음
+- YAML 정상
 
 ## Known Problems
 
@@ -45,4 +45,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 병합 → 릴리스 브랜치 갱신
