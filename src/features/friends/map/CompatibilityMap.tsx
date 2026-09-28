@@ -14,7 +14,14 @@ import './CompatibilityMap.css';
 // mine = 내 궁합 지도(SCR-08), visitor = 공유 링크로 들어온 사람이 보는 링크 주인의 지도(SCR-06).
 export type MapVariant = 'mine' | 'visitor';
 
-type Props = { nickname: string; friends: readonly Friend[]; variant?: MapVariant };
+type Props = {
+  nickname: string;
+  friends: readonly Friend[];
+  variant?: MapVariant;
+  // 멈춘 지도 — 구슬이 모두 제 궤도 자리에 보이고 아무것도 움직이지 않는다. 공유 링크 진입 화면의 주인 지도가
+  // Figma 4.1·4.2(30:5916·30:6128)처럼 친구를 한눈에 보여야 해서다(09/T18).
+  isStill?: boolean;
+};
 
 // 구슬은 등급 색 궤도 위에 놓는다 — 달에서 가까운 줄부터 귀인·찰떡·벗·스침(orbLayout). 친구 수 제한은 없다.
 
@@ -51,11 +58,12 @@ function subtitle(nickname: string, friendCount: number, variant: MapVariant) {
 }
 
 // 궁합 지도의 지도 카드 — Figma 「UI 최종 - 개발용」 지도 최종 v2(558:2628) · 궁합 지도 확인(713:3956). friends 는 순위 순서다.
-export function CompatibilityMap({ nickname, friends, variant = 'mine' }: Props) {
+export function CompatibilityMap({ nickname, friends, variant = 'mine', isStill = false }: Props) {
   const placed = placeOrbs(friends);
   // 무엇이 움직이나 — 구슬(3명 이상) · 궤도 선(구슬 1개 이하) · 아무것도(그 사이). 둘이 함께 돌지는 않는다.
-  const motion =
-    friends.length >= SPIN_ORBS_FROM
+  const motion = isStill
+    ? 'none'
+    : friends.length >= SPIN_ORBS_FROM
       ? 'orbs'
       : friends.length < SPIN_ORBITS_UNTIL
         ? 'orbits'

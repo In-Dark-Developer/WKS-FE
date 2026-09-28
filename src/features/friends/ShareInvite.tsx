@@ -27,7 +27,8 @@ export function ShareInvite({ ownerNickname, ownerFriends }: Props) {
         </p>
       </header>
 
-      <CompatibilityMap friends={ownerFriends} nickname={ownerNickname} />
+      {/* 초대 머리의 지도는 멈춰 둔다 — 흐르는 구슬은 절반 동안 숨어 친구가 비어 보인다(QA · Figma 30:6128). */}
+      <CompatibilityMap friends={ownerFriends} isStill nickname={ownerNickname} />
     </section>
   );
 }
