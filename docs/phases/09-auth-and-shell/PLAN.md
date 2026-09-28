@@ -77,7 +77,7 @@ QA(2026-09-27, Notion 「🩺 QA / 디자인」) — 홈·네비 항목을 원�
 
 QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `담당자` 칸과 같고, 원래 그 FR 을 만든 사람이다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
 
-- [ ] T15. 하단 네비 간격 조정 — Done when: 디자인이 정한 새 간격(탭 사이 40px · 좌우 여백 48px · 바닥 20px 중 무엇을 얼마로)을 Figma nav `30:5661` 에 먼저 반영하고, 네비가 그 값으로 그려진다. 값이 정해지기 전에는 시작하지 않는다 · Touches: `src/ui/BottomNav.tsx`, `src/app/layout.css` · Owner: 이정진 · FR: FR-19 (QA: 네브바 거리가 너무 먼 듯)
+- [x] T15. 하단 네비 간격 조정 — Done when: 디자인이 정한 새 간격(탭 사이 40px · 좌우 여백 48px · 바닥 20px 중 무엇을 얼마로)을 Figma nav `30:5661` 에 먼저 반영하고, 네비가 그 값으로 그려진다. 값이 정해지기 전에는 시작하지 않는다 · Touches: `src/ui/BottomNav.tsx`, `src/app/layout.css` · Owner: 이동건 · FR: FR-19 (QA: 네브바 거리가 너무 먼 듯) (수정 없음 — 2026-09-28 디자인 확인 결과 QA 지적이 착오였고 현재 값을 유지한다: 탭 사이 40px · 좌우 48px · 바닥 20px + safe area)
 
 - [x] T16. 홈 운세 표시 순서 — Done when: 홈(SCR-04)의 운세 등급(결혼운·자녀운·연애운 등)이 Figma `8:794` 와 같은 순서로 보이고, 순서는 백엔드 응답 순서가 아니라 화면이 정한 순서를 따른다 · Touches: `src/features/saju/` · Owner: 이동건 · FR: FR-3 (QA: 내 사주에서 운 보여주는 순서 변경) (commit 19c59e3, PR #283)
 
@@ -85,7 +85,7 @@ QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `�
 
 - [x] T18. 공유 링크 진입 화면 맞추기 — Done when: `/s/:shareId` 로 들어온 신규·기존 방문자 화면이 Figma `30:5916`(신규 티저)·`4.2 기존 티저 (링크 진입 화면)` 와 같은 구성·문구로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/ShareInputScreen.tsx`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-15, FR-23 (QA: 링크타고 들어왔을 때 화면 다름) (commit 1884b44 — 초대 지도 구슬이 흐르며 숨던 것을 멈춤, 배경은 #278)
 
-- [ ] T19. 공유 링크 진입 화면 배경 — Done when: 공유 Flow(`/s/**`) 화면의 배경이 Figma 링크 진입 화면과 같은 배경(사진·그라데이션)으로 보이고, 새로고침·뒤로가기 뒤에도 같다 · Touches: `src/app/routes/share.routes.tsx`, `src/app/layout.css` · Owner: 강근우 · FR: FR-15 (QA: 링크 진입 화면 배경이 다름)
+- [x] T19. 공유 링크 진입 화면 배경 — Done when: 공유 Flow(`/s/**`) 화면의 배경이 Figma 링크 진입 화면과 같은 배경(사진·그라데이션)으로 보이고, 새로고침·뒤로가기 뒤에도 같다 · Touches: `src/app/routes/share.routes.tsx`, `src/app/layout.css` · Owner: 강근우 · FR: FR-15 (QA: 링크 진입 화면 배경이 다름) (commit d9d298b — 입력 화면 dawn 은 #278, 결과 화면 상단 Primary-500 그라데이션은 이 커밋)
 
 - [x] T20. 공유 링크 진입 뒤 궁합 지도 디자인 — Done when: 공유 링크로 들어와 궁합을 만든 뒤 보이는 주인의 궁합 지도(SCR-24·SCR-13)가 Figma `15:1089`·`16:1827` 과 같은 배치·색으로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/` · Owner: 강근우 · FR: FR-6, FR-14 (QA: 공유링크 타고 진입 후 지도 디자인 이상) (commit 18f7e28 내 줄 가운데 · e2d6209 궤도 선 정지 — 회전이 선을 패널 밖으로 밀어내 안 보이던 QA)
 

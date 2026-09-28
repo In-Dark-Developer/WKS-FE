@@ -71,9 +71,11 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 - [x] T11. Top 3 카드는 늘 세 장 — Done when: 추천이 몇 명이든 카드는 늘 세 장이고, 후보가 1–2명이면 남은 자리를 빈 카드(Figma 인연x `134:2248`)로 채우며(FR-26, 2026-09-28 결정), 세 장 모두 넘겨 볼 수 있고 인디케이터 점 세 개가 각각 그 카드를 가리킨다. 빈 카드에서는 '운명의 실 보내기'·해금이 동작하지 않는다. 지금 세 장이 다 보이지 않는 조건도 재현해 적은 뒤 고친다 · Touches: `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA 기능: 탑3 카드가 다 떠야함) (commit 0db0e50, PR #277)
 
-- [x] T12. 소개팅 상단 바 아이콘 — Done when: Top 3 상단의 '운명의 실'·'요청함' 아이콘과 글자가 Figma `top_nav`(`91:1790`)와 같은 간격·크기·아이콘으로 보인다 · Touches: `src/features/dating/recommendation/DatingHeader.tsx` · Owner: 이동건 · FR: FR-31 (QA: top bar 아이콘 간 간격 및 디자인) (commit ec3b4a2, PR #287)
+- [x] T12. 소개팅 상단 바 아이콘 — Done when: Top 3 상단의 '운명의 실'·'요청함' 아이콘과 글자가 Figma `top_nav`(`91:1790`)와 같은 간격·크기·아이콘으로 보인다 · Touches: `src/features/dating/recommendation/DatingHeader.tsx` · Owner: 이동건 · FR: FR-31 (QA: top bar 아이콘 간 간격 및 디자인) (commit ec3b4a2, PR #287 — 간격. 배경 유리는 재작업 commit 4489f46)
 
 - [x] T13. 리롤 시트 실 문구 — Done when: '다른 인연 만나보기' 확인 시트의 실 차감 안내 문구가 디자인이 정한 문구로 바뀌고, 무료·유료·잔액 부족 세 상태 모두 비용(5실)과 맞는다 · Touches: `src/features/dating/recommendation/RerollSheet.tsx` · Owner: 이동건 · FR: FR-27 (QA: 리롤 모달 실 멘트 변경) (commit d29f1e8, PR #285)
+
+- [x] T14. 사진 추가 영역 Figma 정합 — Done when: 프로필 (2/2)의 사진 추가 칸이 Figma 사주입력폼 (2/2) `134:3639` 와 같은 흰 카드·테두리·미리보기 비율(311×393)·버튼 색(Rose/300)으로 보인다 · Touches: `src/ui/PhotoUpload.tsx`, `src/ui/Button.tsx`, `src/ui/tokens/theme.css` · Owner: 이동건 · UI: FR-25 (QA 2026-09-28: 피그마 사진 넣는 곳과 구현이 다름) (commit 4489f46)
 
 ## Relevant Specifications
 

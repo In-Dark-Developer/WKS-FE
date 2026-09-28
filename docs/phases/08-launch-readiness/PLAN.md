@@ -54,7 +54,7 @@
 
 - [x] T5. 성능 예산 측정 — Done when: 운영 주소를 Lighthouse 모바일(느린 4G) 3회 측정한 LCP 중앙값 < 2.5s 와 초기 JS < 250KB gzip 이 RESULT 에 기록되고, 넘으면 원인(폰트·이미지·번들)을 줄이는 변경이 병합되며, 빌드 산출물의 JS gzip 크기를 CI 가 검사해 250KB 를 넘으면 실패한다 (NFR-2) · Touches: `scripts/check-bundle-size.mjs`, `.github/workflows/ci.yml`, `package.json`, `docs/phases/08-launch-readiness/` · After: T3 · Owner: @gn00py48 (commit 75dc54e, 387cba3)
 
-- [ ] T6. 출시 점검 — Done when: iOS Safari·Android Chrome 실기기 각 1대에서 SC-1~6 절차와 360·390·430px 가로 스크롤 0·키보드 폼 완주·본문 대비 4.5:1 을 확인해 결과·발견한 문제(이슈 번호)를 RESULT 에 남긴다 (NFR-1·5·6) · Touches: `docs/phases/08-launch-readiness/` · After: T3, T4 · Owner: @nicerjs23
+- [ ] T6. 출시 점검 — Done when: iOS Safari·Android Chrome 실기기 각 1대에서 SC-1~6 절차와 360·390·430px 가로 스크롤 0·키보드 폼 완주·본문 대비 4.5:1 을 확인해 결과·발견한 문제(이슈 번호)를 RESULT 에 남긴다 (NFR-1·5·6) · Touches: `docs/phases/08-launch-readiness/` · After: T3, T4 · Owner: @jjjung0921 (iPhone 부분은 @nicerjs23 이 2026-09-27 에 확인 — RESULT. 남은 Android·두 기기·인앱 브라우저 절차를 2026-09-28 에 이관했다)
 
 <!-- T2 는 소유자 지시(2026-09-13 "Phase 08 계획이랑 같이 올려줘")로 계획 PR 에 함께 들어갔다. 호스팅이 Netlify → Cloudflare Pages → Workers → AWS S3 + CloudFront → 개인 fork + Netlify 무료(ADR-20260914-netlify-personal-fork)로 바뀌며 재작업됐다. T3·T6 은 사람이 계정·실기기로 확인하는 Task 라 코드 Touches 가 없다.
      T5 의 CI 검사는 `.github/workflows/ci.yml` 을 고친다 — 병합 전 Lead 리뷰.

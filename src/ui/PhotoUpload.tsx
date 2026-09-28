@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn';
 import { Button } from '@/ui/Button';
 
 // Figma 디자인시스템 C11 PhotoUpload — Empty·Uploading·Uploaded·Error·Disabled.
+// 실제 배치는 사주입력폼 (2/2) `134:3639` — 흰 카드 + Border/Default, 미리보기 311×393, 버튼은 Rose/300.
 // 파일 형식·용량 검증과 업로드 실행은 쓰는 화면이 한다 (PRD Q10).
 type Status = 'empty' | 'uploading' | 'uploaded' | 'error';
 
@@ -54,12 +55,14 @@ export function PhotoUpload({
         'flex flex-col gap-8 rounded-12 border p-16',
         isError
           ? 'border-status-error-foreground bg-status-error-background'
-          : 'border-neutral bg-surface-subtle',
+          : 'border-default bg-surface-default',
         disabled && 'opacity-50',
         className,
       )}
     >
-      <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-12 bg-surface-subtle">
+      {/* Figma 는 311×393 — 인연 카드(343×433)와 같은 비율이다. 올린 사진이 카드에서 어떻게 잘릴지
+          그대로 보여야 해서 높이를 고정하지 않고 비율로 둔다(10/T8 과 같은 이유). */}
+      <div className="flex aspect-[311/393] w-full items-center justify-center overflow-hidden rounded-12 bg-surface-default">
         {status === 'uploaded' && previewUrl ? (
           <img alt={previewAlt} className="size-full object-cover" src={previewUrl} />
         ) : (
@@ -94,7 +97,7 @@ export function PhotoUpload({
         disabled={disabled || status === 'uploading'}
         onClick={() => inputRef.current?.click()}
         size="m"
-        variant="secondary"
+        variant="rose"
       >
         {buttonLabel}
       </Button>
