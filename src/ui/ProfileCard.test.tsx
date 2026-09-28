@@ -37,19 +37,6 @@ test('처음에는 앞면이 열려 있고, 뒤집으면 뒷면이 열린다', (
   expect(faceOf('앞면 내용')).toHaveAttribute('aria-hidden', 'true');
 });
 
-// QA(2026-09-28): WebKit 은 흐림 사진에 backface-hidden 을 먹이지 않아 뒷면에 앞면 사진이 좌우로 뒤집혀 비쳤다.
-test('안 보이는 면은 회전 절반 뒤 visibility 로 숨긴다', () => {
-  renderCard();
-
-  expect(faceOf('앞면 내용')).not.toHaveClass('invisible');
-  expect(faceOf('뒷면 내용')).toHaveClass('invisible', 'delay-250');
-
-  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
-
-  expect(faceOf('앞면 내용')).toHaveClass('invisible');
-  expect(faceOf('뒷면 내용')).not.toHaveClass('invisible');
-});
-
 test('initialFace 로 뒷면부터 보일 수 있다', () => {
   renderCard('back');
 
@@ -102,4 +89,17 @@ test('카드 뒤집기 칩은 반투명 채움과 테두리를 갖는다', () =>
     'border-neutral-100',
     'backdrop-blur-sm',
   );
+});
+
+// QA(2026-09-28): 뒤집은 뒤 앞면 사진이 뒷면에 거울처럼 비쳤다 — Tailwind 의 `backface-hidden` 은
+// 접두사 없는 속성만 내서 WebKit 이 놓친다. ProfileCard.css 가 접두사와 절반 뒤 숨김을 마저 맡는다.
+test('두 면 모두 겹친 면을 가리는 표식을 갖는다 (ProfileCard.css)', () => {
+  renderCard();
+
+  const faces = document.querySelectorAll('[data-profile-card-face]');
+
+  expect(faces).toHaveLength(2);
+  for (const face of faces) expect(face).toHaveClass('backface-hidden');
+  // 지금 보이지 않는 면만 숨긴다 — 선택자가 aria-hidden 을 쓰므로 두 값이 서로 달라야 한다.
+  expect(document.querySelectorAll('[data-profile-card-face][aria-hidden="true"]')).toHaveLength(1);
 });

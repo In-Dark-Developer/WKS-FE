@@ -4,6 +4,8 @@ import { cn } from '@/lib/cn';
 import rotateRight from '@/ui/assets/icons/rotate-right.svg';
 import { Icon } from '@/ui/Icon';
 
+import './ProfileCard.css';
+
 export type ProfileCardFace = 'front' | 'back';
 
 type Props = {
@@ -19,11 +21,9 @@ type Props = {
 
 // 앞·뒷면을 같은 자리에 겹쳐 두고 뒷면만 미리 180도 돌려 둔다. `backface-hidden` 이 돌아간 동안
 // 뒤통수를 가려, 절반을 지나면 다른 면이 나타난다(홈 운명 카드 ConnectionCard.css 와 같은 방식).
-// 다만 WebKit(iOS Safari·카카오톡 인앱)은 흐림 사진처럼 따로 합성되는 자식에는 `backface-hidden` 을 먹이지 않아,
-// 뒤로 돌아간 앞면 사진이 뒷면에 좌우로 뒤집혀 비쳤다(QA 2026-09-28). 그래서 보이지 않는 면은 회전(500ms)의 절반이
-// 지난 순간 visibility 로 숨긴다 — 그때 면이 옆으로 누워 있어 바뀌는 순간은 보이지 않는다.
+// 겹친 면을 확실히 가리는 일은 ProfileCard.css 의 `[data-profile-card-face]` 가 마저 한다.
 const faceClass =
-  'absolute inset-0 overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800 shadow-lg backface-hidden transition-[visibility] delay-250 duration-0 motion-reduce:delay-0';
+  'absolute inset-0 overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800 shadow-lg backface-hidden';
 
 // 소개팅 인연 카드 틀 — Figma 카드 앞면 96:1876 · 뒷면 103:2543 (343×433).
 // 앞면은 아래 절반, 뒷면은 전체에 어둠 그라데이션을 깔고 그 위에 슬롯 내용을 얹는다. 내용과 값은 쓰는 화면이 정한다.
@@ -59,7 +59,7 @@ export function ProfileCard({
         data-profile-card-inner=""
       >
         {/* 앞면 — 뒤집힌 동안에는 화면 낭독기·탭 이동에서 뺀다. */}
-        <div aria-hidden={isBack} className={cn(faceClass, isBack && 'invisible')} inert={isBack}>
+        <div aria-hidden={isBack} className={faceClass} data-profile-card-face="" inert={isBack}>
           <div className="absolute inset-0">{background}</div>
           <div className="absolute inset-0 flex flex-col justify-end">
             <div className="bg-linear-to-b from-transparent to-neutral-900 to-60% px-20 pt-48 pb-24 opacity-90">
@@ -71,7 +71,8 @@ export function ProfileCard({
         {back ? (
           <div
             aria-hidden={!isBack}
-            className={cn(faceClass, 'rotate-y-180', !isBack && 'invisible')}
+            className={cn(faceClass, 'rotate-y-180')}
+            data-profile-card-face=""
             inert={!isBack}
           >
             <div className="absolute inset-0">{background}</div>

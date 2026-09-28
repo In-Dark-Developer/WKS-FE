@@ -6,4 +6,6 @@ interface ImportMetaEnv {
   readonly VITE_API_MOCK?: string;
   // 카카오 앱 REST API 키 — `features/auth/kakaoLogin.ts` 가 인가 URL 에 싣는다(공개값, 비밀 아님).
   readonly VITE_KAKAO_CLIENT_ID?: string;
+  // 서비스 오픈 시각(ISO 8601) — 운영 배포에만 둔다. 그 전에는 오픈 대기 화면만 보인다(`features/intro/openingGate.ts`).
+  readonly VITE_OPEN_AT?: string;
 }

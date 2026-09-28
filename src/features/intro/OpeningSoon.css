@@ -1,0 +1,16 @@
+/* 'GRAND OPEN' — 결과 화면 사전신청 섹션(Figma 873:1871)과 같은 칠: 글자 모양으로 칠한 청록(Primary 500) 위에
+   Primary 200→700 방사형을 20% 로 얹고 청록 그림자 두 겹. */
+[data-opening-title] {
+  background-image:
+    radial-gradient(
+      174px 30px at 29.5px 24px,
+      color-mix(in srgb, var(--color-primary-200) 20%, transparent),
+      color-mix(in srgb, var(--color-primary-700) 20%, transparent)
+    ),
+    linear-gradient(var(--color-primary-500), var(--color-primary-500));
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 4px 4px color-mix(in srgb, var(--color-primary-400) 30%, transparent),
+    0 4px 20px color-mix(in srgb, var(--color-primary-300) 20%, transparent);
+}

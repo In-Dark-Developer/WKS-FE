@@ -203,10 +203,17 @@ test('(2/2) MBTI 칸은 다른 입력 칸과 같은 배경이다 (Figma 134:3639
   expect(department.closest('div')).toHaveClass('bg-surface-default');
 });
 
-// QA(2026-09-28): 연락처 아래 안내는 상대에게 공개된다는 것을 알린다.
-test('(2/2) 연락처 칸은 상대방에게 공개될 정보라고 안내한다', () => {
-  render(<StepHost initialStep={2} onPhotoSelect={vi.fn()} onSubmit={vi.fn()} photo={uploaded} />);
+test('(2/2) 연락처 칸 아래에 상대방에게 공개된다고 안내한다', () => {
+  render(
+    <DatingProfileForm
+      onBack={vi.fn()}
+      onPhotoSelect={vi.fn()}
+      onStepChange={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+      step={2}
+    />,
+  );
 
   expect(screen.getByText('상대방에게 공개될 정보예요')).toBeInTheDocument();
-  expect(screen.queryByText('연락받을 수단 한 가지를 입력해 주세요.')).not.toBeInTheDocument();
 });

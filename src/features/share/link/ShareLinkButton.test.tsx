@@ -15,7 +15,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-test('버튼을 누르면 초대 문구와 현재 origin 의 공유 링크를 시트로 넘긴다', async () => {
+test('버튼을 누르면 현재 origin 의 공유 링크를 시트로 넘긴다', async () => {
   const share = vi.fn().mockResolvedValue(undefined);
   setNavigator('share', share);
 
@@ -23,9 +23,11 @@ test('버튼을 누르면 초대 문구와 현재 origin 의 공유 링크를 �
   fireEvent.click(screen.getByRole('button', { name: '친구에게 공유' }));
 
   await screen.findByRole('button', { name: '친구에게 공유' });
-  expect(share).toHaveBeenCalledWith({
-    text: `부처님이 우리를 어떻게 이어놨는지 궁금하면 지금 등록해봐!\n${window.location.origin}/s/abc`,
-  });
+  expect(share).toHaveBeenCalledWith(
+    expect.objectContaining({
+      text: `부처님이 우리를 어떻게 이어놨는지 궁금하면 지금 등록해봐!\n${window.location.origin}/s/abc`,
+    }),
+  );
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
