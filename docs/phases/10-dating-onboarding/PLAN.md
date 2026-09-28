@@ -81,7 +81,7 @@ QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 N
 
 - [ ] T15. 학교 메일 코드 발송 뒤 화면 흔들림 — Done when: 프로필 (2/2)에서 '인증'을 눌러 코드를 보낸 뒤 화면이 커졌다 작아지지 않는다 — 데스크톱 브라우저만의 현상인지 모바일(375)에서도 나는지 재현해 적고, 원인(코드 입력칸·타이머가 나타나며 높이·스크롤바가 바뀌는 등)을 고친다 · Touches: `src/features/dating/profile/EmailVerification.tsx`, `src/features/dating/profile/DetailsStep.tsx` · Owner: 이정진 · UI: FR-25 (QA: 메일 인증 발송 후 화면 사이즈가 변화)
 
-- [ ] T16. 연락처 칸 안내 문구 — Done when: 프로필 (2/2) 연락처 칸 아래 안내가 '상대방에게 공개될 정보예요'로 보인다 · Touches: `src/features/dating/profile/DetailsStep.tsx` · Owner: 이정진 · UI: FR-25 (QA: 소개팅 페이지 설명 수정)
+- [x] T16. 연락처 칸 안내 문구 — Done when: 프로필 (2/2) 연락처 칸 아래 안내가 '상대방에게 공개될 정보예요'로 보인다 · Touches: `src/features/dating/profile/DetailsStep.tsx` · Owner: 이정진 · UI: FR-25 (QA: 소개팅 페이지 설명 수정) (commit c3e0cb7)
 
 - [x] T17. 카드를 뒤집어도 사진은 그대로 — Done when: 소개팅 카드를 뒤집을 때(10/T10) 뒷면의 사진이 좌우 반전되지 않고 앞면과 같은 방향으로 보이며, 동작 줄이기 설정에서도 같다 · Touches: `src/ui/ProfileCard.tsx` · Owner: 이동건 · FR: FR-26 (QA: 소개팅 사진 좌우반전) (commit 833b64e)
 
