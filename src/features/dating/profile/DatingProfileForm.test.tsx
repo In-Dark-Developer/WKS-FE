@@ -202,3 +202,18 @@ test('(2/2) MBTI 칸은 다른 입력 칸과 같은 배경이다 (Figma 134:3639
   // 학과 칸은 배경을 감싸는 요소가 갖는다 — 두 칸이 같은 토큰을 쓰는지 본다.
   expect(department.closest('div')).toHaveClass('bg-surface-default');
 });
+
+test('(2/2) 연락처 칸 아래에 상대방에게 공개된다고 안내한다', () => {
+  render(
+    <DatingProfileForm
+      onBack={vi.fn()}
+      onPhotoSelect={vi.fn()}
+      onStepChange={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+      step={2}
+    />,
+  );
+
+  expect(screen.getByText('상대방에게 공개될 정보예요')).toBeInTheDocument();
+});
