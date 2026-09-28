@@ -57,7 +57,7 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 - [x] T9. 받은 신청 궁합 까닭 공개 — Done when: '받은 신청' 상대 카드의 궁합 까닭이 블러 없이 보이거나, 백엔드가 까닭을 주지 않는다면 블러 대신 없음 안내가 보인다(받은 신청의 상대 정보는 해금 없이 보인다, FR-30). 백엔드 응답에 까닭이 없으면 WKS-BE 에 요청한다 · Touches: `src/features/dating/requests/`, `src/api/` · Owner: 강근우 · FR: FR-30 (QA 기능: 나에게 요청한 사람 - 궁합 이유 블러 처리 됨) (commit 6869f80 — 없음 안내 · 재개 후 WKS-BE #124 의 `counterpart.fields.reason` 연결)
 
-- [ ] T10. 먼저 실을 보낸 상대의 추천 카드 — Done when: 상대가 먼저 운명의 실을 보낸 추천 카드(`isThreadReceived`, WKS-FE #270)가 잠긴 항목을 그대로 두지 않는다 — 추천에서 빼거나, 받은 신청처럼 사진·이름·학과·궁합 까닭을 실 없이 열어 보이는 방식 중 하나를 정해 PLAN 에 적고 구현한다(받은 신청의 상대 정보는 해금 없이 보인다, FR-30). 해금 비용은 차감되지 않는다 · Touches: `src/features/dating/recommendation/`, `src/features/dating/card/` · After: T9 · Owner: 강근우 · FR: FR-28, FR-30 (QA 기능: 나한테 보낸 사람의 카드가 없어지거나 해금한 걸 보여줘야 할 듯)
+- [x] T10. 먼저 실을 보낸 상대의 추천 카드 — Done when: 상대가 먼저 운명의 실을 보낸 추천 카드(`isThreadReceived`, WKS-FE #270)가 잠긴 항목을 그대로 두지 않는다 — 추천에서 빼거나, 받은 신청처럼 사진·이름·학과·궁합 까닭을 실 없이 열어 보이는 방식 중 하나를 정해 PLAN 에 적고 구현한다(받은 신청의 상대 정보는 해금 없이 보인다, FR-30). 해금 비용은 차감되지 않는다 · Touches: `src/features/dating/recommendation/`, `src/features/dating/card/` · After: T9 · Owner: 강근우 · FR: FR-28, FR-30 (QA 기능: 나한테 보낸 사람의 카드가 없어지거나 해금한 걸 보여줘야 할 듯) (방식: 추천에서 빼지 않고 **받은 신청처럼 열어 보인다** — 받은 요청 행의 `counterpart` 가 사진·이름·학과·까닭을 실 없이 주므로 그 값으로 카드를 덮는다. 해금 시트는 열리지 않고 비용도 차감되지 않는다)
 
 ## Relevant Specifications
 

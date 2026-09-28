@@ -3,6 +3,8 @@ import type { ApiOutcome } from '@/api/client';
 import { listDatingRequests, type DatingRequestListItem } from '@/api/matchRequests';
 import { ensureDailyCheckIn, getWallet } from '@/api/wallet';
 
+import { REASON_PENDING } from '../requests/messages';
+
 import {
   type CandidatePhoto,
   type CandidateRank,
@@ -93,21 +95,59 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
   // 받은 신청도 같은 규칙이다 — 취소되지 않은 요청이 있으면 백엔드가 방향과 무관하게 다시 보내기를 막는다(WKS-BE §11.2).
   // 못 읽으면 받은 것이 없는 것으로 두고, 보내면 409 로 막힌다.
   if (!received.ok) console.error('GET /dating/requests?box=received 실패', received.error);
-  const receivedIds = activeCounterpartIds(received);
+  const receivedByCandidate = activeCounterparts(received);
 
   return {
     kind: 'ready',
     view: {
       balance,
       checkedInToday: wallet.ok && !wallet.data.canCheckInToday,
-      candidates: recommendations.data.candidates.map((candidate) => ({
-        ...toCandidateView(candidate),
-        isThreadSent: sentIds.has(candidate.candidateId),
-        isThreadReceived: receivedIds.has(candidate.candidateId),
-      })),
+      candidates: recommendations.data.candidates.map((candidate) => {
+        const fromReceived = receivedByCandidate.get(candidate.candidateId);
+        return {
+          ...toCandidateView(candidate),
+          // 상대가 먼저 실을 보냈으면 그 요청 행의 열린 프로필로 덮는다 — 받은 신청의 상대 정보는 해금 없이
+          // 보이므로(FR-30), 추천 카드에서만 잠긴 채 남아 열 수도 없는 상태를 두지 않는다(11/T10).
+          ...(fromReceived === undefined ? {} : openedByReceivedRequest(fromReceived)),
+          isThreadSent: sentIds.has(candidate.candidateId),
+          isThreadReceived: fromReceived !== undefined,
+        };
+      }),
       reroll: toRerollView(recommendations.data.rerollCost, balance),
     },
   };
+}
+
+// 받은 신청이 열어 준 프로필 — 사진·이름·학과는 실 없이 열려 오고, 궁합 까닭은 받은 사람 기준 문장이 따로 온다
+// (WKS-BE §11.1). 아직 만들어지지 않았으면 잠긴 것처럼 보이지 않게 만드는 중임을 알린다(11/T9 과 같은 규칙).
+function openedByReceivedRequest(
+  request: DatingRequestListItem,
+): Pick<MatchCandidateView, 'photo' | 'name' | 'department' | 'reason'> {
+  const { counterpart } = request;
+  const reason = counterpart.fields.reason;
+  return {
+    photo: toPhoto(counterpart.fields.photo, counterpart.blurredPhotoUrl ?? null),
+    name: toLockable(counterpart.fields.name),
+    department: toLockable(counterpart.fields.department),
+    reason:
+      reason === undefined
+        ? { isLocked: true, cost: 0 }
+        : !reason.locked && reason.value === null
+          ? { isLocked: false, value: REASON_PENDING }
+          : toLockable(reason),
+  };
+}
+
+// 취소되지 않은 요청 — `candidateId` 는 조회한 사람 기준 상대라 추천 후보 id 와 같다.
+function activeCounterparts(
+  outcome: ApiOutcome<DatingRequestListItem[]>,
+): Map<string, DatingRequestListItem> {
+  if (!outcome.ok) return new Map();
+  return new Map(
+    outcome.data
+      .filter((request) => request.status !== 'CANCELLED')
+      .map((request) => [request.candidateId, request]),
+  );
 }
 
 // 취소되지 않은 요청의 상대 프로필 id — `candidateId` 는 조회한 사람 기준 상대라 추천 후보 id 와 같다.
