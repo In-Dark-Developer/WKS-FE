@@ -84,7 +84,7 @@ export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Pr
   );
 }
 
-// 받은 방법은 개수 칩 아래에 '지급 완료'를 붙인다(Figma 522:2773). 줄 높이는 Figma 82px 가 최소다.
+// 받은 방법은 개수 칩 대신 '지급 완료'만 줄 가운데 높이에 보인다(Figma 445:2701). 줄 높이는 Figma 82px 가 최소다.
 function EarnRow({ way, isDone }: { way: EarnWay; isDone: boolean }) {
   return (
     <li
@@ -103,15 +103,17 @@ function EarnRow({ way, isDone }: { way: EarnWay; isDone: boolean }) {
           <span className="text-ui-14 text-muted">{way.when}</span>
         </div>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-8">
-        <span className="flex items-center gap-4 rounded-8 px-8 py-[2px]" data-earn-amount="">
+      {isDone ? (
+        <span className="shrink-0 rounded-8 bg-rose-50 px-8 text-ui-12 text-muted">지급 완료</span>
+      ) : (
+        <span
+          className="flex shrink-0 items-center gap-4 rounded-8 px-8 py-[2px]"
+          data-earn-amount=""
+        >
           <span className="text-ui-12">+</span>
           <span className="text-ui-16 font-semibold">{way.amount}</span>
         </span>
-        {isDone ? (
-          <span className="rounded-8 bg-rose-50 px-8 text-ui-12 text-muted">지급 완료</span>
-        ) : null}
-      </div>
+      )}
     </li>
   );
 }
