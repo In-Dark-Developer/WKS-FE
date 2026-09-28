@@ -217,3 +217,19 @@ test('(2/2) 연락처 칸 아래에 상대방에게 공개된다고 안내한다
 
   expect(screen.getByText('상대방에게 공개될 정보예요')).toBeInTheDocument();
 });
+
+// QA(2026-09-29): 폭이 좁은 화면(약 357px 아래)에서 (2/2) 의 칸이 통째로 오른쪽으로 삐져나갔다.
+// 브라우저 기본값 `fieldset { min-inline-size: min-content }` 이 줄어드는 것을 막아 칸 너비가 325px 에
+// 걸려 있었다 — 320px 화면에서 실측으로 확인했다(Chrome).
+test('(2/2) 의 입력 묶음은 좁은 화면에서 줄어들 수 있다', () => {
+  const { container } = render(
+    <StepHost
+      initialStep={2}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={{ status: 'empty' }}
+    />,
+  );
+
+  expect(container.querySelector('fieldset')).toHaveClass('min-w-0');
+});

@@ -66,7 +66,12 @@ export function DetailsStep({
     <form className="flex flex-col gap-20" noValidate onSubmit={handleSubmit}>
       <StepHeader onBack={onBack} step={2} title={'소개팅에 들어갈 정보만\n입력하면 끝이에요'} />
 
-      <fieldset className="flex flex-col gap-24 disabled:opacity-80" disabled={isSubmitting}>
+      {/* `min-w-0` — 브라우저 기본 `fieldset { min-inline-size: min-content }` 때문에 좁은 화면에서
+          칸이 줄지 않고 통째로 오른쪽으로 삐져나갔다(QA 2026-09-29, 폭 357px 아래). */}
+      <fieldset
+        className="flex min-w-0 flex-col gap-24 disabled:opacity-80"
+        disabled={isSubmitting}
+      >
         <Field error={errors.name} help="작성자 이름을 입력해 주세요." label="이름">
           {(control) => (
             <TextField
