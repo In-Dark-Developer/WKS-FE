@@ -90,3 +90,16 @@ test('카드 뒤집기 칩은 반투명 채움과 테두리를 갖는다', () =>
     'backdrop-blur-sm',
   );
 });
+
+// QA(2026-09-28): 뒤집은 뒤 앞면 사진이 뒷면에 거울처럼 비쳤다 — Tailwind 의 `backface-hidden` 은
+// 접두사 없는 속성만 내서 WebKit 이 놓친다. ProfileCard.css 가 접두사와 절반 뒤 숨김을 마저 맡는다.
+test('두 면 모두 겹친 면을 가리는 표식을 갖는다 (ProfileCard.css)', () => {
+  renderCard();
+
+  const faces = document.querySelectorAll('[data-profile-card-face]');
+
+  expect(faces).toHaveLength(2);
+  for (const face of faces) expect(face).toHaveClass('backface-hidden');
+  // 지금 보이지 않는 면만 숨긴다 — 선택자가 aria-hidden 을 쓰므로 두 값이 서로 달라야 한다.
+  expect(document.querySelectorAll('[data-profile-card-face][aria-hidden="true"]')).toHaveLength(1);
+});
