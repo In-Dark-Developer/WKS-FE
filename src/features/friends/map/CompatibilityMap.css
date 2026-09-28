@@ -140,8 +140,9 @@
 
 /* 동작 줄이기 설정이 없을 때만 움직인다 — 설정한 사용자는 멈춘 지도를 본다. */
 @media (prefers-reduced-motion: no-preference) {
-  /* 궤도 선은 저마다 제자리에서 돈다(선 자리는 그대로, 밝은 구간만 흐른다). */
-  [data-compatibility-map-orbit] {
+  /* 궤도 선은 구슬이 1개 이하일 때만 저마다 제자리에서 돈다 — 구슬이 흐르는 동안에는 Figma 자리에 서 있다.
+     에셋에 밝은 구간 하나만 그려져 있어, 돌리면 그 구간이 패널 밖으로 나간 사이 선이 보이지 않는다. */
+  [data-motion='orbits'] [data-compatibility-map-orbit] {
     animation: compatibility-map-spin 30s linear infinite;
   }
 
