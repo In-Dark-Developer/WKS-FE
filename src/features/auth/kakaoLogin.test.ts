@@ -6,6 +6,7 @@ vi.mock('@/api/auth', () => ({ loginWithKakao: loginMock }));
 import { clearSession, readSession, writeSession } from '@/api/session';
 
 import { completeKakaoLogin, KAKAO_CALLBACK_PATH, startKakaoLogin } from './kakaoLogin';
+import { capturePartnerRef, readPartnerRef } from './partnerRef';
 
 const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
 const CALLBACK_URI = `${window.location.origin}${KAKAO_CALLBACK_PATH}`;
@@ -69,6 +70,26 @@ test('콜백은 이 브라우저의 resultId 를 함께 보내고 시작한 화�
     resultId: RESULT_ID,
     ref: null,
   });
+});
+
+test('제휴 링크로 들어왔으면 그 코드를 로그인 요청에 싣고, 로그인 뒤 지운다 (FR-32)', async () => {
+  capturePartnerRef('?ref=FESTIVAL');
+  const state = stateOf(startKakaoLogin('/dating'));
+
+  await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
+
+  expect(loginMock).toHaveBeenCalledWith(expect.objectContaining({ ref: 'FESTIVAL' }));
+  expect(readPartnerRef()).toBeNull();
+});
+
+test('로그인이 실패하면 제휴 코드를 남겨 다시 로그인할 때 싣는다', async () => {
+  capturePartnerRef('?ref=FESTIVAL');
+  loginMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  const state = stateOf(startKakaoLogin('/dating'));
+
+  await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
+
+  expect(readPartnerRef()).toBe('FESTIVAL');
 });
 
 test('state 가 다르거나 같은 콜백을 다시 열면 로그인하지 않고 / 로 보낸다', async () => {

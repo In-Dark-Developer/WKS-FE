@@ -16,3 +16,14 @@ export const walletCheckInSchema = z.object({
 });
 
 export type WalletCheckIn = z.infer<typeof walletCheckInSchema>;
+
+// 제휴 유입 보상 — 이미 로그인한 사람이 제휴 링크로 들어왔을 때. 이미 받았거나 모르는 코드면 오류가 아니라
+// `rewardGranted: null` 로 온다(WKS-BE api-spec.md §12, dev bfe89e3).
+export const partnerRewardSchema = z.object({
+  rewardGranted: z
+    .object({ partnerName: z.string(), amount: z.number().int().nonnegative() })
+    .nullable(),
+  balance: z.number().int().nonnegative(),
+});
+
+export type PartnerReward = z.infer<typeof partnerRewardSchema>;

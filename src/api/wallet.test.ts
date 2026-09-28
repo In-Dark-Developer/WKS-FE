@@ -7,8 +7,14 @@ vi.mock('./client', async (importOriginal) => {
 });
 
 import { resetMockAccount, signInMockAccount } from './me';
-import { walletCheckInSchema, walletSchema } from './schema/wallet';
-import { checkInWallet, ensureDailyCheckIn, getWallet, resetDailyCheckIn } from './wallet';
+import { partnerRewardSchema, walletCheckInSchema, walletSchema } from './schema/wallet';
+import {
+  checkInWallet,
+  claimPartnerReward,
+  ensureDailyCheckIn,
+  getWallet,
+  resetDailyCheckIn,
+} from './wallet';
 
 beforeEach(() => {
   vi.stubEnv('VITE_API_MOCK', 'false');
@@ -99,4 +105,15 @@ test('비로그인(401)으로 실패하면 다음 호출에서 다시 출석한�
   await ensureDailyCheckIn();
 
   expect(requestMock).toHaveBeenCalledTimes(2);
+});
+
+test('claimPartnerReward 는 POST /wallet/partner-rewards 에 ref 를 싣는다 (FR-32)', async () => {
+  const data = { rewardGranted: { partnerName: '동국대 축제', amount: 10 }, balance: 20 };
+  requestMock.mockResolvedValue({ ok: true, data });
+
+  await expect(claimPartnerReward('FESTIVAL')).resolves.toEqual({ ok: true, data });
+  expect(requestMock).toHaveBeenCalledWith(
+    { method: 'POST', path: '/wallet/partner-rewards', body: { ref: 'FESTIVAL' } },
+    partnerRewardSchema,
+  );
 });

@@ -7,3 +7,4 @@ export {
   startKakaoLogin,
   type KakaoLoginOutcome,
 } from './kakaoLogin';
+export { capturePartnerRef, claimPendingPartnerRef } from './partnerRef';

@@ -4,6 +4,8 @@ import { loginWithKakao } from '@/api/auth';
 import type { ApiFailure } from '@/api/client';
 import { readSession, writeSession } from '@/api/session';
 
+import { clearPartnerRef, readPartnerRef } from './partnerRef';
+
 // 카카오 로그인 왕복 — 인가 화면으로 전체 페이지 이동(팝업 아님, 인앱 브라우저에서도 동작)했다가 콜백 경로로 돌아와
 // 인가 코드를 백엔드에 넘긴다. 세션은 백엔드가 쿠키로 심으므로 여기서는 토큰을 다루지 않는다(openapi `/auth/kakao`).
 // `Feat/Login`(b226363)의 인가 URL·state 검증을 옮기고 토큰 저장을 뺐다.
@@ -110,9 +112,10 @@ export async function completeKakaoLogin(
     code,
     redirectUri: callbackUri(),
     resultId: browserResultId,
-    ref: null,
+    ref: readPartnerRef(), // 제휴 링크로 들어왔으면 그 코드 — 지급은 백엔드가 계정당 코드별 1회만 한다(FR-32)
   });
   if (!result.ok) return { returnTo, outcome: { kind: 'api-error', error: result.error } };
+  clearPartnerRef();
 
   const { restoredResultId } = result.data;
   const outcome = { kind: 'success', restoredResultId } as const;
