@@ -24,7 +24,7 @@ export const datingRequestSchema = z.object({
 export type DatingRequest = z.infer<typeof datingRequestSchema>;
 
 // 목록 행의 상대 프로필(§11.1) — 받은 목록은 보낸 사람의 사진·이름·학과가 실 없이 열려 오고, 보낸 목록은 내가
-// 카드에서 연 만큼만 열려 온다. 궁합 까닭은 오지 않는다.
+// 카드에서 연 만큼만 열려 온다.
 export const datingRequestCounterpartSchema = z.object({
   score: z.number().int().min(0).max(100),
   mbti: z.string(),
@@ -36,6 +36,10 @@ export const datingRequestCounterpartSchema = z.object({
     photo: datingLockableFieldSchema,
     name: datingLockableFieldSchema,
     department: datingLockableFieldSchema,
+    // 궁합 까닭(§11.1, 2026-09-28 추가) — 받은 목록은 받은 사람 기준으로 새로 쓴 문장이라 늘 `locked: false` 이고,
+    // 만들어지기 전 몇 초 동안은 `value` 가 null 이다. 보낸 목록은 카드와 같은 해금 상태로 온다.
+    // 아직 이 필드를 주지 않는 백엔드도 파싱되도록 없어도 되는 값으로 받는다.
+    reason: datingLockableFieldSchema.optional(),
   }),
 });
 

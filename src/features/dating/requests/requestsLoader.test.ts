@@ -16,6 +16,7 @@ vi.mock('@/api/dating', async (importOriginal) => {
 import type { DatingCandidate } from '@/api/dating';
 import type { DatingRequestListItem } from '@/api/matchRequests';
 
+import { REASON_PENDING } from './messages';
 import { datingRequestsLoader } from './requestsLoader';
 
 const CANDIDATE_ID = '3fa85f64-5717-4562-b3fc-2c963f66afa6';
@@ -158,4 +159,62 @@ test('목록을 못 읽으면 오류 화면으로 보낸다(503)', async () => {
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
 
   await expect(datingRequestsLoader()).rejects.toMatchObject({ status: 503 });
+});
+
+test('받은 신청은 목록 행이 준 궁합 까닭을 해금 없이 보인다 (WKS-BE §11.1, 2026-09-28)', async () => {
+  const received = request({
+    counterpart: {
+      ...lockedCounterpart,
+      fields: {
+        ...lockedCounterpart.fields,
+        reason: { locked: false, value: '먼저 말을 꺼내는 쪽은 이 사람일 거예요.' },
+      },
+    },
+  });
+  listMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'received' ? [received] : [] }),
+  );
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [candidate] } });
+
+  const view = await datingRequestsLoader();
+
+  expect(view.received[0]?.reason).toEqual({
+    isLocked: false,
+    value: '먼저 말을 꺼내는 쪽은 이 사람일 거예요.',
+  });
+});
+
+test('아직 만들어지지 않은 까닭은 잠금이 아니라 만드는 중 안내로 보인다', async () => {
+  const received = request({
+    counterpart: {
+      ...lockedCounterpart,
+      fields: { ...lockedCounterpart.fields, reason: { locked: false, value: null } },
+    },
+  });
+  listMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'received' ? [received] : [] }),
+  );
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [candidate] } });
+
+  const view = await datingRequestsLoader();
+
+  expect(view.received[0]?.reason).toEqual({ isLocked: false, value: REASON_PENDING });
+});
+
+test('보낸 신청은 목록 행이 준 잠긴 까닭을 카드와 같은 해금 상태로 보인다', async () => {
+  const sent = request({
+    candidateId: crypto.randomUUID(),
+    counterpart: {
+      ...lockedCounterpart,
+      fields: { ...lockedCounterpart.fields, reason: { locked: true, cost: 3 } },
+    },
+  });
+  listMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'sent' ? [sent] : [] }),
+  );
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [candidate] } });
+
+  const view = await datingRequestsLoader();
+
+  expect(view.sent[0]?.reason).toEqual({ isLocked: true, cost: 3 });
 });
