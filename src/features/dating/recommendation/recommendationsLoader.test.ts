@@ -1,12 +1,18 @@
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
-const { getMeMock, getRecommendationsMock } = vi.hoisted(() => ({
-  getMeMock: vi.fn(),
+const { getWalletMock, getRecommendationsMock } = vi.hoisted(() => ({
+  getWalletMock: vi.fn(),
   getRecommendationsMock: vi.fn(),
 }));
-vi.mock('@/api/me', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/api/me')>();
-  return { ...actual, getMe: getMeMock };
+vi.mock('@/api/wallet', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/wallet')>();
+  // 접속 출석은 네트워크를 타지 않게 끝난 것으로 둔다.
+  return { ...actual, getWallet: getWalletMock, ensureDailyCheckIn: () => Promise.resolve() };
+});
+const { listRequestsMock } = vi.hoisted(() => ({ listRequestsMock: vi.fn() }));
+vi.mock('@/api/matchRequests', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/matchRequests')>();
+  return { ...actual, listDatingRequests: listRequestsMock };
 });
 vi.mock('@/api/dating', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/dating')>();
@@ -14,13 +20,10 @@ vi.mock('@/api/dating', async (importOriginal) => {
 });
 
 import type { DatingCandidate } from '@/api/dating';
+import type { DatingRequestListItem } from '@/api/matchRequests';
 
-import {
-  REROLL_COST,
-  datingCardsLoader,
-  toCandidateView,
-  toRerollView,
-} from './recommendationsLoader';
+import { REASON_PENDING } from '../requests/messages';
+import { datingCardsLoader, toCandidateView, toRerollView } from './recommendationsLoader';
 
 const CANDIDATE_ID = '3f2a9c1e-0000-4000-8000-000000000001';
 
@@ -41,15 +44,48 @@ const locked: DatingCandidate = {
   },
 };
 
-function me(threadBalance: number) {
+// 받은 목록의 상대 프로필 — 사진·이름·학과가 실 없이 열려 오고 궁합 까닭도 함께 온다(WKS-BE §11.1).
+const openCounterpart: DatingRequestListItem['counterpart'] = {
+  score: 91,
+  mbti: 'INFP',
+  bio: '같이 부스 구경해요.',
+  blurredPhotoUrl: BLURRED_URL,
+  fields: {
+    photo: { locked: false, value: 'https://s3.example.com/original.jpg' },
+    name: { locked: false, value: '김운명' },
+    department: { locked: false, value: '국어국문학과' },
+    reason: { locked: false, value: '서로의 빈 자리를 채워 주는 사주예요.' },
+  },
+};
+
+function request(
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED',
+  counterpart: DatingRequestListItem['counterpart'] = openCounterpart,
+): DatingRequestListItem {
   return {
-    ok: true,
-    data: { memberId: 1, hasResult: true, hasDatingProfile: true, threadBalance },
+    requestId: '312f3185-f114-4db0-a2fb-54d0669b7e33',
+    candidateId: CANDIDATE_ID,
+    status,
+    createdAt: '2026-09-24T12:00:00Z',
+    respondedAt: null,
+    contactMethod: null,
+    contactValue: null,
+    counterpart,
   };
 }
 
+// 잔액의 단일 출처는 원장(`GET /wallet`)이다 — `/me` 의 threadBalance 는 쓰지 않는다(FR-31).
+function wallet(balance: number) {
+  return { ok: true, data: { balance, canCheckInToday: true } };
+}
+
+beforeEach(() => {
+  listRequestsMock.mockResolvedValue({ ok: true, data: [] });
+});
+
 afterEach(() => {
-  getMeMock.mockReset();
+  listRequestsMock.mockReset();
+  getWalletMock.mockReset();
   getRecommendationsMock.mockReset();
   vi.restoreAllMocks();
 });
@@ -84,19 +120,19 @@ test('해금한 항목은 값을 옮긴다', () => {
   expect(view.name).toEqual({ isLocked: false, value: '김채원' });
 });
 
-test('리롤은 무료가 남으면 free, 아니면 잔액으로 가능 여부를 가른다 (FR-27 · FR-31)', () => {
-  expect(toRerollView(true, 0)).toEqual({ kind: 'free' });
-  expect(toRerollView(false, REROLL_COST)).toEqual({
-    kind: 'paid',
-    cost: REROLL_COST,
-    canAfford: true,
-  });
-  expect(toRerollView(false, REROLL_COST - 1)).toMatchObject({ canAfford: false });
+// 비용 판정은 서버가 한다 — 추천 응답의 rerollCost 가 0 이면 오늘 무료가 남은 것이다(WKS-BE §10.4).
+test('리롤 비용 0 은 무료, 그 밖에는 잔액으로 가능 여부를 가른다 (FR-27 · FR-31)', () => {
+  expect(toRerollView(0, 0)).toEqual({ kind: 'free' });
+  expect(toRerollView(5, 5)).toEqual({ kind: 'paid', cost: 5, canAfford: true });
+  expect(toRerollView(5, 4)).toMatchObject({ kind: 'paid', cost: 5, canAfford: false });
 });
 
 test('loader 는 잔액과 후보를 함께 싣는다', async () => {
-  getMeMock.mockResolvedValue(me(12));
-  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [locked] } });
+  getWalletMock.mockResolvedValue(wallet(12));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
 
   const state = await datingCardsLoader();
 
@@ -105,19 +141,19 @@ test('loader 는 잔액과 후보를 함께 싣는다', async () => {
 });
 
 test('후보가 0명이면 빈 목록으로 그린다 (FR-26)', async () => {
-  getMeMock.mockResolvedValue(me(0));
-  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
+  getWalletMock.mockResolvedValue(wallet(0));
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [], rerollCost: 0 } });
 
   const state = await datingCardsLoader();
 
   expect(state).toEqual({
     kind: 'ready',
-    view: { balance: 0, candidates: [], reroll: { kind: 'free' } },
+    view: { balance: 0, checkedInToday: false, candidates: [], reroll: { kind: 'free' } },
   });
 });
 
 test('학교 메일 인증 전(403)에는 안내 상태를 돌려준다', async () => {
-  getMeMock.mockResolvedValue(me(0));
+  getWalletMock.mockResolvedValue(wallet(0));
   getRecommendationsMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'DATING_NOT_VERIFIED', message: '학교 메일 인증이 필요해요.' },
@@ -128,8 +164,191 @@ test('학교 메일 인증 전(403)에는 안내 상태를 돌려준다', async 
 
 test('그 밖의 조회 실패는 오류 화면으로 보낸다', async () => {
   vi.spyOn(console, 'error').mockImplementation(() => {});
-  getMeMock.mockResolvedValue(me(0));
+  getWalletMock.mockResolvedValue(wallet(0));
   getRecommendationsMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
 
   await expect(datingCardsLoader()).rejects.toBeInstanceOf(Response);
+});
+
+test('열렸는데 값이 아직 없는 항목은 비용 0 잠금으로 두어 다시 열게 한다 (§10.4)', () => {
+  const view = toCandidateView({
+    ...locked,
+    fields: {
+      ...locked.fields,
+      photo: { locked: false, value: null },
+      name: { locked: false, value: '이서연' },
+      reason: { locked: false, value: null },
+    },
+  });
+
+  expect(view.name).toEqual({ isLocked: false, value: '이서연' });
+  expect(view.reason).toEqual({ isLocked: true, cost: 0 });
+  expect(view.photo).toEqual({ isLocked: true, thumbnailUrl: BLURRED_URL, cost: 0 });
+});
+
+test('운명의 실을 보낸 상대 카드에는 보냈다는 표시가 붙는다 (FR-29)', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'sent' ? [request('PENDING')] : [] }),
+  );
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(true);
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadReceived).toBe(false);
+  expect(listRequestsMock).toHaveBeenCalledWith('sent');
+});
+
+// 백엔드는 취소되지 않은 요청이 있는 두 사람 사이의 요청을 방향과 무관하게 막는다(409) — 받은 쪽 카드에서 안내한다.
+test('상대가 먼저 실을 보낸 카드에는 받았다는 표시가 붙는다', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'received' ? [request('REJECTED')] : [] }),
+  );
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadReceived).toBe(true);
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(false);
+  expect(listRequestsMock).toHaveBeenCalledWith('received');
+});
+
+test('받은 신청을 못 읽어도 카드는 그대로 보인다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve(
+      box === 'received' ? { ok: false, error: { kind: 'network' } } : { ok: true, data: [] },
+    ),
+  );
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadReceived).toBe(false);
+});
+
+test('취소한 신청의 상대 카드는 보내지 않은 것으로 보여 다시 보낼 수 있다', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockResolvedValue({
+    ok: true,
+    data: [
+      {
+        requestId: '312f3185-f114-4db0-a2fb-54d0669b7e33',
+        candidateId: CANDIDATE_ID,
+        status: 'CANCELLED',
+        createdAt: '2026-09-24T12:00:00Z',
+        respondedAt: '2026-09-24T12:05:00Z',
+        contactMethod: null,
+        contactValue: null,
+      },
+    ],
+  });
+
+  const state = await datingCardsLoader();
+
+  expect(state.kind === 'ready' && state.view.candidates[0]?.isThreadSent).toBe(false);
+});
+
+test('잔액을 못 읽으면 0 으로 두고 소모를 막는다 (FR-31)', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getWalletMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+
+  const state = await datingCardsLoader();
+
+  expect(state).toMatchObject({ kind: 'ready', view: { balance: 0 } });
+  // 카드는 그대로 보인다 — 잔액만 0 이다.
+  if (state.kind === 'ready') expect(state.view.candidates).toHaveLength(1);
+});
+
+test('나이는 서버 문구(03년생) 그대로 옮기고, 없으면 나이 칸을 숨긴다', () => {
+  expect(toCandidateView({ ...locked, age: '03년생' }).birthYear).toBe('03년생');
+  expect(toCandidateView({ ...locked, age: null }).birthYear).toBeNull();
+  expect(toCandidateView(locked).birthYear).toBeNull();
+});
+
+// 11/T10 — 상대가 먼저 실을 보낸 카드는 잠긴 채로 두지 않는다. 받은 신청의 상대 정보는 해금 없이 보이므로(FR-30)
+// 그 요청 행이 준 열린 프로필로 카드를 덮는다.
+test('상대가 먼저 실을 보낸 카드는 사진·이름·학과·까닭이 실 없이 열려 보인다 (FR-30)', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'received' ? [request('PENDING')] : [] }),
+  );
+
+  const state = await datingCardsLoader();
+  const card = state.kind === 'ready' ? state.view.candidates[0] : undefined;
+
+  expect(card?.photo).toEqual({ isLocked: false, url: 'https://s3.example.com/original.jpg' });
+  expect(card?.name).toEqual({ isLocked: false, value: '김운명' });
+  expect(card?.department).toEqual({ isLocked: false, value: '국어국문학과' });
+  expect(card?.reason).toEqual({
+    isLocked: false,
+    value: '서로의 빈 자리를 채워 주는 사주예요.',
+  });
+});
+
+test('까닭이 아직 만들어지지 않았으면 잠금이 아니라 만드는 중 안내로 보인다', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({
+      ok: true,
+      data:
+        box === 'received'
+          ? [
+              request('PENDING', {
+                ...openCounterpart,
+                fields: { ...openCounterpart.fields, reason: { locked: false, value: null } },
+              }),
+            ]
+          : [],
+    }),
+  );
+
+  const state = await datingCardsLoader();
+  const card = state.kind === 'ready' ? state.view.candidates[0] : undefined;
+
+  expect(card?.reason).toEqual({ isLocked: false, value: REASON_PENDING });
+});
+
+test('내가 보낸 신청의 잠긴 프로필은 그대로 둔다 (FR-29)', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'sent' ? [request('PENDING')] : [] }),
+  );
+
+  const state = await datingCardsLoader();
+  const card = state.kind === 'ready' ? state.view.candidates[0] : undefined;
+
+  expect(card?.name).toEqual({ isLocked: true, cost: 7 });
 });

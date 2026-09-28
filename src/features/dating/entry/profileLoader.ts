@@ -1,7 +1,7 @@
 import { redirect } from 'react-router-dom';
 
 import type { Me } from '@/api/me';
-import { getResultInput, type ResultInput } from '@/api/results';
+import { getMyResult, getResultInput, type ResultInput } from '@/api/results';
 import { readSession } from '@/api/session';
 
 import { birthTimeOptions, type BirthTime } from '../profile/options';
@@ -37,13 +37,25 @@ export function toSajuStepValues(input: ResultInput): Partial<SajuStepValues> {
   };
 }
 
+// 이미 넣은 사주의 resultId — 이 브라우저 세션이 먼저고, 없으면 계정에 연결된 결과를 불러온다(GET /me/result).
+// 어느 쪽도 없으면 null 이라 (1/2) 부터 받는다.
+async function findMyResultId(): Promise<string | null> {
+  const stored = readSession()?.resultId;
+  if (stored !== undefined) return stored;
+  const mine = await getMyResult();
+  if (mine.ok) return mine.data.resultId;
+  console.error('GET /me/result 실패', mine.error);
+  return null;
+}
+
 // 로그인 확인(requireAuth)을 마친 뒤 부른다. 이미 등록했으면 Top 3 로 보낸다.
 export async function datingProfileLoader(me: Me): Promise<DatingProfileStart> {
   const entry = resolveDatingEntry(me);
   if (entry.kind === 'cards') throw redirect(DATING_CARDS_PATH);
 
-  const resultId = readSession()?.resultId ?? null;
-  if (entry.step === 1 || resultId === null) return { initialStep: 1, resultId: null };
+  if (entry.step === 1) return { initialStep: 1, resultId: null };
+  const resultId = await findMyResultId();
+  if (resultId === null) return { initialStep: 1, resultId: null };
 
   const input = await getResultInput(resultId);
   if (!input.ok) {

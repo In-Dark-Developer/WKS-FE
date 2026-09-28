@@ -4,7 +4,8 @@ import { Button } from '@/ui/Button';
 type Props = {
   onViewSaju: () => void;
   onFindMatch: () => void;
-  onHaveAccount: () => void;
+  // 로그인하지 않았을 때만 넘긴다 — 없으면 '이미 아이디가 있어요'를 그리지 않는다.
+  onHaveAccount?: () => void;
 };
 
 // SCR-01 메인 티저 — Figma v1.0 「0. 메인 진입 티저」(축사 연결 228:4738 과 같은 화면). 배경은 AppShell 의 dawn 이다.
@@ -51,13 +52,15 @@ export function MainTeaser({ onViewSaju, onFindMatch, onHaveAccount }: Props) {
       </div>
 
       {/* UI/12/400 Text/Secondary 밑줄 (228:4750). */}
-      <button
-        className="mt-12 text-ui-12 text-secondary underline"
-        onClick={onHaveAccount}
-        type="button"
-      >
-        이미 아이디가 있어요
-      </button>
+      {onHaveAccount ? (
+        <button
+          className="mt-12 text-ui-12 text-secondary underline"
+          onClick={onHaveAccount}
+          type="button"
+        >
+          이미 아이디가 있어요
+        </button>
+      ) : null}
     </section>
   );
 }

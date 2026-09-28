@@ -2,14 +2,33 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
-const { rerollMock } = vi.hoisted(() => ({ rerollMock: vi.fn() }));
+const { rerollMock, unlockMock, sendMock } = vi.hoisted(() => ({
+  rerollMock: vi.fn(),
+  unlockMock: vi.fn(),
+  sendMock: vi.fn(),
+}));
+vi.mock('@/api/matchRequests', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/matchRequests')>();
+  return { ...actual, sendDatingRequest: sendMock };
+});
 vi.mock('@/api/dating', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/dating')>();
   return { ...actual, rerollRecommendations: rerollMock };
 });
+vi.mock('@/api/unlocks', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/unlocks')>();
+  return { ...actual, unlockCandidateFields: unlockMock };
+});
 
 import type { DatingCardsView, MatchCandidateView } from './cardsView';
-import { DatingCardsScreen, REROLL_FAILED_MESSAGE } from './DatingCardsScreen';
+import {
+  DatingCardsScreen,
+  REROLL_FAILED_MESSAGE,
+  REROLL_NO_MORE_MESSAGE,
+  REROLL_SHORT_MESSAGE,
+  THREAD_FAILED_MESSAGE,
+  UNLOCK_SHORT_MESSAGE,
+} from './DatingCardsScreen';
 
 const candidate: MatchCandidateView = {
   id: 'c1',
@@ -23,12 +42,19 @@ const candidate: MatchCandidateView = {
   reason: { isLocked: true, cost: 3 },
 };
 
-function renderScreen(view: DatingCardsView) {
+function renderScreen(view: Omit<DatingCardsView, 'checkedInToday'>) {
   const router = createMemoryRouter(
-    [{ path: '/dating/cards', element: <DatingCardsScreen view={view} /> }],
+    [
+      {
+        path: '/dating/cards',
+        element: <DatingCardsScreen view={{ ...view, checkedInToday: false }} />,
+      },
+      { path: '/dating/requests', element: <p>요청함</p> },
+    ],
     { initialEntries: ['/dating/cards'] },
   );
   render(<RouterProvider router={router} />);
+  return router;
 }
 
 function openRerollSheet() {
@@ -38,6 +64,8 @@ function openRerollSheet() {
 afterEach(() => {
   cleanup();
   rerollMock.mockReset();
+  unlockMock.mockReset();
+  sendMock.mockReset();
   vi.restoreAllMocks();
 });
 
@@ -49,10 +77,10 @@ test('잔액이 모자라면 변경 버튼이 막히고 알린다 (FR-31)', asyn
   });
 
   openRerollSheet();
-  const confirm = await screen.findByRole('button', { name: '3실로 지금 변경하기' });
+  const confirm = await screen.findByRole('button', { name: '실 3개로 지금 변경하기' });
 
   expect(confirm).toBeDisabled();
-  expect(screen.getByRole('alert')).toHaveTextContent('운명의 실이 부족해요');
+  expect(screen.getByRole('alert')).toHaveTextContent('운명의 실 3개가 필요해요');
   fireEvent.click(confirm);
   expect(rerollMock).not.toHaveBeenCalled();
 });
@@ -69,9 +97,177 @@ test('리롤이 실패하면 추천을 그대로 두고 알린다 (FR-27)', asyn
   expect(screen.getByText('영화 보러 다니는 걸 좋아해요.')).toBeInTheDocument();
 });
 
+test.each([
+  {
+    label: '잔액 부족(402)',
+    error: { kind: 'api', code: 'INSUFFICIENT_THREAD', message: '운명의 실이 부족해요.' },
+    message: REROLL_SHORT_MESSAGE,
+  },
+  {
+    label: '후보 소진(409)',
+    error: {
+      kind: 'api',
+      code: 'DATING_NO_MORE_CANDIDATES',
+      message: '새로 소개할 인연이 없어요.',
+    },
+    message: REROLL_NO_MORE_MESSAGE,
+  },
+])('리롤 $label 은 그 상황에 맞게 알린다 (FR-27 · FR-31)', async ({ error, message }) => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  rerollMock.mockResolvedValue({ ok: false, error });
+  renderScreen({ balance: 1, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openRerollSheet();
+  fireEvent.click(await screen.findByRole('button', { name: '무료 점지권으로 변경하기' }));
+
+  expect(await screen.findByRole('status')).toHaveTextContent(message);
+  expect(screen.getByText('영화 보러 다니는 걸 좋아해요.')).toBeInTheDocument();
+});
+
+// 서버가 연타를 막지 않는다 — 두 번 부르면 두 번 차감된다(WKS-BE §10.4.1).
+test('리롤 요청 중에 다시 눌러도 한 번만 부른다 (FR-27)', async () => {
+  let settle = (): void => {};
+  rerollMock.mockReturnValue(
+    new Promise((resolve) => {
+      settle = () =>
+        resolve({ ok: true, data: { candidates: [], rerollCost: 5, threadBalance: 5 } });
+    }),
+  );
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openRerollSheet();
+  fireEvent.click(await screen.findByRole('button', { name: '무료 점지권으로 변경하기' }));
+  openRerollSheet();
+  fireEvent.click(await screen.findByRole('button', { name: '무료 점지권으로 변경하기' }));
+
+  expect(rerollMock).toHaveBeenCalledTimes(1);
+  settle();
+});
+
 test('잔액과 빈 카드를 그린다 (FR-26)', () => {
   renderScreen({ balance: 7, candidates: [], reroll: { kind: 'free' } });
 
-  expect(screen.getByLabelText('운명의 실 보유 7개')).toBeInTheDocument();
   expect(screen.getByText('운명의 인연을 기다리고 있어요')).toBeInTheDocument();
+  // 잔액은 상단 운명의 실을 눌러 연 재화 안내에서만 보인다.
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 획득 방법 보기' }));
+  expect(screen.getByText('7개')).toBeInTheDocument();
+});
+
+// 11/T1 해금 — 카드 뒷면의 '열람하기' → 해금 모달 → 고른 항목을 열고 완료 모달 (FR-28).
+
+function openUnlockDialog() {
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  fireEvent.click(screen.getByRole('button', { name: '열람하기' }));
+}
+
+test('고른 항목을 열고 남은 실과 연 항목을 완료 모달로 알린다', async () => {
+  unlockMock.mockResolvedValue({ ok: true, data: { values: { NAME: '이서연' }, balance: 3 } });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openUnlockDialog();
+  fireEvent.click(await screen.findByRole('button', { name: /이름/ }));
+  fireEvent.click(screen.getByRole('button', { name: '7개 사용하기' }));
+
+  expect(await screen.findByRole('heading', { name: /정보를 열었어요/ })).toBeInTheDocument();
+  expect(unlockMock).toHaveBeenCalledWith('c1', ['NAME']);
+  expect(screen.getAllByLabelText('운명의 실 보유 3개').length).toBeGreaterThan(0);
+});
+
+test('연 값은 추천을 다시 읽기 전에도 카드에 곧바로 보인다', async () => {
+  unlockMock.mockResolvedValue({ ok: true, data: { values: { NAME: '이서연' }, balance: 3 } });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openUnlockDialog();
+  fireEvent.click(await screen.findByRole('button', { name: /이름/ }));
+  fireEvent.click(screen.getByRole('button', { name: '7개 사용하기' }));
+
+  // 이 테스트의 loader 값(view)은 바뀌지 않는다 — 카드에 보이는 이름은 해금 응답에서 왔다.
+  expect(await screen.findByText('이서연')).toBeInTheDocument();
+});
+
+test('잔액이 모자라 백엔드가 거절하면 열지 않고 알린다', async () => {
+  unlockMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'INSUFFICIENT_THREAD', message: '부족' },
+  });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  openUnlockDialog();
+  fireEvent.click(await screen.findByRole('button', { name: /사진/ }));
+  fireEvent.click(screen.getByRole('button', { name: '10개 사용하기' }));
+
+  expect(await screen.findByRole('status')).toHaveTextContent(UNLOCK_SHORT_MESSAGE);
+  expect(screen.queryByRole('heading', { name: /정보를 열었어요/ })).not.toBeInTheDocument();
+});
+
+// 11/T2 운명의 실 보내기 (FR-29).
+
+test('열지 않은 항목이 남았으면 확인받고 보낸 뒤 보낸 모달을 띄운다', async () => {
+  sendMock.mockResolvedValue({ ok: true, data: { requestId: 'r1', candidateId: 'c1' } });
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 보내기' }));
+  expect(sendMock).not.toHaveBeenCalled();
+  fireEvent.click(await screen.findByRole('button', { name: '보내기' }));
+
+  expect(await screen.findByRole('button', { name: '보러가기' })).toBeInTheDocument();
+  expect(sendMock).toHaveBeenCalledWith('c1');
+});
+
+test('확인에서 취소하면 보내지 않는다', async () => {
+  renderScreen({ balance: 10, candidates: [candidate], reroll: { kind: 'free' } });
+
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 보내기' }));
+  fireEvent.click(await screen.findByRole('button', { name: '취소' }));
+
+  expect(sendMock).not.toHaveBeenCalled();
+});
+
+test('전송이 실패하면 보낸 모달 없이 알린다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  sendMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  const opened = {
+    ...candidate,
+    photo: { isLocked: false as const, url: 'https://example.com/p.jpg' },
+    name: { isLocked: false as const, value: '이서연' },
+    department: { isLocked: false as const, value: '영화영상학과' },
+    reason: { isLocked: false as const, value: '잘 맞아요' },
+  };
+  renderScreen({ balance: 10, candidates: [opened], reroll: { kind: 'free' } });
+
+  // 다 열었으면 확인 없이 바로 보낸다.
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 보내기' }));
+
+  expect(await screen.findByRole('status')).toHaveTextContent(THREAD_FAILED_MESSAGE);
+  expect(screen.queryByRole('button', { name: '보러가기' })).not.toBeInTheDocument();
+});
+
+test('이미 보낸 상대는 다시 보낼 수 없고 더 열 수도 없다', () => {
+  renderScreen({
+    balance: 10,
+    candidates: [{ ...candidate, isThreadSent: true }],
+    reroll: { kind: 'free' },
+  });
+
+  expect(screen.getByRole('button', { name: '운명의 실을 보냈어요' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  expect(screen.queryByRole('button', { name: '열람하기' })).not.toBeInTheDocument();
+});
+
+test('상대가 먼저 실을 보냈으면 보내기 대신 받은 신청 탭으로 안내하고 더 열 수 없다', async () => {
+  const router = renderScreen({
+    balance: 10,
+    candidates: [{ ...candidate, isThreadReceived: true }],
+    reroll: { kind: 'free' },
+  });
+
+  expect(screen.queryByRole('button', { name: '운명의 실 보내기' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
+  expect(screen.queryByRole('button', { name: '열람하기' })).not.toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: '상대가 보낸 운명의 실 확인하기' }));
+
+  expect(await screen.findByText('요청함')).toBeInTheDocument();
+  expect(router.state.location.search).toBe('?tab=received');
+  expect(sendMock).not.toHaveBeenCalled();
 });

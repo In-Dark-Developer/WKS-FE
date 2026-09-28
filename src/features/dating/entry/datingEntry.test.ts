@@ -41,6 +41,9 @@ test('인트로 loader 는 401 이면 비로그인, 그 밖에는 로그인 인�
   getMeMock.mockResolvedValue(member(false, false));
   await expect(datingIntroLoader()).resolves.toEqual({ viewer: 'member' });
 
+  getMeMock.mockResolvedValue(member(true, false));
+  await expect(datingIntroLoader()).resolves.toEqual({ viewer: 'member' });
+
   // 조회 실패는 진입을 막지 않는다(FR-24) — 시작 버튼이 다시 묻는다.
   getMeMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
   await expect(datingIntroLoader()).resolves.toEqual({ viewer: 'member' });
@@ -60,4 +63,13 @@ test('시작하기는 등록 상태에 맞는 경로로, 실패는 실패로 알
 
   getMeMock.mockResolvedValue({ ok: false, error: { kind: 'schema' } });
   await expect(findDatingStart()).resolves.toEqual({ kind: 'failed' });
+});
+
+test('프로필까지 등록한 사용자는 인트로를 건너뛰고 Top 3 로 간다', async () => {
+  getMeMock.mockResolvedValue(member(true, true));
+
+  const thrown: unknown = await datingIntroLoader().catch((error: unknown) => error);
+
+  expect(thrown).toBeInstanceOf(Response);
+  expect((thrown as Response).headers.get('Location')).toBe('/dating/cards');
 });

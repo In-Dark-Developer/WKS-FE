@@ -96,3 +96,11 @@ test('일부만 연 뒷면은 잠긴 항목마다 자물쇠 알약을 두고, �
 
   expect(onOpenUnlock).toHaveBeenCalledWith('c1');
 });
+
+// QA(2026-09-28): 사진 위 배지·점수 원이 불투명해 Figma 의 유리 느낌과 달랐다(96:1891 회색 50% · 101:1972 20%).
+test('Top 배지와 점수 원은 반투명 채움을 갖는다 (Figma 91:1641)', () => {
+  render(<CandidateCard candidate={locked} onOpenUnlock={vi.fn()} />);
+
+  expect(screen.getByText('Top1')).toHaveClass('bg-opacity-card-badge-50');
+  expect(screen.getByLabelText('궁합 점수 68점')).toHaveClass('bg-opacity-card-score-20');
+});

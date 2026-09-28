@@ -12,6 +12,7 @@ const lockedCandidates: readonly MatchCandidateView[] = [
     rank: 1,
     score: 98,
     mbti: 'ENTP',
+    birthYear: '03년생',
     bio: '안녕하세요! 처음에는 조금 낯을 가리지만 친해지면 장난도 많고 말도 꽤 많은 편이에요. 평소에는 영화나 전시 보러 가는 걸 좋아하고, 새로운 카페나 맛집 찾아다니는 것도 좋아합니다. 같이 축제 공연 보러 갈 사람을 찾아요.',
     photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
     name: { isLocked: true, cost: 7 },
@@ -23,6 +24,7 @@ const lockedCandidates: readonly MatchCandidateView[] = [
     rank: 2,
     score: 87,
     mbti: 'INFJ',
+    birthYear: '02년생',
     bio: '조용한 카페에서 책 읽는 걸 좋아해요.',
     photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
     name: { isLocked: true, cost: 7 },
@@ -34,6 +36,7 @@ const lockedCandidates: readonly MatchCandidateView[] = [
     rank: 3,
     score: 68,
     mbti: 'ISFP',
+    birthYear: '04년생',
     bio: '운동하고 맛집 다니는 걸 좋아합니다.',
     photo: { isLocked: true, thumbnailUrl: null, cost: 10 },
     name: { isLocked: true, cost: 7 },
@@ -61,6 +64,20 @@ const nameOnly: readonly MatchCandidateView[] = lockedCandidates.map((candidate,
   index === 0 ? { ...candidate, name: { isLocked: false, value: '차은호' } } : candidate,
 );
 
+// 궁합 이유만 연 카드 — 잠긴 이름·학과 알약이 위아래로 붙는다.
+const reasonOnly: readonly MatchCandidateView[] = lockedCandidates.map((candidate, index) =>
+  index === 0
+    ? {
+        ...candidate,
+        reason: {
+          isLocked: false,
+          value:
+            '두 분은 마음을 편안하게 채워주는 따뜻한 인연이에요. 서로에게 든든한 힘이 되어줘요.',
+        },
+      }
+    : candidate,
+);
+
 const allUnlocked: readonly MatchCandidateView[] = partlyUnlocked.map((candidate, index) =>
   index === 0
     ? {
@@ -76,6 +93,7 @@ const allUnlocked: readonly MatchCandidateView[] = partlyUnlocked.map((candidate
 
 export const cardsBase: DatingCardsView = {
   balance: 12,
+  checkedInToday: true,
   candidates: lockedCandidates,
   reroll: { kind: 'paid', cost: 3, canAfford: true },
 };
@@ -85,15 +103,19 @@ export function Cards({
   view = cardsBase,
   face,
   isRerollOpen = false,
+  isThreadGuideOpen = false,
 }: {
   view?: DatingCardsView;
   face?: 'front' | 'back';
   isRerollOpen?: boolean;
+  isThreadGuideOpen?: boolean;
 }) {
   return (
     <DatingCards
       initialCardFace={face}
       initialRerollOpen={isRerollOpen}
+      initialThreadGuideOpen={isThreadGuideOpen}
+      onOpenReceived={noop}
       onOpenRequests={noop}
       onOpenUnlock={noop}
       onReroll={noop}
@@ -113,6 +135,9 @@ export const preview: PreviewScreen = {
     '카드 뒷면(이름만 해금)': () => (
       <Cards face="back" view={{ ...cardsBase, candidates: nameOnly }} />
     ),
+    '카드 뒷면(궁합 이유만 해금)': () => (
+      <Cards face="back" view={{ ...cardsBase, candidates: reasonOnly }} />
+    ),
     '카드 뒷면(일부 해금)': () => (
       <Cards face="back" view={{ ...cardsBase, candidates: partlyUnlocked }} />
     ),
@@ -121,6 +146,40 @@ export const preview: PreviewScreen = {
       <Cards face="back" view={{ ...cardsBase, candidates: allUnlocked }} />
     ),
     '인연 없음': () => <Cards view={{ ...cardsBase, candidates: [] }} />,
+    // 자기소개 최대 170자(BIO_MAX)를 띄어쓰기 없이 채운 카드 — 카드 폭 안에서 줄을 바꿔야 한다.
+    '자기소개 170자(띄어쓰기 없음)': () => (
+      <Cards
+        view={{
+          ...cardsBase,
+          candidates: lockedCandidates.map((candidate, index) =>
+            index === 0 ? { ...candidate, bio: '안녕하세요'.repeat(34) } : candidate,
+          ),
+        }}
+      />
+    ),
+    // 상대가 먼저 보낸 카드는 잠긴 채로 두지 않는다 — 받은 신청의 상대 정보는 해금 없이 보인다(FR-30, 11/T10).
+    '상대가 먼저 실을 보냄': () => (
+      <Cards
+        view={{
+          ...cardsBase,
+          candidates: lockedCandidates.map((candidate, index) =>
+            index === 0
+              ? {
+                  ...candidate,
+                  isThreadReceived: true,
+                  photo: { isLocked: false, url: photoRabbit },
+                  name: { isLocked: false, value: '김채원' },
+                  department: { isLocked: false, value: '바이오헬스의료기기규제과학과' },
+                  reason: {
+                    isLocked: false,
+                    value: '두 사람 모두 물의 기운이 약해 서로를 채워 주는 사이예요.',
+                  },
+                }
+              : candidate,
+          ),
+        }}
+      />
+    ),
     '리롤 무료 o': () => <Cards isRerollOpen view={{ ...cardsBase, reroll: { kind: 'free' } }} />,
     '리롤 무료 x': () => <Cards isRerollOpen />,
     '리롤 잔액 부족': () => (
@@ -128,6 +187,10 @@ export const preview: PreviewScreen = {
         isRerollOpen
         view={{ ...cardsBase, balance: 2, reroll: { kind: 'paid', cost: 3, canAfford: false } }}
       />
+    ),
+    '재화 안내(출석 받음)': () => <Cards isThreadGuideOpen />,
+    '재화 안내(출석 전)': () => (
+      <Cards isThreadGuideOpen view={{ ...cardsBase, checkedInToday: false }} />
     ),
   },
 };

@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { afterEach, expect, test, vi } from 'vitest';
 
-import { hasJoinedShare } from '@/api/joinedShares';
+import { hasJoinedShare, readJoinedCompatibilityId } from '@/api/joinedShares';
 import { readSession, writeSession } from '@/api/session';
 
 const { createCompatibilityMock, getSharedResultMock } = vi.hoisted(() => ({
@@ -47,18 +47,19 @@ test('내 결과가 없으면 궁합을 부르지 않고 공유 링크 입력으
   expect(createCompatibilityMock).not.toHaveBeenCalled();
 });
 
-test('내 결과로 궁합을 만들면 이 탭의 기록에 남기고 친구의 궁합 지도로 보낸다', async () => {
+test('내 결과로 궁합을 만들면 궁합 id 와 함께 이 탭의 기록에 남기고 공유 궁합 결과로 보낸다', async () => {
   writeSession(MY_RESULT_ID);
   createCompatibilityMock.mockResolvedValue({
     ok: true,
-    data: { score: 93, tier: 'GUIIN', originNickname: '주인', guestNickname: '나' },
+    data: { id: 12, score: 93, tier: 'GUIIN', originNickname: '주인', guestNickname: '나' },
   });
 
   const response = await joinShareLoader(args());
 
   expect(createCompatibilityMock).toHaveBeenCalledWith(SHARE_ID, MY_RESULT_ID);
-  expect(response.headers.get('Location')).toBe(`/s/${SHARE_ID}/map`);
+  expect(response.headers.get('Location')).toBe(`/s/${SHARE_ID}/result`);
   expect(hasJoinedShare(SHARE_ID)).toBe(true);
+  expect(readJoinedCompatibilityId(SHARE_ID)).toBe(12);
 });
 
 test('자기 링크면 궁합 없이 내 결과로 보낸다', async () => {

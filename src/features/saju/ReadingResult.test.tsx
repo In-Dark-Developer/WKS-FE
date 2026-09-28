@@ -30,18 +30,15 @@ function renderAt(path: string) {
         path: '/reading/:id',
         element: (
           <ReadingResult
-            ranking={<p>순위 자리</p>}
             renderCard={(face) => (
               <p>
                 카드 자리 {face.nickname} {face.title}{' '}
                 {face.grades.map((g) => `${g.label}${g.grade}`).join(' ')}
               </p>
             )}
-            teaser={<p>티저 자리</p>}
             view={view}
           />
         ),
-        children: [{ path: 'pre-register', element: <p>하위 화면</p> }],
       },
     ],
     { initialEntries: [path] },
@@ -53,7 +50,8 @@ test('카드 자리에 뷰 모델의 앞면 값을 넘기고 행운·운세 세 
   renderAt('/reading/abc');
 
   expect(
-    screen.getByText('카드 자리 달빛토끼 꽃길만 걷는 인연 결혼운S 자녀운A 연애운B+'),
+    // 등급 스탬프 줄은 화면이 정한 순서다 — 연애·결혼·자녀(Figma 8:794, QA 2026-09-28).
+    screen.getByText('카드 자리 달빛토끼 꽃길만 걷는 인연 연애운B+ 결혼운S 자녀운A'),
   ).toBeInTheDocument();
   // Figma 사주 카드 화면(658:5087·658:5088) 순서: 아이템 → 장소, 운세는 연애 → 결혼 → 자녀.
   // 카드 아래 오행 다섯 장(982:3446) → 행운 두 장 순서다.
@@ -72,14 +70,6 @@ test('카드 자리에 뷰 모델의 앞면 값을 넘기고 행운·운세 세 
     screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent),
   ).toEqual(['연애운', '결혼운', '자녀운']);
   expect(screen.getByText('연애 풀이')).toBeInTheDocument();
-});
-
-test('다른 Phase 의 슬롯과 하위 라우트를 제자리에 그린다', () => {
-  renderAt('/reading/abc/pre-register');
-
-  expect(screen.getByText('순위 자리')).toBeInTheDocument();
-  expect(screen.getByText('티저 자리')).toBeInTheDocument();
-  expect(screen.getByText('하위 화면')).toBeInTheDocument();
 });
 
 test('뒤로가기 자리에 받은 버튼을 카드 위에 둔다', () => {
@@ -124,4 +114,18 @@ test('옛 결과처럼 잘 맞는 오행이 없으면 그 영역만 그리지 �
 
   expect(screen.queryByRole('region', { name: '나와 잘 맞는 오행' })).not.toBeInTheDocument();
   expect(screen.getByText('행운의 아이템')).toBeInTheDocument();
+});
+
+test("공유 링크로 들어온 방문자의 내 사주는 운세 아래 오른쪽에 '지도 보기 >'가 있다 (Figma 4.1.3)", () => {
+  render(
+    <ReadingResult
+      mapLink={<a href="/me/map">지도 보기 &gt;</a>}
+      renderCard={() => <p>카드 자리</p>}
+      view={view}
+    />,
+  );
+
+  const link = screen.getByRole('link', { name: '지도 보기 >' });
+  const lastFortune = screen.getByText('연애 풀이');
+  expect(lastFortune.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });

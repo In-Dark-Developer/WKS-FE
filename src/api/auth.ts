@@ -7,6 +7,8 @@ import {
   signInMockAccount,
   signOutMockAccount,
 } from './me';
+import { rememberPendingReward } from './rewards';
+import { clearSession } from './session';
 import { kakaoLoginResultSchema, type KakaoLoginResult } from './schema/auth';
 
 export type { KakaoLoginResult } from './schema/auth';
@@ -27,8 +29,12 @@ export type KakaoLoginInput = {
 export async function loginWithKakao(
   input: KakaoLoginInput,
 ): Promise<ApiOutcome<KakaoLoginResult>> {
-  if (isMockEnabled()) return mockLogin(input.resultId);
-  return request({ method: 'POST', path: '/auth/kakao', body: input }, kakaoLoginResultSchema);
+  const outcome = isMockEnabled()
+    ? mockLogin(input.resultId)
+    : await request({ method: 'POST', path: '/auth/kakao', body: input }, kakaoLoginResultSchema);
+  // 제휴 지급은 이 응답에서 한 번만 온다 — 로그인 왕복 뒤 도착한 화면이 모달로 알리도록 남긴다(FR-32).
+  if (outcome.ok) rememberPendingReward(outcome.data.rewardGranted);
+  return outcome;
 }
 
 // 백엔드 §9 연결·복원 규칙 — 계정 결과가 있으면 그것을 복원하고, 없을 때만 브라우저 결과를 계정에 연결한다.
@@ -43,10 +49,17 @@ function mockLogin(browserResultId: string | null): ApiOutcome<KakaoLoginResult>
 }
 
 // POST /auth/logout — HttpOnly 쿠키는 프론트가 지울 수 없어 백엔드가 만료시킨다. 쿠키가 없어도 성공한다(멱등).
+// 성공하면 이 브라우저의 '내 결과'도 지운다 — 로그인이 덮어쓴 계정 결과가 공용 기기에 남지 않게
+// (ADR-20260927-logout-clears-browser-result). 실패하면 로그인 상태 그대로라 남긴다.
 export async function logout(): Promise<ApiOutcome<null>> {
-  if (isMockEnabled()) {
-    signOutMockAccount();
-    return { ok: true, data: null };
-  }
-  return request({ method: 'POST', path: '/auth/logout' }, z.null());
+  const outcome = isMockEnabled()
+    ? mockLogout()
+    : await request({ method: 'POST', path: '/auth/logout' }, z.null());
+  if (outcome.ok) clearSession();
+  return outcome;
+}
+
+function mockLogout(): ApiOutcome<null> {
+  signOutMockAccount();
+  return { ok: true, data: null };
 }

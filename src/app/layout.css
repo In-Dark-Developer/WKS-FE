@@ -1,3 +1,10 @@
+/* 스크롤바 자리를 늘 비워 둔다 — 데스크톱의 상시 스크롤바 환경에서 스크롤이 없는 화면(요청함 등)으로 가면
+   스크롤바가 사라지며 가운데 정렬된 셸과 하단 네비가 반 폭(약 7.5px)만큼 옆으로 움직였다(09/T14). 모바일처럼
+   스크롤바가 화면 위에 겹치는 환경에는 영향이 없다. */
+:root {
+  scrollbar-gutter: stable;
+}
+
 [data-app-shell] {
   /* 콘텐츠 아래 여백 — 네비가 뜬 화면은 네비 높이(63px)와 바닥 간격(20px)만큼 더 비운다. */
   --app-shell-content-bottom: calc(16px + env(safe-area-inset-bottom));
@@ -81,12 +88,6 @@ body:has([data-bottom-nav]) [data-toast] {
   width: 92.53%;
   background: url('../ui/assets/backgrounds/star-ribbon-loop.webp') top center / 100% auto repeat-y;
   pointer-events: none;
-}
-
-/* 결과 화면 맨 아래 사전신청 띠(Figma 873:1868)에는 리본이 없다 — 띠 윗변에서 리본을 끝낸다.
-   띠 아래로는 ReadingResult 의 pb-24(24px)와 콘텐츠 아래 여백(네비가 있으면 그만큼 더)이 있다. */
-[data-backdrop='result']:has([data-pre-register-teaser])::before {
-  bottom: calc(var(--pre-register-teaser-height) + 24px + var(--app-shell-content-bottom));
 }
 
 /* 공유 링크 대기 화면(Figma 1044:4150)에는 리본이 없다 — 그라데이션만 남긴다. */

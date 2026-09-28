@@ -7,6 +7,7 @@ import {
   type ResultInput,
   type ResultRequestInput,
 } from './schema/result';
+import { readMockAccountResultId } from './me';
 import { forgetSession, writeSession } from './session';
 
 export type { ResultInput, ResultRequestInput } from './schema/result';
@@ -32,6 +33,13 @@ function buildMockResult(input: ResultRequestInput): Result {
       { category: 'LOVE', grade: 'SS', content: '올해 인연운이 아주 좋아요.' },
     ],
     elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
+    // 잘 맞는 오행 — 목 결과에도 넣어 SCR-04 의 카드(Figma 39:2481)를 목 모드에서 본다.
+    elementMatch: {
+      element: 'EARTH',
+      korean: '토',
+      reason:
+        '흙의 기운은 당신을 살려 주는 기운이에요. 안정적인 사람과 좋은 흐름을 만들 수 있어요.',
+    },
     luckyItem: '파란색 팔찌',
     luckyPlace: '동국대 팔정도',
     compatibilities: [],
@@ -92,4 +100,25 @@ export async function getResultInput(resultId: string): Promise<ApiOutcome<Resul
     };
   }
   return request({ method: 'GET', path: `/results/${resultId}/input` }, resultInputSchema);
+}
+
+// GET /me/result — 계정에 연결된 내 결과(FR-21). 이 브라우저에 세션이 없어도(기기 변경·저장소 삭제) 계정 사주를
+// 찾는다. 받은 resultId 를 세션에 다시 보관해 이후 기존 API 를 그대로 쓴다(openapi getMyResult). 없으면 404.
+export async function getMyResult(): Promise<ApiOutcome<Result>> {
+  const outcome = isMockEnabled()
+    ? await mockGetMyResult()
+    : await request({ method: 'GET', path: '/me/result' }, resultSchema);
+  if (outcome.ok) writeSession(outcome.data.resultId);
+  return outcome;
+}
+
+async function mockGetMyResult(): Promise<ApiOutcome<Result>> {
+  const resultId = readMockAccountResultId();
+  if (resultId === null) {
+    return {
+      ok: false,
+      error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '점지된 결과를 찾을 수 없어요.' },
+    };
+  }
+  return mockGetResult(resultId);
 }

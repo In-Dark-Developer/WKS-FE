@@ -14,7 +14,7 @@ const items = [
   { id: 'dating', label: '소개팅', icon: heartIcon },
 ] as const;
 
-// 홈 탭은 티저로 돌아가지 않는다 — 이 브라우저의 사주가 있으면 결과(= 홈), 없으면 사주 입력으로 간다(FR-19).
+// 홈 탭 — 이 브라우저의 사주가 있으면 결과(= 홈), 없으면 `/` 의 메인 티저가 홈이다(FR-19, 2026-09-26).
 // 누르는 순간 읽는다: 네비가 떠 있는 동안 새 결과가 생길 수 있다.
 function pathOf(tab: NavTab): string {
   if (tab === 'map') return '/me/map';

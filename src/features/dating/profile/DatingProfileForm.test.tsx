@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { useState, type ComponentProps } from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import { DatingProfileForm } from './DatingProfileForm';
@@ -24,10 +25,21 @@ const validDetails = {
 
 const uploaded = { status: 'uploaded', previewUrl: '/me.webp' } as const;
 
-test('(1/2) 를 비운 채 넘어가려 하면 오류를 보이고 (2/2) 로 가지 않는다', () => {
-  render(
-    <DatingProfileForm onPhotoSelect={vi.fn()} onSubmit={vi.fn()} photo={{ status: 'empty' }} />,
+type FormProps = ComponentProps<typeof DatingProfileForm>;
+
+// 단계는 부르는 쪽이 갖는다 — 테스트에서는 상태 하나로 흉내 낸다.
+function StepHost({
+  initialStep = 1,
+  ...props
+}: Omit<FormProps, 'step' | 'onStepChange' | 'onBack'> & { initialStep?: 1 | 2 }) {
+  const [step, setStep] = useState(initialStep);
+  return (
+    <DatingProfileForm {...props} onBack={() => setStep(1)} onStepChange={setStep} step={step} />
   );
+}
+
+test('(1/2) 를 비운 채 넘어가려 하면 오류를 보이고 (2/2) 로 가지 않는다', () => {
+  render(<StepHost onPhotoSelect={vi.fn()} onSubmit={vi.fn()} photo={{ status: 'empty' }} />);
 
   fireEvent.click(screen.getByRole('button', { name: '다음으로' }));
 
@@ -39,7 +51,7 @@ test('(1/2) 를 비운 채 넘어가려 하면 오류를 보이고 (2/2) 로 가
 test('두 단계를 통과하면 사주 정보와 학교 정보를 함께 onSubmit 으로 넘긴다', () => {
   const onSubmit = vi.fn();
   render(
-    <DatingProfileForm
+    <StepHost
       initialValues={{ saju: validSaju, details: validDetails }}
       onPhotoSelect={vi.fn()}
       onSubmit={onSubmit}
@@ -67,7 +79,7 @@ test('두 단계를 통과하면 사주 정보와 학교 정보를 함께 onSubm
 test('사진이 올라가지 않았으면 제출하지 않고 사진 오류를 보인다', () => {
   const onSubmit = vi.fn();
   render(
-    <DatingProfileForm
+    <StepHost
       initialStep={2}
       initialValues={{ saju: validSaju, details: validDetails }}
       onPhotoSelect={vi.fn()}
@@ -84,7 +96,7 @@ test('사진이 올라가지 않았으면 제출하지 않고 사진 오류를 �
 
 test('연결에 실패하면 입력값을 둔 채 안내를 보인다', () => {
   render(
-    <DatingProfileForm
+    <StepHost
       initialStep={2}
       initialValues={{ saju: validSaju, details: validDetails }}
       onPhotoSelect={vi.fn()}
@@ -96,4 +108,97 @@ test('연결에 실패하면 입력값을 둔 채 안내를 보인다', () => {
 
   expect(screen.getByRole('alert')).toHaveTextContent('연결이 원활하지 않아요');
   expect(screen.getByRole('textbox', { name: '이름' })).toHaveValue('김채원');
+});
+
+test('학교 메일이 아니면 제출하지 않고 메일 칸에 도메인 오류를 보인다', () => {
+  const onSubmit = vi.fn();
+  render(
+    <StepHost
+      initialStep={2}
+      initialValues={{ saju: validSaju, details: { ...validDetails, email: 'me@gmail.com' } }}
+      onPhotoSelect={vi.fn()}
+      onSubmit={onSubmit}
+      photo={uploaded}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: '내 운명 찾아 떠나기' }));
+
+  expect(onSubmit).not.toHaveBeenCalled();
+  expect(screen.getByText(profileErrorMessages.emailDomain)).toBeInTheDocument();
+});
+
+test('메일 인증 요청에는 (2/2) 의 지금 메일 값을 앞뒤 공백 없이 싣는다', () => {
+  const onSendCode = vi.fn();
+  const onVerifyCode = vi.fn();
+  render(
+    <StepHost
+      emailVerification={{ view: { status: 'sent' }, onSendCode, onVerifyCode }}
+      initialStep={2}
+      initialValues={{ saju: validSaju, details: { ...validDetails, email: ' me@dgu.ac.kr ' } }}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: '재발송' }));
+  fireEvent.change(screen.getByLabelText('인증 코드'), { target: { value: '654321' } });
+  fireEvent.click(screen.getByRole('button', { name: '확인' }));
+
+  expect(onSendCode).toHaveBeenCalledWith('me@dgu.ac.kr');
+  expect(onVerifyCode).toHaveBeenCalledWith('me@dgu.ac.kr', '654321');
+});
+
+test('(2/2) 사진 칸은 JPG·PNG 만 고르게 하고 올릴 수 있는 조건을 안내한다', () => {
+  const { container } = render(
+    <StepHost
+      initialStep={2}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={{ status: 'empty' }}
+    />,
+  );
+
+  expect(container.querySelector('input[type="file"]')).toHaveAttribute(
+    'accept',
+    'image/jpeg,image/png',
+  );
+  expect(screen.getByText(/JPG·PNG, 10MB 이하 사진을 올려 주세요/)).toBeInTheDocument();
+});
+
+test('사진을 올리지 못하면 확인할 조건을 함께 알린다', () => {
+  render(
+    <StepHost
+      initialStep={2}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={{ status: 'error' }}
+    />,
+  );
+
+  expect(
+    screen.getByText('JPG·PNG, 10MB 이하 사진인지 확인하고 다시 시도해 주세요.'),
+  ).toBeInTheDocument();
+});
+
+// QA(2026-09-28): (2/2) MBTI 칸만 배경이 달라 보였다 — 다른 입력 칸과 같은 흰 배경이어야 한다.
+test('(2/2) MBTI 칸은 다른 입력 칸과 같은 배경이다 (Figma 134:3639)', () => {
+  render(
+    <DatingProfileForm
+      onBack={vi.fn()}
+      onPhotoSelect={vi.fn()}
+      onStepChange={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+      step={2}
+    />,
+  );
+
+  const mbti = screen.getByRole('combobox', { name: 'MBTI' });
+  const department = screen.getByRole('textbox', { name: '학과' });
+
+  expect(mbti).toHaveClass('bg-surface-default');
+  // 학과 칸은 배경을 감싸는 요소가 갖는다 — 두 칸이 같은 토큰을 쓰는지 본다.
+  expect(department.closest('div')).toHaveClass('bg-surface-default');
 });

@@ -6,16 +6,21 @@ import type { Result } from '@/api/schema/result';
 import type { SharedResult } from '@/api/schema/share';
 import { writeSession } from '@/api/session';
 import { routes } from '@/app/routes';
-import { markTeaserPassed, resetTeaserPassed } from '@/features/intro/introSeen';
 
 // getResult 는 src/api/ 경계 — 라우트 조립만 확인하니 실제 요청을 보내지 않는다 (CONVENTIONS 8장).
-const { getResultMock, createResultMock } = vi.hoisted(() => ({
+const { getResultMock, createResultMock, getMyResultMock } = vi.hoisted(() => ({
   getResultMock: vi.fn(),
   createResultMock: vi.fn(),
+  getMyResultMock: vi.fn(),
 }));
 vi.mock('@/api/results', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/results')>();
-  return { ...actual, getResult: getResultMock, createResult: createResultMock };
+  return {
+    ...actual,
+    getResult: getResultMock,
+    createResult: createResultMock,
+    getMyResult: getMyResultMock,
+  };
 });
 const { getCompatibilityReasonMock } = vi.hoisted(() => ({
   getCompatibilityReasonMock: vi.fn(),
@@ -36,6 +41,12 @@ const unauthenticated = {
   error: { kind: 'api', code: 'UNAUTHENTICATED', message: '로그인이 필요해요.' },
 } as const;
 // 추천도 경계에서 대체한다 — Top 3 라우트가 GET /dating/recommendations 를 부른다(10/T3).
+// 잔액도 경계에서 대체한다 — 카드 화면은 원장(`GET /wallet`)에서 읽는다(10/T2 · FR-31).
+const { getWalletMock } = vi.hoisted(() => ({ getWalletMock: vi.fn() }));
+vi.mock('@/api/wallet', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/wallet')>();
+  return { ...actual, getWallet: getWalletMock };
+});
 const { getRecommendationsMock } = vi.hoisted(() => ({ getRecommendationsMock: vi.fn() }));
 vi.mock('@/api/dating', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/dating')>();
@@ -74,23 +85,24 @@ const stubResult: Result = {
 // 인트로는 첫 방문에만, 메인 티저는 접속마다 뜬다(FR-1) — 입력 화면을 보는 테스트는 둘 다 지난 방문자로 시작한다.
 beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
-  markTeaserPassed();
   getMeMock.mockResolvedValue(unauthenticated);
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
+  getWalletMock.mockResolvedValue({ ok: true, data: { balance: 0, canCheckInToday: true } });
 });
 
 afterEach(() => {
   cleanup();
   localStorage.clear();
   sessionStorage.clear();
-  resetTeaserPassed();
   getResultMock.mockReset();
   createResultMock.mockReset();
+  getMyResultMock.mockReset();
   getSharedResultMock.mockReset();
   createCompatibilityMock.mockReset();
   getCompatibilityReasonMock.mockReset();
   getMeMock.mockReset();
   getRecommendationsMock.mockReset();
+  getWalletMock.mockReset();
 });
 
 function renderAt(path: string) {
@@ -107,51 +119,102 @@ test('루트 경로가 화면을 렌더한다', async () => {
   ).toBeInTheDocument();
 });
 
-test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', () => {
+test('첫 방문이면 루트 경로에 인트로가 먼저 뜬다', async () => {
   localStorage.clear();
   renderAt('/');
 
-  expect(screen.getByLabelText('인트로 영상')).toBeInTheDocument();
+  expect(await screen.findByLabelText('인트로 영상')).toBeInTheDocument();
 });
 
-// 인트로를 본 뒤 티저에서 아직 진입을 고르지 않은 방문자.
-function renderTeaser() {
-  resetTeaserPassed();
-  return renderAt('/');
+// 인트로를 본 방문자 — `/` 는 언제나 티저다. 티저 loader(GET /me)가 끝나 티저가 그려질 때까지 기다린다.
+async function renderTeaser() {
+  const router = renderAt('/');
+  await screen.findByRole('button', { name: '내 사주 보기' });
+  return router;
 }
 
-test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', () => {
-  renderTeaser();
+test('인트로 뒤에는 네비 없는 메인 티저가 뜬다', async () => {
+  await renderTeaser();
 
   expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '새로운 인연 찾기' })).toBeInTheDocument();
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
-test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력을 열고 다음 방문에는 티저가 없다", async () => {
-  renderTeaser();
+test("티저의 '내 사주 보기'는 결과가 없으면 사주 입력(/saju)을 열고, 뒤로가기는 티저로 돌아온다", async () => {
+  const router = await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
   expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/saju');
 
-  cleanup();
-  renderAt('/');
+  await router.navigate(-1);
 
-  expect(screen.queryByRole('button', { name: '내 사주 보기' })).not.toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+});
+
+test('결과가 없으면 소개팅에서 홈 탭을 눌러도 티저가 홈이다', async () => {
+  const router = await renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
+  const nav = await screen.findByRole('navigation', { name: '주요 메뉴' });
+
+  fireEvent.click(within(nav).getByRole('button', { name: '홈' }));
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
 });
 
 test("티저의 '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로 간다", async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
-  const router = renderTeaser();
+  const router = await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
 
   await screen.findByRole('navigation', { name: '주요 메뉴' });
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
 });
 
+test("로그인했는데 이 브라우저에 결과가 없으면 티저가 계정 결과를 복원해 '내 사주 보기'가 결과로 간다", async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  // 실제 getMyResult 는 받은 resultId 를 세션에 보관한다 — 목도 같게 둔다.
+  getMyResultMock.mockImplementation(() => {
+    writeSession(RESULT_ID);
+    return Promise.resolve({ ok: true, data: stubResult });
+  });
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+  const router = await renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
+
+  await screen.findByRole('navigation', { name: '주요 메뉴' });
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
+test('이 브라우저에 결과가 있거나 계정에 결과가 없으면 티저가 계정 결과를 부르지 않는다', async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: false }));
+  await renderTeaser();
+  cleanup();
+
+  writeSession(OTHER_RESULT_ID);
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  await renderTeaser();
+
+  expect(getMyResultMock).not.toHaveBeenCalled();
+});
+
+test("계정 결과를 불러오지 못해도 티저는 뜨고 '내 사주 보기'는 사주 입력으로 간다", async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  getMyResultMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  const router = await renderTeaser();
+  fireEvent.click(screen.getByRole('button', { name: '내 사주 보기' }));
+
+  expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/saju');
+});
+
 test("티저의 '새로운 인연 찾기'는 소개팅 인트로로 간다", async () => {
-  const router = renderTeaser();
+  const router = await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '새로운 인연 찾기' }));
 
   await screen.findByRole('navigation', { name: '주요 메뉴' });
@@ -159,7 +222,7 @@ test("티저의 '새로운 인연 찾기'는 소개팅 인트로로 간다", asy
 });
 
 test("티저의 '이미 아이디가 있어요'는 로그인 시트를 띄우고 닫으면 티저에 남는다", async () => {
-  renderTeaser();
+  await renderTeaser();
   fireEvent.click(screen.getByRole('button', { name: '이미 아이디가 있어요' }));
 
   const sheet = await screen.findByRole('dialog', { name: '내 운명 찾아 떠나기' });
@@ -168,6 +231,21 @@ test("티저의 '이미 아이디가 있어요'는 로그인 시트를 띄우고
   fireEvent.click(within(sheet).getByRole('button', { name: '나중에 할래요' }));
 
   expect(screen.getByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+});
+
+test("로그인했으면 티저에 '이미 아이디가 있어요'가 없다", async () => {
+  getMeMock.mockResolvedValue(member());
+  await renderTeaser();
+
+  expect(screen.queryByRole('button', { name: '이미 아이디가 있어요' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '새로운 인연 찾기' })).toBeInTheDocument();
+});
+
+test("로그인 여부를 확인하지 못하면 티저에 '이미 아이디가 있어요'를 둔다", async () => {
+  getMeMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  await renderTeaser();
+
+  expect(screen.getByRole('button', { name: '이미 아이디가 있어요' })).toBeInTheDocument();
 });
 
 test('첫 방문이라도 결과 화면으로 바로 들어오면 인트로가 없다', async () => {
@@ -192,6 +270,47 @@ test('세션 없이 결과 화면에 들어오면 입력 화면으로 보낸다'
   expect(router.state.location.pathname).toBe('/');
 });
 
+test('세션 없이 로그인 계정의 결과 주소로 들어오면 세션을 되살리고 결과 화면에 머문다', async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  // 실제 getMyResult 는 받은 resultId 를 세션에 보관한다 — 목도 같게 둔다.
+  getMyResultMock.mockImplementation(() => {
+    writeSession(RESULT_ID);
+    return Promise.resolve({ ok: true, data: stubResult });
+  });
+  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+});
+
+test('세션 없이 계정 결과가 아닌 주소로 들어오면 티저로 보낸다', async () => {
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+  getMyResultMock.mockImplementation(() => {
+    writeSession(OTHER_RESULT_ID);
+    return Promise.resolve({ ok: true, data: { ...stubResult, resultId: OTHER_RESULT_ID } });
+  });
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+});
+
+test('세션이 다른 결과면 계정 결과를 부르지 않고 티저로 보낸다', async () => {
+  writeSession(OTHER_RESULT_ID);
+  getMeMock.mockResolvedValue(member({ hasResult: true }));
+
+  const router = renderAt(`/reading/${RESULT_ID}`);
+
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe('/');
+  expect(getMyResultMock).not.toHaveBeenCalled();
+});
+
 test('이 브라우저가 만든 결과면 결과 화면에 머문다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
@@ -203,13 +322,14 @@ test('이 브라우저가 만든 결과면 결과 화면에 머문다', async ()
   ).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
   expect(screen.getByRole('main')).toHaveAttribute('data-backdrop', 'result');
-  // 친구 궁합 순위(05/T2 FriendRanking)가 ranking 슬롯에 조립돼 있다 — 인연이 없을 때 안내.
-  expect(screen.getByText('아직 인연이 없어요')).toBeInTheDocument();
+  // 친구 궁합 순위·친구에게 공유는 홈에 없다 — 궁합지도가 갖는다(09/T12, Figma 8:794).
+  expect(screen.queryByText('아직 인연이 없어요')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '친구에게 공유' })).not.toBeInTheDocument();
   // 뒤로가기는 친구의 궁합 지도에서 들어왔을 때만 있다 (FR-6).
   expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
 });
 
-test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () => {
+test('궁합 목록이 있어도 홈에는 친구 궁합 순위가 없다 (09/T12)', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: true,
@@ -223,13 +343,16 @@ test('궁합 목록이 있으면 친구 궁합 순위에 보인다', async () =>
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  expect(await screen.findByText('친구1')).toBeInTheDocument();
-  expect(screen.getByText('92')).toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('친구1')).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: '지도 보기 >' })).not.toBeInTheDocument();
 });
 
 // 05/T3 조립 — 궁합 지도(`/me/map`)와 결과 화면 순위의 '지도 보기'.
 
-test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서 친구가 점수 높은 순으로 보인다', async () => {
+test('궁합 지도에는 친구가 점수 높은 순으로 보인다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: true,
@@ -242,8 +365,7 @@ test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서
     },
   });
 
-  const router = renderAt(`/reading/${RESULT_ID}`);
-  fireEvent.click(await screen.findByRole('link', { name: '지도 보기 >' }));
+  const router = renderAt('/me/map');
 
   expect(
     await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
@@ -261,17 +383,16 @@ test('결과 화면 순위의 지도 보기를 누르면 궁합 지도로 가서
   ).toBeInTheDocument();
 });
 
-test('궁합 지도의 뒤로가기는 내 사주 결과로 돌아간다 — 직접 주소로 들어와도 된다', async () => {
+test('내 궁합 지도에는 맨 위 뒤로가기가 없다 — 직접 주소로 들어와도 지도가 보인다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
 
-  const router = renderAt('/me/map');
-  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+  renderAt('/me/map');
 
   expect(
-    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
   ).toBeInTheDocument();
-  expect(router.state.location.pathname).toBe(`/reading/${RESULT_ID}`);
+  expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
 });
 
 test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 보낸다', async () => {
@@ -282,6 +403,14 @@ test('보관된 결과 없이 궁합 지도에 들어오면 입력 화면으로 
   ).toBeInTheDocument();
   expect(router.state.location.pathname).toBe('/');
   expect(getResultMock).not.toHaveBeenCalled();
+});
+
+test('공유 링크 입력 화면은 새벽 하늘 배경이다 (Figma 4.2)', async () => {
+  getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
+
+  renderAt('/s/11111111-1111-4111-8111-111111111111');
+
+  expect(await screen.findByRole('main')).toHaveAttribute('data-backdrop', 'dawn');
 });
 
 // 공유 링크 궁합 대기 화면(Figma 1044:4150) — '이전 정보 불러오기'를 누르면 궁합이 만들어질 때까지 보인다(FR-23).
@@ -343,43 +472,13 @@ test('결과 화면은 카드 뒷면부터 보이고, 카드 뒤집기·카드 �
 
   // 들어오면 카드 뒷면부터 보인다 (PRD FR-5).
   expect(await screen.findByRole('img', { name: '운명도 꿰어야 사랑이다' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '카드 저장하기' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: '인연카드 보기' })).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole('button', { name: '카드 뒤집기' }));
   expect(screen.getByRole('region', { name: '달빛토끼님의 운명 카드' })).toBeInTheDocument();
+  // 카드 저장은 앞면 오른쪽 아래 아이콘이다(09/T11).
+  expect(screen.getByRole('button', { name: '카드 저장하기' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'SS 등급' })).toBeInTheDocument();
-});
-
-test('친구 궁합 순위가 비어 있으면 안내 아래에 친구에게 공유가 있다', async () => {
-  writeSession(RESULT_ID);
-  getResultMock.mockResolvedValue({ ok: true, data: stubResult });
-
-  renderAt(`/reading/${RESULT_ID}`);
-
-  const empty = (await screen.findByText('아직 인연이 없어요')).closest('[role="status"]');
-  if (!(empty instanceof HTMLElement)) throw new Error('빈 상태 안내가 없다');
-  expect(within(empty).getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
-});
-
-test('친구 궁합 순위가 있어도 목록 아래에 친구에게 공유가 있다', async () => {
-  writeSession(RESULT_ID);
-  getResultMock.mockResolvedValue({
-    ok: true,
-    data: {
-      ...stubResult,
-      compatibilities: [
-        { nickname: '친구1', score: 92, tier: 'GUIIN', createdAt: '2026-09-15T02:00:00Z' },
-      ],
-    },
-  });
-
-  renderAt(`/reading/${RESULT_ID}`);
-
-  expect(await screen.findByText('친구1')).toBeInTheDocument();
-  const ranking = screen.getByRole('region', { name: '친구 궁합 순위' });
-  expect(within(ranking).getByRole('button', { name: '친구에게 공유' })).toBeInTheDocument();
-  expect(within(ranking).queryByRole('status')).not.toBeInTheDocument();
 });
 
 test('없어진 인연카드 주소는 없는 경로 화면이다', async () => {
@@ -403,7 +502,7 @@ test('다른 결과를 만든 브라우저로 결과 화면에 들어오면 입�
   expect(getResultMock).not.toHaveBeenCalled();
 });
 
-test('백엔드가 모르는 결과면 사주 입력으로 돌아간다 — 죽은 resultId 로 오류 화면에 갇히지 않는다', async () => {
+test('백엔드가 모르는 결과면 티저(홈)로 돌아간다 — 죽은 resultId 로 오류 화면에 갇히지 않는다', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({
     ok: false,
@@ -412,7 +511,7 @@ test('백엔드가 모르는 결과면 사주 입력으로 돌아간다 — 죽�
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  expect(await screen.findByRole('button', { name: '점지 확인하기' })).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: '내 사주 보기' })).toBeInTheDocument();
 });
 
 test('결과 조회가 연결 문제로 실패하면 오류 화면을 보인다', async () => {
@@ -470,12 +569,18 @@ test('공유 링크로 들어오면 세션 없이 링크 주인 닉네임이 든
 
   renderAt(`/s/${SHARE_ID}`);
 
+  // 사주가 없는 방문자도 초대 머리와 주인의 궁합 지도 아래에서 입력한다 (FR-15 V1, Figma 30:5916).
   expect(
-    await screen.findByText(
-      '아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.',
-    ),
+    await screen.findByRole('heading', { level: 1, name: '달빛토끼님의궁합지도에 초대됐어요' }),
   ).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: '사주를 입력해 인연을 확인하세요' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText(/달빛토끼님과 나의 궁합을 확인할 수 있어요/)).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '이전 정보 불러오기' })).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
   // 주인의 사주 요약은 화면에 없다 (FR-15).
   expect(screen.queryByText('꽃길만 걷는 인연')).not.toBeInTheDocument();
 });
@@ -490,9 +595,9 @@ test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로
   createCompatibilityMock.mockResolvedValue(compatibility);
 
   const router = renderAt(`/s/${SHARE_ID}`);
-  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
   fillValidSaju();
-  fireEvent.click(screen.getByRole('button', { name: '운명 지도 확인하기' }));
+  fireEvent.click(screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }));
 
   expect(
     await screen.findByRole('heading', { level: 1, name: '달빛토끼님의 궁합 지도' }),
@@ -501,6 +606,49 @@ test('입력을 마치면 결과·궁합을 만들고 주인의 궁합 지도로
   expect(createCompatibilityMock).toHaveBeenCalledWith(SHARE_ID, RESULT_ID);
   expect(screen.getByText('달빛토끼님과의 궁합 지도예요.')).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: '뒤로가기' })).not.toBeInTheDocument();
+});
+
+// 09/T10 — 궁합을 만들면 공유 궁합 결과(SCR-24)로 가고, '전체 보기 >'의 지도에서 뒤로가기로 돌아온다.
+test('궁합 id 를 받으면 공유 궁합 결과에서 내 궁합 한 줄과 이유를 보이고, 전체 지도에 갔다 돌아온다', async () => {
+  const owner = {
+    ...sharedOwner,
+    compatibilities: [
+      ...sharedOwner.compatibilities,
+      {
+        id: 5,
+        nickname: '보살',
+        score: 80,
+        tier: 'CHALTTEOK' as const,
+        createdAt: '2026-09-27T01:00:00Z',
+      },
+    ],
+  };
+  getSharedResultMock.mockResolvedValue({ ok: true, data: owner });
+  createResultMock.mockImplementation(() => {
+    writeSession(RESULT_ID);
+    return Promise.resolve({ ok: true, data: stubResult });
+  });
+  createCompatibilityMock.mockResolvedValue({ ok: true, data: { ...compatibility.data, id: 5 } });
+  getCompatibilityReasonMock.mockResolvedValue({
+    ok: true,
+    data: { why: '서로를 채워 줘요', together: '함께 웃어요', conflict: '금방 풀어요' },
+  });
+
+  const router = renderAt(`/s/${SHARE_ID}`);
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
+  fillValidSaju();
+  fireEvent.click(screen.getByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }));
+
+  expect(await screen.findByRole('heading', { name: '나의 궁합 순위' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}/result`);
+  expect(await screen.findByText('서로를 채워 줘요')).toBeInTheDocument();
+  expect(getCompatibilityReasonMock).toHaveBeenCalledWith(5);
+
+  fireEvent.click(screen.getByRole('button', { name: '전체 보기 >' }));
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  expect(await screen.findByRole('heading', { name: '나의 궁합 순위' })).toBeInTheDocument();
+  expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}/result`);
 });
 
 test(
@@ -543,9 +691,12 @@ test('새로 작성하기를 고르면 보관된 내 결과를 두고 사주 입
   renderAt(`/s/${SHARE_ID}`);
   fireEvent.click(await screen.findByRole('button', { name: '새로 작성하기' }));
 
-  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
   expect(
-    screen.getByText('아래 정보를 입력하고 나와 달빛토끼 님의 귀인 궁합을 관계로 확인해보아요.'),
+    await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
+  // 기존 방문자의 '새로 작성하기' 폼도 신규 방문자와 같은 문구다 (Figma 30:6323).
+  expect(
+    screen.getByRole('heading', { name: '사주를 입력해 인연을 확인하세요' }),
   ).toBeInTheDocument();
   expect(createCompatibilityMock).not.toHaveBeenCalled();
   expect(localStorage.getItem('wks:session')).toContain(RESULT_ID);
@@ -556,7 +707,9 @@ test('결과 없이 친구의 궁합 지도 주소로 오면 공유 링크 입�
 
   const router = renderAt(`/s/${SHARE_ID}/map`);
 
-  expect(await screen.findByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' }),
+  ).toBeInTheDocument();
   expect(router.state.location.pathname).toBe(`/s/${SHARE_ID}`);
 });
 
@@ -592,16 +745,21 @@ test('없는 공유 링크는 없는 경로 화면이다', async () => {
 });
 
 // 06/T4 조립 — 결과 화면 사전신청 섹션 → 모달 → 완료, 그리고 매직링크가 돌아오는 /verify.
-test('결과 화면의 사전 신청 버튼이 사전신청 모달을 연다', async () => {
+test('홈에는 그랜드 오픈 사전신청 섹션이 없고 그 모달 주소도 없다 (09/T13)', async () => {
   writeSession(RESULT_ID);
   getResultMock.mockResolvedValue({ ok: true, data: stubResult });
 
   renderAt(`/reading/${RESULT_ID}`);
 
-  fireEvent.click(await screen.findByRole('button', { name: '사전 신청하고 알림 받기' }));
+  expect(
+    await screen.findByRole('heading', { name: '달빛토끼님의 사주 결과' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('GRAND OPEN !!')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: '사전 신청하고 알림 받기' })).not.toBeInTheDocument();
 
-  expect(await screen.findByRole('dialog', { name: '사전신청' })).toBeInTheDocument();
-  expect(screen.getByLabelText('이메일')).toBeInTheDocument();
+  cleanup();
+  renderAt(`/reading/${RESULT_ID}/pre-register`);
+  expect(await screen.findByRole('alert')).toHaveTextContent('찾는 점지가 없어요');
 });
 
 test('매직링크가 보내는 /verify 는 인증 완료를 알린다', async () => {
@@ -706,14 +864,14 @@ test('홈 탭은 사주가 없으면 티저가 아니라 사주 입력으로 간
 });
 
 test('사주 입력과 공유 Flow 에는 하단 네비가 없다', async () => {
-  renderAt('/');
+  renderAt('/saju');
   await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' });
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
   cleanup();
 
   getSharedResultMock.mockResolvedValue({ ok: true, data: sharedOwner });
   renderAt(`/s/${SHARE_ID}`);
-  await screen.findByRole('button', { name: '운명 지도 확인하기' });
+  await screen.findByRole('button', { name: '내 운명을 친구 궁합 지도에 꿰기' });
   expect(screen.queryByRole('navigation', { name: '주요 메뉴' })).not.toBeInTheDocument();
 });
 
@@ -831,13 +989,12 @@ test('사주 없는 로그인 사용자는 프로필 (1/2) 사주 정보부터 �
   expect(await screen.findByRole('button', { name: '다음으로' })).toBeInTheDocument();
 });
 
-test('프로필까지 등록한 사용자는 입력 없이 Top 3 로 간다', async () => {
+test('프로필까지 등록한 사용자는 소개팅 탭에서 인트로 없이 Top 3 로 간다', async () => {
   getMeMock.mockResolvedValue(member({ hasResult: true, hasDatingProfile: true }));
   const router = renderAt('/dating');
 
-  fireEvent.click(await screen.findByRole('button', { name: '내 운명 찾아 떠나기' }));
-
   await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating/cards'));
+  expect(screen.queryByRole('button', { name: '내 운명 찾아 떠나기' })).not.toBeInTheDocument();
 });
 
 test('비로그인으로 프로필 등록 주소에 오면 소개팅 인트로로 돌려보낸다', async () => {
@@ -863,9 +1020,8 @@ test('내 정보 조회가 실패해도 인트로는 열리고 다시 누를 수
 });
 
 test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린다 (10/T3 · FR-26)', async () => {
-  getMeMock.mockResolvedValue(
-    member({ hasResult: true, hasDatingProfile: true, threadBalance: 12 }),
-  );
+  getMeMock.mockResolvedValue(member({ hasResult: true, hasDatingProfile: true }));
+  getWalletMock.mockResolvedValue({ ok: true, data: { balance: 12, canCheckInToday: true } });
   getRecommendationsMock.mockResolvedValue({
     ok: true,
     data: {
@@ -893,7 +1049,8 @@ test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린
   expect(
     await screen.findByRole('heading', { name: '나와 잘 맞는 인연 TOP 3' }),
   ).toBeInTheDocument();
-  expect(screen.getByLabelText('운명의 실 보유 12개')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 획득 방법 보기' }));
+  expect(screen.getByText('12개')).toBeInTheDocument();
   expect(screen.getByText('영화 보러 다니는 걸 좋아해요.')).toBeInTheDocument();
 });
 

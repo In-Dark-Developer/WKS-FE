@@ -1,9 +1,12 @@
 import { afterEach, expect, test, vi } from 'vitest';
 
-const { getResultInputMock } = vi.hoisted(() => ({ getResultInputMock: vi.fn() }));
+const { getResultInputMock, getMyResultMock } = vi.hoisted(() => ({
+  getResultInputMock: vi.fn(),
+  getMyResultMock: vi.fn(),
+}));
 vi.mock('@/api/results', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/results')>();
-  return { ...actual, getResultInput: getResultInputMock };
+  return { ...actual, getResultInput: getResultInputMock, getMyResult: getMyResultMock };
 });
 
 import { clearSession, writeSession } from '@/api/session';
@@ -23,6 +26,7 @@ const storedInput = {
 
 afterEach(() => {
   getResultInputMock.mockReset();
+  getMyResultMock.mockReset();
   clearSession();
   vi.restoreAllMocks();
 });
@@ -54,6 +58,7 @@ test('사주가 없으면 (1/2) 부터 시작한다', async () => {
     resultId: null,
   });
   expect(getResultInputMock).not.toHaveBeenCalled();
+  expect(getMyResultMock).not.toHaveBeenCalled();
 });
 
 test('사주가 있으면 (2/2) 부터 시작하고 (1/2) 는 그 사주로 채운다', async () => {
@@ -66,6 +71,30 @@ test('사주가 있으면 (2/2) 부터 시작하고 (1/2) 는 그 사주로 채�
     saju: toSajuStepValues(storedInput),
   });
   expect(getResultInputMock).toHaveBeenCalledWith(RESULT_ID);
+  expect(getMyResultMock).not.toHaveBeenCalled();
+});
+
+test('이 브라우저에 세션이 없어도 계정에 사주가 있으면 불러와 (2/2) 부터 시작한다', async () => {
+  getMyResultMock.mockResolvedValue({ ok: true, data: { resultId: RESULT_ID } });
+  getResultInputMock.mockResolvedValue({ ok: true, data: storedInput });
+
+  await expect(datingProfileLoader(me)).resolves.toEqual({
+    initialStep: 2,
+    resultId: RESULT_ID,
+    saju: toSajuStepValues(storedInput),
+  });
+  expect(getResultInputMock).toHaveBeenCalledWith(RESULT_ID);
+});
+
+test('계정 사주를 불러오지 못하면 (1/2) 부터 받는다', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  getMyResultMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'RESULT_NOT_FOUND', message: '없음' },
+  });
+
+  await expect(datingProfileLoader(me)).resolves.toEqual({ initialStep: 1, resultId: null });
+  expect(getResultInputMock).not.toHaveBeenCalled();
 });
 
 test('입력값을 못 읽으면 막지 않고 (1/2) 부터 다시 받는다', async () => {

@@ -9,8 +9,9 @@ import type { ProfileCardFace } from '@/ui/ProfileCard';
 
 import { DatingBackdrop } from '../DatingBackdrop';
 import { CandidateCard } from './CandidateCard';
-import type { DatingCardsView } from './cardsView';
+import type { DatingCardsView, MatchCandidateView } from './cardsView';
 import { DatingHeader } from './DatingHeader';
+import { ThreadGuideDialog } from '../wallet/ThreadGuideDialog';
 import { RerollSheet } from './RerollSheet';
 
 type Props = {
@@ -21,9 +22,12 @@ type Props = {
   // 리롤 확인 시트에서 변경을 고른 뒤. 차감·새 추천은 부르는 쪽이 한다.
   onReroll: () => void;
   onOpenRequests: () => void;
+  // 상대가 먼저 실을 보낸 카드에서 — 받은 신청 탭을 연다.
+  onOpenReceived: () => void;
   // 미리보기용 시작 상태.
   initialCardFace?: ProfileCardFace;
   initialRerollOpen?: boolean;
+  initialThreadGuideOpen?: boolean;
 };
 
 // SCR-17 오늘의 인연 Top 3 — Figma 카드 앞면(91:1641) · 뒷면(103:2533) · 인연x(134:2320) · 리롤 시트.
@@ -33,13 +37,17 @@ export function DatingCards({
   onOpenUnlock,
   onReroll,
   onOpenRequests,
+  onOpenReceived,
   initialCardFace,
   initialRerollOpen = false,
+  initialThreadGuideOpen = false,
 }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isRerollOpen, setRerollOpen] = useState(initialRerollOpen);
+  const [isThreadGuideOpen, setThreadGuideOpen] = useState(initialThreadGuideOpen);
   const trackRef = useRef<HTMLUListElement>(null);
   const active = view.candidates[activeIndex];
+  const slots = toCardSlots(view.candidates);
 
   function handleScroll(event: UIEvent<HTMLUListElement>) {
     const { scrollLeft, clientWidth } = event.currentTarget;
@@ -55,7 +63,16 @@ export function DatingCards({
   return (
     <div className="flex flex-col gap-20">
       <DatingBackdrop />
-      <DatingHeader balance={view.balance} onOpenRequests={onOpenRequests} />
+      <DatingHeader
+        onOpenRequests={onOpenRequests}
+        onOpenThreadGuide={() => setThreadGuideOpen(true)}
+      />
+      <ThreadGuideDialog
+        balance={view.balance}
+        checkedInToday={view.checkedInToday}
+        onClose={() => setThreadGuideOpen(false)}
+        open={isThreadGuideOpen}
+      />
 
       <section className="flex flex-col gap-32">
         <header className="flex flex-col gap-4">
@@ -77,39 +94,49 @@ export function DatingCards({
               onScroll={handleScroll}
               ref={trackRef}
             >
-              {view.candidates.map((candidate) => (
-                <li className="w-full shrink-0 snap-center" key={candidate.id}>
-                  <CandidateCard
-                    candidate={candidate}
-                    initialFace={initialCardFace}
-                    onOpenUnlock={onOpenUnlock}
-                  />
+              {slots.map((slot) => (
+                <li className="w-full shrink-0 snap-center" key={slot.id}>
+                  {slot.candidate ? (
+                    <CandidateCard
+                      candidate={slot.candidate}
+                      initialFace={initialCardFace}
+                      onOpenUnlock={
+                        slot.candidate.isThreadSent || slot.candidate.isThreadReceived
+                          ? undefined
+                          : onOpenUnlock
+                      }
+                    />
+                  ) : (
+                    <EmptyCard />
+                  )}
                 </li>
               ))}
             </ul>
           )}
           <Indicator
             activeIndex={activeIndex}
-            ids={
-              view.candidates.length > 0
-                ? view.candidates.map((candidate) => candidate.id)
-                : emptyIndicatorIds
-            }
+            ids={view.candidates.length > 0 ? slots.map((slot) => slot.id) : emptyIndicatorIds}
             isInteractive={view.candidates.length > 0}
             onSelect={showCandidate}
           />
         </div>
 
         <div className="flex flex-col gap-12">
-          <Button
-            disabled={!active}
-            onClick={() => {
-              if (active) onSendThread(active.id);
-            }}
-            size="m"
-          >
-            운명의 실 보내기
-          </Button>
+          {active?.isThreadReceived ? (
+            <Button onClick={onOpenReceived} size="m">
+              상대가 보낸 운명의 실 확인하기
+            </Button>
+          ) : (
+            <Button
+              disabled={!active || active.isThreadSent === true}
+              onClick={() => {
+                if (active) onSendThread(active.id);
+              }}
+              size="m"
+            >
+              {active?.isThreadSent ? '운명의 실을 보냈어요' : '운명의 실 보내기'}
+            </Button>
+          )}
           <div className="flex flex-col items-center gap-8">
             <Button
               className="w-full"
@@ -145,7 +172,8 @@ export function DatingCards({
 // 인연x — 추천할 상대가 없을 때(Figma 134:2248).
 function EmptyCard() {
   return (
-    <div className="relative flex h-[433px] w-full items-center justify-center overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800">
+    // 카드 자리와 같은 규격이어야 나란히 놓였을 때 높이가 맞는다(ProfileCard 와 같은 비율).
+    <div className="relative flex aspect-[343/433] w-full items-center justify-center overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800">
       <img
         alt=""
         className="absolute size-[178px] opacity-20"
@@ -159,7 +187,19 @@ function EmptyCard() {
   );
 }
 
+const CARD_SLOTS = 3;
 const emptyIndicatorIds = ['empty-1', 'empty-2', 'empty-3'] as const;
+
+// 카드 자리는 늘 세 개다 — 추천이 1~2명이면 남은 자리를 빈 카드로 채워 'Top 3' 가 세 장으로 보인다
+// (2026-09-28 결정, Figma 인연x 134:2248). 0명이면 넘기기 없이 빈 카드 하나만 보인다(FR-26).
+type CardSlot = { id: string; candidate?: MatchCandidateView };
+
+function toCardSlots(candidates: readonly MatchCandidateView[]): CardSlot[] {
+  return Array.from({ length: CARD_SLOTS }, (_, index) => {
+    const candidate = candidates[index];
+    return candidate ? { id: candidate.id, candidate } : { id: `empty-${index + 1}` };
+  });
+}
 
 type IndicatorProps = {
   ids: readonly string[];

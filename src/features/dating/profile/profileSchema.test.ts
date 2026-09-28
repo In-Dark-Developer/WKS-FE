@@ -54,6 +54,22 @@ test('(1/2) 없는 날짜와 범위 밖 날짜를 구분한다', () => {
   });
 });
 
+// QA(2026-09-28): 사주 입력과 같은 규칙·문구를 쓴다 — 받는 마지막 날은 어제다(백엔드가 오늘을 400 으로 막는다).
+test('(1/2) 오늘은 막고 어제는 받는다', () => {
+  expect(validateSajuStep({ ...validSaju, birthDate: '20260924' }, now)).toMatchObject({
+    fieldErrors: { birthDate: profileErrorMessages.birthDateRange },
+  });
+  expect(validateSajuStep({ ...validSaju, birthDate: '20260923' }, now).success).toBe(true);
+});
+
+// 사주 입력(`features/saju`)과 같은 문구여야 한다. feature 끼리 import 하지 않으므로(CONVENTIONS 6장)
+// 양쪽 테스트가 같은 문장을 각각 단언한다 — 한쪽만 고치면 여기서 깨진다.
+test('(1/2) 생년월일 범위 문구가 사주 입력과 같은 문장이다', () => {
+  expect(profileErrorMessages.birthDateRange).toBe(
+    '1950년 1월 1일부터 어제까지의 날짜로 작성해 주세요 (오늘·미래는 사주를 볼 수 없어요)',
+  );
+});
+
 test("(1/2) 통과하면 ISO 날짜로 바꾸고 '시간 몰라요'면 시간을 비운다", () => {
   const result = validateSajuStep({ ...validSaju, birthTimeUnknown: true }, now);
 
@@ -102,6 +118,21 @@ test('(2/2) 연락 수단에 따라 전화번호·인스타그램 아이디 규�
   });
 
   expect(instagram).toMatchObject({ success: true, data: { contactValue: 'moon.rabbit' } });
+});
+
+test('(2/2) 이메일은 @dgu.ac.kr 학교 메일만 받는다 — 대소문자는 가리지 않는다', () => {
+  expect(validateDetailsStep({ ...validDetails, email: 'chaewon@gmail.com' })).toMatchObject({
+    fieldErrors: { email: profileErrorMessages.emailDomain },
+  });
+  expect(
+    validateDetailsStep({ ...validDetails, email: 'chaewon@mail.dgu.ac.kr.evil.com' }),
+  ).toMatchObject({
+    fieldErrors: { email: profileErrorMessages.emailDomain },
+  });
+  expect(validateDetailsStep({ ...validDetails, email: ' Chaewon@DGU.AC.KR ' })).toMatchObject({
+    success: true,
+    data: { email: 'Chaewon@DGU.AC.KR' },
+  });
 });
 
 test('(2/2) 학과는 14자, 자기소개는 170자를 넘으면 막는다', () => {

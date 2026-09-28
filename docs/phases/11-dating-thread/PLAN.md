@@ -25,23 +25,39 @@
 
 - 앱 내 채팅 — 성립 후 대화는 앱 밖에서 한다(2026-09-13 확정, Non-goals).
 - 잠긴 사진의 원본 URL 차단 — 백엔드 책임(FR-56 계열).
-- 받은 요청에 궁합 점수를 노출할지 — 미확정(OPEN-2). 노출하지 않는 쪽으로 만들고 결정이 오면 고친다.
+- 받은 요청에 궁합 점수를 노출할지 — 노출한다(2026-09-27 소유자 결정, Figma 보관함/나에게보낸사람 109:2251 · 109:2498). PRD Q17 은 2026-09-28 FR-30 에서 닫았다.
 
 ## Dependencies
 
 - Phase 10 — 추천(FR-26)이 서야 해금할 대상이 있다.
 - 백엔드: 해금 차감·중복 차감 방지, 요청 생성·수락·거절, 연락처 공개 시점 제어. `docs/api/openapi.yaml` 갱신이 T1 착수의 전제다.
-- 미확정 결정: OPEN-2(받은 요청의 궁합 점수 노출). 결정 전에는 노출하지 않는다.
+- 결정됨: OPEN-2(받은 요청의 궁합 점수 노출) — 노출한다(2026-09-27).
 
 ## Tasks
 
-- [ ] T1. 정보 해금 — Done when: 사진·이름·학과·궁합 까닭을 항목별로 열 수 있고 각 비용(10 · 7 · 5 · 3)이 잔액에서 차감되며, 같은 상대의 같은 항목은 한 번만 차감되고, 해금 전에는 화면과 네트워크 응답 어디에도 그 값이 없다 · Touches: `src/features/dating/`, `src/ui/`, `docs/api/openapi.yaml` · After: T3 · Owner: 강근우 · FR: FR-28
+- [x] T1. 정보 해금 — Done when: 사진·이름·학과·궁합 까닭을 항목별로 열 수 있고 각 비용(10 · 7 · 5 · 3)이 잔액에서 차감되며, 같은 상대의 같은 항목은 한 번만 차감되고, 해금 전에는 화면과 네트워크 응답 어디에도 그 값이 없다 · Touches: `src/features/dating/`, `src/ui/`, `docs/api/openapi.yaml` · After: T3 · Owner: 강근우 · FR: FR-28 (commit 20bbc0f)
 
-- [ ] T2. 운명의 실과 요청함 — Done when: 보내기 전 '보낸 뒤에는 열지 않은 정보를 더 볼 수 없다'를 확인받고 전송되며, 요청함이 '보낸 신청'과 '받은 신청'으로 나뉘고, 받은 신청의 상대 정보는 해금 없이 전부 보이며, 수락하면 양쪽에 서로 등록한 연락 수단(전화번호 또는 인스타그램, 택1)이 공개되고 거절하면 공개되지 않는다 · Touches: `src/features/dating/`, `src/app/routes/` · After: T1, T3 · Owner: 강근우 · FR: FR-29, FR-30
+- [x] T2. 운명의 실과 요청함 — Done when: 보내기 전 '보낸 뒤에는 열지 않은 정보를 더 볼 수 없다'를 확인받고 전송되며, 요청함이 '보낸 신청'과 '받은 신청'으로 나뉘고, 받은 신청의 상대 정보는 해금 없이 전부 보이며, 수락하면 양쪽에 서로 등록한 연락 수단(전화번호 또는 인스타그램, 택1)이 공개되고 거절하면 공개되지 않는다 · Touches: `src/features/dating/`, `src/app/routes/` · After: T1, T3 · Owner: 강근우 · FR: FR-29, FR-30 (commit bbde9a8, 03821c9 — 요청 취소·받은 신청 프로필·취소 후 재요청은 WKS-BE dev 4d2e534 로 반영. 취소한 신청은 요청함에 보이지 않는다)
 
 - [x] T3. 해금·운명의 실·요청함 퍼블리싱 — Done when: 메인/카드(`76-3401`)의 해금 모달(기본·hover·selected·구매 완료)·전체 해금 카드(앞면·뒷면)·운명의 실 보냈을 때 모달 1·2, 요청 리스트(`76-3400`)의 보관함 내가보낸사람·나에게보낸사람과 각 상세 모달이 뷰 모델 props 로만 그려지고 `/preview/<화면>` 에서 가짜 데이터로 보이며, `LockedValue`·`Tabs` 가 도메인 규칙 없이 `src/ui/` 에 있다. Phase 10 T4 의 `ProfileCard`·`BottomSheet` 를 재사용하고, API 호출·loader·action 은 넣지 않는다 · Touches: `src/features/dating/`, `src/ui/`, `src/app/preview/screens/` · Owner: 이정진 · UI: FR-28, FR-29, FR-30 (commit 2c7a29d)
 
 퍼블리싱 먼저(2026-09-24): 화면은 T3 가 props 뷰 모델로만 그리고, 데이터 연결은 T1·T2 가 한다. T3 는 Phase 10 T4 의 공용 컴포넌트 위에 선다.
+
+QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 원래 그 FR 을 만든 사람이다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
+
+- [x] T4. 해금 뒤 카드 버튼 정렬 — Done when: 항목을 해금하기 전과 뒤에 카드 뒷면의 '열람하기'·잠금 알약·버튼의 정렬이 바뀌지 않고(Figma 뒷면 `103:2533`), 일부·전체 해금 상태 모두 같은 줄에 선다 · Touches: `src/features/dating/card/CandidateFaces.tsx` · Owner: 강근우 · FR: FR-28 (QA: 해금 시 버튼 정렬 바뀜) (commit c3dd065, PR #275 — 이름·학과 알약을 카드 가운데로)
+
+- [x] T5. 해금 즉시 카드 갱신 — Done when: 해금 완료 모달을 닫으면 새로고침 없이 그 카드에 연 항목(사진·이름·학과·궁합 까닭)이 보이고, 잔액도 함께 맞는다 · Touches: `src/features/dating/recommendation/DatingCardsScreen.tsx`, `src/features/dating/unlock/` · Owner: 강근우 · FR: FR-28 (QA 기능: 해금 시 새로고침 바로 안 됨) (commit c3dd065, PR #275 — 해금 응답 값을 재조회 전 카드·잔액에 얹는다)
+
+- [x] T6. 궁합 까닭 줄바꿈 — Done when: 카드 뒷면과 요청함 상세의 궁합 까닭 문장이 카드 폭 안에서 줄을 바꾸고, 백엔드 문장에 들어 있는 줄바꿈도 그대로 보인다 · Touches: `src/features/dating/card/CandidateFaces.tsx`, `src/features/dating/requests/RequestDetail.tsx` · Owner: 강근우 · FR: FR-28 (QA: 궁합사유 줄 바꿈이 안된다) (commit 416da49 — 긴 글 줄바꿈은 #275)
+
+- [x] T7. 운명의 실 모달 상단 간격 — Done when: '운명의 실 보내기' 확인 모달과 보낸 뒤 모달의 위쪽 여백이 Figma 운명의 실 모달 1·2 와 같다 · Touches: `src/features/dating/thread/ThreadDialogs.tsx`, `src/features/dating/DatingDialog.tsx` · Owner: 강근우 · FR: FR-29 (QA: 운명의 실 모달 상단 간격) (수정 없음 — Figma 모달 1·2 와 실측이 343/32/32/16·gap 24·20·12 로 모두 같다)
+
+- [x] T8. 요청함 목록 오른쪽 알약 — Done when: '보낸 신청' 목록 줄은 궁합 점수 대신 요청 상태 알약('신청중'·'수락됨'·'거절됨', Figma 보관함/내가보낸사람 `390:2842` — 상태마다 알약 색이 다르다)을 보이고, '받은 신청' 목록 줄은 궁합 점수 알약(Figma 보관함/나에게보낸사람 `109:2251`)을 보인다(FR-30, 2026-09-28 결정) · Touches: `src/features/dating/requests/` · Owner: 강근우 · FR: FR-30 (QA: 받은 요청함에서 수락중 이런 식으로 떠야 하는데 궁합점수가 뜸 · QA 기능: 보낸 요청함 리스트 → 대기 상태) (commit f08af93 보낸 상태 알약 · 57c2691 받은 점수 알약)
+
+- [x] T9. 받은 신청 궁합 까닭 공개 — Done when: '받은 신청' 상대 카드의 궁합 까닭이 블러 없이 보이거나, 백엔드가 까닭을 주지 않는다면 블러 대신 없음 안내가 보인다(받은 신청의 상대 정보는 해금 없이 보인다, FR-30). 백엔드 응답에 까닭이 없으면 WKS-BE 에 요청한다 · Touches: `src/features/dating/requests/`, `src/api/` · Owner: 강근우 · FR: FR-30 (QA 기능: 나에게 요청한 사람 - 궁합 이유 블러 처리 됨) (commit 6869f80 — 없음 안내 · 재개 후 WKS-BE #124 의 `counterpart.fields.reason` 연결)
+
+- [x] T10. 먼저 실을 보낸 상대의 추천 카드 — Done when: 상대가 먼저 운명의 실을 보낸 추천 카드(`isThreadReceived`, WKS-FE #270)가 잠긴 항목을 그대로 두지 않는다 — 추천에서 빼거나, 받은 신청처럼 사진·이름·학과·궁합 까닭을 실 없이 열어 보이는 방식 중 하나를 정해 PLAN 에 적고 구현한다(받은 신청의 상대 정보는 해금 없이 보인다, FR-30). 해금 비용은 차감되지 않는다 · Touches: `src/features/dating/recommendation/`, `src/features/dating/card/` · After: T9 · Owner: 강근우 · FR: FR-28, FR-30 (QA 기능: 나한테 보낸 사람의 카드가 없어지거나 해금한 걸 보여줘야 할 듯) (commit e644205 · 방식: 추천에서 빼지 않고 **받은 신청처럼 열어 보인다** — 받은 요청 행의 `counterpart` 가 사진·이름·학과·까닭을 실 없이 주므로 그 값으로 카드를 덮는다. 해금 시트는 열리지 않고 비용도 차감되지 않는다)
 
 ## Relevant Specifications
 

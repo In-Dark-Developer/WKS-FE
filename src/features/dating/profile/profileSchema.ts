@@ -5,6 +5,7 @@ import {
   DEPARTMENT_MAX,
   NAME_MAX,
   NICKNAME_MAX,
+  SCHOOL_EMAIL_DOMAIN,
   type BirthTime,
   type CalendarType,
   type ContactMethod,
@@ -65,12 +66,14 @@ export const profileErrorMessages = {
   gender: '성별을 선택해 주세요',
   birthDateFormat: '생년월일을 숫자 8자리로 작성해 주세요',
   birthDateReal: '실제로 있는 날짜로 작성해 주세요',
-  birthDateRange: '1950년 1월 1일부터 오늘까지의 날짜로 작성해 주세요',
+  birthDateRange:
+    '1950년 1월 1일부터 어제까지의 날짜로 작성해 주세요 (오늘·미래는 사주를 볼 수 없어요)',
   birthTime: "태어난 시간을 선택하거나 '태어난 시간을 몰라요'를 체크해 주세요",
   nickname: `닉네임을 1~${NICKNAME_MAX}자로 작성해 주세요`,
   name: `이름을 1~${NAME_MAX}자로 입력해 주세요`,
   photo: '본인 사진을 한 장 올려 주세요',
   email: '이메일 주소를 확인해 주세요',
+  emailDomain: `학교 메일(@${SCHOOL_EMAIL_DOMAIN})만 쓸 수 있어요`,
   phone: '전화번호를 숫자 10~11자리로 입력해 주세요',
   instagram: '인스타그램 아이디를 확인해 주세요',
   department: `학과를 1~${DEPARTMENT_MAX}자로 입력해 주세요`,
@@ -107,9 +110,12 @@ function isRealDate(digits: string, calendarType: CalendarType): boolean {
   return date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
-function todayIso(now: Date): string {
+// 사주 입력(`features/saju/formSchema.ts`)과 같은 규칙·문구를 쓴다 — 받을 수 있는 마지막 날은 어제다
+// (백엔드가 오늘·미래를 400 으로 막는다, 2026-09-28 dev 확인).
+function lastAllowedIso(now: Date): string {
+  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
   const pad = (value: number) => String(value).padStart(2, '0');
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  return `${yesterday.getFullYear()}-${pad(yesterday.getMonth() + 1)}-${pad(yesterday.getDate())}`;
 }
 
 // 형식(8자리)이 틀리면 형식 오류만 보인다 — 실재·범위 검사는 그 다음이다.
@@ -120,7 +126,7 @@ function birthDateError(
   if (!/^\d{8}$/.test(values.birthDate)) return undefined;
   if (!isRealDate(values.birthDate, values.calendarType)) return profileErrorMessages.birthDateReal;
   const iso = toIsoDate(values.birthDate);
-  if (iso < MIN_DATE || iso > todayIso(now)) return profileErrorMessages.birthDateRange;
+  if (iso < MIN_DATE || iso > lastAllowedIso(now)) return profileErrorMessages.birthDateRange;
   return undefined;
 }
 
@@ -159,7 +165,10 @@ const detailsStepSchema = z
     email: z
       .string()
       .trim()
-      .pipe(z.email({ error: profileErrorMessages.email })),
+      .pipe(z.email({ error: profileErrorMessages.email }))
+      .refine((email) => email.toLowerCase().endsWith(`@${SCHOOL_EMAIL_DOMAIN}`), {
+        error: profileErrorMessages.emailDomain,
+      }),
     contactMethod: z.enum(['PHONE', 'INSTAGRAM']),
     contactValue: z.string(),
     department: lengthBetween(DEPARTMENT_MAX, profileErrorMessages.department),

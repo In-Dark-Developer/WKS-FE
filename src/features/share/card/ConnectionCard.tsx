@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import cardBack from '@/ui/assets/cards/card-back.webp';
 import rotateRight from '@/ui/assets/icons/rotate-right.svg';
@@ -18,18 +18,22 @@ type Props = {
   // 앞면 등급 줄 — 결혼운·자녀운·연애운(PRD FR-5). 순서·이름은 부르는 쪽이 정한다.
   grades: readonly { label: string; grade: Grade }[];
   initialFace?: Face;
+  // 앞면 오른쪽 아래에 얹는 동작(카드 저장 아이콘, Figma 58:2523). 앞면과 함께 뒤집혀 뒷면에서는 보이지 않고,
+  // DestinyCard 밖이라 저장 이미지에는 담기지 않는다.
+  frontAction?: ReactNode;
 };
 
 // 결과 화면 운명 카드 — 앞면(운명 카드, Figma 713:4026)·뒷면(점지 카드 뒷면 731:4712)과 '카드 뒤집기'(FR-5).
-export function ConnectionCard({ initialFace = 'front', ...front }: Props) {
+export function ConnectionCard({ initialFace = 'front', frontAction, ...front }: Props) {
   const [face, setFace] = useState<Face>(initialFace);
   const isBack = face === 'back';
 
   return (
     <div data-connection-card="" data-face={face}>
       <div data-connection-card-inner="">
-        <div aria-hidden={isBack} inert={isBack}>
+        <div aria-hidden={isBack} data-connection-card-front="" inert={isBack}>
           <DestinyCard {...front} />
+          {frontAction ? <div data-connection-card-front-action="">{frontAction}</div> : null}
         </div>
         <div aria-hidden={!isBack} data-connection-card-back="" inert={!isBack}>
           <img alt="운명도 꿰어야 사랑이다" draggable={false} src={cardBack} />

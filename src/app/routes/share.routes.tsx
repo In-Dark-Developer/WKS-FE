@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
 import {
+  Await,
   Link,
   isRouteErrorResponse,
   useLoaderData,
+  useLocation,
   useNavigate,
   useNavigation,
   useParams,
+  useRevalidator,
   useRouteError,
 } from 'react-router-dom';
-import type { z } from 'zod';
+import { z } from 'zod';
 
 import { AppShell } from '@/app/AppShell';
 import { RouteError } from '@/app/RouteError';
@@ -17,16 +20,22 @@ import { RouteLoading } from '@/app/RouteLoading';
 import { fromSharedMapState } from '@/app/routes/fromSharedMap';
 import { ShareInputScreen } from '@/app/screens/ShareInputScreen';
 import { SharedMapScreen } from '@/app/screens/SharedMapScreen';
+import { SharedResultScreen } from '@/app/screens/SharedResultScreen';
 import { readSession } from '@/api/session';
 import {
   joinShare,
   joinShareLoader,
   ShareEntryChoice,
+  ShareInvite,
+  ReasonAnswers,
   ShareJoinLoading,
   shareInputLoader,
   shareMapLoader,
+  shareResultLoader,
   type ShareInputView,
+  type ReasonState,
   type SharedMapView,
+  type SharedResultView,
 } from '@/features/friends';
 import { IntroGate } from '@/features/intro';
 import { createSajuAction } from '@/features/saju';
@@ -55,26 +64,24 @@ function ShareInputRoute() {
   // canReusePrevious=false 를 주고 navigation 이 멈춰 폼이 보인다.
   if (choice === 'reuse' && navigation.state !== 'idle') return <ShareJoinLoading />;
 
-  const form = <ShareInputScreen ownerNickname={view.ownerNickname} />;
+  // 초대 머리는 사주 유무와 상관없이 늘 위에 있다(FR-15 V1). 신규 방문자는 바로 폼, 기존 방문자는 먼저 고르고
+  // '새로 작성하기'를 누르면 선택 아래에 같은 폼이 열린다(Figma 30:5916 · 30:6128 · 30:6323).
+  const showForm = !view.canReusePrevious || choice === 'new';
   return (
     <IntroGate>
-      {view.canReusePrevious ? (
-        // '새로 작성하기'를 눌러도 초대·선택은 남고 그 아래에 폼이 열린다(Figma 30:6323).
-        <>
+      <div className="flex flex-col gap-40">
+        <ShareInvite ownerFriends={view.ownerFriends} ownerNickname={view.ownerNickname} />
+        {view.canReusePrevious ? (
           <ShareEntryChoice
             onReusePrevious={() => {
               setChoice('reuse');
               void navigate(`/s/${encodeURIComponent(shareId)}/join`);
             }}
             onWriteNew={() => setChoice('new')}
-            ownerFriends={view.ownerFriends}
-            ownerNickname={view.ownerNickname}
           />
-          {choice === 'new' ? form : null}
-        </>
-      ) : (
-        form
-      )}
+        ) : null}
+        {showForm ? <ShareInputScreen ownerNickname={view.ownerNickname} /> : null}
+      </div>
     </IntroGate>
   );
 }
@@ -86,18 +93,67 @@ const shareSajuAction = createSajuAction(async (resultId, { params }) => {
   return (await joinShare(shareId, resultId)) ?? `/s/${encodeURIComponent(shareId)}/join`;
 }, 'share');
 
-// 내 사주로는 push 로 가서 내 사주의 '뒤로가기'가 이 지도로 돌아온다 (FR-6).
+// 공유 궁합 결과 → 전체 지도 이동 표시 — 이동 기록(history state)은 런타임 경계 입력이라 파싱해서 읽는다.
+const fromSharedResultState = z.object({ from: z.literal('shared-result') });
+
+// 내 사주로는 push 로 가서 내 사주의 '뒤로가기'가 이 지도로 돌아온다 (FR-6). 공유 궁합 결과의 '전체 보기 >'로
+// 들어왔으면 맨 위 '뒤로가기'가 결과로 돌아간다(09/T10).
 function SharedMapRoute() {
   const view = useLoaderData<SharedMapView>();
   const navigate = useNavigate();
+  const fromResult = fromSharedResultState.safeParse(useLocation().state).success;
   return (
     <SharedMapScreen
       friends={view.friends}
       nickname={view.nickname}
+      onBack={fromResult ? () => void navigate(-1) : undefined}
       onViewMyReading={() =>
         void navigate(`/reading/${view.myResultId}`, {
           state: { from: 'shared-map' } satisfies z.infer<typeof fromSharedMapState>,
         })
+      }
+    />
+  );
+}
+
+// SCR-24 공유 궁합 결과(09/T10, FR-6) — 궁합을 만들면 여기로 온다. 이유는 첫 열람에 생성되느라 느려서(FR-22)
+// 화면을 먼저 그리고 그 자리만 로딩 → 답(또는 오류)으로 바꾼다. 다시 시도는 loader 를 다시 돌린다.
+function SharedResultRoute() {
+  const view = useLoaderData<SharedResultView>();
+  const navigate = useNavigate();
+  const revalidator = useRevalidator();
+  const answers = (state: ReasonState) => (
+    <ReasonAnswers
+      bodySize="page"
+      onRetry={() => void revalidator.revalidate()}
+      state={state}
+      tier={view.mine.tier}
+    />
+  );
+  return (
+    <SharedResultScreen
+      friends={view.friends}
+      mine={view.mine}
+      myRank={view.myRank}
+      onViewAll={() =>
+        void navigate(`/s/${encodeURIComponent(view.shareId)}/map`, {
+          state: { from: 'shared-result' } satisfies z.infer<typeof fromSharedResultState>,
+        })
+      }
+      onViewMyReading={() =>
+        void navigate(`/reading/${view.myResultId}`, {
+          state: { from: 'shared-map' } satisfies z.infer<typeof fromSharedMapState>,
+        })
+      }
+      ownerNickname={view.ownerNickname}
+      reason={
+        <Suspense fallback={answers({ status: 'loading' })}>
+          <Await errorElement={answers({ status: 'error' })} resolve={view.reason}>
+            {(reason: Awaited<SharedResultView['reason']>) =>
+              answers({ status: 'ready', ...reason })
+            }
+          </Await>
+        </Suspense>
       }
     />
   );
@@ -170,11 +226,12 @@ function ShareEntryFallback() {
 
 export const shareRoutes: RouteObject[] = [
   // SCR-06 공유 링크 입력 — 가드 없음(FR-18). 내 결과가 있으면 이전 정보로 할지 새로 쓸지 고르게 한다 (FR-23).
+  // 배경은 입력 화면과 같은 새벽 하늘이다(Figma 4.2).
   {
     path: 's/:shareId',
     loader: shareInputLoader,
     action: shareSajuAction,
-    handle: { backdrop: 'result' },
+    handle: { backdrop: 'dawn' },
     hydrateFallbackElement: <ShareInputFallback />,
     element: <ShareInputRoute />,
   },
@@ -185,6 +242,14 @@ export const shareRoutes: RouteObject[] = [
     handle: { backdrop: 'result' },
     hydrateFallbackElement: <ShareEntryFallback />,
     errorElement: <JoinShareError />,
+  },
+  // SCR-24 공유 궁합 결과 — 궁합을 만든 뒤 오는 곳(09/T10). 이 탭의 궁합 기록이 없으면 전체 지도로.
+  {
+    path: 's/:shareId/result',
+    loader: shareResultLoader,
+    handle: { backdrop: 'result' },
+    hydrateFallbackElement: <ShareEntryFallback />,
+    element: <SharedResultRoute />,
   },
   // SCR-13 친구의 궁합 지도 — 내 결과가 없으면 입력으로 (05/T10).
   {

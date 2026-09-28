@@ -7,7 +7,12 @@ import { Tabs } from '@/ui/Tabs';
 
 import { DatingBackdrop } from '../DatingBackdrop';
 import { RequestDetail } from './RequestDetail';
-import type { RequestInboxView, RequestProfileView, RequestTab } from './requestsView';
+import type {
+  ReceivedRequestView,
+  RequestInboxView,
+  RequestTab,
+  SentRequestView,
+} from './requestsView';
 
 type Props = {
   view: RequestInboxView;
@@ -38,7 +43,8 @@ export function RequestInbox({
 }: Props) {
   const [tab, setTab] = useState<RequestTab>(initialTab);
   const [openId, setOpenId] = useState(initialOpenId);
-  const rows: readonly RequestProfileView[] = tab === 'sent' ? view.sent : view.received;
+  const rows: readonly (SentRequestView | ReceivedRequestView)[] =
+    tab === 'sent' ? view.sent : view.received;
   const sentOpen = tab === 'sent' ? view.sent.find((each) => each.id === openId) : undefined;
   const receivedOpen =
     tab === 'received' ? view.received.find((each) => each.id === openId) : undefined;
@@ -72,7 +78,7 @@ export function RequestInbox({
           <ul className="flex flex-col gap-8">
             {rows.map((request) => (
               <li key={request.id}>
-                <RequestRow onOpen={() => setOpenId(request.id)} request={request} />
+                <RequestRow onOpen={() => setOpenId(request.id)} request={request} tab={tab} />
               </li>
             ))}
           </ul>
@@ -95,15 +101,41 @@ export function RequestInbox({
           onClose={() => setOpenId(undefined)}
           onDecline={() => act(onDecline, receivedOpen.id)}
           request={receivedOpen}
+          status={receivedOpen.status}
         />
       ) : null}
     </div>
   );
 }
 
+type PillTone = 'pending' | 'matched' | 'declined';
+
+// 요청 상태 알약 — 기다림은 '신청중', 성립은 '수락됨', 실패·거절은 '거절됨'(Figma 보관함/내가보낸사람 390:2842).
+// 받은 신청의 응답 전(상태 없음 포함)도 '신청중'이다.
+const pillByStatus: Record<
+  NonNullable<ReceivedRequestView['status']> | SentRequestView['status'],
+  { tone: PillTone; label: string }
+> = {
+  PENDING: { tone: 'pending', label: '신청중' },
+  MATCHED: { tone: 'matched', label: '수락됨' },
+  FAILED: { tone: 'declined', label: '거절됨' },
+  DECLINED: { tone: 'declined', label: '거절됨' },
+};
+
 // 목록 한 줄 — Figma Card/순위(109:1871). 누르면 상대 카드를 띄운다.
-function RequestRow({ request, onOpen }: { request: RequestProfileView; onOpen: () => void }) {
+// 오른쪽 알약은 탭마다 다르다(2026-09-28 결정) — 보낸 신청은 요청 상태(보관함/내가보낸사람 390:2842),
+// 받은 신청은 궁합 점수(보관함/나에게보낸사람 109:2251)다.
+function RequestRow({
+  request,
+  tab,
+  onOpen,
+}: {
+  request: SentRequestView | ReceivedRequestView;
+  tab: RequestTab;
+  onOpen: () => void;
+}) {
   const { photo, name, score } = request;
+  const pill = pillByStatus[request.status ?? 'PENDING'];
   const photoSrc = photo.isLocked ? photo.thumbnailUrl : photo.url;
 
   return (
@@ -134,7 +166,7 @@ function RequestRow({ request, onOpen }: { request: RequestProfileView; onOpen: 
           <span className="truncate text-ui-16 font-semibold text-primary">{name.value}</span>
         )}
       </span>
-      {score === null ? null : (
+      {tab === 'received' && score !== null ? (
         <span className="flex shrink-0 items-center gap-12">
           <span className="font-display text-ui-12 text-primary">궁합점수</span>
           <span
@@ -143,6 +175,13 @@ function RequestRow({ request, onOpen }: { request: RequestProfileView; onOpen: 
           >
             {score}점
           </span>
+        </span>
+      ) : (
+        <span
+          className="flex h-[28px] w-[60px] shrink-0 items-center justify-center rounded-999 border border-primary-50 font-display text-ui-12 shadow-sm"
+          data-status-pill={pill.tone}
+        >
+          {pill.label}
         </span>
       )}
     </button>

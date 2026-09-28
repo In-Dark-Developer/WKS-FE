@@ -2,22 +2,23 @@ import { useState } from 'react';
 import type { LoaderFunctionArgs, RouteObject } from 'react-router-dom';
 import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 
+import { getMe } from '@/api/me';
 import { readSession } from '@/api/session';
 import { HomeScreen } from '@/app/screens/HomeScreen';
-import { requireSaju } from '@/app/routes/guards';
+import { requireSaju, restoreSessionFromAccount } from '@/app/routes/guards';
 import { fromSharedMapState } from '@/app/routes/fromSharedMap';
 import { readingLoader, SajuForm, sajuAction, type ReadingView } from '@/features/saju';
 import { goToKakaoLogin } from '@/features/auth';
 import { DATING_INTRO_PATH, LoginSheet } from '@/features/dating';
 import { IntroGate, MainTeaser } from '@/features/intro';
-import { PreRegisterModal, VerifyComplete, preRegisterAction } from '@/features/profile';
+import { VerifyComplete } from '@/features/profile';
 import { track } from '@/lib/analytics';
 
 // 화면 도착 이벤트는 loader 에서 보낸다 — 이동마다 한 번이라 StrictMode 의 이중 마운트에 겹치지 않는다(analytics).
 
 // 세션 가드(T3·T8) 뒤에 결과 loader(T7)를 잇는다 — 이 브라우저가 만든 결과가 아니면 redirect('/')로 끝난다.
 async function protectedReadingLoader(args: LoaderFunctionArgs) {
-  requireSaju(args.params.id);
+  await requireSaju(args.params.id);
   const view = await readingLoader(args);
   track('reading_viewed', { friendCount: view.friends?.length ?? 0 });
   return view;
@@ -29,36 +30,39 @@ function HomeRoute() {
   const view = useLoaderData<ReadingView>();
   const navigate = useNavigate();
   const fromSharedMap = fromSharedMapState.safeParse(useLocation().state).success;
-  return (
-    <HomeScreen
-      onBack={fromSharedMap ? () => void navigate(-1) : undefined}
-      onPreRegister={() => {
-        track('pre_register_opened', {});
-        void navigate('pre-register');
-      }}
-      view={view}
-    />
-  );
+  return <HomeScreen onBack={fromSharedMap ? () => void navigate(-1) : undefined} view={view} />;
 }
 
-// SCR-01 메인 티저 (FR-1 V1). '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로, 없으면 사주 입력으로 간다.
+// 사주 입력(SCR-02) 주소 — 티저(`/`)와 나눠 '내 사주 보기'가 기록을 쌓게 한다. 뒤로가기가 티저로 돌아온다(2026-09-26).
+export const SAJU_INPUT_PATH = '/saju';
+
+// SCR-01 메인 티저 (FR-1 V1) — `/` 에 올 때마다 보인다. '내 사주 보기'는 이 브라우저의 결과가 있으면 로그인 없이 홈(결과)으로,
+// 없으면 사주 입력(`/saju`)으로 간다.
 // '새로운 인연 찾기'는 소개팅 인트로로 가고 로그인·프로필 조건은 소개팅이 판단한다(FR-24).
 // '이미 아이디가 있어요'는 로그인 시트만 띄운다 — 로그인 뒤 계정 기록을 불러와 이 티저로 돌아온다(FR-21).
-function MainTeaserRoute({ pass }: { pass: () => void }) {
+// 이미 로그인했으면 그 링크를 그리지 않는다. 로그인 여부는 GET /me 로만 판단하고, 조회가 실패하면 로그인하지 않은
+// 것으로 본다 — 링크가 한 번 더 보이는 편이 로그인할 길을 막는 것보다 낫다.
+// 로그인했는데 이 브라우저에 결과가 없으면 계정 결과를 세션에 되살려 '내 사주 보기'가 입력으로 새지 않게 한다(FR-21).
+type MainTeaserView = { isSignedIn: boolean };
+
+async function mainTeaserLoader(): Promise<MainTeaserView> {
+  const me = await getMe();
+  await restoreSessionFromAccount(me);
+  return { isSignedIn: me.ok };
+}
+
+function MainTeaserRoute() {
+  const { isSignedIn } = useLoaderData<MainTeaserView>();
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   return (
     <>
       <MainTeaser
-        onFindMatch={() => {
-          pass();
-          void navigate(DATING_INTRO_PATH);
-        }}
-        onHaveAccount={() => setIsLoginOpen(true)}
+        onFindMatch={() => void navigate(DATING_INTRO_PATH)}
+        onHaveAccount={isSignedIn ? undefined : () => setIsLoginOpen(true)}
         onViewSaju={() => {
           const session = readSession();
-          pass();
-          if (session) void navigate(`/reading/${session.resultId}`);
+          void navigate(session ? `/reading/${session.resultId}` : SAJU_INPUT_PATH);
         }}
       />
       <LoginSheet
@@ -70,23 +74,23 @@ function MainTeaserRoute({ pass }: { pass: () => void }) {
   );
 }
 
-// SCR-09 사전신청 모달 — 결과 화면 하위 라우트라 결과 화면의 <Outlet /> 에 뜬다(FR-9).
-// 닫기(배경·ESC·완료의 '확인')는 부모 결과 화면으로 돌아간다.
-function PreRegisterModalRoute() {
-  const navigate = useNavigate();
-  return <PreRegisterModal onClose={() => void navigate('..', { relative: 'path' })} open />;
-}
-
-// 사주 입력과 사주 결과(= 홈). 사전신청(SCR-09·SCR-14)은 결과 화면에 붙어 있어 같은 파일에 둔다.
+// 사주 입력과 사주 결과(= 홈). 홈의 사전신청(SCR-09)은 없앴고(2026-09-27 QA, 09/T13) 이미 나간 인증 메일의
+// 도착지(SCR-14 `/verify`)만 남긴다.
 export const sajuRoutes: RouteObject[] = [
-  // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7. 첫 방문이면 SCR-01 인트로와 메인 티저가 먼저 뜬다(FR-1).
+  // SCR-01 인트로·메인 티저 — 첫 방문이면 인트로 영상이 먼저 뜬다(FR-1). 사주가 없으면 이 티저가 홈이다(FR-19).
   {
     index: true,
+    loader: mainTeaserLoader,
     element: (
-      <IntroGate teaser={(pass) => <MainTeaserRoute pass={pass} />}>
-        <SajuForm />
+      <IntroGate>
+        <MainTeaserRoute />
       </IntroGate>
     ),
+  },
+  // SCR-02 사주 입력 — 03/T4 SajuForm, action 03/T7. 티저의 '내 사주 보기'로 온다.
+  {
+    path: SAJU_INPUT_PATH.slice(1),
+    element: <SajuForm />,
     action: sajuAction,
   },
   // SCR-04 사주 결과 = 홈 — 03/T5 ReadingResult (세션 필요), loader 03/T7. 인연카드(SCR-05)는 이 화면에 합쳤다(04/T7).
@@ -96,14 +100,6 @@ export const sajuRoutes: RouteObject[] = [
     // 공유 Flow 에서 '내 사주 내용도 확인하기'로 들어와도 여기서부터 네비가 보인다(FR-19, Figma 4.1.3).
     handle: { backdrop: 'result', nav: 'home' },
     element: <HomeRoute />,
-    children: [
-      {
-        path: 'pre-register',
-        action: preRegisterAction,
-        handle: { backdrop: 'mist' },
-        element: <PreRegisterModalRoute />,
-      },
-    ],
   },
   // SCR-14 인증 완료 — 백엔드 매직링크(`GET /signups/verify`)가 인증 뒤 302 로 보내는 자리다.
   // 가드 없음: 메일을 연 기기에 '내 결과'가 없을 수 있다.

@@ -6,9 +6,16 @@ vi.mock('./client', async (importOriginal) => {
   return { ...actual, request: requestMock };
 });
 
-import { createDatingProfile, type DatingProfileRequest } from './dating';
+import {
+  REROLL_PAID_COST,
+  createDatingProfile,
+  getRecommendations,
+  rerollRecommendations,
+  resetMockRecommendations,
+  type DatingProfileRequest,
+} from './dating';
 import { getMe, linkMockAccountResult, resetMockAccount, signInMockAccount } from './me';
-import { datingProfileSchema } from './schema/dating';
+import { datingProfileSchema, datingRerollResultSchema } from './schema/dating';
 import { clearSession, writeSession } from './session';
 
 const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
@@ -34,6 +41,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.useRealTimers();
   resetMockAccount();
+  resetMockRecommendations();
   clearSession();
   localStorage.clear();
 });
@@ -88,4 +96,59 @@ test('목 모드는 이 브라우저의 사주를 계정에 연결해 준다 (�
   await vi.runAllTimersAsync();
 
   await expect(pending).resolves.toMatchObject({ ok: true });
+});
+
+test('리롤은 POST /dating/recommendations/reroll 을 부른다', async () => {
+  const result = { candidates: [], rerollCost: 5, threadBalance: 10 };
+  requestMock.mockResolvedValue({ ok: true, data: result });
+
+  await expect(rerollRecommendations()).resolves.toEqual({ ok: true, data: result });
+  expect(requestMock).toHaveBeenCalledWith(
+    { method: 'POST', path: '/dating/recommendations/reroll' },
+    datingRerollResultSchema,
+  );
+});
+
+test('목 리롤은 하루 한 번 무료이고 그 뒤 비용을 알려준다 (WKS-BE §10.4.1)', async () => {
+  vi.stubEnv('VITE_API_MOCK', 'true');
+  vi.useFakeTimers();
+  signInMockAccount(); // 가입 지급 10
+
+  // 첫 조회는 무료(rerollCost 0)다.
+  await expect(getRecommendations()).resolves.toMatchObject({
+    ok: true,
+    data: { rerollCost: 0 },
+  });
+
+  const free = rerollRecommendations();
+  await vi.runAllTimersAsync();
+  // 무료로 바꿨으니 잔액은 그대로고, 다음 비용을 알려준다.
+  await expect(free).resolves.toMatchObject({
+    ok: true,
+    data: { rerollCost: REROLL_PAID_COST, threadBalance: 10 },
+  });
+  await expect(getRecommendations()).resolves.toMatchObject({
+    ok: true,
+    data: { rerollCost: REROLL_PAID_COST },
+  });
+  expect(requestMock).not.toHaveBeenCalled();
+});
+
+// 목 계정이 받는 실(가입 10 · 출석 5)은 리롤 비용(20)보다 적다 — 목에서 유료 리롤은 늘 막힌다.
+test('목 리롤은 잔액이 모자라면 402 로 막고 카드를 두 번 바꾸지 않는다', async () => {
+  vi.stubEnv('VITE_API_MOCK', 'true');
+  vi.useFakeTimers();
+  signInMockAccount();
+  // 무료 한 번을 쓴 뒤에는 유료라 잔액(10)이 비용(20)에 모자란다.
+  const free = rerollRecommendations();
+  await vi.runAllTimersAsync();
+  await free;
+
+  const blocked = rerollRecommendations();
+  await vi.runAllTimersAsync();
+
+  await expect(blocked).resolves.toMatchObject({
+    ok: false,
+    error: { kind: 'api', code: 'INSUFFICIENT_THREAD' },
+  });
 });

@@ -1,6 +1,20 @@
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
+// 티저 loader 의 GET /me 는 경계에서 대체한다 — 실제 요청을 보내지 않고 비로그인(401)으로 둔다.
+vi.mock('@/api/me', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/me')>();
+  return {
+    ...actual,
+    getMe: vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        error: { kind: 'api', code: 'UNAUTHENTICATED', message: '로그인이 필요해요.' },
+      }),
+    ),
+  };
+});
+
 import { App } from '@/app/App';
 
 // 인트로(FR-1)는 첫 방문에만 뜬다 — 셸 안의 입력 화면을 보려고 이미 본 방문자로 시작한다.
@@ -14,13 +28,14 @@ afterEach(() => {
   window.history.pushState({}, '', '/');
 });
 
-test('루트 경로 콘텐츠를 앱 셸 안에 렌더한다', () => {
+test('루트 경로 콘텐츠를 앱 셸 안에 렌더한다', async () => {
   render(<App />);
 
-  const shell = screen.getByRole('main');
+  // 티저는 loader(GET /me)가 끝난 뒤 그려진다.
+  const shell = await screen.findByRole('main');
 
   expect(
-    within(shell).getByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+    await within(shell).findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
   ).toBeInTheDocument();
 });
 

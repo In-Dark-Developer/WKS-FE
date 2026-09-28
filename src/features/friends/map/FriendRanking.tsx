@@ -14,6 +14,12 @@ type Props = {
   headerAction?: ReactNode;
   // 줄을 눌러 궁합 이유를 연다(FR-22, Figma 3.2) — 궁합 ID 가 있는 줄만 버튼이 된다.
   onSelect?: (friend: Friend) => void;
+  // 제목 — 공유 궁합 결과(SCR-24)는 '나의 궁합 순위'다.
+  title?: string;
+  // 첫 줄의 순위 — 주인 지도 안에서 내 줄과 그 앞뒤만 보일 때 첫 줄의 순위(Figma 15:1089).
+  firstRank?: number;
+  // 등급 색으로 칠할 줄(rows 안 위치) — 공유 궁합 결과의 '나'(Figma 15:1301).
+  highlightIndex?: number;
 };
 
 const badgeText: Record<CompatibilityTier, string> = {
@@ -23,20 +29,29 @@ const badgeText: Record<CompatibilityTier, string> = {
   SEUCHIM: 'text-neutral-900',
 };
 
-// Figma RankingList(80:614) — 사주 카드 화면 인스턴스(796:3828) 모양: 제목 줄 패딩 16, 목록은 좌우 8 안쪽.
+// Figma v1.0 RankingList(8:384 — 15:1292·57:2721·30:5790) — 흰 판 50%, 제목 줄 위 16 아래 8, 목록은 좌우 8 안쪽.
 // friends 는 순위 순서다.
-export function FriendRanking({ friends, limit, shareAction, headerAction, onSelect }: Props) {
+export function FriendRanking({
+  friends,
+  limit,
+  shareAction,
+  headerAction,
+  onSelect,
+  title = '친구 궁합 순위',
+  firstRank = 1,
+  highlightIndex,
+}: Props) {
   const rows = limit === undefined ? friends : friends.slice(0, limit);
   const titleId = useId();
 
   return (
     <section
       aria-labelledby={titleId}
-      className="flex flex-col gap-8 rounded-16 border border-neutral bg-opacity-card-neutral-0-80 pb-8 backdrop-blur-md"
+      className="flex flex-col gap-8 rounded-16 border border-neutral bg-opacity-card-neutral-0-50 pb-8 backdrop-blur-md"
     >
-      <div className="flex items-center justify-between gap-8 p-16">
+      <div className="flex items-center justify-between gap-8 px-16 pt-16 pb-8">
         <h2 className="text-ui-18 font-semibold text-primary" id={titleId}>
-          친구 궁합 순위
+          {title}
         </h2>
         {headerAction}
       </div>
@@ -62,10 +77,18 @@ export function FriendRanking({ friends, limit, shareAction, headerAction, onSel
                     onClick={() => onSelect(friend)}
                     type="button"
                   >
-                    <RankingRow friend={friend} rank={index + 1} />
+                    <RankingRow
+                      friend={friend}
+                      highlighted={index === highlightIndex}
+                      rank={firstRank + index}
+                    />
                   </button>
                 ) : (
-                  <RankingRow friend={friend} rank={index + 1} />
+                  <RankingRow
+                    friend={friend}
+                    highlighted={index === highlightIndex}
+                    rank={firstRank + index}
+                  />
                 )}
               </li>
             ))}
@@ -86,7 +109,7 @@ const highlightTone: Record<CompatibilityTier, string> = {
   SEUCHIM: 'bg-neutral-300',
 };
 
-// Figma RankingRow — 순위·닉네임·등급 배지·점수. highlighted 는 궁합 이유 시트 맨 위의 선택한 줄이다.
+// Figma RankingRow — 순위·닉네임·등급 배지·점수. highlighted 는 궁합 이유 시트 맨 위의 선택한 줄·공유 궁합 결과의 나다.
 export function RankingRow({
   friend,
   rank,

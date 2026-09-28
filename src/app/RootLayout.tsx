@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
 import { Outlet, useMatches } from 'react-router-dom';
+
+import { ensureDailyCheckIn } from '@/api/wallet';
 
 import { AppShell, type Backdrop } from '@/app/AppShell';
 import { BottomNavBar, type NavTab } from '@/app/screens/BottomNavBar';
@@ -20,6 +23,10 @@ function navOf(handle: unknown): NavTab | undefined {
 
 export function RootLayout() {
   const matches = useMatches();
+  // 사이트 접속 때 출석 실을 받는다 — 비로그인이면 조용히 넘어간다(ensureDailyCheckIn).
+  useEffect(() => {
+    void ensureDailyCheckIn();
+  }, []);
   const backdrop = matches
     .map((match) => backdropOf(match.handle))
     .findLast((value) => value !== undefined);

@@ -1,16 +1,29 @@
 import { redirect } from 'react-router-dom';
 
+import type { ApiOutcome } from '@/api/client';
 import { getMe, isUnauthenticated, type Me } from '@/api/me';
+import { getMyResult } from '@/api/results';
 import { readSession } from '@/api/session';
 
 // 라우트 가드는 이 파일만 갖는다 — 진입 조건이 늘어나도 loader 가 조건을 직접 읽지 않게 한다.
 // 주소에 결과 id 가 있는 보호 라우트의 loader 에서 먼저 부른다 — 이 브라우저가 만든 결과가 아니면
 // (보관된 resultId 가 없거나 주소의 id 와 다르면) 사주 입력으로 보낸다
-// (FR-18 · ADR-20260914-result-ownership-in-browser).
-export function requireSaju(resultId: string | undefined): null {
+// (FR-18 · ADR-20260914-result-ownership-in-browser). 세션이 없으면 먼저 계정 결과를 되살려 본다 — 다른 기기에서
+// 북마크로 들어온 로그인 사용자는 자기 결과 주소면 그대로 본다.
+export async function requireSaju(resultId: string | undefined): Promise<null> {
+  if (readSession() === null) await restoreSessionFromAccount(await getMe());
   const session = readSession();
   if (!session || session.resultId !== resultId) throw redirect('/');
   return null;
+}
+
+// 로그인했는데 이 브라우저에 세션이 없으면(저장소 삭제·다른 기기) 계정 결과를 세션에 둔다(GET /me/result, FR-21).
+// 카카오 로그인의 복원은 로그인 순간에만 일어나므로 진입 loader 가 이걸로 한 번 더 잡는다. 세션이 있으면 건드리지
+// 않고(이 브라우저가 만든 결과를 덮지 않는다), 실패하면 세션 없음 그대로 둔다.
+export async function restoreSessionFromAccount(me: ApiOutcome<Me>): Promise<void> {
+  if (!me.ok || !me.data.hasResult || readSession() !== null) return;
+  const mine = await getMyResult();
+  if (!mine.ok) console.error('GET /me/result 실패', mine.error);
 }
 
 // 주소에 결과 id 가 없는 보호 라우트(궁합 지도 `/me/map`)의 loader 에서 부른다 — 보관된 resultId 가

@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { DatingBackdrop } from '../DatingBackdrop';
 import { DetailsStep } from './DetailsStep';
+import type { EmailVerificationView } from './emailVerificationView';
 import type { DatingPhotoView } from './photoView';
 import {
   initialDetailsStepValues,
@@ -23,13 +24,23 @@ type Props = {
   // 두 단계를 모두 통과하면 한 번 부른다. 네트워크 호출은 부르는 쪽이 한다.
   onSubmit: (input: DatingProfileInput) => void;
   submitState?: ProfileSubmitState;
-  // 아래 셋은 미리보기·복귀용 시작 상태다.
-  initialStep?: 1 | 2;
+  // 지금 단계는 부르는 쪽이 갖는다 — 단계를 방문 기록에 쌓아 브라우저 뒤로가기가 이전 단계로 가게 한다.
+  step: 1 | 2;
+  onStepChange: (step: 1 | 2) => void;
+  // (2/2) 의 '뒤로가기' — 어디로 돌아갈지(이전 단계 · 인트로)는 부르는 쪽이 정한다.
+  onBack: () => void;
+  // 아래 둘은 미리보기·복귀용 시작 상태다.
   initialValues?: {
     saju?: Partial<SajuStepValues>;
     details?: Partial<Omit<DetailsStepValues, 'isPhotoReady'>>;
   };
   showErrorsInitially?: boolean;
+  // 학교 메일 코드 인증(10/T5 퍼블리싱) — 연동(10/T1)이 넘긴다. 요청은 부르는 쪽이 (2/2) 의 지금 메일 값으로 한다.
+  emailVerification?: {
+    view: EmailVerificationView;
+    onSendCode: (email: string) => void;
+    onVerifyCode: (email: string, code: string) => void;
+  };
 };
 
 // SCR-16 소개팅 프로필 등록 — (1/2) 사주 정보 → (2/2) 이름·사진·학교 정보(FR-25).
@@ -38,11 +49,13 @@ export function DatingProfileForm({
   onPhotoSelect,
   onSubmit,
   submitState = 'idle',
-  initialStep = 1,
+  step,
+  onStepChange,
+  onBack,
   initialValues,
   showErrorsInitially = false,
+  emailVerification,
 }: Props) {
-  const [step, setStep] = useState(initialStep);
   const [saju, setSaju] = useState<SajuStepValues>({
     ...initialSajuStepValues,
     ...initialValues?.saju,
@@ -52,8 +65,8 @@ export function DatingProfileForm({
     ...initialValues?.details,
   });
   const [attempted, setAttempted] = useState({
-    saju: showErrorsInitially && initialStep === 1,
-    details: showErrorsInitially && initialStep === 2,
+    saju: showErrorsInitially && step === 1,
+    details: showErrorsInitially && step === 2,
   });
 
   const sajuResult = validateSajuStep(saju);
@@ -67,14 +80,14 @@ export function DatingProfileForm({
 
   function handleNext() {
     setAttempted((current) => ({ ...current, saju: true }));
-    if (sajuResult.success) setStep(2);
+    if (sajuResult.success) onStepChange(2);
   }
 
   function handleSubmit() {
     setAttempted({ saju: true, details: true });
     // (2/2) 에서 곧바로 시작했을 수 있다 — (1/2) 가 틀렸으면 그 단계로 돌려보낸다.
     if (!sajuResult.success) {
-      setStep(1);
+      onStepChange(1);
       return;
     }
     if (detailsResult.success) onSubmit({ saju: sajuResult.data, details: detailsResult.data });
@@ -92,10 +105,17 @@ export function DatingProfileForm({
         />
       ) : (
         <DetailsStep
+          emailVerification={
+            emailVerification && {
+              view: emailVerification.view,
+              onSendCode: () => emailVerification.onSendCode(details.email.trim()),
+              onVerifyCode: (code) => emailVerification.onVerifyCode(details.email.trim(), code),
+            }
+          }
           errors={detailsErrors}
           hasSubmitFailed={submitState === 'failed'}
           isSubmitting={submitState === 'submitting'}
-          onBack={() => setStep(1)}
+          onBack={onBack}
           onChange={(patch) => setDetails((current) => ({ ...current, ...patch }))}
           onPhotoSelect={onPhotoSelect}
           onSubmit={handleSubmit}

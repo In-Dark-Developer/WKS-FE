@@ -134,6 +134,19 @@ test('설명과 버튼 글자를 바꿀 수 있다', () => {
   expect(screen.getByRole('button', { name: '운명 지도 확인하기' })).toBeInTheDocument();
 });
 
+test('섹션 제목을 주면 페이지 제목 대신 섹션 머리글과 줄바꿈 설명을 보인다', () => {
+  renderForm(
+    vi.fn(),
+    <SajuForm description={'첫 줄\n둘째 줄'} sectionTitle="사주를 입력해 인연을 확인하세요" />,
+  );
+
+  expect(
+    screen.getByRole('heading', { level: 2, name: '사주를 입력해 인연을 확인하세요' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: '운명도 꿰어야 사랑이다' })).not.toBeInTheDocument();
+  expect(screen.getByText(/첫 줄/)).toHaveTextContent('첫 줄 둘째 줄');
+});
+
 test("'자세히'로 연 약관 시트 맨 끝에 [동의] 절이 있다", () => {
   renderForm(() => null);
 

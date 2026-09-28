@@ -1,3 +1,5 @@
+import { redirect } from 'react-router-dom';
+
 import { getMe, isUnauthenticated, type Me } from '@/api/me';
 
 import type { DatingIntroView } from '../intro/DatingIntro';
@@ -21,9 +23,12 @@ export function datingEntryPath(entry: DatingEntry): string {
 
 // 인트로 loader — 로그인 여부만 정한다. 조회가 실패해도 진입을 막지 않는다(FR-24): 로그인 인트로를 보이고
 // '내 운명 찾아 떠나기'가 다시 조회한다. 비로그인으로 판명되면 그때 비로그인 인트로로 바뀐다.
+// 프로필까지 등록해 인연을 추천받는 사용자는 인트로를 건너뛰고 Top 3 로 간다 — 하단 네비 소개팅 탭이
+// 매번 인트로를 보이지 않게 한다(2026-09-27 결정). 비로그인은 언제나 인트로다.
 export async function datingIntroLoader(): Promise<DatingIntroView> {
   const outcome = await getMe();
   if (isUnauthenticated(outcome)) return { viewer: 'guest' };
+  if (outcome.ok && outcome.data.hasDatingProfile) throw redirect(DATING_CARDS_PATH);
   if (!outcome.ok) console.error('GET /me 실패', outcome.error);
   return { viewer: 'member' };
 }

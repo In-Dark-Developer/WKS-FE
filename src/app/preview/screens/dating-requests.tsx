@@ -24,6 +24,7 @@ const sent: readonly SentRequestView[] = [
     score: 98,
     relationLabel: '천생연분',
     mbti: 'ENTP',
+    birthYear: '03년생',
     bio,
     photo: { isLocked: true, thumbnailUrl: photoRabbit, cost: 10 },
     name: { isLocked: false, value: '차은호' },
@@ -37,6 +38,7 @@ const sent: readonly SentRequestView[] = [
     score: 92,
     relationLabel: '천생연분',
     mbti: 'INFJ',
+    birthYear: '02년생',
     bio: '조용한 카페에서 책 읽는 걸 좋아해요.',
     photo: { isLocked: false, url: photoTiger },
     name: { isLocked: false, value: '김채원' },
@@ -50,6 +52,7 @@ const sent: readonly SentRequestView[] = [
     score: 87,
     relationLabel: '찰떡궁합',
     mbti: 'ISFP',
+    birthYear: '04년생',
     bio: '운동하고 맛집 다니는 걸 좋아합니다.',
     photo: { isLocked: true, thumbnailUrl: photoHorse, cost: 10 },
     name: { isLocked: true, cost: 7 },
@@ -58,14 +61,15 @@ const sent: readonly SentRequestView[] = [
   },
 ];
 
-// 받은 신청 — 해금 없이 전부 열려 오고, 궁합 점수는 보이지 않는다(Q17 미정).
+// 받은 신청 — 해금 없이 전부 열려 오고, 목록 줄 오른쪽에는 요청 상태가 아니라 궁합 점수가 보인다(Figma 109:2251, 2026-09-28).
 const received: readonly RequestProfileView[] = [
   {
     id: 'r1',
     rank: null,
-    score: null,
+    score: 92,
     relationLabel: '천생연분',
     mbti: 'ENTP',
+    birthYear: '03년생',
     bio,
     photo: { isLocked: false, url: photoRabbit },
     name: { isLocked: false, value: '김채원' },
@@ -78,9 +82,10 @@ const received: readonly RequestProfileView[] = [
   {
     id: 'r2',
     rank: null,
-    score: null,
+    score: 78,
     relationLabel: '찰떡궁합',
     mbti: 'ISTJ',
+    birthYear: '01년생',
     bio: '주말마다 등산을 가요.',
     photo: { isLocked: false, url: photoHorse },
     name: { isLocked: false, value: '이도윤' },

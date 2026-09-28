@@ -177,6 +177,17 @@
     var(--color-neutral-900) 80%,
     transparent
   );
+  /* 인연 카드 앞면(Figma 카드 앞면 91:1641) — Figma 변수가 아니라 그 컴포넌트의 원본 paint 값이다.
+     '카드 뒤집기' 칩 흰색 18%(134:2275) · Top 배지 회색 50%(96:1891, 원본 #3c3c3c) ·
+     점수 원 20%(101:1972, 원본 #786926). 사진 위에 얹히는 유리 면이라 투명도가 그대로 보인다. */
+  --color-opacity-card-neutral-0-18: color-mix(in srgb, var(--color-neutral-0) 18%, transparent);
+  --color-opacity-card-badge-50: color-mix(in srgb, #3c3c3c 50%, transparent);
+  --color-opacity-card-score-20: color-mix(in srgb, #786926 20%, transparent);
+
+  /* 소개팅 상단 바(Figma top_nav 91:1790) — Figma 변수가 아니라 그 컴포넌트의 원본 paint 값이다.
+     Rose 계열 살구빛 10% 라 뒤 배경이 그대로 비친다. Rose/50(거의 흰색)을 쓰면 띠가 하얗게 뜬다. */
+  --color-opacity-top-nav-salmon-10: color-mix(in srgb, #ffa1a1 10%, transparent);
+
   /* 하단 네비(Figma nav 30:5661) — Figma 변수가 아니라 그 컴포넌트의 원본 paint 값이다.
      배경 Rose/50 20% · 선택한 탭 Primary/500 80%. */
   --color-opacity-nav-rose-50-20: color-mix(in srgb, var(--color-rose-50) 20%, transparent);

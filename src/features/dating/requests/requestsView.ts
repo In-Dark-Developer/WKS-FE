@@ -1,28 +1,41 @@
 import type { CandidatePhoto, LockableField } from '../recommendation/cardsView';
 
-// 요청함(SCR-20) 뷰 모델 — 응답 → 뷰 모델 변환은 연동 Task(11/T2)가 한다.
+// 요청함(SCR-20) 뷰 모델 — 응답 → 뷰 모델 변환은 requestsLoader 가 한다.
 // 상대 한 사람. 보낸 신청은 보내기 전에 연 항목만 열려 있고, 받은 신청은 해금 없이 전부 열려 온다(FR-30).
 export type RequestProfileView = {
   id: string;
   // 추천 당시 순위 — 받은 신청은 null.
   rank: number | null;
-  // 궁합 점수 — 받은 신청에 보일지는 미정(Q17)이라 그동안 null 로 둔다.
+  // 궁합 점수 — 보낸·받은 신청 모두 보인다(Figma 109:2251). 퍼블리싱 미리보기는 null 로 숨길 수 있다.
   score: number | null;
   relationLabel: string;
   mbti: string;
+  // 나이 — '02년생'. 없으면 칸을 숨긴다.
+  birthYear?: string | null;
   bio: string;
   photo: CandidatePhoto;
   name: LockableField<string>;
   department: LockableField<string>;
-  reason: LockableField<string>;
+  // 궁합 까닭 — 목록 행이 준다(WKS-BE §11.1, 2026-09-28). 그 필드가 없는 백엔드에서는 지금 Top 3 카드에 있는
+  // 상대만 그 카드 값을 쓰고, 모르면 null 이다.
+  reason: LockableField<string> | null;
+  // 매칭이 성립했을 때만 — 상대가 등록한 연락 수단 하나(FR-30 · NFR-4).
+  contact?: ContactView | null;
 };
 
-// 보낸 신청 — 기다리는 중이거나, 거절됐거나 상대가 다른 사람과 맺어져 실패했다(FR-30).
-export type SentRequestView = RequestProfileView & { status: 'PENDING' | 'FAILED' };
+export type ContactView = { method: 'PHONE' | 'INSTAGRAM'; value: string };
+
+// 보낸 신청 — 기다리는 중이거나, 성립했거나, 거절돼 실패했다(FR-30).
+export type SentRequestView = RequestProfileView & { status: 'PENDING' | 'MATCHED' | 'FAILED' };
+
+// 받은 신청 — 응답 전이거나, 수락해 성립했거나, 거절했다. 퍼블리싱 미리보기는 상태 없이(응답 전) 넘긴다.
+export type ReceivedRequestView = RequestProfileView & {
+  status?: 'PENDING' | 'MATCHED' | 'DECLINED';
+};
 
 export type RequestInboxView = {
   sent: readonly SentRequestView[];
-  received: readonly RequestProfileView[];
+  received: readonly ReceivedRequestView[];
 };
 
 export type RequestTab = 'sent' | 'received';

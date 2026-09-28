@@ -1,5 +1,6 @@
 import type { FormEvent } from 'react';
 
+import { DATING_PHOTO_ACCEPT } from '@/api/schema/dating';
 import { Button } from '@/ui/Button';
 import { Field } from '@/ui/Field';
 import { PhotoUpload } from '@/ui/PhotoUpload';
@@ -8,6 +9,8 @@ import { Select } from '@/ui/Select';
 import { TextArea } from '@/ui/TextArea';
 import { TextField } from '@/ui/TextField';
 
+import { EmailVerification } from './EmailVerification';
+import type { EmailVerificationView } from './emailVerificationView';
 import { BIO_MAX, DEPARTMENT_MAX, NAME_MAX, contactMethodOptions, mbtiOptions } from './options';
 import type { DatingPhotoView } from './photoView';
 import type { DetailsField, DetailsStepValues } from './profileSchema';
@@ -23,6 +26,12 @@ type Props = {
   onSubmit: () => void;
   isSubmitting: boolean;
   hasSubmitFailed: boolean;
+  // 학교 메일 코드 인증 — 연동(10/T1) 전에는 넘기지 않아 인증 없는 메일 입력칸만 보인다.
+  emailVerification?: {
+    view: EmailVerificationView;
+    onSendCode: () => void;
+    onVerifyCode: (code: string) => void;
+  };
 };
 
 const contactPlaceholder = {
@@ -30,8 +39,10 @@ const contactPlaceholder = {
   INSTAGRAM: '인스타그램 아이디를 입력해 주세요',
 } as const;
 
+// 업로드 조건은 uploadDatingPhoto 와 같다(JPG·PNG, 10MB 이하). 실패하면 무엇을 확인할지 같은 조건으로 알린다.
 const photoGuide =
-  '사진 형식과 용량은 서비스 정책에 따릅니다. 현재 화면과 동일하게 상대방에게 보여집니다.';
+  'JPG·PNG, 10MB 이하 사진을 올려 주세요. 현재 화면과 동일하게 상대방에게 보여집니다.';
+const photoErrorGuide = 'JPG·PNG, 10MB 이하 사진인지 확인하고 다시 시도해 주세요.';
 
 // (2/2) 이름·사진·학교 메일·연락처·학과·MBTI·자기소개 — Figma 사주입력폼 (2/2) 134:3639.
 export function DetailsStep({
@@ -44,6 +55,7 @@ export function DetailsStep({
   onSubmit,
   isSubmitting,
   hasSubmitFailed,
+  emailVerification,
 }: Props) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -75,7 +87,14 @@ export function DetailsStep({
             <PhotoUpload
               aria-describedby={control['aria-describedby']}
               id={control.id}
-              message={photo.status === 'empty' ? photoGuide : undefined}
+              accept={DATING_PHOTO_ACCEPT}
+              message={
+                photo.status === 'empty'
+                  ? photoGuide
+                  : photo.status === 'error'
+                    ? photoErrorGuide
+                    : undefined
+              }
               onSelect={onPhotoSelect}
               previewAlt="내 소개팅 사진"
               previewUrl={photo.previewUrl}
@@ -84,21 +103,36 @@ export function DetailsStep({
           )}
         </Field>
 
-        <Field error={errors.email} help="소속 확인을 위해 dgu 메일을 작성해주세요." label="이메일">
-          {(control) => (
-            <TextField
-              {...control}
-              appearance="soft"
-              autoComplete="email"
-              className="bg-surface-default"
-              inputMode="email"
-              onChange={(event) => onChange({ email: event.target.value })}
-              placeholder="example@domain.com"
-              type="email"
-              value={values.email}
-            />
-          )}
-        </Field>
+        {emailVerification ? (
+          <EmailVerification
+            email={values.email}
+            emailError={errors.email}
+            onEmailChange={(email) => onChange({ email })}
+            onSendCode={emailVerification.onSendCode}
+            onVerifyCode={emailVerification.onVerifyCode}
+            view={emailVerification.view}
+          />
+        ) : (
+          <Field
+            error={errors.email}
+            help="소속 확인을 위해 dgu 메일을 작성해주세요."
+            label="이메일"
+          >
+            {(control) => (
+              <TextField
+                {...control}
+                appearance="soft"
+                autoComplete="email"
+                className="bg-surface-default"
+                inputMode="email"
+                onChange={(event) => onChange({ email: event.target.value })}
+                placeholder="example@domain.com"
+                type="email"
+                value={values.email}
+              />
+            )}
+          </Field>
+        )}
 
         <Field
           error={errors.contactValue}
@@ -146,6 +180,7 @@ export function DetailsStep({
             <Select
               {...control}
               appearance="soft"
+              className="bg-surface-default"
               onChange={(mbti) => onChange({ mbti })}
               options={mbtiOptions}
               placeholder="유형을 선택해 주세요"
