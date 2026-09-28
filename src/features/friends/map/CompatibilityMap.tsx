@@ -1,10 +1,10 @@
 import type { CSSProperties } from 'react';
 
-import moon from '@/ui/assets/backgrounds/compatibility-moon.svg';
-import orbit1 from '@/ui/assets/backgrounds/compatibility-orbit-1.svg';
-import orbit2 from '@/ui/assets/backgrounds/compatibility-orbit-2.svg';
-import orbit3 from '@/ui/assets/backgrounds/compatibility-orbit-3.svg';
-import orbit4 from '@/ui/assets/backgrounds/compatibility-orbit-4.svg';
+import moon from '@/ui/assets/backgrounds/compatibility-moon.webp';
+import orbit1 from '@/ui/assets/backgrounds/compatibility-orbit-1.webp';
+import orbit2 from '@/ui/assets/backgrounds/compatibility-orbit-2.webp';
+import orbit3 from '@/ui/assets/backgrounds/compatibility-orbit-3.webp';
+import orbit4 from '@/ui/assets/backgrounds/compatibility-orbit-4.webp';
 
 import { placeOrbs } from './orbLayout';
 import { tierLooks, type Friend } from './tiers';
@@ -27,13 +27,15 @@ type Props = {
 
 // 궤도 선·달 — 배경 SVG 에서 떼어 낸 레이어(05/T9). 원래 그리던 순서대로 둔다. (cx, cy) 는 패널 323px 기준 중심,
 // r 은 에셋 한 변의 절반이다(에셋 중심 = 레이어 중심이라 제자리 회전이 된다).
+// 에셋은 원래 SVG(그림자 블러·노이즈 필터)를 3배로 미리 구워 빈 가장자리를 중심 기준으로 잘라 낸 WebP 다. SVG 그대로면
+// 폰이 필터를 3배 해상도로 그리느라 새로 연 페이지(카카오 로그인 복귀 등)에서 선·달이 수 초 비고 그동안 움직임도 멈췄다.
 const orbits = [
-  { src: orbit2, cx: 46.12, cy: 423.34, r: 329 },
-  { src: orbit1, cx: 37.47, cy: 432.53, r: 246 },
-  { src: orbit3, cx: 60.72, cy: 414.69, r: 415 },
-  { src: orbit4, cx: 64.5, cy: 405.5, r: 496 },
+  { src: orbit2, cx: 46.12, cy: 423.34, r: 231 },
+  { src: orbit1, cx: 37.47, cy: 432.53, r: 177 },
+  { src: orbit3, cx: 60.72, cy: 414.69, r: 289.67 },
+  { src: orbit4, cx: 64.5, cy: 405.5, r: 343 },
 ] as const;
-const moonLayer = { cx: 36.53, cy: 431.58, r: 244 } as const;
+const moonLayer = { cx: 36.53, cy: 431.58, r: 177.67 } as const;
 
 // 친구가 이만큼 이상이면 구슬이 자기 궤도의 보이는 구간을 흐른다 — 보이는 시간과 숨는 시간이 같고 같은 궤도
 // 친구는 주기를 똑같이 나눠 출발해 간격이 늘 같아 겹치지 않는다 (PRD FR-8).
