@@ -91,7 +91,7 @@ QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `�
 
 QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 그 화면·코드를 마지막으로 만든 사람이 이어서 맡는다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
 
-- [ ] T21. 공유 링크 문구 — Done when: '친구에게 공유'로 보내는 문구(`shareLinkMessages.shareText`)가 QA 가 정한 문구('부처님이 우리를 어떻게 이어놨는지 궁금하면 지금 등록해봐!')로 바뀌고, 링크는 지금처럼 문구 다음 줄에 붙는다 · Touches: `src/features/share/link/` · Owner: 이정진 · FR: FR-4 (QA: 링크 공유 시 멘트 변경)
+- [x] T21. 공유 링크 문구 — Done when: '친구에게 공유'로 보내는 문구(`shareLinkMessages.shareText`)가 QA 가 정한 문구('부처님이 우리를 어떻게 이어놨는지 궁금하면 지금 등록해봐!')로 바뀌고, 링크는 지금처럼 문구 다음 줄에 붙는다 · Touches: `src/features/share/link/` · Owner: 이정진 · FR: FR-4 (QA: 링크 공유 시 멘트 변경) (commit c660176 — 새 문구에 닉네임이 없어 `ShareLinkButton` 의 `nickname` prop 을 뺐다)
 
 - [x] T22. 궁합 지도 궤도 선·달이 사라짐 — Done when: 로그인 복귀처럼 새로 연 궁합 지도에서도 궤도 선·달이 곧바로 보이고 움직임이 멈추지 않는다 · Touches: `src/features/friends/map/`, `src/ui/assets/friends/` · Owner: 강근우 · FR: FR-8 (QA: 지도 페이지 선이랑 달이 사라짐) (commit ecfab0d, PR #304 — 원인: 필터 SVG 5장을 폰에서 그리는 데 합 약 11초. WebP 로 바꿈)
 
