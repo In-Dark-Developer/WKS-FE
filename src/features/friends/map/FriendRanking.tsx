@@ -29,7 +29,7 @@ const badgeText: Record<CompatibilityTier, string> = {
   SEUCHIM: 'text-neutral-900',
 };
 
-// Figma RankingList(80:614) — 사주 카드 화면 인스턴스(796:3828) 모양: 제목 줄 패딩 16, 목록은 좌우 8 안쪽.
+// Figma v1.0 RankingList(8:384 — 15:1292·57:2721·30:5790) — 흰 판 50%, 제목 줄 위 16 아래 8, 목록은 좌우 8 안쪽.
 // friends 는 순위 순서다.
 export function FriendRanking({
   friends,
@@ -47,9 +47,9 @@ export function FriendRanking({
   return (
     <section
       aria-labelledby={titleId}
-      className="flex flex-col gap-8 rounded-16 border border-neutral bg-opacity-card-neutral-0-80 pb-8 backdrop-blur-md"
+      className="flex flex-col gap-8 rounded-16 border border-neutral bg-opacity-card-neutral-0-50 pb-8 backdrop-blur-md"
     >
-      <div className="flex items-center justify-between gap-8 p-16">
+      <div className="flex items-center justify-between gap-8 px-16 pt-16 pb-8">
         <h2 className="text-ui-18 font-semibold text-primary" id={titleId}>
           {title}
         </h2>

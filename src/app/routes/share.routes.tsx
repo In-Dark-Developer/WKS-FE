@@ -124,6 +124,7 @@ function SharedResultRoute() {
   const revalidator = useRevalidator();
   const answers = (state: ReasonState) => (
     <ReasonAnswers
+      bodySize="page"
       onRetry={() => void revalidator.revalidate()}
       state={state}
       tier={view.mine.tier}

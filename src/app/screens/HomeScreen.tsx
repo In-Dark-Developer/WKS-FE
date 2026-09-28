@@ -26,6 +26,14 @@ export function HomeScreen({ view, onBack }: Props) {
           </Link>
         ) : undefined
       }
+      mapLink={
+        onBack ? (
+          // Figma 4.1.3 '지도 보기 >'(30:6964) — UI/14/600 Primary-500. 궁합지도로 간다.
+          <Link className="text-ui-14 font-semibold text-primary-500" to="/me/map">
+            지도 보기 &gt;
+          </Link>
+        ) : undefined
+      }
       renderCard={(face) => <ResultCard {...face} />}
       view={view}
     />
