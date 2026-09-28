@@ -53,7 +53,7 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 - [ ] T7. 운명의 실 모달 상단 간격 — Done when: '운명의 실 보내기' 확인 모달과 보낸 뒤 모달의 위쪽 여백이 Figma 운명의 실 모달 1·2 와 같다 · Touches: `src/features/dating/thread/ThreadDialogs.tsx`, `src/features/dating/DatingDialog.tsx` · Owner: 강근우 · FR: FR-29 (QA: 운명의 실 모달 상단 간격)
 
-- [ ] T8. 요청함 목록 오른쪽 알약 — Done when: '보낸 신청' 목록 줄은 궁합 점수 대신 요청 상태 알약('신청중'·'수락됨'·'거절됨', Figma 보관함/내가보낸사람 `390:2842` — 상태마다 알약 색이 다르다)을 보이고, '받은 신청' 목록 줄은 궁합 점수 알약(Figma 보관함/나에게보낸사람 `109:2251`)을 보인다(FR-30, 2026-09-28 결정) · Touches: `src/features/dating/requests/` · Owner: 강근우 · FR: FR-30 (QA: 받은 요청함에서 수락중 이런 식으로 떠야 하는데 궁합점수가 뜸 · QA 기능: 보낸 요청함 리스트 → 대기 상태)
+- [x] T8. 요청함 목록 오른쪽 알약 — Done when: '보낸 신청' 목록 줄은 궁합 점수 대신 요청 상태 알약('신청중'·'수락됨'·'거절됨', Figma 보관함/내가보낸사람 `390:2842` — 상태마다 알약 색이 다르다)을 보이고, '받은 신청' 목록 줄은 궁합 점수 알약(Figma 보관함/나에게보낸사람 `109:2251`)을 보인다(FR-30, 2026-09-28 결정) · Touches: `src/features/dating/requests/` · Owner: 강근우 · FR: FR-30 (QA: 받은 요청함에서 수락중 이런 식으로 떠야 하는데 궁합점수가 뜸 · QA 기능: 보낸 요청함 리스트 → 대기 상태) (commit f08af93 보낸 상태 알약 · 57c2691 받은 점수 알약)
 
 - [x] T9. 받은 신청 궁합 까닭 공개 — Done when: '받은 신청' 상대 카드의 궁합 까닭이 블러 없이 보이거나, 백엔드가 까닭을 주지 않는다면 블러 대신 없음 안내가 보인다(받은 신청의 상대 정보는 해금 없이 보인다, FR-30). 백엔드 응답에 까닭이 없으면 WKS-BE 에 요청한다 · Touches: `src/features/dating/requests/`, `src/api/` · Owner: 강근우 · FR: FR-30 (QA 기능: 나에게 요청한 사람 - 궁합 이유 블러 처리 됨) (commit 6869f80 — 목록에 까닭이 없어 없음 안내, WKS-BE 요청은 남음)
 
