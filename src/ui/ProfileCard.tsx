@@ -33,7 +33,9 @@ export function ProfileCard({
   return (
     <div
       className={cn(
-        'relative h-[433px] w-full overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800 shadow-lg',
+        // Figma 카드 규격 343×433 — 높이를 고정하지 않고 비율로 둔다. 화면 폭이 달라도(360~430px)
+        // 가로세로가 함께 늘고 375px 에서 정확히 343×433 이 된다(Figma 96:1876 · 134:2527).
+        'relative aspect-[343/433] w-full overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800 shadow-lg',
         className,
       )}
       data-face={face}
