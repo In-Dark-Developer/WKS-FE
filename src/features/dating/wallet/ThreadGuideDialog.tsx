@@ -35,11 +35,11 @@ const signup: EarnWay = {
 };
 const checkIn: EarnWay = { icon: earnCheckIn, title: '출석 체크', when: '매일 출석 시', amount: 5 };
 const others: readonly EarnWay[] = [
-  { icon: earnFriendMap, title: '지도 별 달성', when: '별 1개 획득 시', amount: 3 },
+  { icon: earnFriendMap, title: '친구에게 공유', when: '내 지도에 등록된 사람 5명 당', amount: 3 },
   { icon: earnFestival, title: '축제 사이트 방문', when: '축제 사이트에서 들어오면', amount: 10 },
 ];
 
-// 소개팅 상단 '운명의 실'을 누르면 뜨는 재화 안내 — Figma v1.0 「운명의실 재화 모달」 295:3281.
+// 소개팅 상단 '운명의 실'을 누르면 뜨는 재화 안내 — Figma v1.0 「운명의실 재화 모달」 522:2739.
 // 로그인한 소개팅 화면에서만 열리므로 디자인의 로그인 버튼 영역은 두지 않고 닫기만 둔다(2026-09-27 결정).
 export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Props) {
   const titleId = useId();
@@ -84,25 +84,34 @@ export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Pr
   );
 }
 
-// 받은 방법은 개수 대신 '지급 완료'만 보인다(Figma 445:2701).
+// 받은 방법은 개수 칩 아래에 '지급 완료'를 붙인다(Figma 522:2773). 줄 높이는 Figma 82px 가 최소다.
 function EarnRow({ way, isDone }: { way: EarnWay; isDone: boolean }) {
   return (
-    <li className="flex h-[82px] items-center justify-between rounded-12 p-12" data-earn-row="">
-      <div className="flex h-full items-center gap-12">
-        <img alt="" className="size-[58px] object-contain" draggable={false} src={way.icon} />
+    <li
+      className="flex min-h-[82px] items-center justify-between gap-8 rounded-12 p-12"
+      data-earn-row=""
+    >
+      <div className="flex items-center gap-12">
+        <img
+          alt=""
+          className="size-[58px] shrink-0 object-contain"
+          draggable={false}
+          src={way.icon}
+        />
         <div className="flex flex-col gap-4">
           <span className="text-ui-16 font-semibold text-apricot-900">{way.title}</span>
           <span className="text-ui-14 text-muted">{way.when}</span>
         </div>
       </div>
-      {isDone ? (
-        <span className="rounded-8 bg-rose-50 px-8 text-ui-12 text-muted">지급 완료</span>
-      ) : (
+      <div className="flex shrink-0 flex-col items-end gap-8">
         <span className="flex items-center gap-4 rounded-8 px-8 py-[2px]" data-earn-amount="">
           <span className="text-ui-12">+</span>
           <span className="text-ui-16 font-semibold">{way.amount}</span>
         </span>
-      )}
+        {isDone ? (
+          <span className="rounded-8 bg-rose-50 px-8 text-ui-12 text-muted">지급 완료</span>
+        ) : null}
+      </div>
     </li>
   );
 }
