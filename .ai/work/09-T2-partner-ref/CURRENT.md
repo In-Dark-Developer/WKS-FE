@@ -7,7 +7,7 @@
 - Branch: ws/09-T2-partner-ref
 - Task: 09/T2
 - Issue: none
-- Touches: src/features/auth/, src/api/, docs/api/openapi.yaml
+- Touches: src/features/auth/, src/api/, docs/api/openapi.yaml, src/app/RootLayout.tsx
 - Supersedes: 09-T2-kakao-cookie-login
 - Acked: none
 
@@ -21,17 +21,19 @@ T2. 카카오 로그인과 쿠키 세션
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- 1. 제휴 코드 보관(`?ref=`)·로그인 요청에 싣기 · 로그인 상태면 `POST /wallet/partner-rewards` (commit bd7658d) ✓
+- 2. openapi 동기화 — partner-rewards · ref · rewardGranted (commit c4a7d43) ✓
+- 3. test 689/689 · typecheck · lint ✓
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`74bfbcf`
+`c4a7d43`
 
 ## Relevant Documents
 
@@ -40,8 +42,8 @@ TODO
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/auth/partnerRef.ts` · `src/features/auth/kakaoLogin.ts:completeKakaoLogin` · `src/api/wallet.ts:claimPartnerReward` · `src/app/RootLayout.tsx`
 
 ## Next Action
 
-`docs/phases/09-auth-and-shell/PLAN.md`에서 09/T2의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 병합 뒤 dev 에서 `?ref=FESTIVAL` 로 로그인해 지급 모달 확인(실제 모드). T2 체크는 인앱 브라우저 로그인 완주 확인 뒤.
