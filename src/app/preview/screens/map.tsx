@@ -56,7 +56,7 @@ export const preview: PreviewScreen = {
     'SCR-13 친구의 궁합 지도 · 친구 없음': () => (
       <SharedMapScreen friends={[]} nickname="달빛토끼" onViewMyReading={noop} />
     ),
-    // SCR-06 공유 링크 진입의 초대 머리 — 친구 5명이 모두 제 궤도에 멈춰 보인다(Figma 30:6128).
+    // SCR-06 공유 링크 진입의 초대 머리 — 친구 5명, 구슬이 흐르고 궤도 선은 멈춰 있다(FR-8).
     'SCR-06 링크 진입 초대(친구 5명)': () => (
       <ShareInvite ownerFriends={friends.slice(0, 5)} ownerNickname="달빛토끼" />
     ),

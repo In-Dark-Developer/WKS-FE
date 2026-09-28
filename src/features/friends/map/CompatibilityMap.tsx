@@ -18,9 +18,6 @@ type Props = {
   nickname: string;
   friends: readonly Friend[];
   variant?: MapVariant;
-  // 멈춘 지도 — 구슬이 모두 제 궤도 자리에 보이고 아무것도 움직이지 않는다. 공유 링크 진입 화면의 주인 지도가
-  // Figma 4.1·4.2(30:5916·30:6128)처럼 친구를 한눈에 보여야 해서다(09/T18).
-  isStill?: boolean;
 };
 
 // 구슬은 등급 색 궤도 위에 놓는다 — 달에서 가까운 줄부터 귀인·찰떡·벗·스침(orbLayout). 친구 수 제한은 없다.
@@ -37,14 +34,10 @@ const orbits = [
 ] as const;
 const moonLayer = { cx: 36.53, cy: 431.58, r: 177.67 } as const;
 
-// 친구가 이만큼 이상이면 구슬이 자기 궤도의 보이는 구간을 흐른다 — 보이는 시간과 숨는 시간이 같고 같은 궤도
-// 친구는 주기를 똑같이 나눠 출발해 간격이 늘 같아 겹치지 않는다 (PRD FR-8).
-const SPIN_ORBS_FROM = 3;
-
-// 궤도 선이 도는 건 구슬이 1개 이하일 때뿐이다 (2026-09-28 소유자 결정 — PRD FR-8 의 '궤도 선은 늘 돈다' 를 대체한다).
-// 궤도 에셋에는 밝은 구간 하나만 그려져 있어 돌리면 그 구간이 패널 밖으로 나가 선이 통째로 사라져 보인다 —
-// 구슬이 흐르는 동안에는 선을 Figma 자리(0°)에 세워 네 궤도가 늘 또렷하게 남는다.
-const SPIN_ORBITS_UNTIL = 2;
+// 구슬이 이만큼 이상이면 궤도 선은 Figma 자리(0°)에 멈추고 구슬만 자기 궤도의 보이는 구간을 흐른다. 그보다 적으면
+// (구슬 1개 이하) 구슬은 제자리에 있고 궤도 선만 돈다 — 둘이 함께 돌지 않고, 늘 둘 중 하나는 움직인다
+// (2026-09-29 소유자 결정, PRD FR-8). 같은 궤도 친구는 주기를 똑같이 나눠 출발해 간격이 늘 같아 겹치지 않는다.
+const SPIN_ORBS_FROM = 2;
 
 // React 의 CSSProperties 타입은 커스텀 속성(--x)을 모르므로 단언한다.
 function cssVars(vars: Record<string, number>): CSSProperties {
@@ -60,16 +53,10 @@ function subtitle(nickname: string, friendCount: number, variant: MapVariant) {
 }
 
 // 궁합 지도의 지도 카드 — Figma 「UI 최종 - 개발용」 지도 최종 v2(558:2628) · 궁합 지도 확인(713:3956). friends 는 순위 순서다.
-export function CompatibilityMap({ nickname, friends, variant = 'mine', isStill = false }: Props) {
+export function CompatibilityMap({ nickname, friends, variant = 'mine' }: Props) {
   const placed = placeOrbs(friends);
-  // 무엇이 움직이나 — 구슬(3명 이상) · 궤도 선(구슬 1개 이하) · 아무것도(그 사이). 둘이 함께 돌지는 않는다.
-  const motion = isStill
-    ? 'none'
-    : friends.length >= SPIN_ORBS_FROM
-      ? 'orbs'
-      : friends.length < SPIN_ORBITS_UNTIL
-        ? 'orbits'
-        : 'none';
+  // 무엇이 움직이나 — 구슬 2개 이상이면 구슬만, 1개 이하면 궤도 선만.
+  const motion = friends.length >= SPIN_ORBS_FROM ? 'orbs' : 'orbits';
 
   return (
     <section
