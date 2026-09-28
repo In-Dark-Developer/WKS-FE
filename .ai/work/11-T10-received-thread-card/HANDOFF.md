@@ -14,7 +14,7 @@
 ## Work Completed
 
 - 방식을 정해 PLAN T10 줄에 적었다 — 추천에서 빼지 않고 받은 신청처럼 열어 보인다
-- `datingCardsLoader` 가 받은 요청을 id 집합이 아니라 `Map<candidateId, 요청 행>` 으로 읽는다
+- `datingCardsLoader` 가 받은 요청을 id 집합이 아니라 요청 행 Map 으로 으로 읽는다
 - 그 행의 `counterpart` 가 준 열린 사진·이름·학과·까닭으로 추천 카드를 덮는다(`openedByReceivedRequest`)
 - 까닭이 아직 없으면(`locked:false` + `value:null`) 11/T9 과 같은 '만드는 중' 안내를 쓴다
 - `/preview/dating-cards` 의 '상대가 먼저 실을 보냄' 상태 fixture 도 열린 값으로 맞췄다
