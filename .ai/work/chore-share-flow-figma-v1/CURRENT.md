@@ -26,12 +26,12 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- Figma 4.1~4.2.3 9개 프레임 대조 ✓ · SCR-24 머리 흰 글자·상단 그라데이션·간격 ✓ · RankingList 50% ✓ · RelationStat v1.0 ✓ · 이유 카드 16px·그림자 ✓ · SCR-13 간격 ✓
+- Figma 4.1~4.2.3 9개 프레임 대조 ✓ · SCR-24 머리 흰 글자·상단 그라데이션·간격 ✓ · RankingList 50% ✓ · RelationStat v1.0 ✓ · 이유 카드 16px·그림자 ✓ · SCR-13 간격 ✓ · 4.1.3 내 사주(오행 카드 #eeebe1·지도 보기) ✓
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`4a6ce2b`
+`8432a39`
 
 ## Relevant Documents
 
@@ -46,4 +46,4 @@ REVIEW
 
 ## Next Action
 
-PR 리뷰. 4.1.3·4.2.3(내 사주 결과)은 사주 결과 화면 소유자에게 전달.
+PR #301 리뷰. 카드 뒷면부터(FR-5)·뒤로가기 줄은 Figma 4.1.3 과 다르나 spec 결정 — 소유자 판단.

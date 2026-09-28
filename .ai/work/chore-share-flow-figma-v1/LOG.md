@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-28 · claude-code · -/- · 4.1.3 내 사주 결과 맞춤 + #301 충돌 해결
+
+- Commits: 이 PR
+- Done: 잘 맞는 오행 카드 #eeebe1·(土) 굵기·'지도 보기 >'(방문자) · 목 elementMatch · dev 병합(README 재생성)
+- Not done: 카드 앞면부터·뒤로가기 줄 제거 — spec(FR-5·FR-6) 결정 필요
+- Developer changes: 없음 · Upstream changes: docs/phases/README.md 충돌만
+- Spec changes: 없음
+- Needs your attention: Touches 확장(saju/ReadingResult·ElementMatchSection·HomeScreen·api/results)
+- Verification: test · typecheck · lint · 목 모드 공유 흐름 끝까지 눈 확인
+
 ## 2026-09-28 · claude-code · -/- · 공유 Flow(Figma 4.x) 색·배경·글꼴 맞춤 — SCR-24·SCR-13
 
 - Commits: 이 PR
