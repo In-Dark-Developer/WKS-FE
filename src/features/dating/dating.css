@@ -125,11 +125,11 @@
   color: #e96143;
 }
 
-/* 궁합 점수 원 — Figma 112:3436 의 GLASS 효과(흐림 4.4 · 빛 -45° 세기 0.8 · 굴절 0.8 · 깊이 22). CSS 에는 굴절이 없어
-   뒤를 흐리고, 빛을 받는 왼쪽 위와 반대쪽 오른쪽 아래 가장자리에 흰 광택을 얹어 유리 테두리를 옮겼다. */
-[data-score-glass] {
-  -webkit-backdrop-filter: blur(4.4px);
-  backdrop-filter: blur(4.4px);
+/* 카드 앞면 유리 — 궁합 점수 원(Figma 112:3436)과 Top 순위 배지(112:3430)의 GLASS 효과(흐림 4~4.4 · 빛 -45° 세기 0.8 ·
+   굴절 0.8). CSS 에는 굴절이 없어 뒤를 흐리고, 빛을 받는 왼쪽 위와 반대쪽 오른쪽 아래 가장자리에 흰 광택을 얹었다. */
+[data-card-glass] {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   box-shadow:
     inset 1px 1px 1px rgb(255 255 255 / 70%),
     inset -1px -1px 1px rgb(255 255 255 / 45%),
