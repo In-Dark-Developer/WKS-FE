@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-29 · claude-code · 10/T1 · (2/2) 좁은 화면 삐져나감
+
+- Commits: bb06505
+- Done: `fieldset` 에 `min-w-0` — 브라우저 기본 min-inline-size 가 칸을 325px 에 묶고 있었다
+- Not done: 없음
+- Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: `SajuForm.tsx` 의 fieldset 도 같은 기본값이다(지금은 안 넘침)
+- Verification: 헤드리스 Chrome 실측 + pnpm test(708) · typecheck · lint
+
 ## 2026-09-29 · ai-stream · 10/T1 · 스트림 열기
 
 - Commits: (open)
