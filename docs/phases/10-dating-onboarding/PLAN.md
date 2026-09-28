@@ -87,7 +87,7 @@ QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 N
 
 - [ ] T18. 실 안내의 지도 별 문구 — Done when: 운명의 실 안내(`ThreadGuideDialog`)의 '지도 별 달성' 줄이 QA 가 정한 '내 지도에 등록된 사람 5명 당 3개'로 보이고, 개수는 백엔드 원장 규칙과 같다. 지금 WKS-BE §12 와 PRD FR-31 은 '친구 1명 등록당 3' 이라 문구만 바꾸면 실제 지급과 어긋난다 — 백엔드(곽도윤, Notion 기능 「지도 별 1개당 실 3개 지급」)가 규칙을 바꾸거나 QA 가 문구를 거두기 전에는 시작하지 않는다 · Touches: `src/features/dating/wallet/ThreadGuideDialog.tsx` · Owner: 이정진 · FR: FR-31 (QA: 실 설명 페이지 설명)
 
-- [ ] T19. 실 안내 개수 알약 그라데이션 — Done when: 운명의 실 안내의 '+3'·'+10' 개수 알약의 흰 그라데이션이 과하지 않아 가장자리가 잘려 보이지 않고, Figma 운명의 실 안내 모달과 같은 색으로 보인다 · Touches: `src/features/dating/dating.css`, `src/features/dating/wallet/ThreadGuideDialog.tsx` · Owner: 강근우 · FR: FR-31 (QA: 운명의 실 모달 포인트 버튼 그라데이션 조절 필요)
+- [x] T19. 실 안내 개수 알약 그라데이션 — Done when: 운명의 실 안내의 '+3'·'+10' 개수 알약의 흰 그라데이션이 과하지 않아 가장자리가 잘려 보이지 않고, Figma 운명의 실 안내 모달과 같은 색으로 보인다 · Touches: `src/features/dating/dating.css`, `src/features/dating/wallet/ThreadGuideDialog.tsx` · Owner: 강근우 · FR: FR-31 (QA: 운명의 실 모달 포인트 버튼 그라데이션 조절 필요) (commit 9339fb8 — Figma 그라데이션 오른쪽 흰 끝을 rose-200 50% 로. 디자이너 확인 필요)
 
 ## Relevant Specifications
 
