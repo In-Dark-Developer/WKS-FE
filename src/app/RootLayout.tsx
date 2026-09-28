@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useMatches } from 'react-router-dom';
 
 import { ensureDailyCheckIn } from '@/api/wallet';
+import { capturePartnerRef, claimPendingPartnerRef } from '@/features/auth';
 
 import { AppShell, type Backdrop } from '@/app/AppShell';
 import { BottomNavBar, type NavTab } from '@/app/screens/BottomNavBar';
@@ -26,6 +27,11 @@ export function RootLayout() {
   // 사이트 접속 때 출석 실을 받는다 — 비로그인이면 조용히 넘어간다(ensureDailyCheckIn).
   useEffect(() => {
     void ensureDailyCheckIn();
+  }, []);
+  // 제휴 링크(`?ref=`)로 들어오면 코드를 보관하고, 이미 로그인했으면 바로 보상을 받는다(FR-32).
+  useEffect(() => {
+    capturePartnerRef(window.location.search);
+    void claimPendingPartnerRef();
   }, []);
   const backdrop = matches
     .map((match) => backdropOf(match.handle))
