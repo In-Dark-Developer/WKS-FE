@@ -87,7 +87,7 @@ QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `�
 
 - [ ] T19. 공유 링크 진입 화면 배경 — Done when: 공유 Flow(`/s/**`) 화면의 배경이 Figma 링크 진입 화면과 같은 배경(사진·그라데이션)으로 보이고, 새로고침·뒤로가기 뒤에도 같다 · Touches: `src/app/routes/share.routes.tsx`, `src/app/layout.css` · Owner: 강근우 · FR: FR-15 (QA: 링크 진입 화면 배경이 다름)
 
-- [ ] T20. 공유 링크 진입 뒤 궁합 지도 디자인 — Done when: 공유 링크로 들어와 궁합을 만든 뒤 보이는 주인의 궁합 지도(SCR-24·SCR-13)가 Figma `15:1089`·`16:1827` 과 같은 배치·색으로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/` · Owner: 강근우 · FR: FR-6, FR-14 (QA: 공유링크 타고 진입 후 지도 디자인 이상)
+- [x] T20. 공유 링크 진입 뒤 궁합 지도 디자인 — Done when: 공유 링크로 들어와 궁합을 만든 뒤 보이는 주인의 궁합 지도(SCR-24·SCR-13)가 Figma `15:1089`·`16:1827` 과 같은 배치·색으로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/` · Owner: 강근우 · FR: FR-6, FR-14 (QA: 공유링크 타고 진입 후 지도 디자인 이상) (commit 18f7e28 내 줄 가운데 · e2d6209 궤도 선 정지 — 회전이 선을 패널 밖으로 밀어내 안 보이던 QA)
 
 ## Relevant Specifications
 
