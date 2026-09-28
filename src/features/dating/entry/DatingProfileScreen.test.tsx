@@ -168,6 +168,35 @@ test('사진 업로드가 실패하면 사진 칸에 알리고 저장하지 않�
   expect(createDatingProfileMock).not.toHaveBeenCalled();
 });
 
+// QA(2026-09-29): (1/2) 에 뒤로가기가 없어 등록을 그만두고 사주를 보러 갈 길이 없었다.
+test('(1/2) 의 뒤로가기는 로그인을 둔 채 인트로로 간다', async () => {
+  const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+});
+
+// (1/2) 로 되돌아온 뒤에도 인트로로 간다 — (1/2) 의 뒤로가기는 늘 인트로다.
+test('(2/2) 에서 (1/2) 로 돌아온 뒤의 뒤로가기도 인트로로 간다', async () => {
+  const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
+    '/dating',
+    '/dating/profile',
+  ]);
+
+  fireEvent.click(await screen.findByRole('button', { name: '다음으로' }));
+  await screen.findByRole('progressbar', { name: '프로필 등록 2/2 단계' });
+  fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+  await screen.findByRole('progressbar', { name: '프로필 등록 1/2 단계' });
+
+  fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+});
+
 test('(1/2) 를 거쳐 온 (2/2) 의 뒤로가기는 (1/2) 로 돌아간다', async () => {
   const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
     '/dating',
