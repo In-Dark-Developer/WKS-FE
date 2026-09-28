@@ -20,7 +20,9 @@ vi.mock('@/api/dating', async (importOriginal) => {
 });
 
 import type { DatingCandidate } from '@/api/dating';
+import type { DatingRequestListItem } from '@/api/matchRequests';
 
+import { REASON_PENDING } from '../requests/messages';
 import { datingCardsLoader, toCandidateView, toRerollView } from './recommendationsLoader';
 
 const CANDIDATE_ID = '3f2a9c1e-0000-4000-8000-000000000001';
@@ -42,7 +44,24 @@ const locked: DatingCandidate = {
   },
 };
 
-function request(status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED') {
+// 받은 목록의 상대 프로필 — 사진·이름·학과가 실 없이 열려 오고 궁합 까닭도 함께 온다(WKS-BE §11.1).
+const openCounterpart: DatingRequestListItem['counterpart'] = {
+  score: 91,
+  mbti: 'INFP',
+  bio: '같이 부스 구경해요.',
+  blurredPhotoUrl: BLURRED_URL,
+  fields: {
+    photo: { locked: false, value: 'https://s3.example.com/original.jpg' },
+    name: { locked: false, value: '김운명' },
+    department: { locked: false, value: '국어국문학과' },
+    reason: { locked: false, value: '서로의 빈 자리를 채워 주는 사주예요.' },
+  },
+};
+
+function request(
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED',
+  counterpart: DatingRequestListItem['counterpart'] = openCounterpart,
+): DatingRequestListItem {
   return {
     requestId: '312f3185-f114-4db0-a2fb-54d0669b7e33',
     candidateId: CANDIDATE_ID,
@@ -51,6 +70,7 @@ function request(status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED') {
     respondedAt: null,
     contactMethod: null,
     contactValue: null,
+    counterpart,
   };
 }
 
@@ -264,4 +284,71 @@ test('나이는 서버 문구(03년생) 그대로 옮기고, 없으면 나이 �
   expect(toCandidateView({ ...locked, age: '03년생' }).birthYear).toBe('03년생');
   expect(toCandidateView({ ...locked, age: null }).birthYear).toBeNull();
   expect(toCandidateView(locked).birthYear).toBeNull();
+});
+
+// 11/T10 — 상대가 먼저 실을 보낸 카드는 잠긴 채로 두지 않는다. 받은 신청의 상대 정보는 해금 없이 보이므로(FR-30)
+// 그 요청 행이 준 열린 프로필로 카드를 덮는다.
+test('상대가 먼저 실을 보낸 카드는 사진·이름·학과·까닭이 실 없이 열려 보인다 (FR-30)', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'received' ? [request('PENDING')] : [] }),
+  );
+
+  const state = await datingCardsLoader();
+  const card = state.kind === 'ready' ? state.view.candidates[0] : undefined;
+
+  expect(card?.photo).toEqual({ isLocked: false, url: 'https://s3.example.com/original.jpg' });
+  expect(card?.name).toEqual({ isLocked: false, value: '김운명' });
+  expect(card?.department).toEqual({ isLocked: false, value: '국어국문학과' });
+  expect(card?.reason).toEqual({
+    isLocked: false,
+    value: '서로의 빈 자리를 채워 주는 사주예요.',
+  });
+});
+
+test('까닭이 아직 만들어지지 않았으면 잠금이 아니라 만드는 중 안내로 보인다', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({
+      ok: true,
+      data:
+        box === 'received'
+          ? [
+              request('PENDING', {
+                ...openCounterpart,
+                fields: { ...openCounterpart.fields, reason: { locked: false, value: null } },
+              }),
+            ]
+          : [],
+    }),
+  );
+
+  const state = await datingCardsLoader();
+  const card = state.kind === 'ready' ? state.view.candidates[0] : undefined;
+
+  expect(card?.reason).toEqual({ isLocked: false, value: REASON_PENDING });
+});
+
+test('내가 보낸 신청의 잠긴 프로필은 그대로 둔다 (FR-29)', async () => {
+  getWalletMock.mockResolvedValue(wallet(10));
+  getRecommendationsMock.mockResolvedValue({
+    ok: true,
+    data: { candidates: [locked], rerollCost: 0 },
+  });
+  listRequestsMock.mockImplementation((box: string) =>
+    Promise.resolve({ ok: true, data: box === 'sent' ? [request('PENDING')] : [] }),
+  );
+
+  const state = await datingCardsLoader();
+  const card = state.kind === 'ready' ? state.view.candidates[0] : undefined;
+
+  expect(card?.name).toEqual({ isLocked: true, cost: 7 });
 });

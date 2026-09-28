@@ -157,12 +157,25 @@ export const preview: PreviewScreen = {
         }}
       />
     ),
+    // 상대가 먼저 보낸 카드는 잠긴 채로 두지 않는다 — 받은 신청의 상대 정보는 해금 없이 보인다(FR-30, 11/T10).
     '상대가 먼저 실을 보냄': () => (
       <Cards
         view={{
           ...cardsBase,
           candidates: lockedCandidates.map((candidate, index) =>
-            index === 0 ? { ...candidate, isThreadReceived: true } : candidate,
+            index === 0
+              ? {
+                  ...candidate,
+                  isThreadReceived: true,
+                  photo: { isLocked: false, url: photoRabbit },
+                  name: { isLocked: false, value: '김채원' },
+                  department: { isLocked: false, value: '바이오헬스의료기기규제과학과' },
+                  reason: {
+                    isLocked: false,
+                    value: '두 사람 모두 물의 기운이 약해 서로를 채워 주는 사이예요.',
+                  },
+                }
+              : candidate,
           ),
         }}
       />
