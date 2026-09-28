@@ -33,6 +33,13 @@ function buildMockResult(input: ResultRequestInput): Result {
       { category: 'LOVE', grade: 'SS', content: '올해 인연운이 아주 좋아요.' },
     ],
     elements: { wood: 3, fire: 2, earth: 1, metal: 1, water: 1 },
+    // 잘 맞는 오행 — 목 결과에도 넣어 SCR-04 의 카드(Figma 39:2481)를 목 모드에서 본다.
+    elementMatch: {
+      element: 'EARTH',
+      korean: '토',
+      reason:
+        '흙의 기운은 당신을 살려 주는 기운이에요. 안정적인 사람과 좋은 흐름을 만들 수 있어요.',
+    },
     luckyItem: '파란색 팔찌',
     luckyPlace: '동국대 팔정도',
     compatibilities: [],

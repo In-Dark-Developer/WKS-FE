@@ -15,13 +15,14 @@ export function ElementMatchSection({ match, action }: Props) {
   return (
     <section
       aria-label="나와 잘 맞는 오행"
-      className="flex flex-col gap-12 rounded-16 border border-apricot bg-opacity-card-apricot-50-50 p-16 backdrop-blur-sm"
+      className="flex flex-col gap-12 rounded-16 border border-apricot p-16 backdrop-blur-sm"
+      data-reading-element-match=""
     >
       <div className="flex flex-col gap-8 text-primary">
         <h2 className="text-ui-18 font-semibold">나와 잘 맞는 오행은</h2>
         <p className="text-center">
           <span className="font-display text-display-32">{match.korean}</span>{' '}
-          <span className="text-ui-14 font-semibold">({hanja[match.element]})</span>
+          <span className="text-ui-14">({hanja[match.element]})</span>
         </p>
       </div>
       <p className="text-ui-16 break-keep text-secondary">{match.reason}</p>

@@ -115,3 +115,17 @@ test('옛 결과처럼 잘 맞는 오행이 없으면 그 영역만 그리지 �
   expect(screen.queryByRole('region', { name: '나와 잘 맞는 오행' })).not.toBeInTheDocument();
   expect(screen.getByText('행운의 아이템')).toBeInTheDocument();
 });
+
+test("공유 링크로 들어온 방문자의 내 사주는 운세 아래 오른쪽에 '지도 보기 >'가 있다 (Figma 4.1.3)", () => {
+  render(
+    <ReadingResult
+      mapLink={<a href="/me/map">지도 보기 &gt;</a>}
+      renderCard={() => <p>카드 자리</p>}
+      view={view}
+    />,
+  );
+
+  const link = screen.getByRole('link', { name: '지도 보기 >' });
+  const lastFortune = screen.getByText('연애 풀이');
+  expect(lastFortune.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
