@@ -53,3 +53,14 @@ test('카드는 Figma 규격 비율(343:433)과 흰 테두리·radius 12 를 갖
   expect(card).toHaveClass('aspect-[343/433]', 'w-full', 'rounded-12', 'border-neutral-0');
   expect(card).not.toHaveClass('h-[433px]');
 });
+
+// QA(2026-09-28): 사진 위 '카드 뒤집기' 칩에 채움이 없어 밝은 사진에서 글자가 묻혔다(Figma 134:2275 흰색 18%).
+test('카드 뒤집기 칩은 반투명 채움과 테두리를 갖는다', () => {
+  render(<ProfileCard back={<p>뒷면</p>} background={<div />} front={<p>앞면</p>} />);
+
+  expect(screen.getByRole('button', { name: '카드 뒤집기' })).toHaveClass(
+    'bg-opacity-card-neutral-0-18',
+    'border-neutral-100',
+    'backdrop-blur-sm',
+  );
+});
