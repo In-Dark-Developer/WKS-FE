@@ -95,7 +95,7 @@ QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 N
 
 - [x] T22. 궁합 지도 궤도 선·달이 사라짐 — Done when: 로그인 복귀처럼 새로 연 궁합 지도에서도 궤도 선·달이 곧바로 보이고 움직임이 멈추지 않는다 · Touches: `src/features/friends/map/`, `src/ui/assets/friends/` · Owner: 강근우 · FR: FR-8 (QA: 지도 페이지 선이랑 달이 사라짐) (commit ecfab0d, PR #304 — 원인: 필터 SVG 5장을 폰에서 그리는 데 합 약 11초. WebP 로 바꿈)
 
-- [ ] T23. 궁합 이유 상세 로딩 — Done when: 궁합 지도에서 친구 Row 를 눌러 여는 궁합 이유(FR-22)가 느린 원인(생성 요청 대기 · 저장값 재조회 · 화면 쪽 대기 중 무엇인지)을 재현해 적고, 화면 쪽 원인이면 고치며, 백엔드 생성 시간이 원인이면 수치를 적어 WKS-BE 에 넘긴다 · Touches: `src/features/friends/reason/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 · FR: FR-22, NFR-9 (QA 기능: 지도 페이지 상세한 정보 로딩이 느림)
+- [x] T23. 궁합 이유 상세 로딩 — Done when: 궁합 지도에서 친구 Row 를 눌러 여는 궁합 이유(FR-22)가 느린 원인(생성 요청 대기 · 저장값 재조회 · 화면 쪽 대기 중 무엇인지)을 재현해 적고, 화면 쪽 원인이면 고치며, 백엔드 생성 시간이 원인이면 수치를 적어 WKS-BE 에 넘긴다 · Touches: `src/features/friends/reason/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 · FR: FR-22, NFR-9 (QA 기능: 지도 페이지 상세한 정보 로딩이 느림) (수정 없음 — 화면 쪽 대기 없음: 시트는 바로 뜨고 부모 지도 loader 도 다시 돌지 않는다. 원인은 첫 열람 때 백엔드가 Gemini 로 이유를 동기 생성하는 시간 — WKS-BE 운영 실측(2026-09-28 handoff): 호출 성공 49%·IO 오류 34%·429 10%·503 7%, 성공 지연 p50 5.1초·p95 6.4초·최대 17초. WKS-BE #129(1299867)가 무료 3프로젝트 분산·503 유료 전환으로 대응)
 
 ## Relevant Specifications
 
