@@ -29,11 +29,12 @@ REVIEW
 - [x] 헤드리스 Chrome 으로 430·375·360·320·280px 에서 실측 — 320px 아래에서 재현
 - [x] 원인: 브라우저 기본 `fieldset { min-inline-size: min-content }` 가 칸을 325px 에 묶었다
 - [x] `min-w-0` 을 주고 다시 실측해 삐져나감이 사라진 것을 확인
+- [x] Safari 제보를 받고 `fieldset` 을 배치에서 빼 안쪽 div 가 쌓게 한다 — WebKit 은 flex fieldset 폭을 max-content 로 잡는다
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`bb06505`
+`859d631`
 
 ## Relevant Documents
 

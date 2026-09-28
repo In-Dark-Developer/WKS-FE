@@ -4,12 +4,12 @@
 
 ## 2026-09-29 · claude-code · 10/T1 · (2/2) 좁은 화면 삐져나감
 
-- Commits: bb06505
-- Done: `fieldset` 에 `min-w-0` — 브라우저 기본 min-inline-size 가 칸을 325px 에 묶고 있었다
+- Commits: bb06505, 859d631
+- Done: `fieldset` 에 `min-w-0`(Chrome) + 배치를 안쪽 div 로 옮김(Safari max-content)
 - Not done: 없음
 - Upstream changes: 없음
 - Spec changes: 없음
-- Needs your attention: `SajuForm.tsx` 의 fieldset 도 같은 기본값이다(지금은 안 넘침)
+- Needs your attention: Safari 확인은 deploy-preview-324 에서 소유자가 한다 · `SajuForm.tsx` 도 flex fieldset 이다
 - Verification: 헤드리스 Chrome 실측 + pnpm test(708) · typecheck · lint
 
 ## 2026-09-29 · ai-stream · 10/T1 · 스트림 열기
