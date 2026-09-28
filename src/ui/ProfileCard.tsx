@@ -58,7 +58,9 @@ export function ProfileCard({
       {back ? (
         <button
           aria-pressed={isBack}
-          className="absolute top-12 left-1/2 flex -translate-x-1/2 items-center gap-8 rounded-999 border border-neutral-100 px-12 py-4 text-ui-12 whitespace-nowrap text-neutral-100 backdrop-blur-sm"
+          // 사진 위에 얹히는 유리 칩 — 흰색 18% 채움 + 테두리(Figma 134:2275). 채움이 없으면
+          // 밝은 사진 위에서 글자가 묻힌다.
+          className="absolute top-12 left-1/2 flex -translate-x-1/2 items-center gap-8 rounded-999 border border-neutral-100 bg-opacity-card-neutral-0-18 px-12 py-4 text-ui-12 whitespace-nowrap text-neutral-100 backdrop-blur-sm"
           onClick={() => setFace(isBack ? 'front' : 'back')}
           type="button"
         >
