@@ -79,7 +79,7 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 그 화면·코드를 마지막으로 만든 사람이 이어서 맡는다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
 
-- [ ] T15. 학교 메일 코드 발송 뒤 화면 흔들림 — Done when: 프로필 (2/2)에서 '인증'을 눌러 코드를 보낸 뒤 화면이 커졌다 작아지지 않는다 — 데스크톱 브라우저만의 현상인지 모바일(375)에서도 나는지 재현해 적고, 원인(코드 입력칸·타이머가 나타나며 높이·스크롤바가 바뀌는 등)을 고친다 · Touches: `src/features/dating/profile/EmailVerification.tsx`, `src/features/dating/profile/DetailsStep.tsx` · Owner: 이정진 · UI: FR-25 (QA: 메일 인증 발송 후 화면 사이즈가 변화)
+- [x] T15. 학교 메일 코드 발송 뒤 화면 흔들림 — Done when: 프로필 (2/2)에서 '인증'을 눌러 코드를 보낸 뒤 화면이 커졌다 작아지지 않는다 — 데스크톱 브라우저만의 현상인지 모바일(375)에서도 나는지 재현해 적고, 원인(코드 입력칸·타이머가 나타나며 높이·스크롤바가 바뀌는 등)을 고친다 · Touches: `src/features/dating/profile/EmailVerification.tsx`, `src/features/dating/profile/DetailsStep.tsx` · Owner: 이정진 · UI: FR-25 (QA: 메일 인증 발송 후 화면 사이즈가 변화) (commit f794755 — 원인: 재발송 카운트다운 숫자 폭이 매초 달라 버튼이 1–2.7px 씩 변하고 메일 칸이 따라 줄었다 늘었다 함. 데스크톱만의 문제가 아니다. 375px 에서 수정 전 111.4→113.9→112.8px, 수정 뒤 114.4px 고정)
 
 - [ ] T16. 연락처 칸 안내 문구 — Done when: 프로필 (2/2) 연락처 칸 아래 안내가 '상대방에게 공개될 정보예요'로 보인다 · Touches: `src/features/dating/profile/DetailsStep.tsx` · Owner: 이정진 · UI: FR-25 (QA: 소개팅 페이지 설명 수정)
 
