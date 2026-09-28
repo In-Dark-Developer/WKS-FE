@@ -22,8 +22,10 @@ type Props = {
 // 앞·뒷면을 같은 자리에 겹쳐 두고 뒷면만 미리 180도 돌려 둔다. `backface-hidden` 이 돌아간 동안
 // 뒤통수를 가려, 절반을 지나면 다른 면이 나타난다(홈 운명 카드 ConnectionCard.css 와 같은 방식).
 // 겹친 면을 확실히 가리는 일은 ProfileCard.css 의 `[data-profile-card-face]` 가 마저 한다.
+// 글자는 회색조로 다듬는다(antialiased) — macOS 의 서브픽셀 렌더링은 어두운 사진 위 흰 글자를 Figma 보다 두껍게 그린다
+// (QA 2026-09-28 '카드 글자가 두꺼움').
 const faceClass =
-  'absolute inset-0 overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800 shadow-lg backface-hidden';
+  'absolute inset-0 overflow-hidden rounded-12 border border-neutral-0 bg-neutral-800 shadow-lg antialiased backface-hidden';
 
 // 소개팅 인연 카드 틀 — Figma 카드 앞면 96:1876 · 뒷면 103:2543 (343×433).
 // 앞면은 아래 절반, 뒷면은 전체에 어둠 그라데이션을 깔고 그 위에 슬롯 내용을 얹는다. 내용과 값은 쓰는 화면이 정한다.
