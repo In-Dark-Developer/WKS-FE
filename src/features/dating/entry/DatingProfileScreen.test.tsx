@@ -70,6 +70,7 @@ afterEach(() => {
 function renderScreen(start: DatingProfileStart, entries: string[] = ['/dating/profile']) {
   const router = createMemoryRouter(
     [
+      { path: '/', element: <p>메인 티저</p> },
       { path: '/dating', element: <p>인트로</p> },
       { path: '/dating/profile', element: <DatingProfileScreen start={start} /> },
       { path: '/dating/cards', element: <p>Top 3</p> },
@@ -169,7 +170,8 @@ test('사진 업로드가 실패하면 사진 칸에 알리고 저장하지 않�
 });
 
 // QA(2026-09-29): (1/2) 에 뒤로가기가 없어 등록을 그만두고 사주를 보러 갈 길이 없었다.
-test('(1/2) 의 뒤로가기는 로그인을 둔 채 인트로로 간다', async () => {
+// 돌아갈 곳은 메인 티저다(Figma 「0. 사이트 진입(teaser)」 = SCR-01 `/`).
+test('(1/2) 의 뒤로가기는 로그인을 둔 채 메인 티저로 간다', async () => {
   const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
     '/dating',
     '/dating/profile',
@@ -177,11 +179,11 @@ test('(1/2) 의 뒤로가기는 로그인을 둔 채 인트로로 간다', async
 
   fireEvent.click(await screen.findByRole('button', { name: '뒤로가기' }));
 
-  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/'));
 });
 
-// (1/2) 로 되돌아온 뒤에도 인트로로 간다 — (1/2) 의 뒤로가기는 늘 인트로다.
-test('(2/2) 에서 (1/2) 로 돌아온 뒤의 뒤로가기도 인트로로 간다', async () => {
+// (1/2) 로 되돌아온 뒤에도 티저로 간다 — (1/2) 의 뒤로가기는 늘 티저다.
+test('(2/2) 에서 (1/2) 로 돌아온 뒤의 뒤로가기도 메인 티저로 간다', async () => {
   const router = renderScreen({ initialStep: 1, resultId: null, saju: filledSaju }, [
     '/dating',
     '/dating/profile',
@@ -194,7 +196,7 @@ test('(2/2) 에서 (1/2) 로 돌아온 뒤의 뒤로가기도 인트로로 간�
 
   fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
 
-  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/dating'));
+  await vi.waitFor(() => expect(router.state.location.pathname).toBe('/'));
 });
 
 test('(1/2) 를 거쳐 온 (2/2) 의 뒤로가기는 (1/2) 로 돌아간다', async () => {
