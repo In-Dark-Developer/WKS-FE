@@ -33,3 +33,10 @@ test('보유 개수는 상단에 두지 않는다 (2026-09-27 결정)', () => {
 
   expect(screen.queryByText(/개$/)).not.toBeInTheDocument();
 });
+
+// QA(2026-09-28): 배경이 Rose/50 50% 라 흰 띠로 보였다 — Figma `91:1790` 은 살구빛 10% 유리다.
+test('상단 바 배경은 반투명 유리다 (Figma 91:1790)', () => {
+  render(<DatingHeader onOpenRequests={vi.fn()} onOpenThreadGuide={vi.fn()} />);
+
+  expect(screen.getByRole('banner')).toHaveClass('bg-opacity-top-nav-salmon-10');
+});

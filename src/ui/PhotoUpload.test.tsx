@@ -44,3 +44,21 @@ test('올린 뒤에는 미리보기를, 실패하면 오류 문구를 보인다'
 
   expect(screen.getByText('파일을 확인하고 다시 시도해 주세요')).toBeInTheDocument();
 });
+
+// QA(2026-09-28): 사주입력폼 (2/2) `134:3639` 와 달랐다 — 카드가 회색이고 미리보기가 정사각이며
+// 버튼이 흰 아웃라인이었다. Figma 는 흰 카드 + 311×393 미리보기 + Rose/300 버튼이다.
+test('Figma 사주입력폼 (2/2) 의 흰 카드·카드 비율 미리보기·Rose 버튼을 쓴다', () => {
+  const { container } = render(<PhotoUpload onSelect={() => {}} status="empty" />);
+
+  const card = container.firstElementChild;
+  expect(card).toHaveClass('border-default', 'bg-surface-default');
+  // 미리보기는 인연 카드(343×433)와 같은 비율이라 올린 사진이 카드에서 어떻게 보일지 그대로 드러난다.
+  expect(screen.getByText('사진을 추가해 주세요').parentElement).toHaveClass(
+    'aspect-[311/393]',
+    'bg-surface-default',
+  );
+  expect(screen.getByRole('button', { name: '사진 추가' })).toHaveClass(
+    'bg-rose-300',
+    'text-inverse',
+  );
+});
