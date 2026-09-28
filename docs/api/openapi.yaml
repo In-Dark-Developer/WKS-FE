@@ -960,7 +960,7 @@ paths:
     get:
       operationId: getWallet
       summary: (V1) 실 잔액 (FR-31)
-      description: "원장 기반이라 잔액은 지급·차감 내역의 합이다. 화면은 이 값을 그대로 보이고 계산하지 않는다. 획득은 가입 10(카카오 최초 로그인 시 자동·계정당 1회) · 출석 5 · 친구 궁합지도 등록 3(자동) 이고, 제휴 지급은 백엔드 미구현이다. 소모는 정보 해금뿐이며 현금 충전은 없다. WKS-BE api-spec.md §12 (dev adf54ab)."
+      description: "원장 기반이라 잔액은 지급·차감 내역의 합이다. 화면은 이 값을 그대로 보이고 계산하지 않는다. 획득은 가입 10(카카오 최초 로그인 시 자동·계정당 1회) · 출석 5 · 친구 궁합지도 등록 3(자동) 이고, 제휴 유입 10(FR-32 — 로그인 요청의 `ref` 또는 `POST /wallet/partner-rewards`, 계정당 코드별 1회) 이다. 소모는 정보 해금뿐이며 현금 충전은 없다. WKS-BE api-spec.md §12 (dev bfe89e3)."
       tags: [wallet]
       security: [{ cookieAuth: [] }]
       responses:
@@ -999,6 +999,43 @@ paths:
                   data: { $ref: "#/components/schemas/WalletCheckIn" }
         "401":
           description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /wallet/partner-rewards:
+    post:
+      operationId: claimPartnerReward
+      summary: (V1) 제휴 유입 보상 — 이미 로그인한 사람 (FR-32)
+      description: "제휴 링크(`?ref=`)로 이미 로그인한 사람이 들어왔을 때 부른다. 로그인 전이면 이 API 대신 `POST /auth/kakao` 의 `ref` 로 보낸다 — 어느 경로든 계정당 코드별 1회. 이미 받았거나 모르는 코드면 오류가 아니라 200 에 `rewardGranted: null` 로 온다. WKS-BE api-spec.md §12 (dev bfe89e3)."
+      tags: [wallet]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ref]
+              properties:
+                ref: { type: string, minLength: 1, maxLength: 100, description: "제휴 코드, 대소문자 무관" }
+      responses:
+        "200":
+          description: "처리됨 — 지급이 없었으면 rewardGranted 가 null 이다"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data: { $ref: "#/components/schemas/PartnerReward" }
+        "400":
+          description: INVALID_INPUT — ref 가 비었거나 100자를 넘는다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          description: UNAUTHENTICATED — 비로그인에는 지급하지 않는다
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -1228,7 +1265,7 @@ components:
         code: { type: string, description: "카카오 인가 코드" }
         redirectUri: { type: string, format: uri, description: "인가 요청에 쓴 것과 같은 값. 백엔드 화이트리스트에 등록된 주소만 허용(운영·로컬·netlify 콜백을 백엔드에 알려야 한다)" }
         resultId: { type: [string, "null"], format: uuid, description: "이 브라우저의 `wks:session` resultId. 있으면 계정에 연결·복원한다" }
-        ref: { type: [string, "null"], description: "제휴 코드(FR-20). 잘못된 값은 조용히 무시된다" }
+        ref: { type: [string, "null"], maxLength: 100, description: "제휴 코드(FR-32, 축제 사이트는 `FESTIVAL`, 대소문자 무관). 제휴 링크 `?ref=` 로 들어온 값. 등록된 코드면 계정당 코드별 1회 보상, 모르는 값은 조용히 무시되고 로그인은 성공한다" }
     KakaoLoginResult:
       type: object
       required: [isNewUser, restoredResultId, rewardGranted]
@@ -1237,7 +1274,7 @@ components:
         isNewUser: { type: boolean, description: "이번 로그인으로 계정이 새로 만들어졌으면 true" }
         restoredResultId: { type: [string, "null"], format: uuid, description: "계정 결과를 복원했으면 그 id — 프론트는 브라우저 세션을 이 값으로 교체한다. null 이면 브라우저 값을 그대로 쓴다" }
         rewardGranted:
-          description: "제휴·가입 보상. 실(재화) 기능 전에는 항상 null"
+          description: "이번 로그인으로 제휴 보상(FR-32)이 처음 지급됐으면 채워진다. 이미 받았거나 `ref` 가 없거나 모르는 코드면 null. 가입 보너스 10실은 여기 표시되지 않는다 (WKS-BE §9, 2026-09-28)"
           oneOf:
             - type: "null"
             - type: object
@@ -1461,6 +1498,20 @@ components:
       properties:
         checkedIn: { type: boolean, description: "이번 호출로 지급됐으면 true, 오늘 이미 받았으면 false" }
         balance: { type: integer, minimum: 0 }
+    PartnerReward:
+      type: object
+      required: [rewardGranted, balance]
+      properties:
+        rewardGranted:
+          description: "이번 호출로 지급됐을 때만 채워진다 — 로그인 응답의 rewardGranted 와 같은 모양"
+          oneOf:
+            - type: "null"
+            - type: object
+              required: [partnerName, amount]
+              properties:
+                partnerName: { type: string }
+                amount: { type: integer, minimum: 0 }
+        balance: { type: integer, minimum: 0, description: "지급 후 잔액" }
     ErrorCode:
       type: string
       enum: [INVALID_INPUT, RESULT_NOT_FOUND, SELF_COMPATIBILITY, COMPATIBILITY_NOT_FOUND, DUPLICATE_SIGNUP, INVALID_EMAIL_DOMAIN, INVALID_TOKEN, LLM_UNAVAILABLE, UNAUTHENTICATED, KAKAO_UNAVAILABLE, DATING_PROFILE_NOT_FOUND, DATING_PROFILE_CONFLICT, DATING_NOT_VERIFIED, INVALID_EMAIL_CODE, EMAIL_CODE_RATE_LIMITED, MAIL_UNAVAILABLE, DATING_REQUEST_NOT_FOUND, DATING_REQUEST_CONFLICT, DATING_NO_MORE_CANDIDATES, INSUFFICIENT_THREAD, METHOD_NOT_ALLOWED, INTERNAL_ERROR, NOT_FOUND]
