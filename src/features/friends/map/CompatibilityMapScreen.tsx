@@ -45,8 +45,8 @@ export function CompatibilityMapScreen({
         <p className="text-ui-12 text-secondary">친구 이름을 눌러 자세한 정보를 확인해보세요.</p>
       ) : null}
       <FriendRanking friends={friends} onSelect={onSelectFriend} />
-      {/* visitor 는 내용과 버튼 사이 16px(713:3956) — gap-12 에 더한다. */}
-      {share && variant === 'visitor' ? <div className="mt-4">{share}</div> : null}
+      {/* visitor 는 순위와 버튼 사이 32px(Figma v1.0 16:1946 gap-32) — gap-12 에 더한다. */}
+      {share && variant === 'visitor' ? <div className="mt-20">{share}</div> : null}
       {/* 순위와 저장 유도 카드 사이 40px(Figma 24:5094 gap-40) — gap-12 에 더한다. */}
       {footer ? <div className="mt-[28px]">{footer}</div> : null}
     </div>

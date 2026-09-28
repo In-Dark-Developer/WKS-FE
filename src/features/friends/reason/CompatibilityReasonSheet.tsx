@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { cn } from '@/lib/cn';
 import { Button } from '@/ui/Button';
 import { BottomSheet } from '@/ui/BottomSheet';
 
@@ -37,10 +38,16 @@ export function CompatibilityReasonSheet({ friend, rank, onClose, children }: Sh
   );
 }
 
-type AnswersProps = { tier: CompatibilityTier; state: ReasonState; onRetry?: () => void };
+type AnswersProps = {
+  tier: CompatibilityTier;
+  state: ReasonState;
+  onRetry?: () => void;
+  // 본문 글자 — 시트(Figma 3.2 30:5749)는 UI/14, 공유 궁합 결과 페이지(4.1.1 57:2762)는 UI/16.
+  bodySize?: 'sheet' | 'page';
+};
 
 // 세 질문의 답 — 첫 질문은 그 친구의 등급 이름을 넣는다('왜 나에게 귀인일까요?').
-export function ReasonAnswers({ tier, state, onRetry }: AnswersProps) {
+export function ReasonAnswers({ tier, state, onRetry, bodySize = 'sheet' }: AnswersProps) {
   if (state.status === 'error') {
     return (
       <div className="flex flex-col items-center gap-12 py-24 text-center" role="alert">
@@ -71,13 +78,21 @@ export function ReasonAnswers({ tier, state, onRetry }: AnswersProps) {
         </p>
       ) : null}
       {questions.map(({ key, title }) => (
+        // Card/Fortune(8:6) — 흰 판 80% · Border/Default · 그림자 0 2 2 15% · 블러.
         <section
-          className="flex flex-col gap-12 rounded-16 border border-default bg-opacity-card-neutral-0-80 p-16"
+          className="flex flex-col gap-12 rounded-16 border border-default bg-opacity-card-neutral-0-80 p-16 shadow-sm backdrop-blur-sm"
           key={key}
         >
           <h3 className="text-ui-18 font-semibold text-primary">{title}</h3>
           {state.status === 'ready' ? (
-            <p className="text-ui-14 break-keep text-secondary">{state[key]}</p>
+            <p
+              className={cn(
+                'break-keep text-secondary',
+                bodySize === 'page' ? 'text-ui-16' : 'text-ui-14',
+              )}
+            >
+              {state[key]}
+            </p>
           ) : (
             <span aria-hidden="true" className="flex flex-col gap-8">
               <span className="h-12 w-full animate-pulse rounded-999 bg-neutral-200" />

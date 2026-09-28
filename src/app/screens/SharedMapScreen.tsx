@@ -17,11 +17,8 @@ type Props = {
 export function SharedMapScreen({ nickname, friends, onViewMyReading, onBack }: Props) {
   return (
     <div className="flex flex-col gap-12">
-      {onBack ? (
-        <div className="pt-8">
-          <BackRow onBack={onBack} />
-        </div>
-      ) : null}
+      {/* 셸 위 여백 16 에 바로 — 지도가 Figma 처럼 56 에서 시작한다(16:1939). */}
+      {onBack ? <BackRow onBack={onBack} /> : null}
       <CompatibilityMapScreen
         friends={friends}
         nickname={nickname}
