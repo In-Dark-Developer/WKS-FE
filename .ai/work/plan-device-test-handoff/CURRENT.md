@@ -7,9 +7,9 @@
 - Branch: ws/plan-device-test-handoff
 - Task: device/-
 - Issue: none
-- Touches: docs/phases/08-launch-readiness/PLAN.md, docs/phases/08-launch-readiness/RESULT.md, docs/phases/09-auth-and-shell/PLAN.md
+- Touches: docs/phases/08-launch-readiness/PLAN.md, docs/phases/08-launch-readiness/RESULT.md, docs/phases/09-auth-and-shell/PLAN.md, docs/phases/README.md
 - Supersedes: none
-- Acked: none
+- Acked: 2026-09-11-bootstrap, 2026-09-12-board-rows-for-streams, 2026-09-12-commit-type-ci, 2026-09-12-design-first-prd, 2026-09-12-notion-board-sync, 2026-09-12-pr-body-autofill, 2026-09-13-backend-contract, 2026-09-13-design-tokens, 2026-09-13-issue-link, 2026-09-13-notion-index-sync, 2026-09-13-planning-feedback, 2026-09-13-screen-ownership, 2026-09-13-server-state-session, 2026-09-13-session-token-and-contact, 2026-09-13-task-after, 2026-09-14-result-ownership, 2026-09-22-netlify-org-repo, 2026-09-23-dev-default-branch, 2026-09-23-prd-notion-db, 2026-09-23-prd-owner-drift, 2026-09-23-prd-split, 2026-09-23-v1-architecture, 2026-09-24-prd-completion-fields, 2026-09-25-cookie-auth-contract
 
 ## Current Phase
 
@@ -17,31 +17,34 @@
 
 ## Current Task
 
-Phase device-test-handoff 계획
+08/T6 실기기 잔여 절차 이관과 09/T15 종료
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
+- [x] 08 RESULT 에 남은 실기기 절차 6가지를 대상·방법·통과 기준으로 적는다
+- [x] 08/T6 Owner → @jjjung0921
+- [x] 09/T15 를 수정 없음으로 닫는다 — 디자인 확인 결과 QA 지적이 착오였다
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`3dd85a6`
+`1df300e`
 
 ## Relevant Documents
 
 - `AGENTS.md`
+- `docs/phases/08-launch-readiness/RESULT.md` — T6 iPhone 기록과 미실행 표
 
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- 없음 (문서만 바뀐다)
 
 ## Next Action
 
-`AGENTS.md`에서 device/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+@jjjung0921 에게 PR 을 알리고, 디자인팀에 네비 간격 새 값을 요청한다.
