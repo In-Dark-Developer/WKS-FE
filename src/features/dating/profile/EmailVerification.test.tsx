@@ -107,3 +107,9 @@ test('인증을 마치면 메일은 읽기 전용이 되고 버튼과 코드 칸
   expect(screen.queryByRole('button')).toBeNull();
   expect(screen.queryByLabelText('인증 코드')).toBeNull();
 });
+
+test('재발송 카운트다운 숫자는 고정 폭이라 매초 버튼 폭이 흔들리지 않는다', () => {
+  renderVerification({ view: { status: 'sent', resendAvailableAt: NOW + 60_000 } });
+
+  expect(screen.getByRole('button', { name: /재발송/ })).toHaveClass('tabular-nums');
+});
