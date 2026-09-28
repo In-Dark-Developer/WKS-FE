@@ -60,8 +60,10 @@ export function RequestDetail(props: Props) {
 }
 
 // 카드 아래 버튼 — Figma cardbutton(118:2869): 활성화(분홍) · 기본(흰) · 비활성화(짙은 회색).
+// 글줄은 Figma 대로 24px — 12px 글자의 기본 줄(18px)이면 버튼이 26px 로 납작해 위아래 여백이 없어 보였다(QA 2026-09-28).
 function Actions(props: Props) {
-  const pillClass = 'rounded-999 px-20 py-4 font-display text-ui-12 whitespace-nowrap';
+  const pillClass =
+    'rounded-999 px-20 py-4 font-display text-ui-12 leading-[24px] whitespace-nowrap';
 
   // 성립하면 상대가 등록한 연락 수단을 보인다 — 성립 후 화면은 디자인이 없어(FR-30) 카드 버튼 자리에 적는다.
   if (props.status === 'MATCHED' && props.request.contact) {

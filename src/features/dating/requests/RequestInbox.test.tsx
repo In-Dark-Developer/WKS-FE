@@ -98,3 +98,15 @@ test('받은 신청은 수락·거절을 그 신청 id 로 넘긴다', () => {
   fireEvent.click(screen.getByRole('button', { name: '다음 기회에...' }));
   expect(onDecline).toHaveBeenCalledWith('r1');
 });
+
+// QA(2026-09-28): 카드 아래 버튼이 26px 로 납작했다 — Figma cardbutton 처럼 글줄 24px(높이 32px)이다.
+test('받은 신청 카드의 두 버튼은 Figma cardbutton 글줄(24px)을 갖는다', () => {
+  renderInbox();
+
+  fireEvent.click(screen.getByRole('tab', { name: '받은 신청' }));
+  fireEvent.click(screen.getByRole('button', { name: /이도윤/ }));
+
+  for (const name of ['인연이 되고 싶어요', '다음 기회에...']) {
+    expect(screen.getByRole('button', { name })).toHaveClass('py-4', 'leading-[24px]');
+  }
+});
