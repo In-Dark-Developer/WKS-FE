@@ -61,9 +61,11 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 그 화면·코드를 마지막으로 만든 사람이 이어서 맡는다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
 
-- [ ] T11. 먼저 실을 보낸 상대 카드의 글자·버튼 — Done when: 11/T10 의 '나를 찾아온 인연' 카드에서 글자 굵기가 Figma 카드와 같고, '나를 찾아온 인연'과 궁합 점수·MBTI 와 나이가 각각 같은 줄에 서며, 아래 두 버튼 위아래에 여백이 있다 · Touches: `src/features/dating/card/`, `src/features/dating/recommendation/` · Owner: 강근우 · FR: FR-28, FR-30 (QA: 카드 글자/버튼 관련)
+- [x] T11. 먼저 실을 보낸 상대 카드의 글자·버튼 — Done when: 11/T10 의 '나를 찾아온 인연' 카드에서 글자 굵기가 Figma 카드와 같고, '나를 찾아온 인연'과 궁합 점수·MBTI 와 나이가 각각 같은 줄에 서며, 아래 두 버튼 위아래에 여백이 있다 · Touches: `src/features/dating/card/`, `src/features/dating/recommendation/` · Owner: 강근우 · FR: FR-28, FR-30 (QA: 카드 글자/버튼 관련) (commit 577c3b6, PR #315 — 점수 원 배치·MBTI·나이 바닥선·버튼 글줄 24px·antialiased)
 
-- [ ] T12. 궁합 까닭 해금 — Done when: 카드의 궁합 까닭을 해금하면(3실) 잔액이 줄고 까닭이 보이며, 안 되던 조건(리롤 뒤 · 일부 해금 뒤 · 전체 해금 등)을 재현해 적는다. 백엔드 응답이 원인이면 WKS-BE 에 넘긴다(Notion 기능 「리롤 후 잠금 필드」 · 곽도윤) · Touches: `src/features/dating/unlock/`, `src/features/dating/card/` · Owner: 강근우 · FR: FR-28 (QA 기능: 궁합 이유 해금이 안되고 있음)
+- [x] T12. 궁합 까닭 해금 — Done when: 카드의 궁합 까닭을 해금하면(3실) 잔액이 줄고 까닭이 보이며, 안 되던 조건(리롤 뒤 · 일부 해금 뒤 · 전체 해금 등)을 재현해 적는다. 백엔드 응답이 원인이면 WKS-BE 에 넘긴다(Notion 기능 「리롤 후 잠금 필드」 · 곽도윤) · Touches: `src/features/dating/unlock/`, `src/features/dating/card/` · Owner: 강근우 · FR: FR-28 (QA 기능: 궁합 이유 해금이 안되고 있음) (FE 수정 없음 — 2026-09-29 Notion QA 가 완료로 확인. FE 로는 재현하지 못했고, 같은 날 WKS-BE #128·#129 가 이유 생성(`DatingReasonService`)을 고쳤다)
+
+- [x] T13. 운명의 실 보내기 확인 문구 — Done when: '운명의 실 보내기' 확인 모달의 붉은 글씨가 '실을 보내면 아직 열지 않은 정보는 상대방이 수락 후에 확인할 수 있어요!'로 보이고, PRD FR-29 가 수락 뒤 네 항목이 모두 열리는 WKS-BE #128 과 같다 · Touches: `src/features/dating/thread/`, `docs/prd/30-functional-requirements.md` · Owner: 이정진 · FR: FR-29 (QA: 붉은 글씨 부분 문구 수정) (commit 8279648 — 수락된 보낸 신청은 FE 가 `locked` 를 그대로 따라 추가 작업 없이 모두 보인다)
 
 ## Relevant Specifications
 

@@ -85,7 +85,7 @@ QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 N
 
 - [x] T17. 카드를 뒤집어도 사진은 그대로 — Done when: 소개팅 카드를 뒤집을 때(10/T10) 뒷면의 사진이 좌우 반전되지 않고 앞면과 같은 방향으로 보이며, 동작 줄이기 설정에서도 같다 · Touches: `src/ui/ProfileCard.tsx` · Owner: 이동건 · FR: FR-26 (QA: 소개팅 사진 좌우반전) (commit 833b64e)
 
-- [ ] T18. 실 안내의 지도 별 문구 — Done when: 운명의 실 안내(`ThreadGuideDialog`)의 '지도 별 달성' 줄이 QA 가 정한 '내 지도에 등록된 사람 5명 당 3개'로 보이고, 개수는 백엔드 원장 규칙과 같다. 지금 WKS-BE §12 와 PRD FR-31 은 '친구 1명 등록당 3' 이라 문구만 바꾸면 실제 지급과 어긋난다 — 백엔드(곽도윤, Notion 기능 「지도 별 1개당 실 3개 지급」)가 규칙을 바꾸거나 QA 가 문구를 거두기 전에는 시작하지 않는다 · Touches: `src/features/dating/wallet/ThreadGuideDialog.tsx` · Owner: 이정진 · FR: FR-31 (QA: 실 설명 페이지 설명)
+- [ ] T18. 실 안내의 지도 별 문구 — Done when: 운명의 실 안내(`ThreadGuideDialog`)의 '지도 별 달성' 줄이 QA 가 정한 '내 지도에 등록된 사람 5명 당 3개'로 보이고, 개수는 백엔드 원장 규칙과 같다. 지금 WKS-BE §12 와 PRD FR-31 은 '친구 1명 등록당 3' 이라 문구만 바꾸면 실제 지급과 어긋난다 — 백엔드(곽도윤, Notion 기능 「지도 별 1개당 실 3개 지급」)가 규칙을 바꾸거나 QA 가 문구를 거두기 전에는 시작하지 않는다 · Touches: `src/features/dating/wallet/ThreadGuideDialog.tsx` · Owner: 이정진 · FR: FR-31 (QA: 실 설명 페이지 설명) (2026-09-29: 새 Figma 522:2739 에 맞춘 #315(6256b3f)로 '내 지도에 등록된 사람 5명 당 · +3' 문구가 dev 에 들어갔다. WKS-BE §12 는 여전히 '친구 1명 등록당 3' 이라 백엔드 확인 전에는 체크하지 않는다)
 
 - [x] T19. 실 안내 개수 알약 그라데이션 — Done when: 운명의 실 안내의 '+3'·'+10' 개수 알약의 흰 그라데이션이 과하지 않아 가장자리가 잘려 보이지 않고, Figma 운명의 실 안내 모달과 같은 색으로 보인다 · Touches: `src/features/dating/dating.css`, `src/features/dating/wallet/ThreadGuideDialog.tsx` · Owner: 강근우 · FR: FR-31 (QA: 운명의 실 모달 포인트 버튼 그라데이션 조절 필요) (commit 9339fb8 — Figma 그라데이션 오른쪽 흰 끝을 rose-200 50% 로. 디자이너 확인 필요)
 
