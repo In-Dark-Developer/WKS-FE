@@ -51,7 +51,7 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 - [x] T6. 궁합 까닭 줄바꿈 — Done when: 카드 뒷면과 요청함 상세의 궁합 까닭 문장이 카드 폭 안에서 줄을 바꾸고, 백엔드 문장에 들어 있는 줄바꿈도 그대로 보인다 · Touches: `src/features/dating/card/CandidateFaces.tsx`, `src/features/dating/requests/RequestDetail.tsx` · Owner: 강근우 · FR: FR-28 (QA: 궁합사유 줄 바꿈이 안된다) (commit 416da49 — 긴 글 줄바꿈은 #275)
 
-- [ ] T7. 운명의 실 모달 상단 간격 — Done when: '운명의 실 보내기' 확인 모달과 보낸 뒤 모달의 위쪽 여백이 Figma 운명의 실 모달 1·2 와 같다 · Touches: `src/features/dating/thread/ThreadDialogs.tsx`, `src/features/dating/DatingDialog.tsx` · Owner: 강근우 · FR: FR-29 (QA: 운명의 실 모달 상단 간격)
+- [x] T7. 운명의 실 모달 상단 간격 — Done when: '운명의 실 보내기' 확인 모달과 보낸 뒤 모달의 위쪽 여백이 Figma 운명의 실 모달 1·2 와 같다 · Touches: `src/features/dating/thread/ThreadDialogs.tsx`, `src/features/dating/DatingDialog.tsx` · Owner: 강근우 · FR: FR-29 (QA: 운명의 실 모달 상단 간격) (수정 없음 — Figma 모달 1·2 와 실측이 343/32/32/16·gap 24·20·12 로 모두 같다)
 
 - [ ] T8. 요청함 목록 오른쪽 알약 — Done when: '보낸 신청' 목록 줄은 궁합 점수 대신 요청 상태 알약('신청중'·'수락됨'·'거절됨', Figma 보관함/내가보낸사람 `390:2842` — 상태마다 알약 색이 다르다)을 보이고, '받은 신청' 목록 줄은 궁합 점수 알약(Figma 보관함/나에게보낸사람 `109:2251`)을 보인다(FR-30, 2026-09-28 결정) · Touches: `src/features/dating/requests/` · Owner: 강근우 · FR: FR-30 (QA: 받은 요청함에서 수락중 이런 식으로 떠야 하는데 궁합점수가 뜸 · QA 기능: 보낸 요청함 리스트 → 대기 상태)
 
