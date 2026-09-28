@@ -107,3 +107,13 @@ test('인증을 마치면 메일은 읽기 전용이 되고 버튼과 코드 칸
   expect(screen.queryByRole('button')).toBeNull();
   expect(screen.queryByLabelText('인증 코드')).toBeNull();
 });
+
+// QA(2026-09-28): 남은 시간 글자가 매초 바뀌며 버튼 폭이 흔들려 옆 메일 칸이 줄었다 늘었다 했다.
+test('인증·재발송 버튼은 글자가 바뀌어도 폭이 같다', () => {
+  renderVerification({ view: { status: 'sent', resendAvailableAt: NOW + 60_000 } });
+
+  expect(screen.getByRole('button', { name: '재발송 1:00' })).toHaveClass(
+    'w-[120px]',
+    'tabular-nums',
+  );
+});
