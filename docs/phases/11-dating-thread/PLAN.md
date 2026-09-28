@@ -59,6 +59,12 @@ QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion
 
 - [x] T10. 먼저 실을 보낸 상대의 추천 카드 — Done when: 상대가 먼저 운명의 실을 보낸 추천 카드(`isThreadReceived`, WKS-FE #270)가 잠긴 항목을 그대로 두지 않는다 — 추천에서 빼거나, 받은 신청처럼 사진·이름·학과·궁합 까닭을 실 없이 열어 보이는 방식 중 하나를 정해 PLAN 에 적고 구현한다(받은 신청의 상대 정보는 해금 없이 보인다, FR-30). 해금 비용은 차감되지 않는다 · Touches: `src/features/dating/recommendation/`, `src/features/dating/card/` · After: T9 · Owner: 강근우 · FR: FR-28, FR-30 (QA 기능: 나한테 보낸 사람의 카드가 없어지거나 해금한 걸 보여줘야 할 듯) (commit e644205 · 방식: 추천에서 빼지 않고 **받은 신청처럼 열어 보인다** — 받은 요청 행의 `counterpart` 가 사진·이름·학과·까닭을 실 없이 주므로 그 값으로 카드를 덮는다. 해금 시트는 열리지 않고 비용도 차감되지 않는다)
 
+QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 그 화면·코드를 마지막으로 만든 사람이 이어서 맡는다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
+
+- [ ] T11. 먼저 실을 보낸 상대 카드의 글자·버튼 — Done when: 11/T10 의 '나를 찾아온 인연' 카드에서 글자 굵기가 Figma 카드와 같고, '나를 찾아온 인연'과 궁합 점수·MBTI 와 나이가 각각 같은 줄에 서며, 아래 두 버튼 위아래에 여백이 있다 · Touches: `src/features/dating/card/`, `src/features/dating/recommendation/` · Owner: 강근우 · FR: FR-28, FR-30 (QA: 카드 글자/버튼 관련)
+
+- [ ] T12. 궁합 까닭 해금 — Done when: 카드의 궁합 까닭을 해금하면(3실) 잔액이 줄고 까닭이 보이며, 안 되던 조건(리롤 뒤 · 일부 해금 뒤 · 전체 해금 등)을 재현해 적는다. 백엔드 응답이 원인이면 WKS-BE 에 넘긴다(Notion 기능 「리롤 후 잠금 필드」 · 곽도윤) · Touches: `src/features/dating/unlock/`, `src/features/dating/card/` · Owner: 강근우 · FR: FR-28 (QA 기능: 궁합 이유 해금이 안되고 있음)
+
 ## Relevant Specifications
 
 - `docs/prd/` — FR-28, FR-29, FR-30, NFR-4 (FR-13 을 대체)

@@ -89,6 +89,14 @@ QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `�
 
 - [x] T20. 공유 링크 진입 뒤 궁합 지도 디자인 — Done when: 공유 링크로 들어와 궁합을 만든 뒤 보이는 주인의 궁합 지도(SCR-24·SCR-13)가 Figma `15:1089`·`16:1827` 과 같은 배치·색으로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/` · Owner: 강근우 · FR: FR-6, FR-14 (QA: 공유링크 타고 진입 후 지도 디자인 이상) (commit 18f7e28 내 줄 가운데 · e2d6209 궤도 선 정지 — 회전이 선을 패널 밖으로 밀어내 안 보이던 QA)
 
+QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 그 화면·코드를 마지막으로 만든 사람이 이어서 맡는다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
+
+- [ ] T21. 공유 링크 문구 — Done when: '친구에게 공유'로 보내는 문구(`shareLinkMessages.shareText`)가 QA 가 정한 문구('부처님이 우리를 어떻게 이어놨는지 궁금하면 지금 등록해봐!')로 바뀌고, 링크는 지금처럼 문구 다음 줄에 붙는다 · Touches: `src/features/share/link/` · Owner: 이정진 · FR: FR-4 (QA: 링크 공유 시 멘트 변경)
+
+- [x] T22. 궁합 지도 궤도 선·달이 사라짐 — Done when: 로그인 복귀처럼 새로 연 궁합 지도에서도 궤도 선·달이 곧바로 보이고 움직임이 멈추지 않는다 · Touches: `src/features/friends/map/`, `src/ui/assets/friends/` · Owner: 강근우 · FR: FR-8 (QA: 지도 페이지 선이랑 달이 사라짐) (commit ecfab0d, PR #304 — 원인: 필터 SVG 5장을 폰에서 그리는 데 합 약 11초. WebP 로 바꿈)
+
+- [ ] T23. 궁합 이유 상세 로딩 — Done when: 궁합 지도에서 친구 Row 를 눌러 여는 궁합 이유(FR-22)가 느린 원인(생성 요청 대기 · 저장값 재조회 · 화면 쪽 대기 중 무엇인지)을 재현해 적고, 화면 쪽 원인이면 고치며, 백엔드 생성 시간이 원인이면 수치를 적어 WKS-BE 에 넘긴다 · Touches: `src/features/friends/reason/`, `src/app/routes/map.routes.tsx` · Owner: 이정진 · FR: FR-22, NFR-9 (QA 기능: 지도 페이지 상세한 정보 로딩이 느림)
+
 ## Relevant Specifications
 
 - `docs/prd/` — FR-1(V1), FR-3(V1), FR-4, FR-5, FR-9, FR-19, FR-20, FR-21, FR-22, FR-23, NFR-7, NFR-8
