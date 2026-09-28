@@ -95,7 +95,8 @@ export function PreRegisterForm({ defaultValues, onDone }: Props) {
         </p>
       </header>
 
-      <fieldset className="flex flex-col gap-24 disabled:opacity-80" disabled={submitting}>
+      {/* min-w-0 — fieldset 은 기본으로 안쪽 가장 넓은 줄보다 좁아지지 않아 화면 밖으로 튀어나간다. */}
+      <fieldset className="flex min-w-0 flex-col gap-24 disabled:opacity-80" disabled={submitting}>
         <Field
           error={errors.name}
           help="신청자 이름을 입력해 주세요."
