@@ -12,7 +12,7 @@ type ConfirmProps = {
 };
 
 // SCR-19 운명의 실 보내기 확인 — Figma 운명의 실 보냈을 때 모달 1(112:3993).
-// 보낸 뒤에는 열지 않은 정보를 더 볼 수 없음을 알리고 확인받는다(FR-29).
+// 보낸 뒤 열지 않은 정보는 상대가 수락해야 보인다는 것을 알리고 확인받는다(FR-29, WKS-BE #128).
 export function SendThreadDialog({ open, onClose, onSend }: ConfirmProps) {
   const titleId = useId();
 
@@ -26,8 +26,9 @@ export function SendThreadDialog({ open, onClose, onSend }: ConfirmProps) {
           </h2>
           <p className="text-ui-16 font-medium text-primary">
             <span className="text-status-error-foreground">
-              실을 보낸 뒤에는 아직 열지 않은 정보를
-              <br />더 이상 확인할 수 없어요.
+              실을 보내면 아직 열지 않은 정보는
+              <br />
+              상대방이 수락 후에 확인할 수 있어요!
             </span>
             <br />
             그래도 보내시겠어요?

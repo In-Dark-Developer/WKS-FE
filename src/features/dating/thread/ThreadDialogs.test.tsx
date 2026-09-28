@@ -5,12 +5,12 @@ import { SendThreadDialog, ThreadSentDialog } from './ThreadDialogs';
 
 afterEach(cleanup);
 
-test('보내기 전에 열지 않은 정보를 더 볼 수 없음을 알리고, 보내기를 넘긴다', () => {
+test('보내기 전에 열지 않은 정보는 수락 후에 보인다고 알리고, 보내기를 넘긴다', () => {
   const onSend = vi.fn();
   render(<SendThreadDialog onClose={vi.fn()} onSend={onSend} open />);
 
   expect(screen.getByRole('dialog', { name: '운명의 실을 보내시겠어요?' })).toBeVisible();
-  expect(screen.getByText(/더 이상 확인할 수 없어요/)).toBeVisible();
+  expect(screen.getByText(/상대방이 수락 후에 확인할 수 있어요!/)).toBeVisible();
   fireEvent.click(screen.getByRole('button', { name: '보내기' }));
 
   expect(onSend).toHaveBeenCalledOnce();
