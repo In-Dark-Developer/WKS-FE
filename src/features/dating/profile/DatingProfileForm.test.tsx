@@ -218,10 +218,11 @@ test('(2/2) 연락처 칸 아래에 상대방에게 공개된다고 안내한다
   expect(screen.getByText('상대방에게 공개될 정보예요')).toBeInTheDocument();
 });
 
-// QA(2026-09-29): 폭이 좁은 화면(약 357px 아래)에서 (2/2) 의 칸이 통째로 오른쪽으로 삐져나갔다.
-// 브라우저 기본값 `fieldset { min-inline-size: min-content }` 이 줄어드는 것을 막아 칸 너비가 325px 에
-// 걸려 있었다 — 320px 화면에서 실측으로 확인했다(Chrome).
-test('(2/2) 의 입력 묶음은 좁은 화면에서 줄어들 수 있다', () => {
+// QA(2026-09-29): (2/2) 의 칸이 통째로 오른쪽으로 삐져나갔다. 두 가지가 겹쳤다 —
+// Chrome 은 기본값 `fieldset { min-inline-size: min-content }` 때문에 325px 아래로 줄지 않았고(폭 357px
+// 아래에서 삐져나감, 320px 실측), Safari 는 flex 로 쓴 `fieldset` 의 폭을 내용 전체 폭으로 잡아 넓은
+// 창에서도 삐져나갔다. 그래서 `fieldset` 은 배치에서 빼고 안쪽 `div` 가 쌓는다.
+test('(2/2) 의 입력 묶음은 화면 폭을 따라간다', () => {
   const { container } = render(
     <StepHost
       initialStep={2}
@@ -231,5 +232,10 @@ test('(2/2) 의 입력 묶음은 좁은 화면에서 줄어들 수 있다', () =
     />,
   );
 
-  expect(container.querySelector('fieldset')).toHaveClass('min-w-0');
+  const fieldset = container.querySelector('fieldset');
+
+  expect(fieldset).toHaveClass('min-w-0');
+  // 배치는 안쪽 div 가 한다 — `fieldset` 자신이 flex 면 WebKit 이 폭을 잘못 잡는다.
+  expect(fieldset).not.toHaveClass('flex');
+  expect(fieldset?.firstElementChild).toHaveClass('flex', 'min-w-0', 'flex-col');
 });
