@@ -30,7 +30,6 @@ export function MyMapScreen({ nickname, shareId, friends, onSelectFriend, onKaka
           <ShareLinkButton
             className="w-full"
             label="친구에게 공유하고 궁합 지도 넓히기"
-            nickname={nickname}
             shareId={shareId}
             surface="map"
             variant="accent"

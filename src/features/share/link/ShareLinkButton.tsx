@@ -12,7 +12,6 @@ import { buildShareUrl } from './shareUrl';
 type Props = {
   // 결과 응답의 공개 UUID. 응답 스키마를 알 필요가 없도록 값만 받는다 (공지 publishing-first).
   shareId: string;
-  nickname: string;
   variant?: 'primary' | 'accent' | 'secondary' | 'ghost' | 'apricot';
   // Figma 결과 화면(713:4021)의 CTA 는 높이 48(size m)이다. 기본은 Button 과 같은 l.
   size?: 'm' | 'l';
@@ -27,7 +26,6 @@ type Props = {
 // 공유 시트 → 클립보드 복사 → 링크 직접 노출 순으로 물러난다.
 export function ShareLinkButton({
   shareId,
-  nickname,
   surface,
   variant = 'secondary',
   size = 'l',
@@ -43,7 +41,7 @@ export function ShareLinkButton({
   async function share() {
     setSharing(true);
     try {
-      const outcome = await shareLink(url, shareLinkMessages.shareText(nickname));
+      const outcome = await shareLink(url, shareLinkMessages.shareText);
       track('share_clicked', { surface, outcome });
       setShowLink(outcome === 'manual');
       setToast(outcome === 'copied' || outcome === 'manual' ? outcome : null);

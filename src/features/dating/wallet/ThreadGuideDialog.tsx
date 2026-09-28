@@ -26,7 +26,8 @@ type EarnWay = {
 };
 
 // 획득 방법 — 개수는 백엔드 원장 값(WKS-BE api-spec §12, 2026-09-27 결정: 디자인의 +10 대신 백엔드 값).
-// 문구는 Figma 그대로다. 지급은 모두 백엔드가 한다 — 출석은 사이트 접속 때 자동이다(ensureDailyCheckIn).
+// 문구는 Figma 그대로다 — 지도 별 달성 설명만 QA(2026-09-28) 요청으로 '내 지도에 등록된 사람 5명 당 3개'다.
+// 지급은 모두 백엔드가 한다 — 출석은 사이트 접속 때 자동이다(ensureDailyCheckIn).
 const signup: EarnWay = {
   icon: earnSignup,
   title: '기본 지급',
@@ -35,7 +36,12 @@ const signup: EarnWay = {
 };
 const checkIn: EarnWay = { icon: earnCheckIn, title: '출석 체크', when: '매일 출석 시', amount: 5 };
 const others: readonly EarnWay[] = [
-  { icon: earnFriendMap, title: '지도 별 달성', when: '별 1개 획득 시', amount: 3 },
+  {
+    icon: earnFriendMap,
+    title: '지도 별 달성',
+    when: '내 지도에 등록된 사람\n5명 당 3개',
+    amount: 3,
+  },
   { icon: earnFestival, title: '축제 사이트 방문', when: '축제 사이트에서 들어오면', amount: 10 },
 ];
 
@@ -84,21 +90,33 @@ export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Pr
   );
 }
 
-// 받은 방법은 개수 대신 '지급 완료'만 보인다(Figma 445:2701).
+// 받은 방법은 개수 대신 '지급 완료'만 보인다(Figma 445:2701). 줄 높이는 Figma 82px 가 최소다 — 설명이 두 줄이면
+// ('내 지도에 등록된 사람↵5명 당 3개' — 낱말 가운데서 끊기지 않게 줄을 정해 둔다) 줄이 늘어난다.
 function EarnRow({ way, isDone }: { way: EarnWay; isDone: boolean }) {
   return (
-    <li className="flex h-[82px] items-center justify-between rounded-12 p-12" data-earn-row="">
-      <div className="flex h-full items-center gap-12">
-        <img alt="" className="size-[58px] object-contain" draggable={false} src={way.icon} />
+    <li
+      className="flex min-h-[82px] items-center justify-between gap-8 rounded-12 p-12"
+      data-earn-row=""
+    >
+      <div className="flex items-center gap-12">
+        <img
+          alt=""
+          className="size-[58px] shrink-0 object-contain"
+          draggable={false}
+          src={way.icon}
+        />
         <div className="flex flex-col gap-4">
           <span className="text-ui-16 font-semibold text-apricot-900">{way.title}</span>
-          <span className="text-ui-14 text-muted">{way.when}</span>
+          <span className="text-ui-14 whitespace-pre-line text-muted">{way.when}</span>
         </div>
       </div>
       {isDone ? (
-        <span className="rounded-8 bg-rose-50 px-8 text-ui-12 text-muted">지급 완료</span>
+        <span className="shrink-0 rounded-8 bg-rose-50 px-8 text-ui-12 text-muted">지급 완료</span>
       ) : (
-        <span className="flex items-center gap-4 rounded-8 px-8 py-[2px]" data-earn-amount="">
+        <span
+          className="flex shrink-0 items-center gap-4 rounded-8 px-8 py-[2px]"
+          data-earn-amount=""
+        >
           <span className="text-ui-12">+</span>
           <span className="text-ui-16 font-semibold">{way.amount}</span>
         </span>
