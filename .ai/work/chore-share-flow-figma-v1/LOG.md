@@ -2,6 +2,16 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-28 · claude-code · -/- · 공유 Flow(Figma 4.x) 색·배경·글꼴 맞춤 — SCR-24·SCR-13
+
+- Commits: 이 PR
+- Done: 공유 Flow(Figma 4.x) 색·배경·글꼴 맞춤 — SCR-24·SCR-13
+- Not done: 없음
+- Developer changes: 없음 · Upstream changes: 없음
+- Spec changes: 없음
+- Needs your attention: Touches 확장(share.routes.tsx) · RelationStat 색이 3.1 내 지도에도 함께 바뀜(v1.0 과 일치)
+- Verification: test · typecheck · lint · 목 모드 미리보기
+
 ## 2026-09-28 · ai-stream · -/- · 스트림 열기
 
 - Commits: (open)

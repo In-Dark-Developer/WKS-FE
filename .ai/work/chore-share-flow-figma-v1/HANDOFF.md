@@ -2,18 +2,23 @@
 
 <!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
 
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-28
 - Phase / Task: -/-
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+공유 링크로 들어온 친구가 보는 화면(Figma 4.1~4.2.3)의 색·배경·글꼴·글자색이 Figma v1.0 과 같다.
 
 ## Work Completed
 
-- 없음
+- SCR-24(15:1089): 제목·설명 흰 글자(SectionHeader), 위 336px Primary-500→투명 그라데이션(58:2886), 간격 20·12·16·32
+- RankingList(8:384): 판 흰색 50%(80→50), 제목 줄 pt-16 pb-8 — 3.1·3.2·4.x 모두 같은 컴포넌트
+- RelationStat(8:71): 원 44px 표면색(스침은 흰색) + UI/20/700 검정 숫자 — 옛 파일(558) 색을 v1.0 으로
+- 이유 카드(Card/Fortune): 그림자·블러, 결과 페이지 본문 UI/16(시트는 UI/14 그대로, `bodySize`)
+- SCR-13(16:1827): 뒤로가기 셸 여백 16 에 바로(지도 56 시작), 순위→버튼 32
+- 4.1·4.2·4.2 새로 작성하기: #278(배경)·#298(구슬)로 이미 일치 — 확인만
 
 ## Work In Progress
 
@@ -21,23 +26,25 @@
 
 ## Files Changed
 
-- 없음
+- `src/app/screens/{SharedResultScreen,SharedMapScreen}.tsx` · `src/app/routes/share.routes.tsx`(bodySize 한 줄) · `src/features/friends/map/{FriendRanking,RelationStats,CompatibilityMapScreen}.tsx` · `src/features/friends/reason/CompatibilityReasonSheet.tsx` · `docs/phases/09-auth-and-shell/PLAN.md`(T19 [x])
 
 ## Decisions Made
 
-- 없음
+- 배경 그라데이션(164.75deg)은 Figma 4.x 의 153.17deg 와 각도만 달라 그대로 둔다(사주 결과와 공유하는 layout.css 밖 Touches)
+- 순위 줄 배지는 구슬 그림 그대로(Figma 는 4.1.2 구슬 · 4.1.1/3.2 흰 원 두 가지) · Touches 에 share.routes.tsx 추가
 
 ## Tests Executed
 
-- 없음
+- `pnpm test` · `typecheck` · `lint` · 목 모드 `/preview` 눈 확인
 
 ## Test Results
 
-- 없음
+- 전부 통과, 경고 0
 
 ## Known Problems
 
-- 없음
+- 4.1.3·4.2.3 내 사주 결과(30:6851·30:7115)는 사주 결과 화면(다른 소유자) — 목 화면엔 '나와 잘 맞는 오행' 카드가 없고(elementMatch null) 4.2.3 은 그 카드 없이 그려져 있어 확인 필요
+- 4.1.2 의 '친구 이름을 눌러…' 안내는 방문자가 남의 이유를 못 열어 두지 않았다
 
 ## Unverified Assumptions
 
@@ -45,4 +52,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 리뷰. 4.1.3·4.2.3(내 사주 결과)은 사주 결과 화면 소유자에게 전달.
