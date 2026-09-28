@@ -54,6 +54,16 @@ test('구슬 1개 이하면 궤도 선만, 3명 이상이면 구슬만 돈다 �
   expect(map).toHaveAttribute('data-motion', 'orbs');
 });
 
+test('궤도 선·달은 미리 구운 래스터다 — 필터 SVG 를 폰이 그리느라 새로 연 지도에서 선·달이 비지 않는다', () => {
+  const { container } = render(<CompatibilityMap friends={friends} nickname="달빛토끼" />);
+
+  const layers = container.querySelectorAll(
+    '[data-compatibility-map-orbit], [data-compatibility-map-moon]',
+  );
+  expect(layers).toHaveLength(5);
+  for (const layer of layers) expect(layer.getAttribute('src')).toMatch(/\.webp$/);
+});
+
 test('등급별 인원을 네 칸에 센다', () => {
   render(<RelationStats friends={friends} />);
 
