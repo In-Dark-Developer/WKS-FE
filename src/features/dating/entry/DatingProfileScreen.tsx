@@ -56,11 +56,17 @@ export function DatingProfileScreen({ start }: Props) {
     void navigate({ search: `?step=${next}` }, { replace: next === 1 });
   }
 
-  // '뒤로가기'는 들어온 길 그대로 돌아간다: (1/2) 를 거쳤으면 (1/2), 인트로에서 곧장 (2/2) 로 왔으면 인트로.
-  // 이 화면이 첫 방문 기록이면(주소로 바로 열었거나 카카오 로그인에서 돌아왔으면) 돌아갈 곳이 없어 인트로로 간다.
+  // (2/2) 의 '뒤로가기'는 들어온 길 그대로 돌아간다: (1/2) 를 거쳤으면 (1/2), 인트로에서 곧장 (2/2) 로
+  // 왔으면 인트로. 이 화면이 첫 방문 기록이면(주소로 바로 열었거나 카카오 로그인에서 돌아왔으면)
+  // 돌아갈 곳이 없어 인트로로 간다.
+  // (1/2) 는 늘 인트로로 간다 — 등록을 그만두고 사주를 보러 가거나 다른 일을 하러 갈 수 있게(QA 2026-09-29).
+  // 로그인은 쿠키가 들고 있어 화면만 바뀐다. `replace` 로 가 브라우저 뒤로가기에 (1/2) 가 다시 나오지 않는다.
   function handleBack() {
-    if (location.key === 'default') void navigate(DATING_INTRO_PATH, { replace: true });
-    else void navigate(-1);
+    if (step === 1 || location.key === 'default') {
+      void navigate(DATING_INTRO_PATH, { replace: true });
+      return;
+    }
+    void navigate(-1);
   }
 
   async function handlePhotoSelect(file: File) {

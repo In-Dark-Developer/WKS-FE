@@ -5,7 +5,7 @@ import { Icon } from '@/ui/Icon';
 type Props = {
   step: 1 | 2;
   title: string;
-  // (2/2) 의 '뒤로가기' — (1/2) 에는 없다(Figma 134:3490).
+  // '뒤로가기' — Figma 134:3490 에는 (1/2) 에 없지만 QA(2026-09-29)로 두 단계 모두에 둔다.
   onBack?: () => void;
 };
 

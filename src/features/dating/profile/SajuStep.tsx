@@ -16,10 +16,12 @@ type Props = {
   errors: Partial<Record<SajuField, string>>;
   onChange: (patch: Partial<SajuStepValues>) => void;
   onNext: () => void;
+  // '뒤로가기' — 어디로 돌아갈지는 부르는 쪽이 정한다(인트로).
+  onBack: () => void;
 };
 
 // (1/2) 사주 정보 — Figma 사주입력폼 (1/2) 134:3490. 값·오류는 DatingProfileForm 이 들고 있다.
-export function SajuStep({ values, errors, onChange, onNext }: Props) {
+export function SajuStep({ values, errors, onChange, onNext, onBack }: Props) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onNext();
@@ -27,7 +29,11 @@ export function SajuStep({ values, errors, onChange, onNext }: Props) {
 
   return (
     <form className="flex flex-col gap-20" noValidate onSubmit={handleSubmit}>
-      <StepHeader step={1} title={'나의 운명을 찾기 위해\n본인의 사주를 입력해주세요.'} />
+      <StepHeader
+        onBack={onBack}
+        step={1}
+        title={'나의 운명을 찾기 위해\n본인의 사주를 입력해주세요.'}
+      />
 
       <div className="flex flex-col gap-40">
         <div className="flex flex-col gap-24">
