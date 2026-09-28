@@ -55,7 +55,10 @@ export function CandidateFront({
       <div className="flex flex-col items-start gap-4">
         <div className="flex flex-col items-start gap-8">
           {rank === null ? null : (
-            <span className="rounded-999 bg-opacity-card-badge-50 px-16 text-ui-12 text-neutral-100">
+            <span
+              className="rounded-999 bg-opacity-card-badge-50 px-16 text-ui-12 text-neutral-100"
+              data-card-glass=""
+            >
               Top{rank}
             </span>
           )}
@@ -67,7 +70,7 @@ export function CandidateFront({
               <p
                 aria-label={`궁합 점수 ${score}점`}
                 className="flex size-[45px] shrink-0 items-center justify-center rounded-999 bg-opacity-card-score-20 font-display text-display-32 text-neutral-0"
-                data-score-glass=""
+                data-card-glass=""
               >
                 {score}
               </p>
