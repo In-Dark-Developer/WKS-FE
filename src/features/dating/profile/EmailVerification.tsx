@@ -58,9 +58,11 @@ function SendButton({ resendAvailableAt, hasSent, disabled, loading, onClick }: 
   const label =
     resendSeconds > 0 ? `재발송 ${formatCountdown(resendSeconds)}` : hasSent ? '재발송' : '인증';
 
+  // 카운트다운 숫자 폭이 매초 달라지면 버튼 폭이 흔들리고 옆 메일 칸이 따라 줄었다 늘었다 한다(QA 10/T15).
+  // 숫자를 고정 폭으로 그린다.
   return (
     <Button
-      className="shrink-0 px-16"
+      className="shrink-0 px-16 tabular-nums"
       disabled={disabled || resendSeconds > 0}
       loading={loading}
       loadingLabel="발송 중"
