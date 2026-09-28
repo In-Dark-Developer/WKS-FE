@@ -79,9 +79,9 @@ QA 2차(2026-09-28, Notion 「🩺 QA / 디자인」) — 담당자는 Notion `�
 
 - [ ] T15. 하단 네비 간격 조정 — Done when: 디자인이 정한 새 간격(탭 사이 40px · 좌우 여백 48px · 바닥 20px 중 무엇을 얼마로)을 Figma nav `30:5661` 에 먼저 반영하고, 네비가 그 값으로 그려진다. 값이 정해지기 전에는 시작하지 않는다 · Touches: `src/ui/BottomNav.tsx`, `src/app/layout.css` · Owner: 이정진 · FR: FR-19 (QA: 네브바 거리가 너무 먼 듯)
 
-- [ ] T16. 홈 운세 표시 순서 — Done when: 홈(SCR-04)의 운세 등급(결혼운·자녀운·연애운 등)이 Figma `8:794` 와 같은 순서로 보이고, 순서는 백엔드 응답 순서가 아니라 화면이 정한 순서를 따른다 · Touches: `src/features/saju/` · Owner: 이동건 · FR: FR-3 (QA: 내 사주에서 운 보여주는 순서 변경)
+- [x] T16. 홈 운세 표시 순서 — Done when: 홈(SCR-04)의 운세 등급(결혼운·자녀운·연애운 등)이 Figma `8:794` 와 같은 순서로 보이고, 순서는 백엔드 응답 순서가 아니라 화면이 정한 순서를 따른다 · Touches: `src/features/saju/` · Owner: 이동건 · FR: FR-3 (QA: 내 사주에서 운 보여주는 순서 변경) (commit 19c59e3, PR #283)
 
-- [ ] T17. 생년월일 오늘 입력 안내 — Done when: 생년월일에 오늘(또는 미래) 날짜를 넣으면 제출이 막히는 이유를 그 칸 오류 문구로 알리고(지금은 안내가 맞지 않다), 사주 입력(SCR-02)·공유 입력(SCR-06)·소개팅 (1/2) 이 같은 규칙과 문구를 쓴다 · Touches: `src/features/saju/`, `src/features/dating/profile/` · Owner: 이동건 · FR: FR-2 (QA: 생일 오늘로 하면 안 넣어짐 → 안내 수정)
+- [x] T17. 생년월일 오늘 입력 안내 — Done when: 생년월일에 오늘(또는 미래) 날짜를 넣으면 제출이 막히는 이유를 그 칸 오류 문구로 알리고(지금은 안내가 맞지 않다), 사주 입력(SCR-02)·공유 입력(SCR-06)·소개팅 (1/2) 이 같은 규칙과 문구를 쓴다 · Touches: `src/features/saju/`, `src/features/dating/profile/` · Owner: 이동건 · FR: FR-2 (QA: 생일 오늘로 하면 안 넣어짐 → 안내 수정) (commit b5c553b, PR #280)
 
 - [ ] T18. 공유 링크 진입 화면 맞추기 — Done when: `/s/:shareId` 로 들어온 신규·기존 방문자 화면이 Figma `30:5916`(신규 티저)·`4.2 기존 티저 (링크 진입 화면)` 와 같은 구성·문구로 보이고, 다른 점을 재현해 적은 뒤 고친다 · Touches: `src/features/friends/`, `src/app/screens/ShareInputScreen.tsx`, `src/app/routes/share.routes.tsx` · Owner: 강근우 · FR: FR-15, FR-23 (QA: 링크타고 들어왔을 때 화면 다름)
 

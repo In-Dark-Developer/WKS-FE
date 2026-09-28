@@ -61,19 +61,19 @@ V0.5 의 소개팅은 사전신청 폼까지였다(FR-9·FR-10). V1 은 그 자�
 
 QA(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 Notion `담당자` 칸과 같고, 원래 그 FR 을 만든 사람이다. 원인이 적혀 있지 않은 항목은 재현·원인 기록부터 한다.
 
-- [ ] T7. 프로필 (2/2) MBTI 칸 색 — Done when: 프로필 (2/2)의 MBTI 선택 칸이 다른 입력 칸(이름·학과 등)과 같은 배경·테두리·글자 색으로 보이고(Figma 사주입력폼 (2/2) `134:3639`), 선택 전·후와 오류 상태도 같은 규칙을 따른다 · Touches: `src/features/dating/profile/DetailsStep.tsx`, `src/ui/Select.tsx` · Owner: 이동건 · FR: FR-25 (QA: 소개팅 개인정보 입력 페이지에 mbti칸만 색깔이 요상함)
+- [x] T7. 프로필 (2/2) MBTI 칸 색 — Done when: 프로필 (2/2)의 MBTI 선택 칸이 다른 입력 칸(이름·학과 등)과 같은 배경·테두리·글자 색으로 보이고(Figma 사주입력폼 (2/2) `134:3639`), 선택 전·후와 오류 상태도 같은 규칙을 따른다 · Touches: `src/features/dating/profile/DetailsStep.tsx`, `src/ui/Select.tsx` · Owner: 이동건 · FR: FR-25 (QA: 소개팅 개인정보 입력 페이지에 mbti칸만 색깔이 요상함) (commit 933c06c, PR #288)
 
-- [ ] T8. 소개팅 카드 규격 — Done when: Top 3 카드(앞면·뒷면·인연x)가 Figma 카드 규격(343×433, radius 12, 흰 테두리 — `96:1876`·`134:2527`)과 같은 크기로 보이고, 화면 폭이 달라도 비율이 깨지지 않는다 · Touches: `src/ui/ProfileCard.tsx`, `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA: 카드 사이즈가 다름)
+- [x] T8. 소개팅 카드 규격 — Done when: Top 3 카드(앞면·뒷면·인연x)가 Figma 카드 규격(343×433, radius 12, 흰 테두리 — `96:1876`·`134:2527`)과 같은 크기로 보이고, 화면 폭이 달라도 비율이 깨지지 않는다 · Touches: `src/ui/ProfileCard.tsx`, `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA: 카드 사이즈가 다름) (commit 8ab0495, PR #289)
 
-- [ ] T9. 소개팅 카드 글래스 효과 — Done when: 카드의 반투명(글래스) 영역이 Figma 카드 앞면 `91:1641` 과 같은 블러·투명도로 보이고, 사진이 있는 카드와 없는 카드 모두에서 글자가 읽힌다 · Touches: `src/ui/ProfileCard.tsx`, `src/features/dating/card/`, `src/ui/tokens/theme.css`, `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA: 카드 글래스 효과)
+- [x] T9. 소개팅 카드 글래스 효과 — Done when: 카드의 반투명(글래스) 영역이 Figma 카드 앞면 `91:1641` 과 같은 블러·투명도로 보이고, 사진이 있는 카드와 없는 카드 모두에서 글자가 읽힌다 · Touches: `src/ui/ProfileCard.tsx`, `src/features/dating/card/`, `src/ui/tokens/theme.css`, `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA: 카드 글래스 효과) (commit 7c9fcdc, PR #290)
 
-- [ ] T10. 소개팅 카드 뒤집기 애니메이션 — Done when: '카드 뒤집기'가 홈 운명 카드(`DestinyCard`)와 같은 뒤집기 애니메이션으로 앞·뒷면을 바꾸고, 동작 줄이기 설정(`prefers-reduced-motion`)에서는 애니메이션 없이 바뀐다 · Touches: `src/ui/ProfileCard.tsx` · Owner: 이동건 · FR: FR-26 (QA: 소개팅 카드도 사주 카드처럼 애니메이션)
+- [x] T10. 소개팅 카드 뒤집기 애니메이션 — Done when: '카드 뒤집기'가 홈 운명 카드(`DestinyCard`)와 같은 뒤집기 애니메이션으로 앞·뒷면을 바꾸고, 동작 줄이기 설정(`prefers-reduced-motion`)에서는 애니메이션 없이 바뀐다 · Touches: `src/ui/ProfileCard.tsx` · Owner: 이동건 · FR: FR-26 (QA: 소개팅 카드도 사주 카드처럼 애니메이션) (commit 2b97edd, PR #291)
 
-- [ ] T11. Top 3 카드는 늘 세 장 — Done when: 추천이 몇 명이든 카드는 늘 세 장이고, 후보가 1–2명이면 남은 자리를 빈 카드(Figma 인연x `134:2248`)로 채우며(FR-26, 2026-09-28 결정), 세 장 모두 넘겨 볼 수 있고 인디케이터 점 세 개가 각각 그 카드를 가리킨다. 빈 카드에서는 '운명의 실 보내기'·해금이 동작하지 않는다. 지금 세 장이 다 보이지 않는 조건도 재현해 적은 뒤 고친다 · Touches: `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA 기능: 탑3 카드가 다 떠야함)
+- [x] T11. Top 3 카드는 늘 세 장 — Done when: 추천이 몇 명이든 카드는 늘 세 장이고, 후보가 1–2명이면 남은 자리를 빈 카드(Figma 인연x `134:2248`)로 채우며(FR-26, 2026-09-28 결정), 세 장 모두 넘겨 볼 수 있고 인디케이터 점 세 개가 각각 그 카드를 가리킨다. 빈 카드에서는 '운명의 실 보내기'·해금이 동작하지 않는다. 지금 세 장이 다 보이지 않는 조건도 재현해 적은 뒤 고친다 · Touches: `src/features/dating/recommendation/` · Owner: 이동건 · FR: FR-26 (QA 기능: 탑3 카드가 다 떠야함) (commit 0db0e50, PR #277)
 
-- [ ] T12. 소개팅 상단 바 아이콘 — Done when: Top 3 상단의 '운명의 실'·'요청함' 아이콘과 글자가 Figma `top_nav`(`91:1790`)와 같은 간격·크기·아이콘으로 보인다 · Touches: `src/features/dating/recommendation/DatingHeader.tsx` · Owner: 이동건 · FR: FR-31 (QA: top bar 아이콘 간 간격 및 디자인)
+- [x] T12. 소개팅 상단 바 아이콘 — Done when: Top 3 상단의 '운명의 실'·'요청함' 아이콘과 글자가 Figma `top_nav`(`91:1790`)와 같은 간격·크기·아이콘으로 보인다 · Touches: `src/features/dating/recommendation/DatingHeader.tsx` · Owner: 이동건 · FR: FR-31 (QA: top bar 아이콘 간 간격 및 디자인) (commit ec3b4a2, PR #287)
 
-- [ ] T13. 리롤 시트 실 문구 — Done when: '다른 인연 만나보기' 확인 시트의 실 차감 안내 문구가 디자인이 정한 문구로 바뀌고, 무료·유료·잔액 부족 세 상태 모두 비용(5실)과 맞는다 · Touches: `src/features/dating/recommendation/RerollSheet.tsx` · Owner: 이동건 · FR: FR-27 (QA: 리롤 모달 실 멘트 변경)
+- [x] T13. 리롤 시트 실 문구 — Done when: '다른 인연 만나보기' 확인 시트의 실 차감 안내 문구가 디자인이 정한 문구로 바뀌고, 무료·유료·잔액 부족 세 상태 모두 비용(5실)과 맞는다 · Touches: `src/features/dating/recommendation/RerollSheet.tsx` · Owner: 이동건 · FR: FR-27 (QA: 리롤 모달 실 멘트 변경) (commit d29f1e8, PR #285)
 
 ## Relevant Specifications
 
