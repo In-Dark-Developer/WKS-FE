@@ -181,3 +181,24 @@ test('사진을 올리지 못하면 확인할 조건을 함께 알린다', () =>
     screen.getByText('JPG·PNG, 10MB 이하 사진인지 확인하고 다시 시도해 주세요.'),
   ).toBeInTheDocument();
 });
+
+// QA(2026-09-28): (2/2) MBTI 칸만 배경이 달라 보였다 — 다른 입력 칸과 같은 흰 배경이어야 한다.
+test('(2/2) MBTI 칸은 다른 입력 칸과 같은 배경이다 (Figma 134:3639)', () => {
+  render(
+    <DatingProfileForm
+      onBack={vi.fn()}
+      onPhotoSelect={vi.fn()}
+      onStepChange={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+      step={2}
+    />,
+  );
+
+  const mbti = screen.getByRole('combobox', { name: 'MBTI' });
+  const department = screen.getByRole('textbox', { name: '학과' });
+
+  expect(mbti).toHaveClass('bg-surface-default');
+  // 학과 칸은 배경을 감싸는 요소가 갖는다 — 두 칸이 같은 토큰을 쓰는지 본다.
+  expect(department.closest('div')).toHaveClass('bg-surface-default');
+});
