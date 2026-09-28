@@ -1,8 +1,11 @@
 import { getRecommendations, type DatingCandidate } from '@/api/dating';
 import { listDatingRequests, type DatingRequestListItem } from '@/api/matchRequests';
 
+import type { DatingLockableField } from '@/api/schema/dating';
+
 import { relationLabelByRank, type CandidateRank } from '../recommendation/cardsView';
 import { toLockable, toPhoto } from '../recommendation/recommendationsLoader';
+import { REASON_PENDING } from './messages';
 import type {
   ContactView,
   ReceivedRequestView,
@@ -13,8 +16,8 @@ import type {
 
 type ListedRequest = DatingRequestListItem & { status: 'PENDING' | 'ACCEPTED' | 'REJECTED' };
 
-// 상대 프로필은 목록 행의 `counterpart` 에서 온다(WKS-BE §11.1). 받은 신청은 사진·이름·학과가 실 없이 열려 오고,
-// 보낸 신청은 카드에서 연 만큼만 열려 온다. 궁합 까닭은 목록에 없어 지금 카드에 있는 상대만 그 카드 값을 쓴다.
+// 상대 프로필은 목록 행의 `counterpart` 에서 온다(WKS-BE §11.1). 받은 신청은 사진·이름·학과·궁합 까닭이 실 없이
+// 열려 오고, 보낸 신청은 카드에서 연 만큼만 열려 온다.
 function toProfile(
   request: ListedRequest,
   relationLabel: string,
@@ -33,9 +36,21 @@ function toProfile(
     photo: toPhoto(counterpart.fields.photo, counterpart.blurredPhotoUrl ?? null),
     name: toLockable(counterpart.fields.name),
     department: toLockable(counterpart.fields.department),
-    // 까닭을 모르는 상대는 흐리게 가리지 않고 없음 안내를 보인다 — 받은 신청은 해금 없이 열려 있어야 한다(FR-30).
-    reason: candidate === undefined ? null : toLockable(candidate.fields.reason),
+    reason: toReason(counterpart.fields.reason, candidate),
   };
+}
+
+// 궁합 까닭 — 목록 행이 주면 그것을 쓴다(§11.1, 2026-09-28). 받은 목록은 받은 사람 기준 문장이 늘 열려 오고,
+// 아직 만들어지지 않았으면 값 없이 열려 온다 — 그때는 잠긴 것처럼 '0개로 열기' 를 보이지 않고 만드는 중임을 알린다.
+// 이 필드를 주지 않는 백엔드에서는 예전처럼 지금 Top 3 카드에 있는 상대만 그 카드 값을 쓰고, 모르면 null 이다.
+function toReason(
+  field: DatingLockableField | undefined,
+  candidate: DatingCandidate | undefined,
+): RequestProfileView['reason'] {
+  if (field === undefined)
+    return candidate === undefined ? null : toLockable(candidate.fields.reason);
+  if (!field.locked && field.value === null) return { isLocked: false, value: REASON_PENDING };
+  return toLockable(field);
 }
 
 function toContact(request: ListedRequest): ContactView | null {
