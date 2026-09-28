@@ -19,12 +19,14 @@ test('버튼을 누르면 현재 origin 의 공유 링크를 시트로 넘긴다
   const share = vi.fn().mockResolvedValue(undefined);
   setNavigator('share', share);
 
-  render(<ShareLinkButton nickname="달빛토끼" shareId="abc" surface="reading" />);
+  render(<ShareLinkButton shareId="abc" surface="reading" />);
   fireEvent.click(screen.getByRole('button', { name: '친구에게 공유' }));
 
   await screen.findByRole('button', { name: '친구에게 공유' });
   expect(share).toHaveBeenCalledWith(
-    expect.objectContaining({ text: expect.stringMatching(`\n${window.location.origin}/s/abc$`) }),
+    expect.objectContaining({
+      text: `부처님이 우리를 어떻게 이어놨는지 궁금하면 지금 등록해봐!\n${window.location.origin}/s/abc`,
+    }),
   );
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
@@ -33,7 +35,7 @@ test('버튼 글자를 바꿀 수 있다', () => {
   render(
     <ShareLinkButton
       label="친구에게 공유하고 궁합 지도 넓히기"
-      nickname="달빛토끼"
+
       shareId="abc"
       surface="reading"
     />,
@@ -48,7 +50,7 @@ test('공유 시트가 없으면 복사하고 복사했다고 알린다', async 
   const writeText = vi.fn().mockResolvedValue(undefined);
   setNavigator('clipboard', { writeText });
 
-  render(<ShareLinkButton nickname="달빛토끼" shareId="abc" surface="reading" />);
+  render(<ShareLinkButton shareId="abc" surface="reading" />);
   fireEvent.click(screen.getByRole('button', { name: '친구에게 공유' }));
 
   expect(await screen.findByRole('status')).toHaveTextContent('링크를 복사했느니라');
@@ -57,7 +59,7 @@ test('공유 시트가 없으면 복사하고 복사했다고 알린다', async 
 });
 
 test('복사까지 막히면 링크를 직접 고를 수 있게 보여준다', async () => {
-  render(<ShareLinkButton nickname="달빛토끼" shareId="abc" surface="reading" />);
+  render(<ShareLinkButton shareId="abc" surface="reading" />);
   fireEvent.click(screen.getByRole('button', { name: '친구에게 공유' }));
 
   expect(await screen.findByLabelText('공유 링크')).toHaveValue(`${window.location.origin}/s/abc`);
@@ -76,7 +78,7 @@ test('공유하는 동안에는 버튼을 다시 누를 수 없다', async () =>
     ),
   );
 
-  render(<ShareLinkButton nickname="달빛토끼" shareId="abc" surface="reading" />);
+  render(<ShareLinkButton shareId="abc" surface="reading" />);
   fireEvent.click(screen.getByRole('button', { name: '친구에게 공유' }));
 
   const button = await screen.findByRole('button', { name: '인연을 부르는 중' });
