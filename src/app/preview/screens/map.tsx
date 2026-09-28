@@ -2,7 +2,7 @@ import type { PreviewScreen } from '@/app/preview/previewScreen';
 import { MyMapScreen } from '@/app/screens/MyMapScreen';
 import { SharedMapScreen } from '@/app/screens/SharedMapScreen';
 import { SharedResultScreen } from '@/app/screens/SharedResultScreen';
-import type { Friend } from '@/features/friends';
+import { ShareInvite, type Friend } from '@/features/friends';
 
 const friends: Friend[] = [
   { nickname: '영채', score: 94, tier: 'GUIIN' },
@@ -55,6 +55,10 @@ export const preview: PreviewScreen = {
     ),
     'SCR-13 친구의 궁합 지도 · 친구 없음': () => (
       <SharedMapScreen friends={[]} nickname="달빛토끼" onViewMyReading={noop} />
+    ),
+    // SCR-06 공유 링크 진입의 초대 머리 — 친구 5명이 모두 제 궤도에 멈춰 보인다(Figma 30:6128).
+    'SCR-06 링크 진입 초대(친구 5명)': () => (
+      <ShareInvite ownerFriends={friends.slice(0, 5)} ownerNickname="달빛토끼" />
     ),
     // SCR-24 공유 궁합 결과 — 나(찰떡 2등)를 가운데, 앞뒤 순위와 함께(Figma 15:1089).
     'SCR-24 공유 궁합 결과': () => (
