@@ -6,6 +6,8 @@ import { LockedValue } from '@/ui/LockedValue';
 
 import type { CandidatePhoto, LockableField } from '../recommendation/cardsView';
 
+import '../dating.css';
+
 // 인연 카드의 사진·앞면·뒷면 내용 — 오늘의 인연(SCR-17)과 요청함 상세(SCR-20)가 ProfileCard 슬롯에 같이 쓴다.
 
 export function CandidatePhotoLayer({ photo }: { photo: CandidatePhoto }) {
@@ -65,6 +67,7 @@ export function CandidateFront({
               <p
                 aria-label={`궁합 점수 ${score}점`}
                 className="flex size-[45px] shrink-0 items-center justify-center rounded-999 bg-opacity-card-score-20 font-display text-display-32 text-neutral-0"
+                data-score-glass=""
               >
                 {score}
               </p>

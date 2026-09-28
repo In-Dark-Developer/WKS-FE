@@ -112,12 +112,26 @@
   background: #f9ede9;
 }
 
+/* 개수 칩 — Figma(522:2810)가 내보내는 CSS 각도(256.97deg)는 정사각형 기준이라 가로로 긴 칩에 그대로 쓰면
+   오른쪽 끝이 줄 바탕과 같아져 칩이 잘려 보인다. Figma 렌더를 픽셀로 재서 칩 폭 기준 가로 그라데이션으로 옮겼다:
+   왼쪽 rose/200 → 47% 분홍 → 오른쪽 끝은 rose/50 까지 가지 않은 연분홍(모두 50%, 줄 바탕 위). */
 [data-earn-amount] {
   background: linear-gradient(
-    256.97deg,
-    rgb(252 244 242 / 50%) 20.07%,
-    rgb(248 173 173 / 50%) 49.42%,
-    rgb(242 191 177 / 50%) 100.22%
+    to left,
+    rgb(249 211 209 / 50%) 0%,
+    rgb(248 173 173 / 50%) 47%,
+    rgb(242 191 177 / 50%) 100%
   );
   color: #e96143;
+}
+
+/* 궁합 점수 원 — Figma 112:3436 의 GLASS 효과(흐림 4.4 · 빛 -45° 세기 0.8 · 굴절 0.8 · 깊이 22). CSS 에는 굴절이 없어
+   뒤를 흐리고, 빛을 받는 왼쪽 위와 반대쪽 오른쪽 아래 가장자리에 흰 광택을 얹어 유리 테두리를 옮겼다. */
+[data-score-glass] {
+  -webkit-backdrop-filter: blur(4.4px);
+  backdrop-filter: blur(4.4px);
+  box-shadow:
+    inset 1px 1px 1px rgb(255 255 255 / 70%),
+    inset -1px -1px 1px rgb(255 255 255 / 45%),
+    inset 0 0 4px rgb(255 255 255 / 20%);
 }
