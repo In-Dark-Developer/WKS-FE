@@ -114,7 +114,9 @@ test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법
   expect(within(dialog).getByText('5')).toBeInTheDocument();
   // QA(2026-09-28): 지도 별 달성은 등록된 사람 수로 설명한다.
   expect(
-    within(dialog).getByText((_, node) => node?.textContent === '내 지도에 등록된 사람\n5명 당 3개'),
+    within(dialog).getByText(
+      (_, node) => node?.textContent === '내 지도에 등록된 사람\n5명 당 3개',
+    ),
   ).toBeInTheDocument();
 
   fireEvent.click(within(dialog).getByRole('button', { name: '닫기' }));

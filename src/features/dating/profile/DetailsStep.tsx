@@ -134,11 +134,7 @@ export function DetailsStep({
           </Field>
         )}
 
-        <Field
-          error={errors.contactValue}
-          help="상대방에게 공개될 정보예요"
-          label="연락처"
-        >
+        <Field error={errors.contactValue} help="상대방에게 공개될 정보예요" label="연락처">
           {(control) => (
             <div className="flex flex-col gap-8">
               <SegmentedControl
