@@ -112,7 +112,11 @@ export function SajuForm({
           </header>
         )}
 
-        <fieldset className="flex flex-col gap-24 disabled:opacity-80" disabled={submitting}>
+        {/* min-w-0 — fieldset 은 기본으로 안쪽 가장 넓은 줄보다 좁아지지 않아 화면 밖으로 튀어나간다. */}
+        <fieldset
+          className="flex min-w-0 flex-col gap-24 disabled:opacity-80"
+          disabled={submitting}
+        >
           <div className="flex flex-col gap-24 rounded-16 border border-default bg-opacity-card-neutral-0-50 px-12 pt-12 pb-16 backdrop-blur-[25px]">
             <Field
               error={errors.gender}

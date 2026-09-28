@@ -46,9 +46,11 @@ export function TextField({
         className,
       )}
     >
+      {/* w-0 — 입력창이 브라우저 기본 폭(글자 20자)을 최소 폭으로 고집하지 않고 칸 폭을 따른다. 옆에 버튼을 둔 줄
+          (메일 인증 등)이 좁은 폰에서 화면 밖으로 밀어내던 것(QA 2026-09-29 '화면 탈출'). */}
       <input
         className={cn(
-          'min-w-0 flex-1 bg-transparent text-ui-16 text-primary outline-none disabled:text-action-disabled-foreground',
+          'w-0 min-w-0 flex-1 bg-transparent text-ui-16 text-primary outline-none disabled:text-action-disabled-foreground',
           appearance === 'default' ? 'placeholder:text-muted' : 'placeholder:text-disabled',
         )}
         disabled={disabled}

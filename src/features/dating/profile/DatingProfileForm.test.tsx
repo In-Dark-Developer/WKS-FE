@@ -217,3 +217,12 @@ test('(2/2) 연락처 칸 아래에 상대방에게 공개된다고 안내한다
 
   expect(screen.getByText('상대방에게 공개될 정보예요')).toBeInTheDocument();
 });
+
+// QA(2026-09-29 '화면 탈출'): fieldset 은 기본으로 안쪽 가장 넓은 줄보다 좁아지지 않아 폭 400px 이하 폰에서 넘쳤다.
+test('(2/2) 입력 묶음은 화면 폭보다 넓어지지 않는다', () => {
+  const { container } = render(
+    <StepHost initialStep={2} onPhotoSelect={vi.fn()} onSubmit={vi.fn()} photo={uploaded} />,
+  );
+
+  expect(container.querySelector('fieldset')).toHaveClass('min-w-0');
+});

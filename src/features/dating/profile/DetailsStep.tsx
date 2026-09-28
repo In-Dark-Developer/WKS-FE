@@ -66,7 +66,11 @@ export function DetailsStep({
     <form className="flex flex-col gap-20" noValidate onSubmit={handleSubmit}>
       <StepHeader onBack={onBack} step={2} title={'소개팅에 들어갈 정보만\n입력하면 끝이에요'} />
 
-      <fieldset className="flex flex-col gap-24 disabled:opacity-80" disabled={isSubmitting}>
+      {/* min-w-0 — fieldset 은 기본으로 안쪽 가장 넓은 줄보다 좁아지지 않아 화면 밖으로 튀어나간다. */}
+      <fieldset
+        className="flex min-w-0 flex-col gap-24 disabled:opacity-80"
+        disabled={isSubmitting}
+      >
         <Field error={errors.name} help="작성자 이름을 입력해 주세요." label="이름">
           {(control) => (
             <TextField
