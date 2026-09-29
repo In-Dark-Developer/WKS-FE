@@ -6,6 +6,8 @@ import { claimPartnerReward } from '@/api/wallet';
 // sessionStorage 에 둔다. 인앱 브라우저에서 외부 브라우저로 넘어가면 저장소는 비지만 주소에 ref 가 남아 다시 읽힌다.
 const KEY = 'wks:partner-ref';
 const MAX_LENGTH = 100; // WKS-BE §12 — 100자 이하
+// 배너 진입 안내(SCR-23 1.1)를 이 탭에서 이미 띄웠는지 — 넘긴 뒤 화면을 옮길 때마다 다시 뜨지 않게 한다.
+const SEEN_KEY = 'wks:partner-entry-seen';
 
 // 진입 주소에 ref 가 있으면 보관한다. 없으면 이전에 보관한 값을 그대로 둔다(링크로 들어와 다른 화면에서 로그인하는 경우).
 export function capturePartnerRef(search: string): void {
@@ -23,6 +25,27 @@ export function readPartnerRef(): string | null {
     return sessionStorage.getItem(KEY);
   } catch {
     return null;
+  }
+}
+
+// 아직 받지 못한 제휴 코드를 들고 있는지 — 로그인 전 안내 모달을 띄울지 정하는 데 쓴다(FR-32).
+export function hasPartnerRef(): boolean {
+  return readPartnerRef() !== null;
+}
+
+export function markPartnerEntrySeen(): void {
+  try {
+    sessionStorage.setItem(SEEN_KEY, '1');
+  } catch {
+    // 남기지 못하면 안내가 한 번 더 뜬다 — 지급에는 영향이 없다.
+  }
+}
+
+export function wasPartnerEntrySeen(): boolean {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) !== null;
+  } catch {
+    return false;
   }
 }
 

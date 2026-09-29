@@ -1,5 +1,5 @@
 import type { RouteObject } from 'react-router-dom';
-import { Outlet, useLoaderData, useRevalidator, useSearchParams } from 'react-router-dom';
+import { useLoaderData, useRevalidator, useSearchParams } from 'react-router-dom';
 
 import { logout } from '@/api/auth';
 import { requireAuth, requireDatingProfile } from '@/app/routes/guards';
@@ -7,7 +7,6 @@ import { goToKakaoLogin } from '@/features/auth';
 import {
   DatingCardsScreen,
   DatingIntroScreen,
-  PendingRewardDialog,
   DatingProfileScreen,
   DatingRequestsScreen,
   DATING_PROFILE_PATH,
@@ -63,55 +62,40 @@ function DatingRequestsRoute() {
   return <DatingRequestsScreen initialTab={initialTab} view={view} />;
 }
 
-// 소개팅 화면 전체를 감싸 제휴 지급 모달을 한 번만 띄운다 — 로그인 뒤 어느 소개팅 화면에 도착하든
-// 보관된 지급을 꺼내 알린다(FR-32). 지급이 없으면 아무것도 그리지 않는다.
-function DatingLayout() {
-  return (
-    <>
-      <Outlet />
-      <PendingRewardDialog />
-    </>
-  );
-}
-
+// 제휴 지급 모달은 RootLayout 이 건다 — 소개팅 밖(홈 티저)에 도착해도 알려야 한다(2026-09-29 QA, FR-32).
 export const datingRoutes: RouteObject[] = [
   {
-    element: <DatingLayout />,
-    children: [
-      {
-        path: 'dating',
-        handle: { nav: 'dating' },
-        loader: datingIntroLoader,
-        element: <DatingIntroRoute />,
-      },
-      {
-        path: 'dating/profile',
-        loader: async () => datingProfileLoader(await requireAuth()),
-        // 단계(`?step=`)만 바뀌면 다시 부르지 않는다 — 입력 중인 폼이 그대로여야 하고 GET /me 를 또 부를 이유가 없다.
-        shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) =>
-          currentUrl.pathname === nextUrl.pathname ? false : defaultShouldRevalidate,
-        element: <DatingProfileRoute />,
-      },
-      {
-        // SCR-17 Top 3 카드 (FR-26 · FR-27).
-        path: 'dating/cards',
-        handle: { nav: 'dating' },
-        loader: async () => {
-          await requireDatingProfile();
-          return datingCardsLoader();
-        },
-        element: <DatingCardsRoute />,
-      },
-      {
-        // SCR-20 요청함 (FR-30).
-        path: 'dating/requests',
-        handle: { nav: 'dating' },
-        loader: async () => {
-          await requireDatingProfile();
-          return datingRequestsLoader();
-        },
-        element: <DatingRequestsRoute />,
-      },
-    ],
+    path: 'dating',
+    handle: { nav: 'dating' },
+    loader: datingIntroLoader,
+    element: <DatingIntroRoute />,
+  },
+  {
+    path: 'dating/profile',
+    loader: async () => datingProfileLoader(await requireAuth()),
+    // 단계(`?step=`)만 바뀜면 다시 부르지 않는다 — 입력 중인 폼이 그대로여야 하고 GET /me 를 또 부를 이유가 없다.
+    shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) =>
+      currentUrl.pathname === nextUrl.pathname ? false : defaultShouldRevalidate,
+    element: <DatingProfileRoute />,
+  },
+  {
+    // SCR-17 Top 3 카드 (FR-26 · FR-27).
+    path: 'dating/cards',
+    handle: { nav: 'dating' },
+    loader: async () => {
+      await requireDatingProfile();
+      return datingCardsLoader();
+    },
+    element: <DatingCardsRoute />,
+  },
+  {
+    // SCR-20 요청함 (FR-30).
+    path: 'dating/requests',
+    handle: { nav: 'dating' },
+    loader: async () => {
+      await requireDatingProfile();
+      return datingRequestsLoader();
+    },
+    element: <DatingRequestsRoute />,
   },
 ];

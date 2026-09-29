@@ -115,8 +115,8 @@ test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법
   expect(rows[0]).toHaveTextContent(/지급 완료$/);
   expect(rows[0]).not.toHaveTextContent('+10');
   expect(rows[1]).toHaveTextContent('+5');
-  // QA(2026-09-28) 뒤 Figma 522:2739 — '친구에게 공유' · 등록된 사람 5명 당 +3.
-  expect(rows[2]).toHaveTextContent('친구에게 공유내 지도에 등록된 사람 5명 당+3');
+  // Figma 522:2791 개정본(2026-09-29) — '친구에게 공유' · 지도 등록한 친구가 로그인 시 +2.
+  expect(rows[2]).toHaveTextContent('친구에게 공유지도 등록한 친구가 로그인 시+2');
 
   fireEvent.click(within(dialog).getByRole('button', { name: '닫기' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
