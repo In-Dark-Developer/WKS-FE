@@ -110,6 +110,24 @@ test('연결에 실패하면 입력값을 둔 채 안내를 보인다', () => {
   expect(screen.getByRole('textbox', { name: '이름' })).toHaveValue('김채원');
 });
 
+// 2026-09-29 QA: 백엔드가 사진을 거절해도 연결 문제로만 보였다 — 라우트가 정한 안내를 그대로 보인다.
+test('제출 실패 안내가 주어지면 기본 연결 문구 대신 그것을 보인다', () => {
+  render(
+    <StepHost
+      initialStep={2}
+      initialValues={{ saju: validSaju, details: validDetails }}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+      submitError="사진을 등록하지 못했어요. 10MB 이하의 JPEG·PNG 사진으로 다시 올려 주세요."
+      submitState="failed"
+    />,
+  );
+
+  expect(screen.getByRole('alert')).toHaveTextContent('사진을 등록하지 못했어요');
+  expect(screen.getByRole('alert')).not.toHaveTextContent('연결이 원활하지 않아요');
+});
+
 test('학교 메일이 아니면 제출하지 않고 메일 칸에 도메인 오류를 보인다', () => {
   const onSubmit = vi.fn();
   render(
@@ -150,7 +168,7 @@ test('메일 인증 요청에는 (2/2) 의 지금 메일 값을 앞뒤 공백 �
   expect(onVerifyCode).toHaveBeenCalledWith('me@dgu.ac.kr', '654321');
 });
 
-test('(2/2) 사진 칸은 JPG·PNG 만 고르게 하고 올릴 수 있는 조건을 안내한다', () => {
+test('(2/2) 사진 칸은 JPEG·PNG 만 고르게 하고 올릴 수 있는 조건을 안내한다', () => {
   const { container } = render(
     <StepHost
       initialStep={2}
@@ -164,10 +182,10 @@ test('(2/2) 사진 칸은 JPG·PNG 만 고르게 하고 올릴 수 있는 조건
     'accept',
     'image/jpeg,image/png',
   );
-  expect(screen.getByText(/JPG·PNG, 10MB 이하 사진을 올려 주세요/)).toBeInTheDocument();
+  expect(screen.getByText(/JPEG·PNG, 최대 10MB로 등록해주세요/)).toBeInTheDocument();
 });
 
-test('사진을 올리지 못하면 확인할 조건을 함께 알린다', () => {
+test('원인을 모르는 사진 실패는 확인할 조건을 함께 알린다', () => {
   render(
     <StepHost
       initialStep={2}
@@ -178,8 +196,36 @@ test('사진을 올리지 못하면 확인할 조건을 함께 알린다', () =>
   );
 
   expect(
-    screen.getByText('JPG·PNG, 10MB 이하 사진인지 확인하고 다시 시도해 주세요.'),
+    screen.getByText('JPEG·PNG, 10MB 이하 사진인지 확인하고 다시 시도해 주세요.'),
   ).toBeInTheDocument();
+});
+
+// 2026-09-29 QA: 용량이 넘쳐도 '연결이 원활하지 않아요' 로만 보였다 — 원인을 그대로 알린다.
+test('용량 초과는 용량 문제라고 알린다', () => {
+  render(
+    <StepHost
+      initialStep={2}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={{ status: 'error', failure: 'size' }}
+    />,
+  );
+
+  expect(screen.getByText(/사진 용량이 10MB를 넘어요/)).toBeInTheDocument();
+  expect(screen.queryByText(/연결이 원활하지 않아요/)).not.toBeInTheDocument();
+});
+
+test('형식이 맞지 않으면 형식 문제라고 알린다', () => {
+  render(
+    <StepHost
+      initialStep={2}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={{ status: 'error', failure: 'type' }}
+    />,
+  );
+
+  expect(screen.getByText(/JPEG·PNG 사진만 올릴 수 있어요/)).toBeInTheDocument();
 });
 
 // QA(2026-09-28): (2/2) MBTI 칸만 배경이 달라 보였다 — 다른 입력 칸과 같은 흰 배경이어야 한다.

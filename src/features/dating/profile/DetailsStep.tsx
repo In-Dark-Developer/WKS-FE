@@ -12,7 +12,7 @@ import { TextField } from '@/ui/TextField';
 import { EmailVerification } from './EmailVerification';
 import type { EmailVerificationView } from './emailVerificationView';
 import { BIO_MAX, DEPARTMENT_MAX, NAME_MAX, contactMethodOptions, mbtiOptions } from './options';
-import type { DatingPhotoView } from './photoView';
+import { photoErrorMessage, type DatingPhotoView } from './photoView';
 import type { DetailsField, DetailsStepValues } from './profileSchema';
 import { StepHeader } from './StepHeader';
 
@@ -26,6 +26,8 @@ type Props = {
   onSubmit: () => void;
   isSubmitting: boolean;
   hasSubmitFailed: boolean;
+  // 제출 실패 안내 — 원인을 아는 화면이 넘긴다(toProfileSubmitError).
+  submitError?: string;
   // 학교 메일 코드 인증 — 연동(10/T1) 전에는 넘기지 않아 인증 없는 메일 입력칸만 보인다.
   emailVerification?: {
     view: EmailVerificationView;
@@ -39,10 +41,10 @@ const contactPlaceholder = {
   INSTAGRAM: '인스타그램 아이디를 입력해 주세요',
 } as const;
 
-// 업로드 조건은 uploadDatingPhoto 와 같다(JPG·PNG, 10MB 이하). 실패하면 무엇을 확인할지 같은 조건으로 알린다.
+// 업로드 조건은 uploadDatingPhoto 와 같다(JPEG·PNG, 10MB 이하). 문구는 Figma 사주입력폼 (2/2) 134:3639 그대로다.
+// 실패 안내는 원인별로 다르다(photoErrorMessage) — 용량·형식·연결을 한 문구로 뭉뚱그리지 않는다(2026-09-29 QA).
 const photoGuide =
-  'JPG·PNG, 10MB 이하 사진을 올려 주세요. 현재 화면과 동일하게 상대방에게 보여집니다.';
-const photoErrorGuide = 'JPG·PNG, 10MB 이하 사진인지 확인하고 다시 시도해 주세요.';
+  'JPEG·PNG, 최대 10MB로 등록해주세요. 현재 화면과 동일하게 상대방에게 보여집니다.';
 
 // (2/2) 이름·사진·학교 메일·연락처·학과·MBTI·자기소개 — Figma 사주입력폼 (2/2) 134:3639.
 export function DetailsStep({
@@ -55,6 +57,7 @@ export function DetailsStep({
   onSubmit,
   isSubmitting,
   hasSubmitFailed,
+  submitError,
   emailVerification,
 }: Props) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -96,7 +99,7 @@ export function DetailsStep({
                 photo.status === 'empty'
                   ? photoGuide
                   : photo.status === 'error'
-                    ? photoErrorGuide
+                    ? photoErrorMessage(photo.failure)
                     : undefined
               }
               onSelect={onPhotoSelect}
@@ -210,7 +213,7 @@ export function DetailsStep({
             className="text-center text-ui-14 font-medium text-status-error-foreground"
             role="alert"
           >
-            연결이 원활하지 않아요. 입력한 내용은 유지됩니다.
+            {submitError ?? '연결이 원활하지 않아요. 입력한 내용은 유지됩니다.'}
           </p>
         ) : null}
       </fieldset>
