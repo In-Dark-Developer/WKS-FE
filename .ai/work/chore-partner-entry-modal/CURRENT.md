@@ -1,6 +1,5 @@
 # Current State — chore-partner-entry-modal
 
-<!-- 50줄 이내. Status: TODO | IN_PROGRESS | BLOCKED | REVIEW (DONE은 병합 여부로 도출). Progress는 step마다, 나머지는 세션 종료 시 갱신. 머리의 필드는 ai-stream.sh가 채운다. -->
 
 - Stream: chore-partner-entry-modal
 - Owner: gn00py48@gmail.com
@@ -13,7 +12,7 @@
 
 ## Current Phase
 
-— (Task 밖 스트림)
+10 (QA 후속 — T20)
 
 ## Current Task
 
@@ -21,27 +20,29 @@ chore: partner-entry-modal
 
 ## Status
 
-TODO
+REVIEW
 
 ## Progress
 
-<!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- (Task 시작 전)
-
+- Figma 522:2756 · 234:2797 대조 뒤 재화 모달 '친구에게 공유' 줄 갱신
+- PartnerEntryDialog(SCR-23 1.1) 작성 · partnerRef 노출 조건 헬퍼 추가
+- 메인 티저 loader·화면에 연결 · 지급 알림 모달을 RootLayout 으로
+- test · typecheck · lint · 브라우저 확인
 ## Last Checkpoint
 
-<!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`9054820`
+`c4623fd`
 
 ## Relevant Documents
 
-- `AGENTS.md`
+- `AGENTS.md` · `docs/phases/10-dating-onboarding/PLAN.md` (T18, T20)
 
 ## Relevant Source Files
 
-<!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- (아직 없음)
+- `src/features/dating/reward/PartnerEntryDialog.tsx` · `PendingRewardDialog.tsx`
+- `src/features/auth/partnerRef.ts:hasPartnerRef`
+- `src/app/routes/saju.routes.tsx:mainTeaserLoader` · `src/app/RootLayout.tsx`
+- `src/features/dating/wallet/ThreadGuideDialog.tsx:others`
 
 ## Next Action
 
-`AGENTS.md`에서 -/-의 Done when·Acceptance Criteria를 확인하고 HANDOFF의 Goal·Work In Progress를 쓴 뒤 시작한다.
+PR 을 dev 로 올리고, 백엔드(MapFriendRewardService)의 '친구 로그인 시 +2' 규칙 반영을 담당자에게 넘긴다.

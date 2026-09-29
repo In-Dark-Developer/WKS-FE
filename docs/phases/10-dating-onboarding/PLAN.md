@@ -89,7 +89,7 @@ QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 N
 
 - [x] T19. 실 안내 개수 알약 그라데이션 — Done when: 운명의 실 안내의 '+3'·'+10' 개수 알약의 흰 그라데이션이 과하지 않아 가장자리가 잘려 보이지 않고, Figma 운명의 실 안내 모달과 같은 색으로 보인다 · Touches: `src/features/dating/dating.css`, `src/features/dating/wallet/ThreadGuideDialog.tsx` · Owner: 강근우 · FR: FR-31 (QA: 운명의 실 모달 포인트 버튼 그라데이션 조절 필요) (commit 9339fb8 — Figma 그라데이션 오른쪽 흰 끝을 rose-200 50% 로. 디자이너 확인 필요)
 
-- [x] T20. 배너 진입 로그인 전 안내 — Done when: 제휴 배너(`?ref=`)로 들어온 비로그인 사용자에게 메인 티저 위로 '운명의 실' 안내 모달(SCR-23 1.1, Figma 「축사 연결」 `234:2797`)이 받을 개수와 함께 한 번 뜨고, '바로 로그인하고 운명의 짝 찾아보기'가 카카오 로그인으로 보내며, '나중에 사용할래요'·닫기로 넘기면 같은 탭에서 다시 뜨지 않는다(코드는 남겨 나중에 로그인해도 받는다). 지급 알림 모달(1.2)은 소개팅 화면이 아니라 `RootLayout` 에 걸려 로그인 뒤 어느 화면에 도착하든 뜨고, 닫으면 소개팅으로 간다 · Touches: `src/features/dating/reward/`, `src/features/auth/partnerRef.ts`, `src/app/routes/saju.routes.tsx`, `src/app/routes/dating.routes.tsx`, `src/app/RootLayout.tsx` · Owner: 강근우 · FR: FR-32 (QA 2026-09-29: 축제 배너로 들어왔는데 실을 안 준다 — 원인은 지급 조건이 로그인인데 그 사실을 알릴 자리가 없었던 것)
+- [x] T20. 배너 진입 로그인 전 안내 — Done when: 제휴 배너(`?ref=`)로 들어온 비로그인 사용자에게 메인 티저 위로 '운명의 실' 안내 모달(SCR-23 1.1, Figma 「축사 연결」 `234:2797`)이 받을 개수와 함께 한 번 뜨고, '바로 로그인하고 운명의 짝 찾아보기'가 카카오 로그인으로 보내며, '나중에 사용할래요'·닫기로 넘기면 같은 탭에서 다시 뜨지 않는다(코드는 남겨 나중에 로그인해도 받는다). 지급 알림 모달(1.2)은 소개팅 화면이 아니라 `RootLayout` 에 걸려 로그인 뒤 어느 화면에 도착하든 뜨고, 닫으면 소개팅으로 간다 · Touches: `src/features/dating/reward/`, `src/features/auth/partnerRef.ts`, `src/app/routes/saju.routes.tsx`, `src/app/routes/dating.routes.tsx`, `src/app/RootLayout.tsx` · Owner: 강근우 · FR: FR-32 (QA 2026-09-29: 축제 배너로 들어왔는데 실을 안 준다 — 원인은 지급 조건이 로그인인데 그 사실을 알릴 자리가 없었던 것) (commit c4623fd)
 
 ## Relevant Specifications
 
