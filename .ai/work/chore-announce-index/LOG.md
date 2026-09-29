@@ -2,6 +2,17 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-09-29 · claude-code · -/- · 공지 색인 갱신
+
+- Commits: (작업 1개)
+- Done: `.ai/team/README.md` 에 2026-09-29-release-pr-ci 한 줄 추가
+- Not done: 없음
+- Developer changes: 없음
+- Upstream changes: #332 병합됨
+- Spec changes: 없음
+- Needs your attention: 없음
+- Verification: `ai-end.sh --ci` 공지 색인 검사 통과
+
 ## 2026-09-29 · ai-stream · -/- · 스트림 열기
 
 - Commits: (open)

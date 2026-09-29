@@ -1,19 +1,17 @@
 # Handoff — chore-announce-index
 
-<!-- 60줄 이내. Task 시작 시 Goal·Work In Progress를 먼저 쓰고(handoff-first) 진행하며 갱신, 종료 시 완성. 덮어쓴다(이력은 git log). 모든 항목을 채운다(없으면 "없음"). 사람에게 넘길 때는 To:에 다음 소유자를 적는다. -->
-
-- From: <agent 이름>
+- From: claude-code
 - To: 없음
 - Date: 2026-09-29
-- Phase / Task: -/-
+- Phase / Task: -/- (chore)
 
 ## Goal
 
-<이 Task가 끝났을 때 참이 되어야 하는 한 문장>
+공지 색인(.ai/team/README.md)이 공지 파일 목록과 같다.
 
 ## Work Completed
 
-- 없음
+- `scripts/ai-stream.sh announce` 로 색인 재생성 — 2026-09-29-release-pr-ci 한 줄이 빠져 있었다
 
 ## Work In Progress
 
@@ -21,23 +19,23 @@
 
 ## Files Changed
 
-- 없음
+- `.ai/team/README.md` (한 줄 추가)
 
 ## Decisions Made
 
-- 없음
+- 없음 — 생성물 갱신이다
 
 ## Tests Executed
 
-- 없음
+- `scripts/ai-end.sh --ci` (공지 색인 검사 통과 확인)
 
 ## Test Results
 
-- 없음
+- 색인 검사 통과
 
 ## Known Problems
 
-- 없음
+- 공지를 추가한 PR(#332)에 색인을 함께 넣었어야 했다 — 다음부터 공지 추가 시 `announce` 를 같은 커밋에 넣는다
 
 ## Unverified Assumptions
 
@@ -45,4 +43,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+PR 을 dev 로 올린다.
