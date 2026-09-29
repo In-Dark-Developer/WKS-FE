@@ -91,6 +91,8 @@ QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 N
 
 - [x] T20. 배너 진입 로그인 전 안내 — Done when: 제휴 배너(`?ref=`)로 들어온 비로그인 사용자에게 메인 티저 위로 '운명의 실' 안내 모달(SCR-23 1.1, Figma 「축사 연결」 `234:2797`)이 받을 개수와 함께 한 번 뜨고, '바로 로그인하고 운명의 짝 찾아보기'가 카카오 로그인으로 보내며, '나중에 사용할래요'·닫기로 넘기면 같은 탭에서 다시 뜨지 않는다(코드는 남겨 나중에 로그인해도 받는다). 지급 알림 모달(1.2)은 소개팅 화면이 아니라 `RootLayout` 에 걸려 로그인 뒤 어느 화면에 도착하든 뜨고, 닫으면 소개팅으로 간다 · Touches: `src/features/dating/reward/`, `src/features/auth/partnerRef.ts`, `src/app/routes/saju.routes.tsx`, `src/app/routes/dating.routes.tsx`, `src/app/RootLayout.tsx` · Owner: 강근우 · FR: FR-32 (QA 2026-09-29: 축제 배너로 들어왔는데 실을 안 준다 — 원인은 지급 조건이 로그인인데 그 사실을 알릴 자리가 없었던 것) (commit c4623fd)
 
+- [x] T21. 사진 업로드 오류 안내 — Done when: 프로필 (2/2) 의 사진 업로드가 실패한 이유대로 다른 문구를 보인다 — 형식(JPEG·PNG 아님) · 용량(10MB 초과) · 크기(2천만 화소 초과) · 열 수 없음 · 로그인 풀림 · 거절 · 연결 실패. 백엔드가 저장 때 거절하는 화소 한도는 사진을 고르는 순간 걸러 입력을 다 마친 뒤에 막히지 않고, 프로필 저장 실패도 백엔드 오류 코드별로 안내가 다르다 · Touches: `src/api/uploads.ts`, `src/features/dating/profile/photoView.ts`, `src/features/dating/entry/profileSubmitError.ts`, `src/app/preview/screens/dating-profile.tsx` · Owner: 강근우 · FR: FR-25 (QA 2026-09-29: 사진 용량이 넘쳐도 '연결이 원활하지 않아요' 로만 보였다) (commit de79e24)
+
 ## Relevant Specifications
 
 - `docs/prd/` — FR-24, FR-25, FR-26, FR-27, FR-31, FR-32 (FR-12 를 대체), Q20(학교 메일 인증)

@@ -11,6 +11,7 @@ import type { EmailVerificationView } from '../profile/emailVerificationView';
 import type { DatingPhotoView } from '../profile/photoView';
 import type { DatingProfileInput } from '../profile/profileSchema';
 import { toEmailVerificationError, toResendAt } from './emailVerification';
+import { toProfileSubmitError } from './profileSubmitError';
 import { DATING_CARDS_PATH, DATING_INTRO_PATH } from './datingEntry';
 import type { DatingProfileStart } from './profileLoader';
 
@@ -39,6 +40,8 @@ export function DatingProfileScreen({ start }: Props) {
   const step = readStep(searchParams.get('step'), start.initialStep);
   const [photo, setPhoto] = useState<Photo>({ status: 'empty' });
   const [submitState, setSubmitState] = useState<ProfileSubmitState>('idle');
+  // 실패 이유가 달라지면 안내도 달라야 한다(FR-25) — 사진 거절을 연결 문제로 읽지 않게.
+  const [submitError, setSubmitError] = useState<string | undefined>(undefined);
   // 사주를 한 번 만들었으면 프로필 저장만 다시 시도한다 — 재시도마다 새 결과가 생기지 않게.
   const [resultId, setResultId] = useState(start.resultId);
   // 학교 메일 코드 인증(FR-25) — 인증을 마친 주소를 기억해, 메일을 고치면 처음 상태로 돌아간다.
@@ -82,8 +85,8 @@ export function DatingProfileScreen({ start }: Props) {
     setPhoto({ status: 'uploading', previewUrl: nextPreview });
     const outcome = await uploadDatingPhoto(file);
     if (!outcome.ok) {
-      console.error('사진 업로드 실패', outcome.error);
-      setPhoto({ status: 'error' });
+      console.error('사진 업로드 실패', outcome.failure);
+      setPhoto({ status: 'error', failure: outcome.failure });
       return;
     }
     setPhoto({ status: 'uploaded', previewUrl: nextPreview, photoId: outcome.data.photoId });
@@ -95,6 +98,7 @@ export function DatingProfileScreen({ start }: Props) {
     const created = await createResult(input.saju);
     if (!created.ok) {
       console.error('POST /results 실패', created.error);
+      setSubmitError(toProfileSubmitError(created.error));
       return null;
     }
     setResultId(created.data.resultId);
@@ -147,6 +151,7 @@ export function DatingProfileScreen({ start }: Props) {
       return;
     }
     setSubmitState('submitting');
+    setSubmitError(undefined);
 
     if ((await ensureResultId(input)) === null) {
       setSubmitState('failed');
@@ -156,6 +161,7 @@ export function DatingProfileScreen({ start }: Props) {
     const saved = await createDatingProfile({ photoId: photo.photoId, ...input.details });
     if (!saved.ok) {
       console.error('프로필 저장 실패', saved.error);
+      setSubmitError(toProfileSubmitError(saved.error));
       setSubmitState('failed');
       return;
     }
@@ -176,6 +182,7 @@ export function DatingProfileScreen({ start }: Props) {
       onSubmit={(input) => void handleSubmit(input)}
       photo={photo}
       step={step}
+      submitError={submitError}
       submitState={submitState}
     />
   );
