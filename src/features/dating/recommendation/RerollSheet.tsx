@@ -14,7 +14,7 @@ type Props = {
 // 다른 인연 만나보기 확인 시트 — Figma 리롤 무료 o(112:3773) · 무료 x(112:3675).
 // 바꾸면 지금 세 명을 다시 볼 수 없음을 알린다(FR-27). 잔액 부족 모습은 디자인에 없어 문구 한 줄로 막는다(FR-31).
 // 유료 버튼 문구는 Figma 어순('실 N개로 지금 변경하기')을 쓰고 개수는 서버가 준 `rerollCost` 를 넣는다 —
-// 비용이 바뀌어도 화면이 따라간다. 확정값은 20 이다(2026-09-28 소유자 확인, 백엔드 반영 예정).
+// 비용이 바뀌어도 화면이 따라간다. 확정값은 20 이다(2026-09-28 소유자 확인, 백엔드도 같다 — WKS-BE 49d8c32, 2026-09-29 확인).
 export function RerollSheet({ open, reroll, onClose, onConfirm }: Props) {
   const isBlocked = reroll.kind === 'paid' && !reroll.canAfford;
 

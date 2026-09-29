@@ -91,11 +91,15 @@ const allUnlocked: readonly MatchCandidateView[] = partlyUnlocked.map((candidate
     : candidate,
 );
 
+// 리롤 비용 20 은 Figma 112:3675('실 20개로 지금 변경하기')와 백엔드 REROLL_COST 와 같다(2026-09-29).
+// 실제 화면은 서버가 준 `rerollCost` 를 그대로 쓴다 — 이 값은 미리보기용 고정값이다.
+export const REROLL_COST = 20;
+
 export const cardsBase: DatingCardsView = {
-  balance: 12,
+  balance: 24,
   checkedInToday: true,
   candidates: lockedCandidates,
-  reroll: { kind: 'paid', cost: 3, canAfford: true },
+  reroll: { kind: 'paid', cost: REROLL_COST, canAfford: true },
 };
 
 // 해금·운명의 실 모달 미리보기(dating-unlock·dating-thread)도 이 화면 위에 띄운다.
@@ -185,7 +189,11 @@ export const preview: PreviewScreen = {
     '리롤 잔액 부족': () => (
       <Cards
         isRerollOpen
-        view={{ ...cardsBase, balance: 2, reroll: { kind: 'paid', cost: 3, canAfford: false } }}
+        view={{
+          ...cardsBase,
+          balance: 2,
+          reroll: { kind: 'paid', cost: REROLL_COST, canAfford: false },
+        }}
       />
     ),
     '재화 안내(출석 받음)': () => <Cards isThreadGuideOpen />,
