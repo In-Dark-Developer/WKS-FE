@@ -6,6 +6,8 @@ import { LockedValue } from '@/ui/LockedValue';
 
 import type { CandidatePhoto, LockableField } from '../recommendation/cardsView';
 
+import '../dating.css';
+
 // 인연 카드의 사진·앞면·뒷면 내용 — 오늘의 인연(SCR-17)과 요청함 상세(SCR-20)가 ProfileCard 슬롯에 같이 쓴다.
 
 export function CandidatePhotoLayer({ photo }: { photo: CandidatePhoto }) {
@@ -50,26 +52,33 @@ export function CandidateFront({
 }: FrontProps) {
   return (
     <div className="flex flex-col gap-16">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-end gap-16">
-          <div className="flex flex-col items-start gap-8">
-            {rank === null ? null : (
-              <span className="rounded-999 bg-opacity-card-badge-50 px-16 text-ui-12 text-neutral-100">
-                Top{rank}
-              </span>
-            )}
-            <p className="font-sungkok text-display-24 text-neutral-0">{relationLabel}</p>
-          </div>
-          {score === null ? null : (
-            <p
-              aria-label={`궁합 점수 ${score}점`}
-              className="flex size-48 items-center justify-center rounded-999 bg-opacity-card-score-20 font-display text-display-32 text-neutral-0"
+      <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start gap-8">
+          {rank === null ? null : (
+            <span
+              className="rounded-999 bg-opacity-card-badge-50 px-16 text-ui-12 text-neutral-100"
+              data-card-glass=""
             >
-              {score}
-            </p>
+              Top{rank}
+            </span>
           )}
+          {/* 점수 원(45px)은 관계 유형 오른쪽 16px(Figma 448:2833). 원이 글줄(34px)보다 커서 아래쪽에 맞추면 원이
+              위로 솟아 수평이 어긋나 보였다 — 관계 유형과 세로 가운데로 맞춘다(QA 2026-09-28). */}
+          <div className="flex items-center gap-16" data-candidate-headline="">
+            <p className="font-sungkok text-display-24 text-neutral-0">{relationLabel}</p>
+            {score === null ? null : (
+              <p
+                aria-label={`궁합 점수 ${score}점`}
+                className="flex size-[45px] shrink-0 items-center justify-center rounded-999 bg-opacity-card-score-20 font-display text-display-32 text-neutral-0"
+                data-card-glass=""
+              >
+                {score}
+              </p>
+            )}
+          </div>
         </div>
-        <p className="flex items-center gap-12">
+        {/* 라벨(Pretendard 12)과 값(성곡 14)은 글꼴 높이가 달라 가운데 맞춤이면 글자 바닥이 어긋난다 — 바닥선에 맞춘다. */}
+        <p className="flex items-baseline gap-12" data-candidate-meta="">
           <span className="text-ui-12 text-neutral-200">MBTI</span>
           <span className="font-sungkok text-ui-14 text-neutral-0">{mbti}</span>
           {birthYear ? (

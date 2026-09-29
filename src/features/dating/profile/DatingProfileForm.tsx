@@ -27,7 +27,7 @@ type Props = {
   // 지금 단계는 부르는 쪽이 갖는다 — 단계를 방문 기록에 쌓아 브라우저 뒤로가기가 이전 단계로 가게 한다.
   step: 1 | 2;
   onStepChange: (step: 1 | 2) => void;
-  // (2/2) 의 '뒤로가기' — 어디로 돌아갈지(이전 단계 · 인트로)는 부르는 쪽이 정한다.
+  // 두 단계의 '뒤로가기' — 어디로 돌아갈지(이전 단계 · 인트로)는 부르는 쪽이 정한다.
   onBack: () => void;
   // 아래 둘은 미리보기·복귀용 시작 상태다.
   initialValues?: {
@@ -99,6 +99,7 @@ export function DatingProfileForm({
       {step === 1 ? (
         <SajuStep
           errors={sajuErrors}
+          onBack={onBack}
           onChange={(patch) => setSaju((current) => ({ ...current, ...patch }))}
           onNext={handleNext}
           values={saju}

@@ -21,7 +21,7 @@ const restBounds: Bounds = { left: 24, right: 299, top: 96, bottom: 400 };
 // (제목 뒤로 지나갈 수 있다, 2026-09-15 소유자 결정).
 const travelBounds: Bounds = { left: 0, right: 323, top: 0, bottom: 439 };
 
-// x·y — 멈춘 자리(친구 2명 이하·동작 줄이기). travel — 흐르는 구슬(3명 이상): 궤도 중심 (cx, cy)·반지름 r 의 원을
+// x·y — 멈춘 자리(구슬 1개 이하·동작 줄이기). travel — 흐르는 구슬(2개 이상): 궤도 중심 (cx, cy)·반지름 r 의 원을
 // from° 에서 한 주기(duration 초)에 loop° 돈다. 보이는 호 span° 를 늘 VISIBLE_SECONDS 에 지나고 나머지는 숨는다.
 // 보통 loop = 2 × span(보이는 시간 = 숨는 시간)이고, 한 궤도에 친구가 많으면 loop 를 늘려 최소 간격을 지킨다.
 // phase 는 주기 안의 출발 위치(0~1) — 같은 궤도 친구끼리 칸을 나눠 간격을 지키고, 궤도마다 엇갈린다.

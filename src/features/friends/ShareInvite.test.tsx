@@ -14,11 +14,20 @@ const friends: Friend[] = [
   { nickname: '모카', score: 52, tier: 'SEUCHIM' },
 ];
 
-test('링크 진입 초대의 주인 지도는 멈춰 있어 친구 구슬이 모두 보인다 (Figma 30:6128)', () => {
+// QA(2026-09-29): 링크로 들어온 화면의 지도가 선·구슬 모두 멈춰 있었다.
+test('링크 진입 초대의 주인 지도도 움직인다 — 구슬 여러 개면 구슬만 돈다', () => {
   render(<ShareInvite ownerFriends={friends} ownerNickname="원희" />);
 
   const map = screen.getByRole('region', { name: '원희님의 궁합 지도' });
-  // 3명 이상이면 구슬이 흐르며 절반 동안 숨는 'orbs' 가 된다 — 초대 머리는 그러지 않는다.
-  expect(map).toHaveAttribute('data-motion', 'none');
+  expect(map).toHaveAttribute('data-motion', 'orbs');
   for (const friend of friends) expect(screen.getByText(friend.nickname)).toBeInTheDocument();
+});
+
+test('링크 주인의 친구가 1명이면 구슬은 제자리에 있고 궤도 선만 돈다', () => {
+  render(<ShareInvite ownerFriends={friends.slice(0, 1)} ownerNickname="원희" />);
+
+  expect(screen.getByRole('region', { name: '원희님의 궁합 지도' })).toHaveAttribute(
+    'data-motion',
+    'orbits',
+  );
 });

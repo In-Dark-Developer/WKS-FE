@@ -36,7 +36,7 @@ test('친구가 없으면 지도에 구슬 없이 안내한다', () => {
   expect(screen.queryAllByRole('listitem')).toHaveLength(0);
 });
 
-test('구슬 1개 이하면 궤도 선만, 3명 이상이면 구슬만 돈다 — 둘이 함께 돌지 않는다', () => {
+test('구슬 1개 이하면 궤도 선만, 2개 이상이면 선은 멈추고 구슬만 돈다 (FR-8, 2026-09-29)', () => {
   const { rerender } = render(
     <CompatibilityMap friends={friends.slice(0, 1)} nickname="달빛토끼" />,
   );
@@ -46,9 +46,9 @@ test('구슬 1개 이하면 궤도 선만, 3명 이상이면 구슬만 돈다 �
   rerender(<CompatibilityMap friends={[]} nickname="달빛토끼" />);
   expect(map).toHaveAttribute('data-motion', 'orbits');
 
-  // 구슬 2개 — 구슬은 아직 흐르지 않고(3명부터) 선도 서 있다.
+  // 구슬 2개부터 — 선은 서 있고 구슬이 흐른다. 아무것도 안 움직이는 인원은 없다.
   rerender(<CompatibilityMap friends={friends.slice(0, 2)} nickname="달빛토끼" />);
-  expect(map).toHaveAttribute('data-motion', 'none');
+  expect(map).toHaveAttribute('data-motion', 'orbs');
 
   rerender(<CompatibilityMap friends={friends.slice(0, 3)} nickname="달빛토끼" />);
   expect(map).toHaveAttribute('data-motion', 'orbs');

@@ -109,9 +109,14 @@ test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법
 
   const dialog = screen.getByRole('dialog', { name: '운명의 실 획득 방법' });
   expect(within(dialog).getByText('12개')).toBeInTheDocument();
-  // 기본 지급만 받았고 출석은 아직이다.
+  // 기본 지급만 받았고 출석은 아직이다. 받은 줄은 개수 대신 '지급 완료'만 보인다(Figma 445:2701).
+  const rows = within(dialog).getAllByRole('listitem');
   expect(within(dialog).getAllByText('지급 완료')).toHaveLength(1);
-  expect(within(dialog).getByText('5')).toBeInTheDocument();
+  expect(rows[0]).toHaveTextContent(/지급 완료$/);
+  expect(rows[0]).not.toHaveTextContent('+10');
+  expect(rows[1]).toHaveTextContent('+5');
+  // QA(2026-09-28) 뒤 Figma 522:2739 — '친구에게 공유' · 등록된 사람 5명 당 +3.
+  expect(rows[2]).toHaveTextContent('친구에게 공유내 지도에 등록된 사람 5명 당+3');
 
   fireEvent.click(within(dialog).getByRole('button', { name: '닫기' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

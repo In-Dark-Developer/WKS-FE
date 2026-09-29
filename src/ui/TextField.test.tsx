@@ -40,3 +40,10 @@ test('비활성 입력은 비활성 상태다', () => {
 
   expect(screen.getByRole('textbox', { name: '닉네임' })).toBeDisabled();
 });
+
+// QA(2026-09-29 '화면 탈출'): 입력창이 기본 폭(글자 20자)을 최소 폭으로 잡아 옆에 버튼을 둔 줄이 좁은 폰에서 밀려났다.
+test('입력창은 기본 폭 없이 칸 폭을 따른다', () => {
+  render(<TextField aria-label="메일" />);
+
+  expect(screen.getByRole('textbox', { name: '메일' })).toHaveClass('w-0', 'min-w-0', 'flex-1');
+});

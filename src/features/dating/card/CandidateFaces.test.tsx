@@ -14,6 +14,17 @@ test('앞면 MBTI 옆에 나이를 년생으로 보인다 (Figma 448:2786)', () 
   expect(screen.getByText('02년생')).toBeInTheDocument();
 });
 
+// QA(2026-09-28): 점수 원이 관계 유형보다 위로 솟고 MBTI·나이 라벨과 값의 글자 바닥이 어긋났다.
+test('점수 원은 관계 유형과 한 줄에 세로 가운데로, MBTI·나이는 글자 바닥선에 맞춘다', () => {
+  render(<CandidateFront {...front} birthYear="02년생" />);
+
+  const headline = screen.getByText('천생연분').parentElement;
+  expect(headline).toHaveClass('items-center', 'gap-16');
+  expect(headline).toContainElement(screen.getByLabelText('궁합 점수 92점'));
+  expect(screen.getByLabelText('궁합 점수 92점')).toHaveClass('size-[45px]');
+  expect(screen.getByText('MBTI').parentElement).toHaveClass('items-baseline');
+});
+
 test('생년월일이 오지 않은 카드는 나이 칸을 그리지 않는다', () => {
   render(<CandidateFront {...front} birthYear={null} />);
 
