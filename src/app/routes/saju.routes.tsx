@@ -8,8 +8,14 @@ import { HomeScreen } from '@/app/screens/HomeScreen';
 import { requireSaju, restoreSessionFromAccount } from '@/app/routes/guards';
 import { fromSharedMapState } from '@/app/routes/fromSharedMap';
 import { readingLoader, SajuForm, sajuAction, type ReadingView } from '@/features/saju';
-import { goToKakaoLogin } from '@/features/auth';
-import { DATING_INTRO_PATH, LoginSheet } from '@/features/dating';
+import {
+  capturePartnerRef,
+  goToKakaoLogin,
+  hasPartnerRef,
+  markPartnerEntrySeen,
+  wasPartnerEntrySeen,
+} from '@/features/auth';
+import { DATING_INTRO_PATH, LoginSheet, PartnerEntryDialog } from '@/features/dating';
 import { IntroGate, MainTeaser } from '@/features/intro';
 import { VerifyComplete } from '@/features/profile';
 import { track } from '@/lib/analytics';
@@ -43,18 +49,33 @@ export const SAJU_INPUT_PATH = '/saju';
 // 이미 로그인했으면 그 링크를 그리지 않는다. 로그인 여부는 GET /me 로만 판단하고, 조회가 실패하면 로그인하지 않은
 // 것으로 본다 — 링크가 한 번 더 보이는 편이 로그인할 길을 막는 것보다 낫다.
 // 로그인했는데 이 브라우저에 결과가 없으면 계정 결과를 세션에 되살려 '내 사주 보기'가 입력으로 새지 않게 한다(FR-21).
-type MainTeaserView = { isSignedIn: boolean };
+// 축제 배너(`?ref=`)로 이 화면에 바로 들어왔으면 로그인 전에 안내 모달을 한 번 띄운다(SCR-23 1.1, FR-32) —
+// 실은 로그인해야 들어오는데 그 말을 할 자리가 없었다(2026-09-29 QA). 코드 보관은 RootLayout 의 effect 보다
+// 먼저 일어나야 첫 렌더에서 조건이 정해지므로 여기서도 한 번 한다 — 같은 값을 다시 쓰는 것이라 해가 없다.
+type MainTeaserView = { isSignedIn: boolean; showsPartnerEntry: boolean };
 
 async function mainTeaserLoader(): Promise<MainTeaserView> {
+  capturePartnerRef(window.location.search);
   const me = await getMe();
   await restoreSessionFromAccount(me);
-  return { isSignedIn: me.ok };
+  return {
+    isSignedIn: me.ok,
+    showsPartnerEntry: !me.ok && hasPartnerRef() && !wasPartnerEntrySeen(),
+  };
 }
 
 function MainTeaserRoute() {
-  const { isSignedIn } = useLoaderData<MainTeaserView>();
+  const { isSignedIn, showsPartnerEntry } = useLoaderData<MainTeaserView>();
   const navigate = useNavigate();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isPartnerEntryOpen, setIsPartnerEntryOpen] = useState(showsPartnerEntry);
+
+  // 넘기면 이 탭에서는 다시 띄우지 않는다. 코드는 지우지 않아 나중에 로그인해도 실은 들어온다.
+  const dismissPartnerEntry = () => {
+    markPartnerEntrySeen();
+    setIsPartnerEntryOpen(false);
+  };
+
   return (
     <>
       <MainTeaser
@@ -69,6 +90,12 @@ function MainTeaserRoute() {
         onClose={() => setIsLoginOpen(false)}
         onKakaoLogin={() => goToKakaoLogin('/')}
         open={isLoginOpen}
+      />
+      {/* 로그인 뒤에는 '운명의 짝 찾아보기'라는 말 그대로 소개팅으로 보낸다(Figma 1.1.1 → 1.2). */}
+      <PartnerEntryDialog
+        onClose={dismissPartnerEntry}
+        onLogin={() => goToKakaoLogin(DATING_INTRO_PATH)}
+        open={isPartnerEntryOpen}
       />
     </>
   );

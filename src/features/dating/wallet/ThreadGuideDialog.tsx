@@ -34,8 +34,10 @@ const signup: EarnWay = {
   amount: 10,
 };
 const checkIn: EarnWay = { icon: earnCheckIn, title: '출석 체크', when: '매일 출석 시', amount: 5 };
+// '친구에게 공유'는 Figma 522:2791 개정본을 따른다(2026-09-29) — 사람 수만 세던 규칙이 익명 결과를 반복
+// 생성해 실을 무한히 쌓는 길을 열어 두어, 친구가 로그인해야 세는 규칙으로 바뀌었다(개수도 +3 → +2).
 const others: readonly EarnWay[] = [
-  { icon: earnFriendMap, title: '친구에게 공유', when: '내 지도에 등록된 사람 5명 당', amount: 3 },
+  { icon: earnFriendMap, title: '친구에게 공유', when: '지도 등록한 친구가 로그인 시', amount: 2 },
   { icon: earnFestival, title: '축제 사이트 방문', when: '축제 사이트에서 들어오면', amount: 10 },
 ];
 

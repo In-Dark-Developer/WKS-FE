@@ -5,7 +5,14 @@ vi.mock('@/api/wallet', () => ({ claimPartnerReward: claimMock }));
 
 import { takePendingReward } from '@/api/rewards';
 
-import { capturePartnerRef, claimPendingPartnerRef, readPartnerRef } from './partnerRef';
+import {
+  capturePartnerRef,
+  claimPendingPartnerRef,
+  hasPartnerRef,
+  markPartnerEntrySeen,
+  readPartnerRef,
+  wasPartnerEntrySeen,
+} from './partnerRef';
 
 const unauthenticated = {
   ok: false,
@@ -70,4 +77,28 @@ test('연결 실패면 남기고, 백엔드가 거절한 값이면 지운다', a
   });
   await claimPendingPartnerRef();
   expect(readPartnerRef()).toBeNull();
+});
+
+test('보관한 ref 가 있어야 로그인 전 안내를 띄운다 (SCR-23 1.1)', () => {
+  expect(hasPartnerRef()).toBe(false);
+
+  capturePartnerRef('?ref=FESTIVAL');
+
+  expect(hasPartnerRef()).toBe(true);
+});
+
+test('안내를 넘기면 이 탭에서는 다시 띄우지 않는다', () => {
+  expect(wasPartnerEntrySeen()).toBe(false);
+
+  markPartnerEntrySeen();
+
+  expect(wasPartnerEntrySeen()).toBe(true);
+});
+
+test('안내를 넘겨도 ref 는 남아 나중에 로그인하면 받는다', () => {
+  capturePartnerRef('?ref=FESTIVAL');
+
+  markPartnerEntrySeen();
+
+  expect(readPartnerRef()).toBe('FESTIVAL');
 });

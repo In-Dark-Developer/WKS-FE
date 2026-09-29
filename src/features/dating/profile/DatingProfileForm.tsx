@@ -24,6 +24,8 @@ type Props = {
   // 두 단계를 모두 통과하면 한 번 부른다. 네트워크 호출은 부르는 쪽이 한다.
   onSubmit: (input: DatingProfileInput) => void;
   submitState?: ProfileSubmitState;
+  // 제출 실패 안내 — 없으면 DetailsStep 의 기본 문구를 쓴다.
+  submitError?: string;
   // 지금 단계는 부르는 쪽이 갖는다 — 단계를 방문 기록에 쌓아 브라우저 뒤로가기가 이전 단계로 가게 한다.
   step: 1 | 2;
   onStepChange: (step: 1 | 2) => void;
@@ -49,6 +51,7 @@ export function DatingProfileForm({
   onPhotoSelect,
   onSubmit,
   submitState = 'idle',
+  submitError,
   step,
   onStepChange,
   onBack,
@@ -115,6 +118,7 @@ export function DatingProfileForm({
           }
           errors={detailsErrors}
           hasSubmitFailed={submitState === 'failed'}
+          submitError={submitError}
           isSubmitting={submitState === 'submitting'}
           onBack={onBack}
           onChange={(patch) => setDetails((current) => ({ ...current, ...patch }))}

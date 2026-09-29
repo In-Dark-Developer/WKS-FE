@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { Outlet, useMatches } from 'react-router-dom';
+import { Outlet, useMatches, useNavigate } from 'react-router-dom';
 
 import { ensureDailyCheckIn } from '@/api/wallet';
 import { capturePartnerRef, claimPendingPartnerRef } from '@/features/auth';
+import { DATING_INTRO_PATH, PendingRewardDialog } from '@/features/dating';
 
 import { AppShell, type Backdrop } from '@/app/AppShell';
 import { BottomNavBar, type NavTab } from '@/app/screens/BottomNavBar';
@@ -24,6 +25,7 @@ function navOf(handle: unknown): NavTab | undefined {
 
 export function RootLayout() {
   const matches = useMatches();
+  const navigate = useNavigate();
   // 사이트 접속 때 출석 실을 받는다 — 비로그인이면 조용히 넘어간다(ensureDailyCheckIn).
   useEffect(() => {
     void ensureDailyCheckIn();
@@ -41,6 +43,8 @@ export function RootLayout() {
   return (
     <AppShell backdrop={backdrop} bottomNav={nav ? <BottomNavBar active={nav} /> : undefined}>
       <Outlet />
+      {/* 제휴 지급 알림은 로그인 뒤 어느 화면에 도착하든 한 번 뜬다(FR-32) — 닫으면 소개팅으로 간다. */}
+      <PendingRewardDialog onDone={() => void navigate(DATING_INTRO_PATH)} />
     </AppShell>
   );
 }
