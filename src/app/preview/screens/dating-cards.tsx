@@ -98,6 +98,7 @@ export const REROLL_COST = 20;
 export const cardsBase: DatingCardsView = {
   balance: 24,
   checkedInToday: true,
+  festivalRewarded: false,
   candidates: lockedCandidates,
   reroll: { kind: 'paid', cost: REROLL_COST, canAfford: true },
 };

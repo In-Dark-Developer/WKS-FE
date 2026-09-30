@@ -8,7 +8,7 @@ import {
   signOutMockAccount,
 } from './me';
 import { rememberPendingReward } from './rewards';
-import { clearSession } from './session';
+import { clearMyResults, clearSession } from './session';
 import { kakaoLoginResultSchema, type KakaoLoginResult } from './schema/auth';
 
 export type { KakaoLoginResult } from './schema/auth';
@@ -23,6 +23,8 @@ export type KakaoLoginInput = {
   redirectUri: string; // 인가 요청에 쓴 것과 문자 그대로 같아야 한다(백엔드 화이트리스트)
   resultId: string | null; // 이 브라우저의 '내 결과' — 있으면 백엔드가 계정에 연결·복원한다(FR-21)
   ref: string | null; // 제휴 코드(FR-20)
+  // 이 브라우저가 로그인 전에 만든 결과들 — 그 결과로 남긴 궁합지도 별의 친구 보상을 이 계정으로 소급한다(WKS-BE §9, §12)
+  resultIds: string[];
 };
 
 // POST /auth/kakao — 인가 코드를 넘겨 로그인한다. 재시도하지 않는다(인가 코드는 한 번만 쓸 수 있다).
@@ -55,7 +57,10 @@ export async function logout(): Promise<ApiOutcome<null>> {
   const outcome = isMockEnabled()
     ? mockLogout()
     : await request({ method: 'POST', path: '/auth/logout' }, z.null());
-  if (outcome.ok) clearSession();
+  if (outcome.ok) {
+    clearSession();
+    clearMyResults(); // 다음 로그인에 이전 사람의 결과가 실려 가지 않게
+  }
   return outcome;
 }
 

@@ -44,6 +44,8 @@ export type DatingCardsView = {
   balance: number;
   // 오늘 출석 지급을 받았는지(`GET /wallet` canCheckInToday 의 반대) — 재화 안내 모달이 '지급 완료'로 보인다.
   checkedInToday: boolean;
+  // 축제 사이트 유입 보상(FESTIVAL)을 받았는지(`GET /wallet` partnerRewards) — 재화 안내 모달이 '지급 완료'로 보인다.
+  festivalRewarded: boolean;
   candidates: readonly MatchCandidateView[];
   reroll: RerollView;
 };

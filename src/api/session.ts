@@ -54,3 +54,54 @@ export function clearSession(): void {
     // 지울 수 없는 스토리지는 읽기도 실패하므로 세션 없음과 같다.
   }
 }
+
+// 이 브라우저가 로그인 전에 만든 결과 id 들 — 로그인 요청이 `resultIds` 로 싣는다(WKS-BE §9, 2026-09-30).
+// 세션(`wks:session`)은 마지막 결과 하나라 '새로 작성하기'를 여러 번 하면 앞 결과로 남긴 별의 친구 보상이
+// 빠진다(QA 2026-09-30). 최근 것부터 20개(백엔드가 앞에서부터 20개만 본다)를 중복 없이 둔다.
+const MY_RESULTS_KEY = 'wks:my-results';
+const MY_RESULTS_MAX = 20;
+
+const myResultsSchema = z.array(z.string().uuid()).max(MY_RESULTS_MAX);
+
+export function readMyResults(): string[] {
+  let raw: string | null;
+  try {
+    raw = localStorage.getItem(MY_RESULTS_KEY);
+  } catch {
+    return [];
+  }
+  if (raw === null) return [];
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    value = null;
+  }
+  const parsed = myResultsSchema.safeParse(value);
+  if (!parsed.success) {
+    clearMyResults();
+    return [];
+  }
+  return parsed.data;
+}
+
+export function rememberMyResult(resultId: string): void {
+  const next = [resultId, ...readMyResults().filter((id) => id !== resultId)].slice(
+    0,
+    MY_RESULTS_MAX,
+  );
+  try {
+    localStorage.setItem(MY_RESULTS_KEY, JSON.stringify(next));
+  } catch {
+    // 저장하지 못하면 마지막 결과(세션)만 로그인 때 연결된다.
+  }
+}
+
+// 로그인 성공(백엔드가 소급을 마쳤다)·로그아웃(다음 사람에게 실려 가지 않게) 때 비운다.
+export function clearMyResults(): void {
+  try {
+    localStorage.removeItem(MY_RESULTS_KEY);
+  } catch {
+    // 지울 수 없는 스토리지는 읽기도 실패하므로 빈 목록과 같다.
+  }
+}

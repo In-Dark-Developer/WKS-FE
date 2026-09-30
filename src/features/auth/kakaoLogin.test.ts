@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 const { loginMock } = vi.hoisted(() => ({ loginMock: vi.fn() }));
 vi.mock('@/api/auth', () => ({ loginWithKakao: loginMock }));
 
-import { clearSession, readSession, writeSession } from '@/api/session';
+import { readMyResults, readSession, rememberMyResult, writeSession } from '@/api/session';
 
 import { completeKakaoLogin, KAKAO_CALLBACK_PATH, startKakaoLogin } from './kakaoLogin';
 import { capturePartnerRef, readPartnerRef } from './partnerRef';
@@ -28,7 +28,7 @@ afterEach(() => {
   loginMock.mockReset();
   vi.unstubAllEnvs();
   sessionStorage.clear();
-  clearSession();
+  localStorage.clear();
 });
 
 test('실제 모드는 카카오 인가 URL 에 client_id·콜백 주소·state 를 싣는다', () => {
@@ -69,7 +69,32 @@ test('콜백은 이 브라우저의 resultId 를 함께 보내고 시작한 화�
     redirectUri: CALLBACK_URI,
     resultId: RESULT_ID,
     ref: null,
+    resultIds: [],
   });
+});
+
+test('로그인 전에 만든 결과들을 resultIds 로 싣고, 로그인이 성공하면 목록을 비운다', async () => {
+  const EARLIER = '7b91d26f-2222-4222-8222-222222222222';
+  rememberMyResult(EARLIER);
+  rememberMyResult(RESULT_ID);
+  const state = stateOf(startKakaoLogin('/'));
+
+  await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
+
+  expect(loginMock).toHaveBeenCalledWith(
+    expect.objectContaining({ resultIds: [RESULT_ID, EARLIER] }),
+  );
+  expect(readMyResults()).toEqual([]);
+});
+
+test('로그인이 실패하면 로그인 전 결과 목록을 남겨 다시 로그인할 때 싣는다', async () => {
+  rememberMyResult(RESULT_ID);
+  loginMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  const state = stateOf(startKakaoLogin('/'));
+
+  await completeKakaoLogin(new URLSearchParams({ code: 'c1', state }));
+
+  expect(readMyResults()).toEqual([RESULT_ID]);
 });
 
 test('제휴 링크로 들어왔으면 그 코드를 로그인 요청에 싣고, 로그인 뒤 지운다 (FR-32)', async () => {

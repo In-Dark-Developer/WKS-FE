@@ -8,7 +8,7 @@ import {
   type ResultRequestInput,
 } from './schema/result';
 import { readMockAccountResultId } from './me';
-import { forgetSession, writeSession } from './session';
+import { forgetSession, rememberMyResult, writeSession } from './session';
 
 export type { ResultInput, ResultRequestInput } from './schema/result';
 
@@ -72,8 +72,13 @@ export async function createResult(input: ResultRequestInput): Promise<ApiOutcom
     ? await mockCreateResult(body)
     : await request({ method: 'POST', path: '/results', body }, resultSchema);
   // 만든 결과를 이 브라우저의 '내 결과'로 기억한다 — 결과 화면 가드가 주소의 id 와 비교한다
-  // (ADR-20260914-result-ownership-in-browser). 목·실제 응답이 같은 경로로 쓴다.
-  if (outcome.ok) writeSession(outcome.data.resultId);
+  // (ADR-20260914-result-ownership-in-browser). 목·실제 응답이 같은 경로로 쓴다. 로그인 전에 만든 결과들을
+  // 로그인 요청에 함께 싣도록 목록에도 남긴다(WKS-BE §9 resultIds) — 로그인한 뒤 만든 결과가 섞여도 백엔드가 이미 주인이
+  // 있는 id 는 무시한다.
+  if (outcome.ok) {
+    writeSession(outcome.data.resultId);
+    rememberMyResult(outcome.data.resultId);
+  }
   return outcome;
 }
 

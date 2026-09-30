@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { loginWithKakao } from '@/api/auth';
 import type { ApiFailure } from '@/api/client';
-import { readSession, writeSession } from '@/api/session';
+import { clearMyResults, readMyResults, readSession, writeSession } from '@/api/session';
 
 import { clearPartnerRef, readPartnerRef } from './partnerRef';
 
@@ -113,9 +113,12 @@ export async function completeKakaoLogin(
     redirectUri: callbackUri(),
     resultId: browserResultId,
     ref: readPartnerRef(), // 제휴 링크로 들어왔으면 그 코드 — 지급은 백엔드가 계정당 코드별 1회만 한다(FR-32)
+    // 로그인 전에 만든 결과들 — 앞 결과로 남긴 별의 보상도 소급된다. 로그인 뒤 만드는 결과는 백엔드가 바로 기록한다.
+    resultIds: readMyResults(),
   });
   if (!result.ok) return { returnTo, outcome: { kind: 'api-error', error: result.error } };
   clearPartnerRef();
+  clearMyResults();
 
   const { restoredResultId } = result.data;
   const outcome = { kind: 'success', restoredResultId } as const;
