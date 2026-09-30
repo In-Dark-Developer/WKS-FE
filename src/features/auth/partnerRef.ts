@@ -58,15 +58,21 @@ export function clearPartnerRef(): void {
 }
 
 // 이미 로그인한 채 제휴 링크로 들어왔으면 지금 받는다. 비로그인(401)이면 남겨 두고 로그인 요청이 싣는다.
-// 연결 실패도 남겨 두어 다음 진입에 다시 한다. 지급됐으면 소개팅 화면이 모달로 알린다(PendingRewardDialog).
-export async function claimPendingPartnerRef(): Promise<void> {
+// 연결 실패·서버 오류(500)도 남겨 두어 다음 진입에 다시 한다 — 지우면 그 탭에서는 다시 받을 길이 없다(2026-09-30 QA).
+// 지급을 남겼으면 true — 알림 모달(PendingRewardDialog)은 이 응답보다 먼저 떠 있으므로 부른 쪽이 다시 읽게 한다.
+export async function claimPendingPartnerRef(): Promise<boolean> {
   const ref = readPartnerRef();
-  if (ref === null) return;
+  if (ref === null) return false;
   const outcome = await claimPartnerReward(ref);
   if (outcome.ok) {
     clearPartnerRef();
     rememberPendingReward(outcome.data.rewardGranted);
-    return;
+    return outcome.data.rewardGranted !== null;
   }
-  if (outcome.error.kind === 'api' && !isUnauthenticated(outcome)) clearPartnerRef();
+  const isRetryable =
+    outcome.error.kind !== 'api' ||
+    isUnauthenticated(outcome) ||
+    outcome.error.code === 'INTERNAL_ERROR';
+  if (!isRetryable) clearPartnerRef();
+  return false;
 }
