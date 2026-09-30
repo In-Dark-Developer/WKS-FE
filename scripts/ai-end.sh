@@ -9,7 +9,7 @@
 #         scripts/ai-end.sh --pr-title         PR 제목 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
 #         scripts/ai-end.sh --pr-body          PR 본문 초안만 stdout 에 (검사 없음 — CI 의 pr-body 잡이 쓴다)
 #         scripts/ai-end.sh --quick            pre-push 훅용 (브랜치·남의 스트림·비밀값만, 수 초)
-#         scripts/ai-end.sh --ci               PR 검사 (CI). env: PR_TITLE, PR_BODY, PR_AUTHOR, GITHUB_HEAD_REF, CI_BASE(기본 origin/dev)
+#         scripts/ai-end.sh --ci               PR 검사 (CI). env: PR_TITLE, PR_BODY, PR_AUTHOR, GITHUB_HEAD_REF, GITHUB_BASE_REF, CI_BASE(기본 origin/dev)
 # 종료 코드: 0 = 통과, 1 = FAIL 항목 있음 (warn 은 통과). 요구: git 2.23+, bash 3.2+.
 
 set -eo pipefail
@@ -29,12 +29,20 @@ done
 branch=$(current_branch); [ -z "$branch" ] && branch=${GITHUB_HEAD_REF:-}
 id=$(stream_from_branch "$branch")
 base=${CI_BASE:-$(integ_ref)}
+# CI 가 알려준 PR 의 base/head — 로컬 실행에서는 비어 있다.
+pr_base=${GITHUB_BASE_REF:-}; pr_head=${GITHUB_HEAD_REF:-$branch}
 head_short=$(git rev-parse --short HEAD)
 bootstrap=0; [ -f .ai/BOOTSTRAP.md ] && bootstrap=1
 
 case "$mode" in quick|draft) ;; *) say "ai-end ($mode) — HEAD $head_short · branch ${branch:-?} · base $base · $today";; esac
 
-# --- hotfix/* 와 bootstrap 은 스트림 규칙 밖 ---
+# --- 릴리스 PR(dev → main) · hotfix/* · bootstrap 은 스트림 규칙 밖 ---
+# 릴리스 PR 은 head 가 통합 브랜치라 ws/* 일 수 없다 — 이것을 거절하면 배포가 매번 막힌다(2026-09-29).
+# 내용은 이미 각 스트림 PR 이 dev 로 들어올 때 검사를 거쳤으므로 여기서 다시 볼 것이 없다.
+if is_release_pr "$pr_base" "$pr_head"; then
+  say "  릴리스 PR ($pr_head → $pr_base) — 스트림 규칙 검사 없음 (Commands 만 CI 가 검사)"
+  exit 0
+fi
 case "$branch" in hotfix/*) say "  hotfix/* 브랜치 — 스트림 규칙 검사 없음 (Commands 만 CI 가 검사)"; exit 0;; esac
 if [ -z "$id" ]; then
   if [ "$bootstrap" -eq 1 ] && [ "$mode" != "ci" ]; then say "  bootstrap 모드 — 스트림 없이 진행 (파생 파일 검사만)"; fail_derived=0

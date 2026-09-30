@@ -1266,6 +1266,11 @@ components:
         redirectUri: { type: string, format: uri, description: "인가 요청에 쓴 것과 같은 값. 백엔드 화이트리스트에 등록된 주소만 허용(운영·로컬·netlify 콜백을 백엔드에 알려야 한다)" }
         resultId: { type: [string, "null"], format: uuid, description: "이 브라우저의 `wks:session` resultId. 있으면 계정에 연결·복원한다" }
         ref: { type: [string, "null"], maxLength: 100, description: "제휴 코드(FR-32, 축제 사이트는 `FESTIVAL`, 대소문자 무관). 제휴 링크 `?ref=` 로 들어온 값. 등록된 코드면 계정당 코드별 1회 보상, 모르는 값은 조용히 무시되고 로그인은 성공한다" }
+        resultIds:
+          type: [array, "null"]
+          maxItems: 20
+          items: { type: string, format: uuid }
+          description: "이 브라우저가 로그인 전에 만든 결과 id 들(`wks:my-results`, 최근 것부터, `resultId` 를 포함해도 된다). 대표 결과 연결·복원(`resultId`)과 별개로, 어느 계정에도 속하지 않은 결과는 이 계정이 만든 것으로 기록해 그 결과로 남긴 궁합지도 별의 친구 보상을 소급한다. 앞에서부터 20개만 보고, 형식이 틀리거나 이미 주인이 있는 id 는 조용히 무시된다 (WKS-BE §9, 2026-09-30)"
     KakaoLoginResult:
       type: object
       required: [isNewUser, restoredResultId, rewardGranted]
@@ -1488,10 +1493,11 @@ components:
             reason: { $ref: "#/components/schemas/DatingLockableField" }
     Wallet:
       type: object
-      required: [balance, canCheckInToday]
+      required: [balance, canCheckInToday, partnerRewards]
       properties:
         balance: { type: integer, minimum: 0, description: "실 잔액 — 원장 합계" }
         canCheckInToday: { type: boolean, description: "오늘 출석 체크로 받을 수 있는지 (KST 기준)" }
+        partnerRewards: { type: array, items: { type: string }, description: "이 계정이 받은 제휴 코드 목록(대문자, 예: `[\"FESTIVAL\"]`). 받은 게 없으면 `[]`. 실 현황의 '지급 완료' 표시에 쓴다 (WKS-BE §12, 2026-09-30)" }
     WalletCheckIn:
       type: object
       required: [checkedIn, balance]

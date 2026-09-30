@@ -87,7 +87,10 @@ beforeEach(() => {
   localStorage.setItem('wks:intro-seen', '1');
   getMeMock.mockResolvedValue(unauthenticated);
   getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [] } });
-  getWalletMock.mockResolvedValue({ ok: true, data: { balance: 0, canCheckInToday: true } });
+  getWalletMock.mockResolvedValue({
+    ok: true,
+    data: { balance: 0, canCheckInToday: true, partnerRewards: [] },
+  });
 });
 
 afterEach(() => {
@@ -1021,7 +1024,10 @@ test('내 정보 조회가 실패해도 인트로는 열리고 다시 누를 수
 
 test('프로필까지 등록했으면 Top 3 화면이 잔액과 카드를 그린다 (10/T3 · FR-26)', async () => {
   getMeMock.mockResolvedValue(member({ hasResult: true, hasDatingProfile: true }));
-  getWalletMock.mockResolvedValue({ ok: true, data: { balance: 12, canCheckInToday: true } });
+  getWalletMock.mockResolvedValue({
+    ok: true,
+    data: { balance: 12, canCheckInToday: true, partnerRewards: [] },
+  });
   getRecommendationsMock.mockResolvedValue({
     ok: true,
     data: {

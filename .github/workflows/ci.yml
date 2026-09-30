@@ -77,6 +77,8 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           GITHUB_HEAD_REF: ${{ github.head_ref }}
+          # 릴리스 PR(dev → main)을 스크립트가 알아보려면 base 가 필요하다 — head 가 ws/* 일 수 없다(2026-09-29).
+          GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
           PR_TITLE=$(gh pr view "$PR_NUMBER" --json title -q .title) \
           PR_BODY=$(gh pr view "$PR_NUMBER" --json body -q .body) \

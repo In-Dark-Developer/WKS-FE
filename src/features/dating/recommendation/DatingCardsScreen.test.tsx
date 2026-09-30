@@ -42,12 +42,14 @@ const candidate: MatchCandidateView = {
   reason: { isLocked: true, cost: 3 },
 };
 
-function renderScreen(view: Omit<DatingCardsView, 'checkedInToday'>) {
+function renderScreen(view: Omit<DatingCardsView, 'checkedInToday' | 'festivalRewarded'>) {
   const router = createMemoryRouter(
     [
       {
         path: '/dating/cards',
-        element: <DatingCardsScreen view={{ ...view, checkedInToday: false }} />,
+        element: (
+          <DatingCardsScreen view={{ ...view, checkedInToday: false, festivalRewarded: false }} />
+        ),
       },
       { path: '/dating/requests', element: <p>요청함</p> },
     ],

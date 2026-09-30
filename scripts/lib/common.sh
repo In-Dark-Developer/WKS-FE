@@ -26,7 +26,12 @@ have_origin()    { git remote get-url origin >/dev/null 2>&1; }
 # 스트림이 갈라져 나오고 돌아가는 통합 브랜치. 기본은 dev 이고(ADR-20260923-dev-as-default-branch),
 # 운영 배포 브랜치 main 은 dev → main 릴리스 PR 로만 바뀐다. AI_INTEG_BRANCH 로 덮어쓸 수 있다.
 INTEG_BRANCH=${AI_INTEG_BRANCH:-dev}
+# 운영 배포 브랜치. AI_PROD_BRANCH 로 덮어쓸 수 있다.
+PROD_BRANCH=${AI_PROD_BRANCH:-main}
 integ_ref()      { if have_origin && git rev-parse -q --verify "refs/remotes/origin/$INTEG_BRANCH" >/dev/null 2>&1; then echo "origin/$INTEG_BRANCH"; else echo "$INTEG_BRANCH"; fi; }
+# 릴리스 PR 인가 — 통합 브랜치(dev)가 운영 브랜치(main)로 가는 PR 이다.
+# 스트림 규칙(Rule 15, ws/* 브랜치)은 이 PR 에 적용되지 않는다 — 내용은 이미 dev 에서 검사를 거쳤다.
+is_release_pr() { [ "${1:-}" = "$PROD_BRANCH" ] && [ "${2:-}" = "$INTEG_BRANCH" ]; }
 fetch_quiet()    { if have_origin; then git fetch --quiet --prune origin >/dev/null 2>&1 || true; fi; }
 current_branch() { git symbolic-ref -q --short HEAD 2>/dev/null || echo ""; }
 stream_from_branch() { case "$1" in ws/*) echo "${1#ws/}";; *) echo "";; esac; }

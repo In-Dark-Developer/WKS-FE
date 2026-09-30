@@ -14,7 +14,7 @@ import {
   type ResultRequestInput,
 } from './results';
 import { resultInputSchema } from './schema/result';
-import { clearSession, readSession, writeSession } from './session';
+import { clearSession, readMyResults, readSession, writeSession } from './session';
 
 const input: ResultRequestInput = {
   nickname: '보살',
@@ -59,12 +59,24 @@ test('createResult 가 성공하면 응답의 resultId 를 내 결과로 저장�
   expect(readSession()).toEqual({ resultId: RESULT_ID });
 });
 
+test('createResult 가 성공할 때마다 로그인 요청에 실을 결과 목록에 쌓는다 — 앞 결과로 남긴 별도 소급된다', async () => {
+  const EARLIER = '7b91d26f-2222-4222-8222-222222222222';
+  requestMock.mockResolvedValueOnce({ ok: true, data: { resultId: EARLIER } });
+  requestMock.mockResolvedValueOnce({ ok: true, data: { resultId: RESULT_ID } });
+
+  await createResult(input);
+  await createResult(input);
+
+  expect(readMyResults()).toEqual([RESULT_ID, EARLIER]);
+});
+
 test('createResult 가 실패하면 내 결과를 바꾸지 않는다', async () => {
   requestMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
 
   await createResult(input);
 
   expect(readSession()).toBeNull();
+  expect(readMyResults()).toEqual([]);
 });
 
 test('getResult 는 GET /results/{id} 를 부른다', async () => {
