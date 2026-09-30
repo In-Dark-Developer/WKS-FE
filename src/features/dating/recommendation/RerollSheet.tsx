@@ -2,7 +2,11 @@ import rerollElephant from '@/ui/assets/dating/reroll-elephant.webp';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 
+import { CostText } from '../unlock/CostText';
 import type { RerollView } from './cardsView';
+
+// 리롤 정가 — 할인 중이면 버튼에 취소선으로 함께 적는다. 차감 판단에는 쓰지 않는다.
+const REROLL_LISTED_COST = 20;
 
 type Props = {
   open: boolean;
@@ -51,9 +55,14 @@ export function RerollSheet({ open, reroll, onClose, onConfirm }: Props) {
           </p>
         ) : null}
         <Button disabled={isBlocked} onClick={onConfirm} size="m">
-          {reroll.kind === 'free'
-            ? '무료 점지권으로 변경하기'
-            : `실 ${reroll.cost}개로 지금 변경하기`}
+          {reroll.kind === 'free' ? (
+            '무료 점지권으로 변경하기'
+          ) : (
+            <span>
+              실 <CostText cost={reroll.cost} listed={REROLL_LISTED_COST} />
+              개로 지금 변경하기
+            </span>
+          )}
         </Button>
         <Button onClick={onClose} size="m" variant="secondary">
           자정까지 기다릴게요

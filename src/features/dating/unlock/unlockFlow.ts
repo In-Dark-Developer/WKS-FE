@@ -1,7 +1,7 @@
 import { unlockCandidateFields, type DatingUnlockField } from '@/api/unlocks';
 
 import type { MatchCandidateView } from '../recommendation/cardsView';
-import type { UnlockItem, UnlockOptionView } from './unlockView';
+import { listedCost, type UnlockItem, type UnlockOptionView } from './unlockView';
 
 // 모달 항목 → 해금 API 항목. 모달·완료 화면의 순서(사진·이름·학과·궁합 이유)도 이 순서다.
 const fieldByItem: Record<UnlockItem, DatingUnlockField> = {
@@ -12,10 +12,6 @@ const fieldByItem: Record<UnlockItem, DatingUnlockField> = {
 };
 
 const itemOrder: readonly UnlockItem[] = ['photo', 'name', 'department', 'reason'];
-
-// 이미 연 항목의 비용 표시용 — 응답은 연 항목의 비용을 주지 않는다(§10.4). 모달은 연 칸에도 비용을
-// 적은 채 비활성으로 둔다(Figma 112:3342). 차감 판단에는 쓰지 않는다 — 차감은 백엔드가 한다.
-const listedCost: Record<UnlockItem, number> = { photo: 10, name: 7, department: 5, reason: 3 };
 
 // 카드 한 장의 해금 모달 칸 — 잠긴 항목은 백엔드 비용, 연 항목은 비활성.
 export function toUnlockOptions(candidate: MatchCandidateView): UnlockOptionView[] {

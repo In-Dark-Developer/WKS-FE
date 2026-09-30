@@ -5,7 +5,7 @@ import lockImage from '@/ui/assets/lock.webp';
 
 type Props = {
   // 가운데 알약에 적을 말(예: '학과 5개로 열기'). 값이 무엇인지·얼마인지는 부르는 쪽이 정한다.
-  label: string;
+  label: ReactNode;
   // 알약 뒤에 흐리게 깔 자리 — 실제 값이 아니라 가짜 글이어야 한다. 없으면 알약만 그린다.
   children?: ReactNode;
   // 주면 알약이 버튼이 된다.
@@ -18,7 +18,7 @@ export function LockedValue({ label, children, onUnlock, className }: Props) {
   const pill = (
     <>
       <img alt="" className="size-[18px]" draggable={false} src={lockImage} />
-      {label}
+      <span>{label}</span>
     </>
   );
   const pillClass =

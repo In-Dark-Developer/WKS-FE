@@ -17,6 +17,14 @@ const allLocked: readonly UnlockOptionView[] = [
   { item: 'reason', cost: 3, isUnlocked: false },
 ];
 
+// 마지막 날 50% 할인(2026-10-01 10시~자정) — 서버가 준 할인 비용. 칸마다 정가에 취소선이 붙는다.
+const onSale: readonly UnlockOptionView[] = [
+  { item: 'photo', cost: 5, isUnlocked: false },
+  { item: 'name', cost: 3, isUnlocked: false },
+  { item: 'department', cost: 2, isUnlocked: false },
+  { item: 'reason', cost: 1, isUnlocked: false },
+];
+
 const photoOpened = allLocked.map((option) =>
   option.item === 'photo' ? { ...option, isUnlocked: true } : option,
 );
@@ -63,6 +71,7 @@ export const preview: PreviewScreen = {
     '선택(사진)': () => <Unlock selected={['photo']} />,
     '여러 개 선택': () => <Unlock balance={20} selected={['name', 'department', 'reason']} />,
     '이미 연 항목(사진)': () => <Unlock options={photoOpened} />,
+    '마지막 날 할인': () => <Unlock options={onSale} selected={['name', 'department']} />,
     '잔액 부족': () => <Unlock balance={5} selected={['photo']} />,
     '구매 완료 1개': () => <Done items={['department']} />,
     '구매 완료 2개': () => <Done items={['department', 'name']} />,

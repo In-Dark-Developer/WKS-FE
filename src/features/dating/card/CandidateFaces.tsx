@@ -5,6 +5,8 @@ import { BlurredPhoto } from '@/ui/BlurredPhoto';
 import { LockedValue } from '@/ui/LockedValue';
 
 import type { CandidatePhoto, LockableField } from '../recommendation/cardsView';
+import { CostText } from '../unlock/CostText';
+import { listedCost } from '../unlock/unlockView';
 
 import '../dating.css';
 
@@ -119,7 +121,12 @@ export function CandidateBack({ photo, name, department, reason, onUnlock }: Bac
       {rowUnlock && photo.isLocked ? (
         <LockedValue
           className="absolute top-[113px] left-1/2 -translate-x-1/2"
-          label={`사진 ${photo.cost}개로 열기`}
+          label={
+            <>
+              사진 <CostText cost={photo.cost} listed={listedCost.photo} />
+              개로 열기
+            </>
+          }
           onUnlock={rowUnlock}
         />
       ) : null}
@@ -141,8 +148,20 @@ export function CandidateBack({ photo, name, department, reason, onUnlock }: Bac
       ) : null}
       {/* 자물쇠 알약(28px)이 글줄(18px)보다 높아 잠긴 줄이 붙으면 겹친다 — 알약이 있을 때만 줄 간격을 넓힌다. */}
       <dl className={cn('flex flex-col text-ui-12', rowUnlock ? 'gap-16' : 'gap-8')}>
-        <BackRow field={name} label="이름" onUnlock={rowUnlock} placeholder="○○○" />
-        <BackRow field={department} label="학과" onUnlock={rowUnlock} placeholder="○○○○○○학과" />
+        <BackRow
+          field={name}
+          label="이름"
+          listed={listedCost.name}
+          onUnlock={rowUnlock}
+          placeholder="○○○"
+        />
+        <BackRow
+          field={department}
+          label="학과"
+          listed={listedCost.department}
+          onUnlock={rowUnlock}
+          placeholder="○○○○○○학과"
+        />
         {reason === null ? (
           <div className="flex flex-col gap-8">
             <dt className="text-neutral-200">궁합 이유</dt>
@@ -153,6 +172,7 @@ export function CandidateBack({ photo, name, department, reason, onUnlock }: Bac
             field={reason}
             isBlock
             label="궁합 이유"
+            listed={listedCost.reason}
             onUnlock={rowUnlock}
             placeholder="두 사람의 사주가 서로를 채워 주는 까닭이 여기에 적혀 있어요. 운명의 실로 열어 보세요."
           />
@@ -165,13 +185,15 @@ export function CandidateBack({ photo, name, department, reason, onUnlock }: Bac
 type BackRowProps = {
   label: string;
   field: LockableField<string>;
+  // 정가 — 할인 중이면 알약에 취소선으로 함께 적는다.
+  listed: number;
   // 잠긴 항목 자리에 흐리게 보일 가짜 글 — 실제 값이 아니다.
   placeholder: string;
   isBlock?: boolean;
   onUnlock?: () => void;
 };
 
-function BackRow({ label, field, placeholder, isBlock = false, onUnlock }: BackRowProps) {
+function BackRow({ label, field, listed, placeholder, isBlock = false, onUnlock }: BackRowProps) {
   const fake = <span className="font-medium text-neutral-0">{placeholder}</span>;
   // 해금은 됐는데 값이 아직 없는 항목(궁합 까닭 생성 지연)은 비용 없이 다시 연다(WKS-BE §10.4).
   const pillLabel = field.isLocked && field.cost === 0 ? `${label} 다시 열기` : null;
@@ -185,7 +207,14 @@ function BackRow({ label, field, placeholder, isBlock = false, onUnlock }: BackR
             {/* 한 줄 항목의 알약은 글줄이 아니라 카드 가운데에 둔다 — 사진·궁합 이유 알약과 한 줄로(Figma 112:3241). */}
             <LockedValue
               className={isBlock ? undefined : 'static'}
-              label={pillLabel ?? `${label} ${field.cost}개로 열기`}
+              label={
+                pillLabel ?? (
+                  <>
+                    {label} <CostText cost={field.cost} listed={listed} />
+                    개로 열기
+                  </>
+                )
+              }
               onUnlock={onUnlock}
             >
               {fake}
