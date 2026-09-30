@@ -29,11 +29,19 @@ afterEach(() => {
 });
 
 test('getWallet 은 GET /wallet 을 원장 스키마로 부른다', async () => {
-  const wallet = { balance: 18, canCheckInToday: true };
+  const wallet = { balance: 18, canCheckInToday: true, partnerRewards: ['FESTIVAL'] };
   requestMock.mockResolvedValue({ ok: true, data: wallet });
 
   await expect(getWallet()).resolves.toEqual({ ok: true, data: wallet });
   expect(requestMock).toHaveBeenCalledWith({ method: 'GET', path: '/wallet' }, walletSchema);
+});
+
+test('받은 제휴 코드가 없는 이전 응답은 빈 목록으로 읽는다', () => {
+  expect(walletSchema.parse({ balance: 18, canCheckInToday: true })).toEqual({
+    balance: 18,
+    canCheckInToday: true,
+    partnerRewards: [],
+  });
 });
 
 test('checkInWallet 은 POST /wallet/check-in 을 부른다', async () => {
@@ -52,7 +60,7 @@ test('목 모드는 가입 지급 10 을 최초 로그인에 한 번만 준다 (
   signInMockAccount();
   await expect(getWallet()).resolves.toEqual({
     ok: true,
-    data: { balance: 10, canCheckInToday: true },
+    data: { balance: 10, canCheckInToday: true, partnerRewards: [] },
   });
 
   // 다시 로그인해도 가입 지급은 늘지 않는다.
@@ -76,7 +84,7 @@ test('목 모드 출석은 하루 한 번만 5 를 준다', async () => {
   });
   await expect(getWallet()).resolves.toEqual({
     ok: true,
-    data: { balance: 15, canCheckInToday: false },
+    data: { balance: 15, canCheckInToday: false, partnerRewards: [] },
   });
 });
 

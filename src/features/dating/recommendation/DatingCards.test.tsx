@@ -26,6 +26,7 @@ function candidate(id: string, rank: CandidateRank): MatchCandidateView {
 const view: DatingCardsView = {
   balance: 12,
   checkedInToday: true,
+  festivalRewarded: false,
   candidates: [candidate('c1', 1), candidate('c2', 2), candidate('c3', 3)],
   reroll: { kind: 'free' },
 };
@@ -120,6 +121,27 @@ test('상단 운명의 실을 누르면 재화 안내가 열리고 받은 방법
 
   fireEvent.click(within(dialog).getByRole('button', { name: '닫기' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+// QA(2026-09-30): 배너로 들어와 실 10개를 받았는데 실 현황에는 '축제 사이트 방문'이 그대로 +10 이었다.
+test('축제 유입 보상을 받았으면 재화 안내의 축제 사이트 방문 줄이 지급 완료로 보인다', () => {
+  render(
+    <DatingCards
+      onOpenReceived={vi.fn()}
+      onOpenRequests={vi.fn()}
+      onOpenUnlock={vi.fn()}
+      onReroll={vi.fn()}
+      onSendThread={vi.fn()}
+      view={{ ...view, checkedInToday: false, festivalRewarded: true }}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: '운명의 실 획득 방법 보기' }));
+
+  const rows = within(screen.getByRole('dialog')).getAllByRole('listitem');
+  expect(rows[3]).toHaveTextContent(/^.*축제 사이트 방문.*지급 완료$/);
+  expect(rows[3]).not.toHaveTextContent('+10');
+  expect(rows[2]).toHaveTextContent('+2');
 });
 
 // QA(2026-09-28): 'Top 3' 인데 후보가 모자라면 카드가 한두 장만 보였다 — 남은 자리를 빈 카드로 채운다.

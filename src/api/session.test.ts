@@ -1,6 +1,14 @@
 import { afterEach, expect, test, vi } from 'vitest';
 
-import { clearSession, forgetSession, readSession, writeSession } from './session';
+import {
+  clearMyResults,
+  clearSession,
+  forgetSession,
+  readMyResults,
+  readSession,
+  rememberMyResult,
+  writeSession,
+} from './session';
 
 const RESULT_ID = '3f2a9c1e-1111-4111-8111-111111111111';
 
@@ -87,4 +95,33 @@ test('forgetSession 은 보관된 결과와 같은 id 일 때만 비운다', () 
 
   forgetSession(RESULT_ID);
   expect(readSession()).toBeNull();
+});
+
+test('로그인 전 결과 목록은 최근 것부터 중복 없이 20개까지 둔다', () => {
+  const idOf = (i: number) => `3f2a9c1e-1111-4111-8111-${String(i).padStart(12, '0')}`;
+  for (let i = 0; i < 22; i += 1) rememberMyResult(idOf(i));
+  rememberMyResult(idOf(5));
+
+  const list = readMyResults();
+  expect(list).toHaveLength(20);
+  expect(list[0]).toBe(idOf(5));
+  expect(list[1]).toBe(idOf(21));
+  expect(new Set(list).size).toBe(20);
+});
+
+test('로그인 전 결과 목록을 비우면 빈 목록이고, 세션은 그대로다', () => {
+  writeSession(RESULT_ID);
+  rememberMyResult(RESULT_ID);
+
+  clearMyResults();
+
+  expect(readMyResults()).toEqual([]);
+  expect(readSession()).toEqual({ resultId: RESULT_ID });
+});
+
+test('로그인 전 결과 목록이 망가져 있으면 빈 목록으로 보고 키를 지운다', () => {
+  localStorage.setItem('wks:my-results', JSON.stringify(['abc']));
+
+  expect(readMyResults()).toEqual([]);
+  expect(localStorage.getItem('wks:my-results')).toBeNull();
 });

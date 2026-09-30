@@ -101,11 +101,16 @@ function mockToday(): string {
 }
 
 // 목 모드 잔액 조회(wallet.ts) — 백엔드 `GET /wallet` 과 같은 모양으로 돌려준다.
-export function readMockBalance(): { balance: number; canCheckInToday: boolean } {
+export function readMockBalance(): {
+  balance: number;
+  canCheckInToday: boolean;
+  partnerRewards: string[];
+} {
   const account = readMockAccount();
   return {
     balance: mockBalance(account),
     canCheckInToday: account.lastCheckInDate !== mockToday(),
+    partnerRewards: [], // 목 로그인은 제휴 보상을 주지 않는다(auth.ts)
   };
 }
 

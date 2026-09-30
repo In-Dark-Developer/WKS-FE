@@ -75,8 +75,8 @@ function request(
 }
 
 // 잔액의 단일 출처는 원장(`GET /wallet`)이다 — `/me` 의 threadBalance 는 쓰지 않는다(FR-31).
-function wallet(balance: number) {
-  return { ok: true, data: { balance, canCheckInToday: true } };
+function wallet(balance: number, partnerRewards: string[] = []) {
+  return { ok: true, data: { balance, canCheckInToday: true, partnerRewards } };
 }
 
 beforeEach(() => {
@@ -148,8 +148,23 @@ test('후보가 0명이면 빈 목록으로 그린다 (FR-26)', async () => {
 
   expect(state).toEqual({
     kind: 'ready',
-    view: { balance: 0, checkedInToday: false, candidates: [], reroll: { kind: 'free' } },
+    view: {
+      balance: 0,
+      checkedInToday: false,
+      festivalRewarded: false,
+      candidates: [],
+      reroll: { kind: 'free' },
+    },
   });
+});
+
+test('받은 제휴 코드에 FESTIVAL 이 있으면 축제 유입 보상을 받은 것으로 싣는다', async () => {
+  getWalletMock.mockResolvedValue(wallet(20, ['FESTIVAL']));
+  getRecommendationsMock.mockResolvedValue({ ok: true, data: { candidates: [], rerollCost: 0 } });
+
+  const state = await datingCardsLoader();
+
+  expect(state).toMatchObject({ kind: 'ready', view: { festivalRewarded: true } });
 });
 
 test('학교 메일 인증 전(403)에는 안내 상태를 돌려준다', async () => {

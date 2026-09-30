@@ -16,6 +16,8 @@ type Props = {
   balance: number;
   // 오늘 출석 지급을 받았는지 — `GET /wallet` 의 canCheckInToday 가 거짓이면 받은 것이다.
   checkedInToday: boolean;
+  // 축제 사이트 유입 보상을 받았는지 — `GET /wallet` 의 partnerRewards 에 FESTIVAL 이 있으면 받은 것이다(QA 2026-09-30).
+  festivalRewarded: boolean;
 };
 
 type EarnWay = {
@@ -36,14 +38,28 @@ const signup: EarnWay = {
 const checkIn: EarnWay = { icon: earnCheckIn, title: '출석 체크', when: '매일 출석 시', amount: 5 };
 // '친구에게 공유'는 Figma 522:2791 개정본을 따른다(2026-09-29) — 사람 수만 세던 규칙이 익명 결과를 반복
 // 생성해 실을 무한히 쌓는 길을 열어 두어, 친구가 로그인해야 세는 규칙으로 바뀌었다(개수도 +3 → +2).
-const others: readonly EarnWay[] = [
-  { icon: earnFriendMap, title: '친구에게 공유', when: '지도 등록한 친구가 로그인 시', amount: 2 },
-  { icon: earnFestival, title: '축제 사이트 방문', when: '축제 사이트에서 들어오면', amount: 10 },
-];
+const friendMap: EarnWay = {
+  icon: earnFriendMap,
+  title: '친구에게 공유',
+  when: '지도 등록한 친구가 로그인 시',
+  amount: 2,
+};
+const festival: EarnWay = {
+  icon: earnFestival,
+  title: '축제 사이트 방문',
+  when: '축제 사이트에서 들어오면',
+  amount: 10,
+};
 
 // 소개팅 상단 '운명의 실'을 누르면 뜨는 재화 안내 — Figma v1.0 「운명의실 재화 모달」 522:2739.
 // 로그인한 소개팅 화면에서만 열리므로 디자인의 로그인 버튼 영역은 두지 않고 닫기만 둔다(2026-09-27 결정).
-export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Props) {
+export function ThreadGuideDialog({
+  open,
+  onClose,
+  balance,
+  checkedInToday,
+  festivalRewarded,
+}: Props) {
   const titleId = useId();
 
   return (
@@ -77,9 +93,9 @@ export function ThreadGuideDialog({ open, onClose, balance, checkedInToday }: Pr
         <ul className="flex flex-col gap-8">
           <EarnRow isDone way={signup} />
           <EarnRow isDone={checkedInToday} way={checkIn} />
-          {others.map((way) => (
-            <EarnRow isDone={false} key={way.title} way={way} />
-          ))}
+          {/* 친구 공유는 여러 번 받을 수 있어 늘 개수로 보인다. */}
+          <EarnRow isDone={false} way={friendMap} />
+          <EarnRow isDone={festivalRewarded} way={festival} />
         </ul>
       </div>
     </DatingDialog>

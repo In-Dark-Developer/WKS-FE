@@ -62,6 +62,9 @@ export function toRerollView(rerollCost: number, balance: number): RerollView {
   return { kind: 'paid', cost: rerollCost, canAfford: balance >= rerollCost };
 }
 
+// 축제 사이트 제휴 코드 — 배너 링크 `?ref=FESTIVAL`(WKS-BE §12).
+const FESTIVAL_PARTNER_CODE = 'FESTIVAL';
+
 // `/dating/cards` loader — 잔액과 후보를 함께 읽는다. 잔액의 단일 출처는 `GET /wallet`(원장)이고
 // 화면은 계산하지 않는다(FR-31). `/me` 의 threadBalance 는 진입 게이트용 요약이라 여기서 쓰지 않는다.
 // requireDatingProfile 이 먼저 로그인·프로필을 확인하므로 여기서는 인증을 다시 판단하지 않는다.
@@ -102,6 +105,7 @@ export async function datingCardsLoader(): Promise<DatingCardsState> {
     view: {
       balance,
       checkedInToday: wallet.ok && !wallet.data.canCheckInToday,
+      festivalRewarded: wallet.ok && wallet.data.partnerRewards.includes(FESTIVAL_PARTNER_CODE),
       candidates: recommendations.data.candidates.map((candidate) => {
         const fromReceived = receivedByCandidate.get(candidate.candidateId);
         return {

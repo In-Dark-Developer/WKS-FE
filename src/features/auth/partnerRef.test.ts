@@ -21,6 +21,7 @@ const unauthenticated = {
 
 afterEach(() => {
   claimMock.mockReset();
+  localStorage.clear();
   sessionStorage.clear();
 });
 
@@ -65,18 +66,41 @@ test('비로그인(401)이면 ref 를 남겨 로그인 요청이 싣게 한다',
   expect(readPartnerRef()).toBe('FESTIVAL');
 });
 
-test('연결 실패면 남기고, 백엔드가 거절한 값이면 지운다', async () => {
+test.each([
+  ['연결 실패', { kind: 'network' }],
+  ['스키마 위반', { kind: 'schema' }],
+  [
+    '서버 오류(500)',
+    { kind: 'api', code: 'INTERNAL_ERROR', message: '잠시 후 다시 시도해 주세요.' },
+  ],
+])('%s면 ref 를 남겨 다음 진입에 다시 받는다', async (_, error) => {
   capturePartnerRef('?ref=FESTIVAL');
-  claimMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
-  await claimPendingPartnerRef();
-  expect(readPartnerRef()).toBe('FESTIVAL');
+  claimMock.mockResolvedValue({ ok: false, error });
 
+  await claimPendingPartnerRef();
+
+  expect(readPartnerRef()).toBe('FESTIVAL');
+});
+
+test('백엔드가 값을 거절하면(INVALID_INPUT) 지운다', async () => {
+  capturePartnerRef('?ref=FESTIVAL');
   claimMock.mockResolvedValue({
     ok: false,
     error: { kind: 'api', code: 'INVALID_INPUT', message: 'ref 는 100자 이하여야 합니다.' },
   });
+
   await claimPendingPartnerRef();
+
   expect(readPartnerRef()).toBeNull();
+});
+
+test('ref 는 탭을 닫아도 남고(localStorage), 진입 안내 표시는 탭 단위다(sessionStorage)', () => {
+  capturePartnerRef('?ref=FESTIVAL');
+  markPartnerEntrySeen();
+  sessionStorage.clear(); // 새 탭
+
+  expect(readPartnerRef()).toBe('FESTIVAL');
+  expect(wasPartnerEntrySeen()).toBe(false);
 });
 
 test('보관한 ref 가 있어야 로그인 전 안내를 띄운다 (SCR-23 1.1)', () => {

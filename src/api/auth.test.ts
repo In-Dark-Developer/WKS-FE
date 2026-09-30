@@ -11,13 +11,14 @@ import { loginWithKakao, logout } from './auth';
 import { getMe, isUnauthenticated, resetMockAccount } from './me';
 import { takePendingReward } from './rewards';
 import { kakaoLoginResultSchema } from './schema/auth';
-import { readSession, writeSession } from './session';
+import { readMyResults, readSession, rememberMyResult, writeSession } from './session';
 
 const INPUT = {
   code: 'auth-code',
   redirectUri: 'http://localhost:3000/auth/kakao/callback',
   resultId: '3f2a9c1e-1111-4111-8111-111111111111',
   ref: null,
+  resultIds: ['3f2a9c1e-1111-4111-8111-111111111111'],
 };
 
 beforeEach(() => {
@@ -29,6 +30,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
   resetMockAccount();
   sessionStorage.clear();
+  localStorage.clear();
 });
 
 test('loginWithKakao 는 POST /auth/kakao 에 코드·resultId 를 보내고 토큰 없는 응답을 검증한다', async () => {
@@ -61,13 +63,15 @@ test('logout 은 POST /auth/logout 을 부르고 data null 을 기대한다', as
   expect(schema.safeParse(null).success).toBe(true);
 });
 
-test('logout 이 성공하면 이 브라우저의 내 결과를 지운다', async () => {
+test('logout 이 성공하면 이 브라우저의 내 결과와 로그인 전 결과 목록을 지운다', async () => {
   writeSession(INPUT.resultId);
+  rememberMyResult(INPUT.resultId);
   requestMock.mockResolvedValue({ ok: true, data: null });
 
   await logout();
 
   expect(readSession()).toBeNull();
+  expect(readMyResults()).toEqual([]);
 });
 
 test('logout 이 실패하면 로그인 상태 그대로라 내 결과를 남긴다', async () => {

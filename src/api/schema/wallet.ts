@@ -5,6 +5,9 @@ import { z } from 'zod';
 export const walletSchema = z.object({
   balance: z.number().int().nonnegative(),
   canCheckInToday: z.boolean(),
+  // 이 계정이 받은 제휴 코드(대문자, 예: `FESTIVAL`) — 실 현황의 '지급 완료' 표시에 쓴다(WKS-BE §12, 2026-09-30).
+  // 필드가 없는 이전 백엔드 응답은 받은 것이 없는 것으로 본다.
+  partnerRewards: z.array(z.string()).default([]),
 });
 
 export type Wallet = z.infer<typeof walletSchema>;

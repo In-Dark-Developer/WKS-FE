@@ -70,6 +70,7 @@ export function DatingCards({
       <ThreadGuideDialog
         balance={view.balance}
         checkedInToday={view.checkedInToday}
+        festivalRewarded={view.festivalRewarded}
         onClose={() => setThreadGuideOpen(false)}
         open={isThreadGuideOpen}
       />
