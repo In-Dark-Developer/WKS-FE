@@ -91,6 +91,15 @@ const allUnlocked: readonly MatchCandidateView[] = partlyUnlocked.map((candidate
     : candidate,
 );
 
+// 마지막 날 50% 할인(2026-10-01 10시~자정) — 서버가 할인된 비용을 주면 정가에 취소선이 붙는다. 이름만 연 카드로
+// 사진·학과·궁합 이유 알약을 함께 보인다.
+const nameOnlyOnSale: readonly MatchCandidateView[] = nameOnly.map((candidate) => ({
+  ...candidate,
+  photo: candidate.photo.isLocked ? { ...candidate.photo, cost: 5 } : candidate.photo,
+  department: candidate.department.isLocked ? { isLocked: true, cost: 2 } : candidate.department,
+  reason: candidate.reason.isLocked ? { isLocked: true, cost: 1 } : candidate.reason,
+}));
+
 // 리롤 비용 20 은 Figma 112:3675('실 20개로 지금 변경하기')와 백엔드 REROLL_COST 와 같다(2026-09-29).
 // 실제 화면은 서버가 준 `rerollCost` 를 그대로 쓴다 — 이 값은 미리보기용 고정값이다.
 export const REROLL_COST = 20;
@@ -195,6 +204,15 @@ export const preview: PreviewScreen = {
           balance: 2,
           reroll: { kind: 'paid', cost: REROLL_COST, canAfford: false },
         }}
+      />
+    ),
+    '마지막 날 할인(뒷면)': () => (
+      <Cards face="back" view={{ ...cardsBase, candidates: nameOnlyOnSale }} />
+    ),
+    '마지막 날 할인(리롤)': () => (
+      <Cards
+        isRerollOpen
+        view={{ ...cardsBase, reroll: { kind: 'paid', cost: 10, canAfford: true } }}
       />
     ),
     '재화 안내(출석 받음)': () => <Cards isThreadGuideOpen />,

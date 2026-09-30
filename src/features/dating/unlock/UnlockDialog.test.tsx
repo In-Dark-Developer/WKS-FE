@@ -63,3 +63,26 @@ test('구매 완료는 연 항목을 이름으로 알린다', () => {
   expect(screen.getByText('학과, 이름')).toBeVisible();
   expect(screen.getByLabelText('운명의 실 보유 0개')).toBeVisible();
 });
+
+test('할인 중이면 칸마다 정가에 취소선을 긋고, 합계는 지금 비용으로 셈한다', () => {
+  render(
+    <UnlockDialog
+      balance={20}
+      onClose={vi.fn()}
+      onConfirm={vi.fn()}
+      open
+      options={[
+        { item: 'photo', cost: 5, isUnlocked: false },
+        { item: 'name', cost: 3, isUnlocked: false },
+        { item: 'department', cost: 2, isUnlocked: false },
+        { item: 'reason', cost: 1, isUnlocked: false },
+      ]}
+    />,
+  );
+
+  const name = screen.getByRole('button', { name: /이름3개로 열기/ });
+  expect(name.querySelector('s')).toHaveTextContent('7');
+  fireEvent.click(name);
+  fireEvent.click(screen.getByRole('button', { name: /사진5개로 열기/ }));
+  expect(screen.getByRole('button', { name: '8개 사용하기' })).toBeEnabled();
+});
