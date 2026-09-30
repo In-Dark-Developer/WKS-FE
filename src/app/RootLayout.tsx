@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useMatches, useNavigate } from 'react-router-dom';
 
 import { ensureDailyCheckIn } from '@/api/wallet';
@@ -31,9 +31,14 @@ export function RootLayout() {
     void ensureDailyCheckIn();
   }, []);
   // 제휴 링크(`?ref=`)로 들어오면 코드를 보관하고, 이미 로그인했으면 바로 보상을 받는다(FR-32).
+  // 지급 알림은 첫 렌더에 보관된 지급만 꺼내므로, 지급이 늦게 도착하면 알림을 새로 그려 다시 꺼내게 한다 —
+  // 로그인한 채 배너로 들어온 사람이 지급 알림을 못 봤다(2026-09-30 QA).
+  const [rewardCheck, setRewardCheck] = useState(0);
   useEffect(() => {
     capturePartnerRef(window.location.search);
-    void claimPendingPartnerRef();
+    void claimPendingPartnerRef().then((granted) => {
+      if (granted) setRewardCheck((count) => count + 1);
+    });
   }, []);
   const backdrop = matches
     .map((match) => backdropOf(match.handle))
@@ -44,7 +49,7 @@ export function RootLayout() {
     <AppShell backdrop={backdrop} bottomNav={nav ? <BottomNavBar active={nav} /> : undefined}>
       <Outlet />
       {/* 제휴 지급 알림은 로그인 뒤 어느 화면에 도착하든 한 번 뜬다(FR-32) — 닫으면 소개팅으로 간다. */}
-      <PendingRewardDialog onDone={() => void navigate(DATING_INTRO_PATH)} />
+      <PendingRewardDialog key={rewardCheck} onDone={() => void navigate(DATING_INTRO_PATH)} />
     </AppShell>
   );
 }

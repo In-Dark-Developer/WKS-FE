@@ -49,10 +49,20 @@ test('로그인 상태면 바로 받고, 지급을 소개팅 모달용으로 남
   const reward = { partnerName: '동국대 축제', amount: 10 };
   claimMock.mockResolvedValue({ ok: true, data: { rewardGranted: reward, balance: 20 } });
 
-  await claimPendingPartnerRef();
+  expect(await claimPendingPartnerRef()).toBe(true);
 
   expect(claimMock).toHaveBeenCalledWith('FESTIVAL');
   expect(takePendingReward()).toEqual(reward);
+  expect(readPartnerRef()).toBeNull();
+});
+
+test('이미 받았거나 모르는 코드면(null) 알림 없이 ref 만 지운다', async () => {
+  capturePartnerRef('?ref=FESTIVAL');
+  claimMock.mockResolvedValue({ ok: true, data: { rewardGranted: null, balance: 20 } });
+
+  expect(await claimPendingPartnerRef()).toBe(false);
+
+  expect(takePendingReward()).toBeNull();
   expect(readPartnerRef()).toBeNull();
 });
 
@@ -65,9 +75,16 @@ test('비로그인(401)이면 ref 를 남겨 로그인 요청이 싣게 한다',
   expect(readPartnerRef()).toBe('FESTIVAL');
 });
 
-test('연결 실패면 남기고, 백엔드가 거절한 값이면 지운다', async () => {
+test('연결 실패·서버 오류면 남기고, 백엔드가 거절한 값이면 지운다', async () => {
   capturePartnerRef('?ref=FESTIVAL');
   claimMock.mockResolvedValue({ ok: false, error: { kind: 'network' } });
+  await claimPendingPartnerRef();
+  expect(readPartnerRef()).toBe('FESTIVAL');
+
+  claimMock.mockResolvedValue({
+    ok: false,
+    error: { kind: 'api', code: 'INTERNAL_ERROR', message: '서버 오류가 발생했습니다.' },
+  });
   await claimPendingPartnerRef();
   expect(readPartnerRef()).toBe('FESTIVAL');
 
