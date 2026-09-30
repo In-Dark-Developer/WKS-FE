@@ -4,7 +4,8 @@ import { cn } from '@/lib/cn';
 import { ThreadCount } from '@/ui/ThreadCount';
 
 import { DatingDialog, DialogActions } from '../DatingDialog';
-import { unlockItemLooks, type UnlockItem, type UnlockOptionView } from './unlockView';
+import { CostText } from './CostText';
+import { listedCost, unlockItemLooks, type UnlockItem, type UnlockOptionView } from './unlockView';
 
 type Props = {
   open: boolean;
@@ -129,7 +130,10 @@ function UnlockOption({ option, isSelected, onToggle }: OptionProps) {
       />
       <span className="flex flex-col items-end gap-4 whitespace-nowrap">
         <span className="text-ui-16 font-medium">{label}</span>
-        <span className="text-ui-12">{option.cost}개로 열기</span>
+        <span className="text-ui-12">
+          <CostText cost={option.cost} listed={listedCost[option.item]} />
+          개로 열기
+        </span>
       </span>
     </button>
   );
