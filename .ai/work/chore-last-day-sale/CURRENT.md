@@ -26,10 +26,7 @@ REVIEW
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. 비용 표시 지점 파악(카드 알약·해금 모달·리롤 시트)
-- 2. CostText 로 정가 취소선, 정가표 unlockView 로 이동
-- 3. 테스트·미리보기 상태 추가, test/typecheck/lint
-- 4. dev PR → dev 배포 확인 → release PR ←
+- 1. CostText 정가 취소선·테스트·미리보기 (완료) · 2. dev PR → dev 확인 → release PR ←
 
 ## Last Checkpoint
 
@@ -43,8 +40,7 @@ REVIEW
 ## Relevant Source Files
 
 <!-- 디렉터리가 아니라 파일·심볼 단위로: `src/api/users.py:create_user` -->
-- `src/features/dating/unlock/CostText.tsx:CostText`
-- `src/features/dating/unlock/unlockView.ts:listedCost`
+- `src/features/dating/unlock/CostText.tsx:CostText` · `unlockView.ts:listedCost`
 - `src/features/dating/card/CandidateFaces.tsx:CandidateBack`
 - `src/features/dating/recommendation/RerollSheet.tsx:REROLL_LISTED_COST`
 
