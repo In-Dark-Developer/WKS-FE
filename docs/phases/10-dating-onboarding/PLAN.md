@@ -93,6 +93,8 @@ QA 3차(2026-09-28, Notion 「🩺 QA / 디자인·기능」) — 담당자는 N
 
 - [x] T21. 사진 업로드 오류 안내 — Done when: 프로필 (2/2) 의 사진 업로드가 실패한 이유대로 다른 문구를 보인다 — 형식(JPEG·PNG 아님) · 용량(10MB 초과) · 크기(2천만 화소 초과) · 열 수 없음 · 로그인 풀림 · 거절 · 연결 실패. 백엔드가 저장 때 거절하는 화소 한도는 사진을 고르는 순간 걸러 입력을 다 마친 뒤에 막히지 않고, 프로필 저장 실패도 백엔드 오류 코드별로 안내가 다르다 · Touches: `src/api/uploads.ts`, `src/features/dating/profile/photoView.ts`, `src/features/dating/entry/profileSubmitError.ts`, `src/app/preview/screens/dating-profile.tsx` · Owner: 강근우 · FR: FR-25 (QA 2026-09-29: 사진 용량이 넘쳐도 '연결이 원활하지 않아요' 로만 보였다) (commit de79e24)
 
+- [x] T22. 로그인한 채 배너 진입 지급 알림 — Done when: 이미 로그인한 사람이 제휴 배너(`?ref=`)로 들어오면 `POST /wallet/partner-rewards` 지급 응답이 첫 화면보다 늦게 와도 지급 알림 모달(SCR-23 1.2)이 뜨고, 그 요청이 서버 오류(500)로 실패하면 ref 를 남겨 다음 진입에 다시 받는다 · Touches: `src/app/RootLayout.tsx`, `src/features/auth/partnerRef.ts` · Owner: 이정진 · FR: FR-32 (QA 2026-09-30: 로그인 상태로 배너를 눌러 들어오면 실을 안 준다 — 지급은 됐지만 알림 모달이 응답보다 먼저 떠서 비어 있었다. 실 현황의 '축제 사이트 방문' 지급 완료 표시는 `GET /wallet` 에 지급 여부가 없어 백엔드 요청으로 넘겼다) (commit 1901ab9)
+
 ## Relevant Specifications
 
 - `docs/prd/` — FR-24, FR-25, FR-26, FR-27, FR-31, FR-32 (FR-12 를 대체), Q20(학교 메일 인증)
