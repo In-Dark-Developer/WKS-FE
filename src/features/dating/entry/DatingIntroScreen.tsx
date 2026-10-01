@@ -4,6 +4,7 @@ import { useNavigate, useRevalidator } from 'react-router-dom';
 import { Toast } from '@/ui/Toast';
 
 import { DatingIntro, type DatingIntroView } from '../intro/DatingIntro';
+import { DATING_CLOSE_AT, useIsClosed } from '../registrationClose';
 import { findDatingStart } from './datingEntry';
 
 type Props = {
@@ -11,16 +12,24 @@ type Props = {
   // 카카오 로그인 시작·로그아웃은 로그인 Task(09/T2)의 몫이라 부르는 쪽(라우트)이 넘긴다.
   onKakaoLogin: () => void;
   onLogout: () => void;
+  // 등록 마감 시각(ms) — 기본은 운영 환경변수(VITE_DATING_CLOSE_AT). 테스트만 넘긴다.
+  closeAt?: number | null;
 };
 
 export const DATING_START_FAILED_MESSAGE = '정보를 불러오지 못했어요. 잠시 후 다시 눌러 주세요.';
 
 // SCR-15 소개팅 인트로 연결(FR-24) — 등록 상태를 다시 물어 필요한 단계 또는 Top 3 로 보낸다.
-export function DatingIntroScreen({ view, onKakaoLogin, onLogout }: Props) {
+export function DatingIntroScreen({
+  view,
+  onKakaoLogin,
+  onLogout,
+  closeAt = DATING_CLOSE_AT,
+}: Props) {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
   const [isStarting, setIsStarting] = useState(false);
   const [hasStartFailed, setHasStartFailed] = useState(false);
+  const isClosed = useIsClosed(closeAt);
 
   async function handleStart() {
     if (isStarting) return;
@@ -37,6 +46,7 @@ export function DatingIntroScreen({ view, onKakaoLogin, onLogout }: Props) {
       <DatingIntro
         // 로그인 상태가 바뀌면 시트 열림 상태를 새로 시작한다.
         key={view.viewer}
+        isClosed={isClosed}
         onKakaoLogin={onKakaoLogin}
         onLogout={onLogout}
         onStart={() => void handleStart()}
