@@ -1,11 +1,14 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { useState, type ComponentProps } from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import { DatingProfileForm } from './DatingProfileForm';
 import { profileErrorMessages } from './profileSchema';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 const validSaju = {
   gender: 'FEMALE',
@@ -271,4 +274,42 @@ test('(2/2) 입력 묶음은 화면 폭보다 넓어지지 않는다', () => {
   );
 
   expect(container.querySelector('fieldset')).toHaveClass('min-w-0');
+});
+
+test('등록 마감 시각이 지났으면 (2/2) 의 제출 버튼이 비활성이고 제출하지 않는다', () => {
+  const onSubmit = vi.fn();
+  render(
+    <StepHost
+      closeAt={Date.now() - 1000}
+      initialStep={2}
+      initialValues={{ saju: validSaju, details: validDetails }}
+      onPhotoSelect={vi.fn()}
+      onSubmit={onSubmit}
+      photo={uploaded}
+    />,
+  );
+
+  const submit = screen.getByRole('button', { name: '내 운명 찾아 떠나기' });
+  expect(submit).toBeDisabled();
+  fireEvent.submit(submit.closest('form') as HTMLFormElement);
+  expect(onSubmit).not.toHaveBeenCalled();
+});
+
+test('화면을 연 채 등록 마감 시각이 되면 새로고침 없이 제출 버튼이 비활성이 된다', () => {
+  vi.useFakeTimers();
+  render(
+    <StepHost
+      closeAt={Date.now() + 60_000}
+      initialStep={2}
+      initialValues={{ saju: validSaju, details: validDetails }}
+      onPhotoSelect={vi.fn()}
+      onSubmit={vi.fn()}
+      photo={uploaded}
+    />,
+  );
+
+  const submit = screen.getByRole('button', { name: '내 운명 찾아 떠나기' });
+  expect(submit).toBeEnabled();
+  act(() => vi.advanceTimersByTime(60_000));
+  expect(submit).toBeDisabled();
 });
