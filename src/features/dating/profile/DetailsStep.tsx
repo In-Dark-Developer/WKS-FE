@@ -9,6 +9,7 @@ import { Select } from '@/ui/Select';
 import { TextArea } from '@/ui/TextArea';
 import { TextField } from '@/ui/TextField';
 
+import { closedNotice } from '../registrationClose';
 import { EmailVerification } from './EmailVerification';
 import type { EmailVerificationView } from './emailVerificationView';
 import { BIO_MAX, DEPARTMENT_MAX, NAME_MAX, contactMethodOptions, mbtiOptions } from './options';
@@ -45,9 +46,6 @@ const contactPlaceholder = {
 
 // 업로드 조건은 uploadDatingPhoto 와 같다(JPEG·PNG, 10MB 이하). 문구는 Figma 사주입력폼 (2/2) 134:3639 그대로다.
 // 실패 안내는 원인별로 다르다(photoErrorMessage) — 용량·형식·연결을 한 문구로 뭉뚱그리지 않는다(2026-09-29 QA).
-// 마감 안내 — 디자인에 없는 상태라 문구는 2026-10-01 소유자 지시, 모양은 기존 토큰으로 그린다.
-export const closedNotice = '새로운 인연 접수가 마감됐어요\n다음 인연 때 더 좋은 모습으로 만나요';
-
 const photoGuide =
   'JPEG·PNG, 최대 10MB로 등록해주세요. 현재 화면과 동일하게 상대방에게 보여집니다.';
 

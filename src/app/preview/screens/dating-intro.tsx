@@ -23,5 +23,15 @@ export const preview: PreviewScreen = {
     로그인: () => (
       <DatingIntro onKakaoLogin={noop} onLogout={noop} onStart={noop} view={{ viewer: 'member' }} />
     ),
+    // 등록 마감(2026-10-02 02:00 KST) 뒤 — 로그인 인트로의 시작 버튼 비활성과 마감 안내.
+    '로그인 · 등록 마감': () => (
+      <DatingIntro
+        isClosed
+        onKakaoLogin={noop}
+        onLogout={noop}
+        onStart={noop}
+        view={{ viewer: 'member' }}
+      />
+    ),
   },
 };

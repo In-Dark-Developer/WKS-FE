@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { DatingBackdrop } from '../DatingBackdrop';
+import { DATING_CLOSE_AT, useIsClosed } from '../registrationClose';
 import { DetailsStep } from './DetailsStep';
 import type { EmailVerificationView } from './emailVerificationView';
 import type { DatingPhotoView } from './photoView';
@@ -13,10 +14,7 @@ import {
   type DetailsStepValues,
   type SajuStepValues,
 } from './profileSchema';
-import { readDatingCloseAt, useIsClosed } from './registrationClose';
 import { SajuStep } from './SajuStep';
-
-const DATING_CLOSE_AT = readDatingCloseAt();
 
 // 제출 상태 — 연동 Task 가 onSubmit 뒤의 요청 결과를 넘긴다. 'failed' 면 입력값을 둔 채 안내만 띄운다.
 export type ProfileSubmitState = 'idle' | 'submitting' | 'failed';

@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 
+import { closedNotice } from '../registrationClose';
 import { DatingIntro } from './DatingIntro';
 
 afterEach(() => {
@@ -8,9 +9,9 @@ afterEach(() => {
   document.body.style.overflow = '';
 });
 
-function renderIntro(viewer: 'guest' | 'member') {
+function renderIntro(viewer: 'guest' | 'member', isClosed = false) {
   const handlers = { onStart: vi.fn(), onKakaoLogin: vi.fn(), onLogout: vi.fn() };
-  render(<DatingIntro view={{ viewer }} {...handlers} />);
+  render(<DatingIntro isClosed={isClosed} view={{ viewer }} {...handlers} />);
   return handlers;
 }
 
@@ -44,6 +45,24 @@ test('로그인했으면 시작 버튼과 로그아웃이 보인다', () => {
   expect(onStart).toHaveBeenCalledTimes(1);
   expect(onLogout).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+test('등록 마감 뒤 로그인 인트로는 시작 버튼이 비활성이고 마감 안내가 보인다', () => {
+  const { onStart } = renderIntro('member', true);
+
+  const start = screen.getByRole('button', { name: '내 운명 찾아 떠나기' });
+  expect(start).toBeDisabled();
+  fireEvent.click(start);
+  expect(onStart).not.toHaveBeenCalled();
+  expect(screen.getByRole('status')).toHaveTextContent(closedNotice.replace('\n', ' '));
+  expect(screen.getByRole('button', { name: '로그아웃' })).toBeEnabled();
+});
+
+test('등록 마감 뒤에도 비로그인 인트로는 로그인할 수 있다 — 이미 등록한 사용자가 Top 3 로 가는 길이다', () => {
+  renderIntro('guest', true);
+
+  expect(screen.getByRole('button', { name: '로그인하고 내 운명 찾아 떠나기' })).toBeEnabled();
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
 test('배경 카드 벽은 세 줄이 왼쪽·오른쪽·왼쪽으로 흐르고, 줄마다 카드 한 벌을 두 번 이어 붙인다', () => {

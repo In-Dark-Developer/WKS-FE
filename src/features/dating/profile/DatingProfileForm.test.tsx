@@ -3,7 +3,7 @@ import { useState, type ComponentProps } from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import { DatingProfileForm } from './DatingProfileForm';
-import { closedNotice } from './DetailsStep';
+import { closedNotice } from '../registrationClose';
 import { profileErrorMessages } from './profileSchema';
 
 afterEach(() => {
