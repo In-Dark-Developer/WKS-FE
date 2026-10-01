@@ -3,6 +3,7 @@ import { useState, type ComponentProps } from 'react';
 import { afterEach, expect, test, vi } from 'vitest';
 
 import { DatingProfileForm } from './DatingProfileForm';
+import { closedNotice } from './DetailsStep';
 import { profileErrorMessages } from './profileSchema';
 
 afterEach(() => {
@@ -291,6 +292,7 @@ test('등록 마감 시각이 지났으면 (2/2) 의 제출 버튼이 비활성�
 
   const submit = screen.getByRole('button', { name: '내 운명 찾아 떠나기' });
   expect(submit).toBeDisabled();
+  expect(screen.getByRole('status')).toHaveTextContent(closedNotice.replace('\n', ' '));
   fireEvent.submit(submit.closest('form') as HTMLFormElement);
   expect(onSubmit).not.toHaveBeenCalled();
 });
@@ -310,6 +312,8 @@ test('화면을 연 채 등록 마감 시각이 되면 새로고침 없이 제�
 
   const submit = screen.getByRole('button', { name: '내 운명 찾아 떠나기' });
   expect(submit).toBeEnabled();
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
   act(() => vi.advanceTimersByTime(60_000));
   expect(submit).toBeDisabled();
+  expect(screen.getByRole('status')).toHaveTextContent(closedNotice.replace('\n', ' '));
 });

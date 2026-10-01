@@ -28,7 +28,7 @@ type Props = {
   hasSubmitFailed: boolean;
   // 제출 실패 안내 — 원인을 아는 화면이 넘긴다(toProfileSubmitError).
   submitError?: string;
-  // 등록 마감(readDatingCloseAt) 뒤면 '내 운명 찾아 떠나기'를 비활성한다. 안내 문구는 디자인에 없어 두지 않는다.
+  // 등록 마감(readDatingCloseAt) 뒤면 '내 운명 찾아 떠나기'를 비활성하고 마감 안내를 버튼 위에 보인다.
   isClosed?: boolean;
   // 학교 메일 코드 인증 — 연동(10/T1) 전에는 넘기지 않아 인증 없는 메일 입력칸만 보인다.
   emailVerification?: {
@@ -45,6 +45,9 @@ const contactPlaceholder = {
 
 // 업로드 조건은 uploadDatingPhoto 와 같다(JPEG·PNG, 10MB 이하). 문구는 Figma 사주입력폼 (2/2) 134:3639 그대로다.
 // 실패 안내는 원인별로 다르다(photoErrorMessage) — 용량·형식·연결을 한 문구로 뭉뚱그리지 않는다(2026-09-29 QA).
+// 마감 안내 — 디자인에 없는 상태라 문구는 2026-10-01 소유자 지시, 모양은 기존 토큰으로 그린다.
+export const closedNotice = '새로운 인연 접수가 마감됐어요\n다음 인연 때 더 좋은 모습으로 만나요';
+
 const photoGuide =
   'JPEG·PNG, 최대 10MB로 등록해주세요. 현재 화면과 동일하게 상대방에게 보여집니다.';
 
@@ -221,6 +224,15 @@ export function DetailsStep({
           </p>
         ) : null}
       </fieldset>
+
+      {isClosed ? (
+        <p
+          className="text-center text-ui-14 font-medium whitespace-pre-line text-secondary"
+          role="status"
+        >
+          {closedNotice}
+        </p>
+      ) : null}
 
       <Button disabled={isClosed} loading={isSubmitting} type="submit">
         내 운명 찾아 떠나기
