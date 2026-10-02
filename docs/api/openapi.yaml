@@ -49,6 +49,8 @@ tags:
     description: (V1) 소개팅 프로필과 오늘의 인연 추천
   - name: wallet
     description: (V1) 재화 '실' 원장 — 잔액과 출석 체크
+  - name: feedbacks
+    description: 축제 종료 뒤 자유 의견 — 로그인 없이 보낸다
   - name: health
     description: 헬스체크
 paths:
@@ -1036,6 +1038,41 @@ paths:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
         "401":
           description: UNAUTHENTICATED — 비로그인에는 지급하지 않는다
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /feedbacks:
+    post:
+      operationId: createFeedback
+      summary: 축제 종료 뒤 피드백 제출
+      description: "사이트 종료 화면(SiteClosed)의 '피드백 실 전달하기'. 로그인 없이 보내고 쿠키를 무시한다. 회원·결과·IP 를 남기지 않는다. 공개 조회 API 는 없다. WKS-BE api-spec.md §13 (main 356504c)."
+      tags: [feedbacks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string, minLength: 1, maxLength: 2000, description: "자유 의견 — 서버가 앞뒤 공백을 지운 뒤 1~2,000자를 본다" }
+      responses:
+        "201":
+          description: 접수됨
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, data]
+                properties:
+                  success: { type: boolean, const: true }
+                  data:
+                    type: object
+                    required: [message]
+                    properties:
+                      message: { type: string, description: "접수 안내 문구 — 화면은 쓰지 않는다" }
+        "400":
+          description: INVALID_INPUT — 내용 누락·공백만·2,000자 초과
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }

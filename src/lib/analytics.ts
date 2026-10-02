@@ -27,9 +27,6 @@ type EventProps = {
   pre_register_opened: Record<string, never>;
   pre_register_submitted: { mailSent: boolean };
   pre_register_failed: { reason: 'duplicate' | 'domain' | 'connection' };
-  // 사이트 종료 뒤 '피드백 실 전달하기' — 피드백 API 가 없어 본문을 그대로 싣는다(2026-10-03 소유자 결정).
-  // 위의 '개수·구분값만' 규칙의 예외다. 입력란에 개인정보를 적지 말라는 안내는 화면이 하지 않는다.
-  feedback_submitted: { text: string };
 };
 
 type Amplitude = typeof import('@amplitude/analytics-browser');
