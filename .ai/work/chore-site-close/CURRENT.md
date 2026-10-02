@@ -21,17 +21,17 @@ chore: site-close — 2026-10-04 02:00 KST 부터 사이트 전체를 종료 안
 
 ## Status
 
-IN_PROGRESS
+REVIEW
 
 ## Progress
 
 <!-- 현재 Task의 step ≤ 10개. 진행 중인 step 끝에 ← -->
-- 1. 종료 시각 게이트(App·VITE_SITE_CLOSE_AT) ← · 2. 종료 안내·커피 모달·피드백 화면 · 3. 피드백 Amplitude 이벤트 · 4. preview·테스트 · 5. 소유자 컨펌 → dev PR → release PR(10/4 02:00 전)
+- 1–4. 게이트·화면·이벤트·preview (완료) · 5. 소유자 컨펌 (완료) · 6. dev PR → release PR(10/4 02:00 전) ←
 
 ## Last Checkpoint
 
 <!-- 이 스트림의 마지막 close commit. `scripts/ai-end.sh --set-checkpoint`가 기록한다. -->
-`501e89a`
+`4940c38`
 
 ## Relevant Documents
 
@@ -44,4 +44,4 @@ IN_PROGRESS
 
 ## Next Action
 
-preview 를 소유자에게 컨펌받는다. 커피 사주기 계좌번호는 소유자가 나중에 준다.
+dev PR 병합 뒤 dev → main 릴리스 PR 을 10/4 02:00 전에 병합한다.

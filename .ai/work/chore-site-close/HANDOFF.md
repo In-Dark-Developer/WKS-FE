@@ -13,15 +13,15 @@
 
 ## Work Completed
 
-- 없음
+- 종료 게이트(`App.tsx`·`openingGate.ts:readSiteCloseAt`) · `SiteClosed.tsx`(안내·커피 모달·피드백, 뒤로가기 복귀) · `analytics.ts:feedback_submitted` · `netlify.toml` 운영 VITE_SITE_CLOSE_AT · preview `closed.tsx`
 
 ## Work In Progress
 
-- 구현·preview 완료. 커피 계좌번호(`SiteClosed.tsx:COFFEE_ACCOUNT`)를 소유자에게 받으면 바꾸고 dev PR → release PR(10/4 02:00 전)
+- 없음 (dev PR → release PR 만 남음)
 
 ## Files Changed
 
-- 없음
+- `src/app/App.tsx` · `src/features/intro/{SiteClosed,openingGate,index}.ts(x)` · `src/lib/analytics.ts` · `src/ui/assets/closing/coffee.webp` · `src/vite-env.d.ts` · `netlify.toml` · `src/app/preview/screens/closed.tsx` + 테스트
 
 ## Decisions Made
 
@@ -30,15 +30,15 @@
 
 ## Tests Executed
 
-- 없음
+- pnpm test · typecheck · lint · build, 브라우저 preview 측정·뒤로가기
 
 ## Test Results
 
-- 없음
+- 774 통과, 경고 없음. 피드백 제출은 dev 에서도 실제 Amplitude 로 가서 브라우저로는 누르지 않았다(단위 테스트만)
 
 ## Known Problems
 
-- 없음
+- 백엔드 API 는 종료 시각 뒤에도 열려 있다(FE 만 닫힘). Amplitude 가 차단되면 피드백은 사라지지만 성공 토스트가 뜬다
 
 ## Unverified Assumptions
 
