@@ -65,8 +65,8 @@ test('운명과 이어졌다면 커피 모달에서 계좌번호를 복사하고
     fireEvent.click(within(dialog).getByRole('button', { name: '커피 사주기' }));
   });
 
-  expect(writeText).toHaveBeenCalledOnce();
-  expect(screen.getByRole('status')).toHaveTextContent('계좌번호를 복사했어요');
+  expect(writeText).toHaveBeenCalledWith('28370204038174');
+  expect(screen.getByRole('status')).toHaveTextContent('국민은행 28370204038174');
 
   fireEvent.keyDown(document, { key: 'Escape' });
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

@@ -7,8 +7,9 @@ import { Button } from '@/ui/Button';
 import { OverlayBackdrop, useOverlayBehavior } from '@/ui/Modal';
 import { Toast } from '@/ui/Toast';
 
-// '커피 사주기'가 복사하는 계좌 — 소유자가 배포 전에 준다.
-const COFFEE_ACCOUNT = '(계좌번호 받기 전)';
+// '커피 사주기'가 복사하는 계좌(2026-10-03 소유자 전달). 은행 앱 입력란에 그대로 붙도록 숫자만 복사한다.
+const COFFEE_BANK = '국민은행';
+const COFFEE_ACCOUNT = '28370204038174';
 // Amplitude 는 1024자를 넘는 문자열 속성을 자른다.
 const FEEDBACK_MAX = 1000;
 
@@ -54,10 +55,10 @@ export function SiteClosed({ initialView = 'notice' }: Props) {
   async function copyAccount() {
     try {
       await navigator.clipboard.writeText(COFFEE_ACCOUNT);
-      setToast(`계좌번호를 복사했어요\n${COFFEE_ACCOUNT}`);
+      setToast(`계좌번호를 복사했어요\n${COFFEE_BANK} ${COFFEE_ACCOUNT}`);
     } catch {
       // 클립보드를 못 쓰는 브라우저 — 번호를 보여 주기만 한다.
-      setToast(COFFEE_ACCOUNT);
+      setToast(`${COFFEE_BANK} ${COFFEE_ACCOUNT}`);
     }
   }
 
