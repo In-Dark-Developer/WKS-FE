@@ -9,15 +9,15 @@
 
 ## Goal
 
-운영 배포에서 2026-10-04 02:00 KST 이후 어떤 주소로 들어와도 종료 안내가 보이고, 피드백은 Amplitude 로 가고, 커피 모달은 계좌번호를 복사한다.
+운영 배포에서 2026-10-04 02:00 KST 이후 어떤 주소로 들어와도 종료 안내가 보이고, 피드백은 BE `POST /feedbacks` 로 가고, 커피 모달은 계좌번호를 복사한다.
 
 ## Work Completed
 
-- 종료 게이트(`App.tsx`·`openingGate.ts:readSiteCloseAt`) · `SiteClosed.tsx`(안내·커피 모달·피드백, 뒤로가기 복귀) · `analytics.ts:feedback_submitted` · `netlify.toml` 운영 VITE_SITE_CLOSE_AT · preview `closed.tsx`
+- 종료 게이트(`App.tsx`·`openingGate.ts:readSiteCloseAt`) · `SiteClosed.tsx`(안내·커피 모달·피드백, 뒤로가기 복귀) · `api/feedbacks.ts:submitFeedback`(WKS-BE #165) · `netlify.toml` 운영 VITE_SITE_CLOSE_AT · preview `closed.tsx`
 
 ## Work In Progress
 
-- 없음 (dev PR → release PR 만 남음)
+- 없음 (dev PR #341 → release PR 만 남음)
 
 ## Files Changed
 
@@ -25,7 +25,7 @@
 
 ## Decisions Made
 
-- 소유자(2026-10-03): 시각 게이트(예약 병합 아님) · 사이트 전체 · 피드백은 Amplitude `feedback_submitted` · 피드백 화면은 뒤로가기로 안내 복귀
+- 소유자(2026-10-03): 시각 게이트(예약 병합 아님) · 사이트 전체 · 피드백은 Amplitude 이벤트였다가 BE API 로(00:50 소유자 지시) · 피드백 화면은 뒤로가기로 안내 복귀
 - 소유자(2026-10-03): 빈 입력이면 버튼 비활성(디자인은 노란 버튼) · 커피 모달은 정중앙(디자인은 37px 아래) — 지금대로 둔다
 
 ## Tests Executed
@@ -34,11 +34,11 @@
 
 ## Test Results
 
-- 774 통과, 경고 없음. 피드백 제출은 dev 에서도 실제 Amplitude 로 가서 브라우저로는 누르지 않았다(단위 테스트만)
+- 777 통과, 경고 없음. 실제 제출은 DB 에 남아 보내지 않았다 — 빈 본문 400·CORS 만 운영·dev 에서 확인
 
 ## Known Problems
 
-- 백엔드 API 는 종료 시각 뒤에도 열려 있다(FE 만 닫힘). Amplitude 가 차단되면 피드백은 사라지지만 성공 토스트가 뜬다
+- 백엔드 API 는 종료 시각 뒤에도 열려 있다(FE 만 닫힘).
 
 ## Unverified Assumptions
 

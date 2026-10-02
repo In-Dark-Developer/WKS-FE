@@ -2,6 +2,15 @@
 
 <!-- 소유자 보고. 세션마다 맨 위에 추가(최신순), 제목은 `## YYYY-MM-DD · <agent> · <phase>/<task> · <한 줄 요약>`, 항목당 8줄 이내. PR 본문 초안(ai-end.sh --ready)의 재료가 된다. -->
 
+## 2026-10-03 · claude-code · -/- · 피드백을 BE API 로 (재작업)
+
+- Commits: 14a2092
+- Done: 피드백 제출을 Amplitude `feedback_submitted` 에서 `POST /feedbacks`(WKS-BE #165, main 356504c)로 바꿨다 — 전송 중 버튼 로딩, 실패하면 화면에 남아 글을 지키고 토스트. 최대 2,000자
+- Not done: 없음
+- Developer changes: 없음 · Upstream changes: 없음 · Spec changes: docs/api/openapi.yaml `/feedbacks`(Touches 선언 조각)
+- Needs your attention: 실제 제출은 dev·운영 DB 에 남아 브라우저로 보내 보지 않았다 — 운영·dev 에 빈 본문을 보내 400 INVALID_INPUT·CORS 통과만 확인
+- Verification: pnpm test 777 · typecheck · lint 통과
+
 ## 2026-10-03 · claude-code · -/- · 사이트 종료 화면 (안내·커피·피드백)
 
 - Commits: 77ab14b 36bdd78 4940c38
