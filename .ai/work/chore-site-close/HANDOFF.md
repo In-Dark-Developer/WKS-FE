@@ -46,4 +46,4 @@
 
 ## Exact Next Action
 
-<다음 세션(또는 다음 사람)이 첫 번째로 할 일 한 줄>
+dev PR 병합 뒤 dev → main 릴리스 PR 을 10/4 02:00 전에 병합한다.
