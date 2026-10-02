@@ -88,3 +88,28 @@ test('오픈 시각이 지났으면 대기 화면 없이 바로 연다', async (
     await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
   ).toBeInTheDocument();
 });
+
+test('종료 시각이 지났으면 어떤 주소로 들어와도 종료 화면만 보인다', () => {
+  window.history.pushState({}, '', '/s/9f0d3f1e-0000-4000-8000-000000000001');
+
+  render(<App closeAt={Date.now() - 1_000} />);
+
+  expect(screen.getByRole('button', { name: '다음을 위한 피드백 남기기' })).toBeInTheDocument();
+});
+
+test('서비스를 보는 중에 종료 시각이 되면 새로고침 없이 종료 화면으로 바뀐다', async () => {
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  render(<App closeAt={Date.now() + 3_000} />);
+
+  expect(
+    await screen.findByRole('heading', { name: '운명도 꿰어야 사랑이다' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: '다음을 위한 피드백 남기기' }),
+  ).not.toBeInTheDocument();
+
+  await act(() => vi.advanceTimersByTimeAsync(3_000));
+  vi.useRealTimers();
+
+  expect(screen.getByRole('button', { name: '다음을 위한 피드백 남기기' })).toBeInTheDocument();
+});

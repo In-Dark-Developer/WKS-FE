@@ -18,6 +18,7 @@ import top5 from '@/ui/assets/dating/card-wall/top-5.webp';
 import { Button } from '@/ui/Button';
 
 import { DatingBackdrop } from '../DatingBackdrop';
+import { closedNotice } from '../registrationClose';
 import { LoginSheet } from './LoginSheet';
 
 // 소개팅 인트로 뷰 모델 — 로그인 여부는 연동 Task 가 `GET /me` 로 판단해 넘긴다(FR-24, ARCHITECTURE V1).
@@ -31,6 +32,9 @@ type Props = {
   onLogout: () => void;
   // 미리보기용 — 로그인 시트를 연 채로 시작한다(Intro 1.1.1).
   initialSheetOpen?: boolean;
+  // 등록 마감(registrationClose) 뒤 — 로그인 인트로는 프로필이 없는 사용자만 보므로(datingIntroLoader) 시작 버튼을
+  // 비활성하고 마감 안내를 버튼 위에 보인다. 비로그인은 그대로 둔다 — 이미 등록한 사용자도 로그인해야 Top 3 로 간다.
+  isClosed?: boolean;
 };
 
 // SCR-15 소개팅 인트로 — Figma Intro 1.1 비로그인(126:2097) · 2.1 로그인(132:3472) · 1.1.1 카카오 시트(132:3133).
@@ -40,9 +44,11 @@ export function DatingIntro({
   onKakaoLogin,
   onLogout,
   initialSheetOpen = false,
+  isClosed = false,
 }: Props) {
   const [sheetOpen, setSheetOpen] = useState(view.viewer === 'guest' && initialSheetOpen);
   const isGuest = view.viewer === 'guest';
+  const isStartClosed = !isGuest && isClosed;
 
   return (
     <section className="flex min-h-[80dvh] flex-col items-center justify-center gap-32 text-center">
@@ -63,8 +69,14 @@ export function DatingIntro({
       </div>
 
       <div className="flex w-full flex-col items-center gap-16">
+        {isStartClosed ? (
+          <p className="text-ui-14 font-medium whitespace-pre-line text-neutral-100" role="status">
+            {closedNotice}
+          </p>
+        ) : null}
         <Button
           className="w-full"
+          disabled={isStartClosed}
           onClick={isGuest ? () => setSheetOpen(true) : onStart}
           size="m"
           variant="accent"

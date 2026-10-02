@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { DatingBackdrop } from '../DatingBackdrop';
+import { DATING_CLOSE_AT, useIsClosed } from '../registrationClose';
 import { DetailsStep } from './DetailsStep';
 import type { EmailVerificationView } from './emailVerificationView';
 import type { DatingPhotoView } from './photoView';
@@ -43,6 +44,8 @@ type Props = {
     onSendCode: (email: string) => void;
     onVerifyCode: (email: string, code: string) => void;
   };
+  // 등록 마감 시각(ms) — 기본은 운영 환경변수(VITE_DATING_CLOSE_AT). 테스트·미리보기만 넘긴다.
+  closeAt?: number | null;
 };
 
 // SCR-16 소개팅 프로필 등록 — (1/2) 사주 정보 → (2/2) 이름·사진·학교 정보(FR-25).
@@ -58,7 +61,9 @@ export function DatingProfileForm({
   initialValues,
   showErrorsInitially = false,
   emailVerification,
+  closeAt = DATING_CLOSE_AT,
 }: Props) {
+  const isClosed = useIsClosed(closeAt);
   const [saju, setSaju] = useState<SajuStepValues>({
     ...initialSajuStepValues,
     ...initialValues?.saju,
@@ -118,6 +123,7 @@ export function DatingProfileForm({
           }
           errors={detailsErrors}
           hasSubmitFailed={submitState === 'failed'}
+          isClosed={isClosed}
           submitError={submitError}
           isSubmitting={submitState === 'submitting'}
           onBack={onBack}

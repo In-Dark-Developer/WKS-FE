@@ -44,6 +44,8 @@ type Props = {
   photoFailure?: PhotoUploadFailure;
   // 제출 실패 안내 — 실제 화면은 백엔드 오류 코드로 정한다(toProfileSubmitError).
   submitError?: string;
+  // 등록 마감 뒤 — 버튼 비활성과 마감 안내를 본다.
+  isClosed?: boolean;
 };
 
 // 업로드·제출·메일 인증은 가짜다 — 인증 코드는 123456 만 맞다.
@@ -55,6 +57,7 @@ function FakeProfileForm({
   verification = { status: 'idle' },
   photoFailure,
   submitError,
+  isClosed = false,
 }: Props) {
   const [photo, setPhoto] = useState<DatingPhotoView>(() => {
     if (photoFailure !== undefined) return { status: 'error', failure: photoFailure };
@@ -108,6 +111,7 @@ function FakeProfileForm({
 
   return (
     <DatingProfileForm
+      closeAt={isClosed ? 0 : null}
       emailVerification={{
         view: emailView,
         onSendCode: handleSendCode,
@@ -137,6 +141,8 @@ export const preview: PreviewScreen = {
     '(2/2) 기본': () => <FakeProfileForm initialStep={2} />,
     '(2/2) 오류': () => <FakeProfileForm initialStep={2} showErrorsInitially />,
     '(2/2) 채움 → 연결 실패': () => <FakeProfileForm initialStep={2} isFilled />,
+    // 등록 마감(2026-10-02 02:00 KST) 뒤 — 제출 버튼 비활성과 마감 안내.
+    '(2/2) 등록 마감': () => <FakeProfileForm initialStep={2} isClosed isFilled />,
     // 사진 업로드 실패 — 원인별 안내(2026-09-29 QA). 사진을 직접 골라도 형식·용량은 같은 안내가 뜬다.
     '(2/2) 사진 실패(형식)': () => <FakeProfileForm initialStep={2} photoFailure="type" />,
     '(2/2) 사진 실패(용량)': () => <FakeProfileForm initialStep={2} photoFailure="size" />,

@@ -9,6 +9,7 @@ import { Select } from '@/ui/Select';
 import { TextArea } from '@/ui/TextArea';
 import { TextField } from '@/ui/TextField';
 
+import { closedNotice } from '../registrationClose';
 import { EmailVerification } from './EmailVerification';
 import type { EmailVerificationView } from './emailVerificationView';
 import { BIO_MAX, DEPARTMENT_MAX, NAME_MAX, contactMethodOptions, mbtiOptions } from './options';
@@ -28,6 +29,8 @@ type Props = {
   hasSubmitFailed: boolean;
   // 제출 실패 안내 — 원인을 아는 화면이 넘긴다(toProfileSubmitError).
   submitError?: string;
+  // 등록 마감(readDatingCloseAt) 뒤면 '내 운명 찾아 떠나기'를 비활성하고 마감 안내를 버튼 위에 보인다.
+  isClosed?: boolean;
   // 학교 메일 코드 인증 — 연동(10/T1) 전에는 넘기지 않아 인증 없는 메일 입력칸만 보인다.
   emailVerification?: {
     view: EmailVerificationView;
@@ -58,10 +61,12 @@ export function DetailsStep({
   isSubmitting,
   hasSubmitFailed,
   submitError,
+  isClosed = false,
   emailVerification,
 }: Props) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isClosed) return;
     onSubmit();
   }
 
@@ -218,7 +223,16 @@ export function DetailsStep({
         ) : null}
       </fieldset>
 
-      <Button loading={isSubmitting} type="submit">
+      {isClosed ? (
+        <p
+          className="text-center text-ui-14 font-medium whitespace-pre-line text-secondary"
+          role="status"
+        >
+          {closedNotice}
+        </p>
+      ) : null}
+
+      <Button disabled={isClosed} loading={isSubmitting} type="submit">
         내 운명 찾아 떠나기
       </Button>
     </form>
