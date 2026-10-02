@@ -17,7 +17,7 @@
 
 ## Work In Progress
 
-- 종료 게이트·화면 구현 중. 소유자 결정(2026-10-03): 시각 게이트(예약 병합 아님) · 사이트 전체 · 피드백은 Amplitude 이벤트 · 커피 계좌번호는 추후 전달
+- 구현·preview 완료. 커피 계좌번호(`SiteClosed.tsx:COFFEE_ACCOUNT`)를 소유자에게 받으면 바꾸고 dev PR → release PR(10/4 02:00 전)
 
 ## Files Changed
 
@@ -25,7 +25,8 @@
 
 ## Decisions Made
 
-- 없음
+- 소유자(2026-10-03): 시각 게이트(예약 병합 아님) · 사이트 전체 · 피드백은 Amplitude `feedback_submitted` · 피드백 화면은 뒤로가기로 안내 복귀
+- 소유자(2026-10-03): 빈 입력이면 버튼 비활성(디자인은 노란 버튼) · 커피 모달은 정중앙(디자인은 37px 아래) — 지금대로 둔다
 
 ## Tests Executed
 
