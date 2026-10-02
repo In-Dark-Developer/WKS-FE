@@ -2,10 +2,22 @@
 // 운영 배포에만 `VITE_OPEN_AT`(ISO 8601, 오프셋 포함 — 예 2026-09-29T09:00:00+09:00)을 둔다(netlify.toml).
 // 값이 없거나 읽을 수 없으면 대기 없이 연다 — 개발·dev 배포·미리보기는 막지 않는다.
 export function readOpenAt(raw: string | undefined = import.meta.env.VITE_OPEN_AT): number | null {
+  return readInstant('VITE_OPEN_AT', raw);
+}
+
+// 사이트 종료 시각 — 이 시각부터 어떤 주소로 들어와도 종료 안내만 보인다(2026-10-03 결정, 축제 종료).
+// 운영 배포에만 `VITE_SITE_CLOSE_AT`(예 2026-10-04T02:00:00+09:00)을 둔다(netlify.toml). 없으면 닫지 않는다.
+export function readSiteCloseAt(
+  raw: string | undefined = import.meta.env.VITE_SITE_CLOSE_AT,
+): number | null {
+  return readInstant('VITE_SITE_CLOSE_AT', raw);
+}
+
+function readInstant(name: string, raw: string | undefined): number | null {
   if (!raw) return null;
   const time = Date.parse(raw);
   if (Number.isNaN(time)) {
-    console.error('VITE_OPEN_AT 을 읽을 수 없다', raw);
+    console.error(`${name} 을 읽을 수 없다`, raw);
     return null;
   }
   return time;

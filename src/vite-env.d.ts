@@ -10,4 +10,6 @@ interface ImportMetaEnv {
   readonly VITE_OPEN_AT?: string;
   // 소개팅 프로필 등록 마감 시각(ISO 8601) — 운영 배포에만 둔다. 이후 소개팅 시작 버튼이 비활성이 된다(`features/dating/registrationClose.ts`).
   readonly VITE_DATING_CLOSE_AT?: string;
+  // 사이트 종료 시각(ISO 8601) — 운영 배포에만 둔다. 이후 모든 주소가 종료 안내를 보인다(`features/intro/openingGate.ts`).
+  readonly VITE_SITE_CLOSE_AT?: string;
 }

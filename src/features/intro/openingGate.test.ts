@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 
-import { formatOpenAt, formatRemaining, readOpenAt } from './openingGate';
+import { formatOpenAt, formatRemaining, readOpenAt, readSiteCloseAt } from './openingGate';
 
 const OPEN_AT = '2026-09-29T09:00:00+09:00';
 
@@ -28,4 +28,11 @@ test('남은 시간은 HH:MM:SS, 하루가 넘으면 일을 앞에 붙인다', (
   expect(formatRemaining(26 * 3600_000)).toBe('1일 02:00:00');
   expect(formatRemaining(400)).toBe('00:00:01');
   expect(formatRemaining(-5)).toBe('00:00:00');
+});
+
+test('사이트 종료 시각도 같은 규칙으로 읽는다 — 없거나 읽을 수 없으면 닫지 않는다', () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  expect(readSiteCloseAt(undefined)).toBeNull();
+  expect(readSiteCloseAt('새벽 2시')).toBeNull();
+  expect(readSiteCloseAt('2026-10-04T02:00:00+09:00')).toBe(Date.UTC(2026, 9, 3, 17, 0, 0));
 });
