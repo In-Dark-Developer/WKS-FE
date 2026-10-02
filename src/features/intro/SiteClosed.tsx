@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 
-import { track } from '@/lib/analytics';
+import { FEEDBACK_MAX_LENGTH, submitFeedback } from '@/api/feedbacks';
 import coffee from '@/ui/assets/closing/coffee.webp';
 import { Button } from '@/ui/Button';
 import { OverlayBackdrop, useOverlayBehavior } from '@/ui/Modal';
@@ -10,8 +10,6 @@ import { Toast } from '@/ui/Toast';
 // '커피 사주기'가 복사하는 계좌(2026-10-03 소유자 전달). 은행 앱 입력란에 그대로 붙도록 숫자만 복사한다.
 const COFFEE_BANK = '국민은행';
 const COFFEE_ACCOUNT = '28370204038174';
-// Amplitude 는 1024자를 넘는 문자열 속성을 자른다.
-const FEEDBACK_MAX = 1000;
 
 type View = 'notice' | 'coffee' | 'feedback';
 
@@ -25,6 +23,7 @@ type Props = {
 export function SiteClosed({ initialView = 'notice' }: Props) {
   const [view, setView] = useState<View>(initialView);
   const [toast, setToast] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
   const closeToast = useCallback(() => setToast(null), []);
   const closeCoffee = useCallback(() => setView('notice'), []);
   // 피드백 화면은 기록을 한 칸 쌓는다 — 휴대폰 뒤로가기가 사이트를 떠나지 않고 안내로 돌아온다.
@@ -46,6 +45,20 @@ export function SiteClosed({ initialView = 'notice' }: Props) {
     setView('feedback');
   }
 
+  // 실패하면 피드백 화면에 남아 적은 글을 그대로 다시 보낼 수 있다.
+  async function sendFeedback(content: string) {
+    setIsSending(true);
+    const outcome = await submitFeedback(content);
+    setIsSending(false);
+    if (!outcome.ok) {
+      console.error('피드백을 보내지 못했다', outcome.error);
+      setToast('피드백 실을 보내지 못했어요\n잠시 뒤 다시 전달해 주세요');
+      return;
+    }
+    setToast('피드백 실이 잘 전달됐어요');
+    leaveFeedback();
+  }
+
   // 쌓은 칸이 있으면 뒤로 가서 popstate 가 안내로 돌린다. 미리보기처럼 바로 연 피드백은 칸이 없다.
   function leaveFeedback() {
     if (pushedFeedback.current) window.history.back();
@@ -65,13 +78,7 @@ export function SiteClosed({ initialView = 'notice' }: Props) {
   return (
     <>
       {view === 'feedback' ? (
-        <ClosingFeedback
-          onSubmit={(text) => {
-            track('feedback_submitted', { text });
-            leaveFeedback();
-            setToast('피드백 실이 잘 전달됐어요');
-          }}
-        />
+        <ClosingFeedback isSending={isSending} onSubmit={(text) => void sendFeedback(text)} />
       ) : (
         <ClosingNotice onConnected={() => setView('coffee')} onFeedback={openFeedback} />
       )}
@@ -120,13 +127,15 @@ function ClosingNotice({ onFeedback, onConnected }: NoticeProps) {
 }
 
 // 610:2777 — 제목 top 81 · 부제 top 131 · 입력 카드 top 202(343 × 251) · 버튼 top 476.
-function ClosingFeedback({ onSubmit }: { onSubmit: (text: string) => void }) {
+type FeedbackProps = { isSending: boolean; onSubmit: (text: string) => void };
+
+function ClosingFeedback({ isSending, onSubmit }: FeedbackProps) {
   const [text, setText] = useState('');
   const trimmed = text.trim();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (trimmed) onSubmit(trimmed);
+    if (trimmed && !isSending) onSubmit(trimmed);
   }
 
   return (
@@ -143,12 +152,19 @@ function ClosingFeedback({ onSubmit }: { onSubmit: (text: string) => void }) {
       <textarea
         aria-label="피드백"
         className="mt-[23px] block h-[251px] w-full resize-none rounded-16 bg-surface-default px-12 py-16 text-ui-14 font-medium text-primary shadow-[0_2px_4px_rgba(0,0,0,0.2)] outline-none placeholder:text-primary focus-visible:outline-2 focus-visible:outline-focus"
-        maxLength={FEEDBACK_MAX}
+        maxLength={FEEDBACK_MAX_LENGTH}
         onChange={(event) => setText(event.target.value)}
         placeholder="피드백을 입력해주세요."
         value={text}
       />
-      <Button className="mt-[23px] w-full" disabled={!trimmed} type="submit" variant="apricot">
+      <Button
+        className="mt-[23px] w-full"
+        disabled={!trimmed}
+        loading={isSending}
+        loadingLabel="피드백 실 전달 중"
+        type="submit"
+        variant="apricot"
+      >
         피드백 실 전달하기
       </Button>
     </form>
