@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 
 import { track } from '@/lib/analytics';
@@ -26,6 +26,30 @@ export function SiteClosed({ initialView = 'notice' }: Props) {
   const [toast, setToast] = useState<string | null>(null);
   const closeToast = useCallback(() => setToast(null), []);
   const closeCoffee = useCallback(() => setView('notice'), []);
+  // 피드백 화면은 기록을 한 칸 쌓는다 — 휴대폰 뒤로가기가 사이트를 떠나지 않고 안내로 돌아온다.
+  const pushedFeedback = useRef(false);
+
+  useEffect(() => {
+    function handlePopState() {
+      pushedFeedback.current = false;
+      setView('notice');
+    }
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  function openFeedback() {
+    // 미리보기는 라우터 위에서 그린다 — 라우터가 둔 state 를 그대로 옮겨 쌓는다.
+    window.history.pushState(window.history.state, '');
+    pushedFeedback.current = true;
+    setView('feedback');
+  }
+
+  // 쌓은 칸이 있으면 뒤로 가서 popstate 가 안내로 돌린다. 미리보기처럼 바로 연 피드백은 칸이 없다.
+  function leaveFeedback() {
+    if (pushedFeedback.current) window.history.back();
+    else setView('notice');
+  }
 
   async function copyAccount() {
     try {
@@ -43,15 +67,12 @@ export function SiteClosed({ initialView = 'notice' }: Props) {
         <ClosingFeedback
           onSubmit={(text) => {
             track('feedback_submitted', { text });
-            setView('notice');
+            leaveFeedback();
             setToast('피드백 실이 잘 전달됐어요');
           }}
         />
       ) : (
-        <ClosingNotice
-          onConnected={() => setView('coffee')}
-          onFeedback={() => setView('feedback')}
-        />
+        <ClosingNotice onConnected={() => setView('coffee')} onFeedback={openFeedback} />
       )}
       <CoffeeModal onClose={closeCoffee} onCopy={copyAccount} open={view === 'coffee'} />
       <Toast

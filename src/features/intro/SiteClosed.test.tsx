@@ -27,7 +27,23 @@ test('피드백을 적어 보내면 Amplitude 로 본문을 보내고 안내 화
 
   expect(track).toHaveBeenCalledWith('feedback_submitted', { text: '궁합 지도가 좋았어요' });
   expect(screen.getByRole('status')).toHaveTextContent('피드백 실이 잘 전달됐어요');
-  expect(screen.getByRole('button', { name: '다음을 위한 피드백 남기기' })).toBeInTheDocument();
+  expect(
+    await screen.findByRole('button', { name: '다음을 위한 피드백 남기기' }),
+  ).toBeInTheDocument();
+});
+
+test('피드백 화면에서 뒤로가기를 누르면 사이트를 떠나지 않고 안내 화면으로 돌아온다', async () => {
+  render(<SiteClosed />);
+
+  fireEvent.click(screen.getByRole('button', { name: '다음을 위한 피드백 남기기' }));
+  expect(screen.getByRole('textbox', { name: '피드백' })).toBeInTheDocument();
+
+  window.history.back();
+
+  expect(
+    await screen.findByRole('button', { name: '다음을 위한 피드백 남기기' }),
+  ).toBeInTheDocument();
+  expect(track).not.toHaveBeenCalled();
 });
 
 test('공백만 적으면 보낼 수 없다', () => {
